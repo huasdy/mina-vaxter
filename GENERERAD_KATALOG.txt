@@ -1,0 +1,23 @@
+HTML-katalogen är visning/output. Redigera inte denna som master. Använd Register/Mina_Vaxter_Register.xlsx och låt katalogen genereras om.
+
+Visningen är förenklad: inga CSV-knappar på sidan, och pelargonkorten har färre chips.
+
+Alla CSV-inläsningsknappar är borttagna ur HTML-visningen.
+
+Etikettdata är inlagd som dokumentation och typstöd.
+
+Pelargonkorten har nu tags för extra egenskaper: Vildart, Brokbladig, Zonal, Primärhybrid.
+
+Redundant Vildart-tagg visas inte längre för huvudtypen Vildpelargon.
+
+Redundanta tags som upprepar huvudtypen visas inte längre.
+
+Denna katalog är genererad från den senast uppladdade registerfilen.
+
+Nielsens Fragrans visas utan exemplar-1; bildfilnamnen är uppdaterade och länkarna är justerade.
+
+Pelargonsidans småbilder visas nu under typ-/taggchipsen.
+
+Etikettbilderna har ersatts med roterade, mer läsbara versioner.
+
+Uppdatering: Korta visningschips i pelargonkatalogen: Vild/Doft/Zonal. Tags uppdaterade med Ampel och Bonsai.
