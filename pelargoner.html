@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pelargon</title>
+  <style>
+    :root {
+      --bg: #f5f1ea; --paper: #fffdf8; --ink: #2b251f; --muted: #6f655b;
+      --line: #ded2c2; --accent: #7d4f3b; --chip: #efe6da;
+      --shadow: 0 14px 40px rgba(62, 43, 28, 0.12); --radius: 22px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top left, rgba(125,79,59,0.10), transparent 35rem),
+                  radial-gradient(circle at top right, rgba(96,119,97,0.10), transparent 30rem),
+                  var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+    }
+    header { padding: 46px 22px 30px; text-align: center; }
+    nav { margin-bottom: 18px; text-align: center; }
+    nav a { color: var(--accent); text-decoration: none; font-weight: 750; }
+    .eyebrow { letter-spacing: .18em; text-transform: uppercase; font-size: .78rem; color: var(--accent); font-weight: 800; }
+    h1 { margin: 8px 0 8px; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.7rem, 8vw, 5.6rem); line-height: .92; font-weight: 500; }
+    .subtitle { margin: 0 auto; max-width: 860px; color: var(--muted); font-size: 1.05rem; }
+    .toolbar {
+      background: rgba(245,241,234,.84); border-top: 1px solid rgba(222,210,194,.75);
+      border-bottom: 1px solid rgba(222,210,194,.95); padding: 14px 18px;
+    }
+    .toolbar-inner { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto auto auto auto; gap: 10px; align-items: center; }
+    input, select, button, label.filebutton {
+      border: 1px solid var(--line); background: var(--paper); border-radius: 999px; color: var(--ink);
+      padding: 11px 14px; font-size: .95rem; font: inherit;
+    }
+    input[type="search"] { width: 100%; min-width: 0; }
+    button, label.filebutton { cursor: pointer; background: var(--accent); color: white; border-color: var(--accent); font-weight: 750; white-space: nowrap; }
+    button.secondary, label.filebutton.secondary { background: var(--paper); color: var(--accent); border-color: rgba(125,79,59,.35); }
+    input[type="file"] { display: none; }
+    main { max-width: 1240px; margin: 0 auto; padding: 26px 18px 64px; }
+    .helpbox { max-width: 1240px; margin: 0 auto 18px; background: rgba(255,253,248,.78); border: 1px solid var(--line); border-radius: 18px; padding: 13px 16px; color: var(--muted); font-size: .92rem; }
+    .stats { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 22px; color: var(--muted); }
+    .stat { background: rgba(255,253,248,.74); border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; font-size: .92rem; font-weight: 650; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(285px, 1fr)); gap: 18px; }
+    .empty { grid-column: 1 / -1; background: rgba(255,253,248,.78); border: 1px solid var(--line); border-radius: 18px; padding: 24px; color: var(--muted); text-align: center; font-weight: 650; }
+    .plant-card { background: var(--paper); border: 1px solid rgba(222,210,194,.95); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column; min-height: 100%; }
+    .image-wrap { position: relative; aspect-ratio: 4 / 5; background: linear-gradient(135deg, rgba(125,79,59,.16), rgba(96,119,97,.14)), #eadfce; overflow: hidden; }
+    .image-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in; }
+    .date-ribbon { position: absolute; left: 12px; bottom: 12px; background: rgba(43,37,31,.76); color: white; border-radius: 999px; padding: 6px 10px; font-size: .8rem; font-weight: 750; backdrop-filter: blur(8px); }
+    .thumbs { display: flex; gap: 8px; padding: 0; flex-wrap: wrap; margin-top: -2px; }
+    .thumb { border: 2px solid transparent; background: transparent; padding: 0; border-radius: 12px; overflow: hidden; width: 58px; height: 58px; cursor: pointer; }
+    .thumb.active { border-color: var(--accent); }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .card-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+    h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 1.55rem; line-height: 1.08; font-weight: 650; }
+    .plant-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+    .score { min-width: 42px; text-align: center; border-radius: 999px; background: var(--chip); color: var(--muted); padding: 5px 9px; font-weight: 800; font-size: .85rem; }
+    .chips { display: flex; flex-wrap: wrap; gap: 7px; }
+    .chip { background: var(--chip); color: var(--muted); border-radius: 999px; padding: 5px 9px; font-size: .8rem; font-weight: 700; }
+    .chip.green { background: rgba(96,119,97,.17); color: #435943; }
+    .chip.gold { background: rgba(181,138,69,.18); color: #77572a; }
+    dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; margin: 0; font-size: .94rem; }
+    dt { color: var(--muted); font-weight: 800; }
+    dd { margin: 0; }
+    .notes { color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; margin-top: auto; font-size: .94rem; min-height: 2.2em; }
+    .timeline { border-top: 1px solid var(--line); padding-top: 11px; display: flex; flex-wrap: wrap; gap: 7px; }
+    .time-pill { background: rgba(0,0,0,.04); border-radius: 999px; padding: 5px 8px; color: var(--muted); font-size: .78rem; font-weight: 700; }
+    dialog { border: none; padding: 0; background: transparent; max-width: min(92vw, 1000px); max-height: 92vh; }
+    dialog::backdrop { background: rgba(0,0,0,.72); }
+    .modal-img { display: block; max-width: 100%; max-height: 88vh; border-radius: 18px; background: white; }
+    .modal-caption { color: white; text-align: center; padding-top: 10px; font-weight: 700; }
+    footer { text-align: center; color: var(--muted); padding: 26px 18px 44px; font-size: .92rem; }
+    @media (max-width: 900px) { .toolbar-inner { grid-template-columns: 1fr; } select, button, label.filebutton { width: 100%; text-align: center; } }
+</style>
+</head>
+<body>
+  <header>
+    <nav><a href="index.html">← Mina Växter</a></nav>
+    <div class="eyebrow">Privat samling</div>
+    <h1>Pelargon</h1>
+    <p class="subtitle">Katalogen är den rena visningen. Masterregistret finns i Numbers-filen.</p>
+  </header>
+
+  <section class="toolbar">
+    <div class="toolbar-inner">
+      <input id="search" type="search" placeholder="Sök namn, exemplar, doft, datum eller anteckning…">
+      <select id="typeFilter"><option value="">Alla typer</option></select>
+      <select id="sortSelect">
+        <option value="name">Namn A-Ö</option>
+        <option value="type">Typ</option>
+        <option value="latest">Senaste bild</option>
+        <option value="photos">Flest bilder</option>
+      </select>
+      <button class="secondary" id="clearBtn" type="button">Rensa</button>
+      <button id="printBtn" type="button">Skriv ut</button>
+    </div>
+  </section>
+
+  <main>
+<div class="stats" id="stats"></div>
+    <section class="grid" id="grid"></section>
+  </main>
+
+  <dialog id="photoDialog">
+    <img class="modal-img" id="modalImg" alt="">
+    <div class="modal-caption" id="modalCaption"></div>
+  </dialog>
+
+  <footer>Serverfri lokal HTML-katalog.</footer>
+
+  <script type="text/plain" id="defaultPlantsCSV">id,name,type,tags,status,scent,source,notes
+p-acetosum,P. acetosum,Vildpelargon,Bonsai,Bekräftad,,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
+p-australe-1,P. australe 1,Vildpelargon,Ampel,Bekräftad,,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
+p-australe-2,P. australe 2,Vildpelargon,Ampel,Bekräftad,,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
+p-cotyledonis-1,P. cotyledonis 1,Vildpelargon,Bonsai,Bekräftad,,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
+p-cotyledonis-2,P. cotyledonis 2,Vildpelargon,Bonsai,Bekräftad,,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
+p-gibbosum-1,P. gibbosum 1,Vildpelargon,Bonsai,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
+p-gibbosum-2,P. gibbosum 2,Vildpelargon,Bonsai,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
+p-gibbosum-3,P. gibbosum 3,Vildpelargon,Bonsai,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
+p-gibbosum-4,P. gibbosum 4,Vildpelargon,Bonsai,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,,Har både maj- och junibild i katalogen.
+p-gibbosum-maroon-1,P. gibbosum ‘Maroon’ 1,Vildpelargon,Bonsai,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
+p-gibbosum-maroon-2,P. gibbosum ‘Maroon’ 2,Vildpelargon,Bonsai,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
+p-laxum-1,P. laxum 1,Vildpelargon,Bonsai,Bekräftad,,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
+p-laxum-2,P. laxum 2,Vildpelargon,Bonsai,Bekräftad,,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
+p-magenteum,P. magenteum,Vildpelargon,Bonsai,Bekräftad,,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
+p-odoratissimum-1,P. odoratissimum,Doftpelargon,Vildart;Ampel,Bekräftad,Äpple / frisk doft,,Doftpelargon med äppellik/frisk doft. Doftpelargon och doftande vildart.
+p-sidoides,P. sidoides,Vildpelargon,,Bekräftad,Svag / örtig,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
+p-triffidum,P. triffidum,Vildpelargon,Ampel,Bekräftad,,,Vild art. Etiketten anger P. triffidum.
+p-caffrum-diana,P. × caffrum ‘Diana’,Primärhybrid,,Bekräftad,,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
+p-bontrosai-1,P. ‘Bontrosai’ 1,Doftpelargon,Bonsai,Bekräftad,,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
+p-bontrosai-2,P. ‘Bontrosai’ 2,Doftpelargon,Bonsai,Bekräftad,,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
+p-bothams-surprise-1,P. ‘Botham Surprise’ 1,Brokbladig pelargon,,Bekräftad,,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
+p-bothams-surprise-2,P. ‘Botham Surprise’ 2,Brokbladig pelargon,,Bekräftad,,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
+p-creamery,P. ‘Creamery’,Zonalpelargon,,Bekräftad,,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
+p-cys-sunburst-1,P. ‘Cy’s Sunburst’ 1,Doftpelargon,Brokbladig,Bekräftad,,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid. Doftpelargon med brokbladigt bladverk."
+p-cys-sunburst-2,P. ‘Cy’s Sunburst’ 2,Doftpelargon,Brokbladig,Bekräftad,,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid. Doftpelargon med brokbladigt bladverk."
+p-cys-sunburst-3,P. ‘Cy’s Sunburst’ 3,Doftpelargon,Brokbladig,Bekräftad,,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid. Doftpelargon med brokbladigt bladverk."
+p-dr-westerlund-1,P. ‘Dr Westerlund’ 1,Doftpelargon,,Bekräftad,Klassisk doftpelargon / frisk citrus-ros,,Doftpelargon. Eget exemplar i samlingen.
+p-dr-westerlund-2,P. ‘Dr Westerlund’ 2,Doftpelargon,,Bekräftad,Klassisk doftpelargon / frisk citrus-ros,,Doftpelargon. Eget exemplar i samlingen.
+p-lemon-queen,P. ‘Lemon Queen’,Doftpelargon,,Bekräftad,Citron,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
+p-nielsens-fragrans-1,P. ‘Nielsens Fragrans’,Doftpelargon,,Bekräftad,Doftpelargon,,Har både helbild och blomma från samma datum.
+p-prince-of-orange,P. ‘Prince of Orange’,Doftpelargon,,Bekräftad,Apelsin / citrus,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
+p-torento,P. ‘Torento’,Doftpelargon,,Bekräftad,Cola / kryddig citrus,,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."</script>
+  <script type="text/plain" id="defaultPhotosCSV">plant_id,date,type,file,label
+p-acetosum,2026-06-21,hel,bilder/pelargoner/p-acetosum_2026-06-21_hel.jpg,2026-06-21 · hel
+p-australe-1,2026-06-21,hel,bilder/pelargoner/p-australe-1_2026-06-21_hel.jpg,2026-06-21 · hel
+p-australe-2,2026-06-21,hel,bilder/pelargoner/p-australe-2_2026-06-21_hel.jpg,2026-06-21 · hel
+p-bontrosai-1,2026-06-21,hel,bilder/pelargoner/p-bontrosai-1_2026-06-21_hel.jpg,2026-06-21 · hel
+p-bontrosai-2,2026-06-21,hel,bilder/pelargoner/p-bontrosai-2_2026-06-21_hel.jpg,2026-06-21 · hel
+p-bothams-surprise-1,2026-06-21,hel,bilder/pelargoner/p-bothams-surprise-1_2026-06-21_hel.jpg,2026-06-21 · hel
+p-bothams-surprise-2,2026-06-21,hel,bilder/pelargoner/p-bothams-surprise-2_2026-06-21_hel.jpg,2026-06-21 · hel
+p-caffrum-diana,2026-06-21,hel,bilder/pelargoner/p-caffrum-diana_2026-06-21_hel.jpg,2026-06-21 · hel
+p-cotyledonis-1,2026-06-21,hel,bilder/pelargoner/p-cotyledonis-1_2026-06-21_hel.jpg,2026-06-21 · hel
+p-cotyledonis-1,2026-06-23,stam,bilder/pelargoner/p-cotyledonis-1_2026-06-23_stam.jpg,2026-06-23 · stam
+p-cotyledonis-2,2026-06-21,hel,bilder/pelargoner/p-cotyledonis-2_2026-06-21_hel.jpg,2026-06-21 · hel
+p-cotyledonis-2,2026-06-23,stam,bilder/pelargoner/p-cotyledonis-2_2026-06-23_stam.jpg,2026-06-23 · stam
+p-creamery,2026-06-21,hel,bilder/pelargoner/p-creamery_2026-06-21_hel.jpg,2026-06-21 · hel
+p-cys-sunburst-1,2026-06-21,blomma,bilder/pelargoner/p-cys-sunburst-1_2026-06-21_blomma.jpg,2026-06-21 · blomma
+p-cys-sunburst-1,2026-06-21,hel,bilder/pelargoner/p-cys-sunburst-1_2026-06-21_hel.jpg,2026-06-21 · hel
+p-cys-sunburst-2,2026-06-21,hel,bilder/pelargoner/p-cys-sunburst-2_2026-06-21_hel.jpg,2026-06-21 · hel
+p-cys-sunburst-3,2026-06-21,hel,bilder/pelargoner/p-cys-sunburst-3_2026-06-21_hel.jpg,2026-06-21 · hel
+p-dr-westerlund-1,2026-06-21,hel,bilder/pelargoner/p-dr-westerlund-1_2026-06-21_hel.jpg,2026-06-21 · hel
+p-dr-westerlund-2,2026-06-21,hel,bilder/pelargoner/p-dr-westerlund-2_2026-06-21_hel.jpg,2026-06-21 · hel
+p-gibbosum-1,2026-06-21,hel,bilder/pelargoner/p-gibbosum-1_2026-06-21_hel.jpg,2026-06-21 · hel
+p-gibbosum-2,2026-06-21,hel,bilder/pelargoner/p-gibbosum-2_2026-06-21_hel.jpg,2026-06-21 · hel
+p-gibbosum-3,2026-06-21,hel,bilder/pelargoner/p-gibbosum-3_2026-06-21_hel.jpg,2026-06-21 · hel
+p-gibbosum-4,2026-05-24,hel,bilder/pelargoner/p-gibbosum-4_2026-05-24_hel.jpg,2026-05-24 · hel
+p-gibbosum-4,2026-06-21,hel,bilder/pelargoner/p-gibbosum-4_2026-06-21_hel.jpg,2026-06-21 · hel
+p-gibbosum-maroon-1,2026-06-21,hel,bilder/pelargoner/p-gibbosum-maroon-1_2026-06-21_hel.jpg,2026-06-21 · hel
+p-gibbosum-maroon-2,2026-06-21,hel,bilder/pelargoner/p-gibbosum-maroon-2_2026-06-21_hel.jpg,2026-06-21 · hel
+p-laxum-1,2026-06-21,hel,bilder/pelargoner/p-laxum-1_2026-06-21_hel.jpg,2026-06-21 · hel
+p-laxum-2,2026-06-21,hel,bilder/pelargoner/p-laxum-2_2026-06-21_hel.jpg,2026-06-21 · hel
+p-lemon-queen,2026-06-21,hel,bilder/pelargoner/p-lemon-queen_2026-06-21_hel.jpg,2026-06-21 · hel
+p-magenteum,2026-06-21,hel,bilder/pelargoner/p-magenteum_2026-06-21_hel.jpg,2026-06-21 · hel
+p-nielsens-fragrans-1,2026-06-21,blomma,bilder/pelargoner/p-nielsens-fragrans_2026-06-21_blomma.jpg,2026-06-21 · blomma
+p-nielsens-fragrans-1,2026-06-21,hel,bilder/pelargoner/p-nielsens-fragrans_2026-06-21_hel.jpg,2026-06-21 · hel
+p-odoratissimum-1,2026-06-21,blomma,bilder/pelargoner/p-odoratissimum-1_2026-06-21_blomma.jpg,2026-06-21 · blomma
+p-odoratissimum-1,2026-06-21,hel,bilder/pelargoner/p-odoratissimum-1_2026-06-21_hel.jpg,2026-06-21 · hel
+p-prince-of-orange,2026-06-21,hel,bilder/pelargoner/p-prince-of-orange_2026-06-21_hel.jpg,2026-06-21 · hel
+p-sidoides,2026-06-21,hel,bilder/pelargoner/p-sidoides_2026-06-21_hel.jpg,2026-06-21 · hel
+p-torento,2026-06-21,hel,bilder/pelargoner/p-torento_2026-06-21_hel.jpg,2026-06-21 · hel
+p-triffidum,2026-06-21,blomma,bilder/pelargoner/p-triffidum_2026-06-21_blomma.jpg,2026-06-21 · blomma
+p-triffidum,2026-06-21,hel,bilder/pelargoner/p-triffidum_2026-06-21_hel.jpg,2026-06-21 · hel</script>
+  <script src="common.js"></script>
+  <script>
+    let plants = [];
+    let plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;
+    let photoCSVText = document.querySelector("#defaultPhotosCSV").textContent;
+
+    const grid = document.querySelector("#grid");
+    const search = document.querySelector("#search");
+    const typeFilter = document.querySelector("#typeFilter");
+    const sortSelect = document.querySelector("#sortSelect");
+    const clearBtn = document.querySelector("#clearBtn");
+    const stats = document.querySelector("#stats");
+    const printBtn = document.querySelector("#printBtn");
+    const dialog = document.querySelector("#photoDialog");
+    const modalImg = document.querySelector("#modalImg");
+    const modalCaption = document.querySelector("#modalCaption");
+
+    function rebuild() {
+      const rows = parseCSV(plantCSVText);
+      const photos = parseCSV(photoCSVText);
+      const photoMap = new Map();
+      photos.forEach(ph => {
+        if (!photoMap.has(ph.plant_id)) photoMap.set(ph.plant_id, []);
+        photoMap.get(ph.plant_id).push(ph);
+      });
+      plants = rows.map(p => ({
+        ...p,
+        photos: (photoMap.get(p.id) || []).sort((a,b) => sortNatural(a.date + a.type, b.date + b.type))
+      })).sort((a,b) => sortNatural(a.name, b.name));
+
+      typeFilter.innerHTML = '<option value="">Alla typer</option>';
+      [...new Set(plants.map(p => clean(p.type)).filter(Boolean))]
+        .sort((a,b) => a.localeCompare(b, "sv"))
+        .forEach(type => {
+          const option = document.createElement("option");
+          option.value = type;
+          option.textContent = displayChipLabel(type);
+          typeFilter.appendChild(option);
+        });
+      render();
+    }
+
+    function photoButtons(p, activeFile) {
+      if ((p.photos || []).length <= 1) return "";
+      return p.photos.map(photo => `
+        <button class="thumb ${photo.file === activeFile ? "active" : ""}" type="button"
+          data-plant="${escapeAttr(p.name)}" data-file="${photo.file}" data-label="${escapeAttr(photo.label || (photo.date + " · " + photo.type))}">
+          <img src="${photo.file}" alt="${escapeAttr(p.name + " " + photo.date)}" loading="lazy">
+        </button>`).join("");
+    }
+    function displayChipLabel(label) {
+      const raw = clean(label);
+      const map = {
+        "Vildpelargon": "Vild",
+        "Vildart": "Vild",
+        "Doftpelargon": "Doft",
+        "Zonalpelargon": "Zonal",
+        "Brokbladig pelargon": "Brokbladig"
+      };
+      return map[raw] || raw;
+    }
+
+    function splitTags(tags) {
+      return clean(tags).split(";")
+        .map(t => t.trim())
+        .filter(Boolean);
+    }
+
+    function cardChips(p) {
+      const raw = [p.type, ...splitTags(p.tags)];
+      const seen = new Set();
+      return raw.map(displayChipLabel)
+        .filter(Boolean)
+        .filter(label => {
+          if (seen.has(label)) return false;
+          seen.add(label);
+          return true;
+        })
+        .map((label, index) => `<span class="chip ${index === 0 ? "green" : ""}">${escapeAttr(label)}</span>`)
+        .join("");
+    }
+
+    function cardTemplate(p) {
+      const photos = p.photos || [];
+      const active = photos[photos.length - 1] || {};
+      const activeFile = active.file || "";
+      const activeLabel = active.label || (active.date ? `${active.date} · ${active.type}` : "");
+      const searchable = [
+        p.id, p.name, p.type, p.tags, p.status, p.scent, p.source, p.notes,
+        ...photos.map(x => `${x.date} ${x.type} ${x.file}`)
+      ].join(" ").toLowerCase();
+
+      return `
+        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}">
+          <div class="image-wrap">
+            ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(p.name)}" data-caption="${escapeAttr(p.name + " · " + activeLabel)}">` : ""}
+            ${activeLabel ? `<div class="date-ribbon">${activeLabel}</div>` : ""}
+          </div>
+          <div class="card-body">
+            <h2>${p.name}</h2>
+            <div class="chips">
+              ${cardChips(p)}
+            </div>
+            ${photos.length > 1 ? `<div class="thumbs">${photoButtons(p, activeFile)}</div>` : ""}
+            <dl>
+              <dt>Doft</dt><dd>${clean(p.scent) || "Ej ifyllt"}</dd>
+              <dt>Källa</dt><dd>${clean(p.source) || "Ej ifyllt"}</dd>
+            </dl>
+            <div class="notes">${clean(p.notes) || "Anteckningar kan läggas till i CSV-filen."}</div>
+          </div>
+        </article>
+      `;
+    }
+
+    function latestDate(p) {
+      return (p.photos || []).map(photo => photo.date).filter(Boolean).sort().at(-1) || "";
+    }
+
+    function sortedPlants(list) {
+      return [...list].sort((a, b) => {
+        if (sortSelect.value === "type") {
+          return sortNatural(clean(a.type) + a.name, clean(b.type) + b.name);
+        }
+        if (sortSelect.value === "latest") {
+          return sortNatural(latestDate(b), latestDate(a)) || sortNatural(a.name, b.name);
+        }
+        if (sortSelect.value === "photos") {
+          return ((b.photos || []).length - (a.photos || []).length) || sortNatural(a.name, b.name);
+        }
+        return sortNatural(a.name, b.name);
+      });
+    }
+
+    function render() {
+      const query = search.value.trim().toLowerCase();
+      const selectedType = typeFilter.value;
+      const filtered = plants.filter(p => {
+        const combined = [
+          p.id, p.name, p.type, p.tags, p.status, p.scent, p.source, p.notes,
+          ...(p.photos || []).map(x => `${x.date} ${x.type} ${x.file}`)
+        ].join(" ").toLowerCase();
+        return (!query || combined.includes(query)) && (!selectedType || p.type === selectedType);
+      });
+      const visible = sortedPlants(filtered);
+      grid.innerHTML = visible.length ? visible.map(cardTemplate).join("") : '<div class="empty">Inga pelargoner matchar sökningen just nu.</div>';
+      const photoCount = plants.reduce((sum, p) => sum + (p.photos || []).length, 0);
+      const withPhoto = plants.filter(p => (p.photos || []).length > 0).length;
+      const activeParts = [
+        query ? `Sökning: “${search.value.trim()}”` : "",
+        selectedType ? `Typ: ${displayChipLabel(selectedType)}` : "",
+        `Sortering: ${sortSelect.options[sortSelect.selectedIndex].textContent}`
+      ].filter(Boolean);
+      stats.innerHTML = `
+        <span class="stat">${plants.length} exemplar</span>
+        <span class="stat">${withPhoto} med bild</span>
+        <span class="stat">${photoCount} bilder</span>
+        <span class="stat">${visible.length} visas just nu</span>
+        <span class="stat">${activeParts.join(" · ")}</span>
+      `;
+    }
+
+    grid.addEventListener("click", event => {
+      const thumb = event.target.closest(".thumb");
+      const main = event.target.closest(".main-photo");
+      if (thumb) {
+        const card = thumb.closest(".plant-card");
+        const img = card.querySelector(".main-photo");
+        const ribbon = card.querySelector(".date-ribbon");
+        card.querySelectorAll(".thumb").forEach(t => t.classList.remove("active"));
+        thumb.classList.add("active");
+        img.src = thumb.dataset.file;
+        img.dataset.caption = `${thumb.dataset.plant} · ${thumb.dataset.label}`;
+        ribbon.textContent = thumb.dataset.label;
+      }
+      if (main) {
+        modalImg.src = main.src;
+        modalImg.alt = main.alt;
+        modalCaption.textContent = main.dataset.caption || main.alt;
+        dialog.showModal();
+      }
+    });
+    dialog.addEventListener("click", () => dialog.close());
+    printBtn.addEventListener("click", () => window.print());
+    clearBtn.addEventListener("click", () => {
+      search.value = "";
+      typeFilter.value = "";
+      sortSelect.value = "name";
+      render();
+    });
+    search.addEventListener("input", render);
+    typeFilter.addEventListener("change", render);
+    sortSelect.addEventListener("change", render);
+    rebuild();
+  </script>
+</body>
+</html>
