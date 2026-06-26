@@ -81,7 +81,7 @@
       <a href="hibiskusar.html">Hibiskus</a>
       <a href="pelargoner.html">Pelargon</a>
       <a href="citrus.html">Citrus</a>
-      <a class="current" href="specialvaxter.html">Udda</a>
+      <a class="current" href="udda.html">Udda</a>
     </nav>
     <div class="eyebrow">Privat samling</div>
     <h1>Udda</h1>
@@ -251,7 +251,7 @@ SP-001,Stapelia mix,Stapelia spp.,Suckulent,Frösådd;Samplantering;Blomning ok�
         return (!query || combined.includes(query)) && (!selectedType || p.type === selectedType);
       });
       const visible = sortedPlants(filtered);
-      grid.innerHTML = visible.length ? visible.map(cardTemplate).join("") : '<div class="empty">Inga specialväxter matchar sökningen just nu.</div>';
+      grid.innerHTML = visible.length ? visible.map(cardTemplate).join("") : '<div class="empty">Inga udda växter matchar sökningen just nu.</div>';
       const photoCount = plants.reduce((sum, p) => sum + (p.photos || []).length, 0);
       const activeParts = [
         query ? `Sökning: “${search.value.trim()}”` : "",
