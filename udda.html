@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Citrus</title>
+  <title>Udda</title>
   <style>
     :root {
       --bg: #f5f1ea; --paper: #fffdf8; --ink: #2b251f; --muted: #6f655b;
@@ -13,16 +13,15 @@
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      background: radial-gradient(circle at top left, rgba(212,157,42,0.16), transparent 35rem),
-                  radial-gradient(circle at top right, rgba(70,128,70,0.12), transparent 30rem),
+      background: radial-gradient(circle at top left, rgba(125,79,59,0.10), transparent 35rem),
+                  radial-gradient(circle at top right, rgba(96,119,97,0.10), transparent 30rem),
                   var(--bg);
       color: var(--ink);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       line-height: 1.5;
     }
     header { padding: 46px 22px 30px; text-align: center; }
-    nav { margin-bottom: 18px; text-align: center; }
-    nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
+    nav { margin-bottom: 18px; text-align: center; display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
     nav a { color: var(--accent); text-decoration: none; font-weight: 750; }
     nav a.current { color: var(--ink); }
     .eyebrow { letter-spacing: .18em; text-transform: uppercase; font-size: .78rem; color: var(--accent); font-weight: 800; }
@@ -32,8 +31,8 @@
       background: rgba(245,241,234,.84); border-top: 1px solid rgba(222,210,194,.75);
       border-bottom: 1px solid rgba(222,210,194,.95); padding: 14px 18px;
     }
-    .toolbar-inner { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto auto auto auto auto auto; gap: 10px; align-items: center; }
-    input, select, button, textarea {
+    .toolbar-inner { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto auto auto auto; gap: 10px; align-items: center; }
+    input, select, button {
       border: 1px solid var(--line); background: var(--paper); border-radius: 999px; color: var(--ink);
       padding: 11px 14px; font-size: .95rem; font: inherit;
     }
@@ -46,8 +45,9 @@
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(285px, 1fr)); gap: 18px; }
     .empty { grid-column: 1 / -1; background: rgba(255,253,248,.78); border: 1px solid var(--line); border-radius: 18px; padding: 24px; color: var(--muted); text-align: center; font-weight: 650; }
     .plant-card { background: var(--paper); border: 1px solid rgba(222,210,194,.95); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column; min-height: 100%; }
-    .image-wrap { position: relative; aspect-ratio: 4 / 5; background: linear-gradient(135deg, rgba(212,157,42,.20), rgba(70,128,70,.16)), #eadfce; overflow: hidden; }
+    .image-wrap { position: relative; aspect-ratio: 4 / 5; background: linear-gradient(135deg, rgba(125,79,59,.16), rgba(96,119,97,.14)), #eadfce; overflow: hidden; }
     .image-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in; }
+    .image-empty { width: 100%; height: 100%; display: grid; place-items: center; color: rgba(111,101,91,.72); font-weight: 800; text-align: center; padding: 24px; }
     .date-ribbon { position: absolute; left: 12px; bottom: 12px; background: rgba(43,37,31,.76); color: white; border-radius: 999px; padding: 6px 10px; font-size: .8rem; font-weight: 750; backdrop-filter: blur(8px); }
     .thumbs { display: flex; gap: 8px; padding: 0; flex-wrap: wrap; margin-top: -2px; }
     .thumb { border: 2px solid transparent; background: transparent; padding: 0; border-radius: 12px; overflow: hidden; width: 58px; height: 58px; cursor: pointer; }
@@ -55,18 +55,14 @@
     .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .card-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
     h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 1.55rem; line-height: 1.08; font-weight: 650; }
+    .latin { color: var(--muted); font-style: italic; margin-top: -8px; }
     .chips { display: flex; flex-wrap: wrap; gap: 7px; }
     .chip { background: var(--chip); color: var(--muted); border-radius: 999px; padding: 5px 9px; font-size: .8rem; font-weight: 700; }
-    .chip.green { background: rgba(70,128,70,.17); color: #3e673d; }
-    .chip.gold { background: rgba(212,157,42,.20); color: #74541d; }
+    .chip.green { background: rgba(96,119,97,.17); color: #435943; }
+    .chip.gold { background: rgba(181,138,69,.18); color: #77572a; }
     dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; margin: 0; font-size: .94rem; }
     dt { color: var(--muted); font-weight: 800; }
     dd { margin: 0; }
-    .edit-form { display: grid; gap: 10px; }
-    .edit-row { display: grid; grid-template-columns: 88px 1fr; gap: 8px; align-items: center; }
-    .edit-row label { color: var(--muted); font-weight: 800; font-size: .9rem; }
-    .edit-row input, .edit-row textarea { width: 100%; border-radius: 12px; padding: 9px 10px; min-width: 0; }
-    .edit-row textarea { min-height: 70px; resize: vertical; }
     .notes { color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; margin-top: auto; font-size: .94rem; min-height: 2.2em; }
     .timeline { border-top: 1px solid var(--line); padding-top: 11px; display: flex; flex-wrap: wrap; gap: 7px; }
     .time-pill { background: rgba(0,0,0,.04); border-radius: 999px; padding: 5px 8px; color: var(--muted); font-size: .78rem; font-weight: 700; }
@@ -84,29 +80,26 @@
       <a href="index.html">← Mina Växter</a>
       <a href="hibiskusar.html">Hibiskus</a>
       <a href="pelargoner.html">Pelargon</a>
-      <a class="current" href="citrus.html">Citrus</a>
-      <a href="udda.html">Udda</a>
+      <a href="citrus.html">Citrus</a>
+      <a class="current" href="udda.html">Udda</a>
     </nav>
     <div class="eyebrow">Privat samling</div>
-    <h1>Citrus</h1>
-    <p class="subtitle">Citrusplantor, sorter, ursprung, placering, bildhistorik och anteckningar.</p>
+    <h1>Udda</h1>
+    <p class="subtitle">Art- och gruppkatalog för udda växter, doftväxter, samplanteringar och frösådder där individ-ID inte är det viktiga.</p>
   </header>
 
   <section class="toolbar">
     <div class="toolbar-inner">
-      <input id="search" type="search" placeholder="Sök namn, typ, status, plats, källa eller anteckning…">
+      <input id="search" type="search" placeholder="Sök namn, latinskt namn, typ, tagg, ursprung eller anteckning…">
       <select id="typeFilter"><option value="">Alla typer</option></select>
       <select id="sortSelect">
         <option value="name">Namn A-Ö</option>
         <option value="type">Typ</option>
+        <option value="status">Status</option>
         <option value="latest">Senaste bild</option>
         <option value="photos">Flest bilder</option>
-        <option value="status">Status</option>
       </select>
       <button class="secondary" id="clearBtn" type="button">Rensa</button>
-      <button class="secondary" id="editBtn" type="button">Redigera</button>
-      <button class="secondary" id="downloadBtn" type="button">Ladda ner CSV</button>
-      <button class="secondary" id="resetBtn" type="button">Återställ</button>
       <button id="printBtn" type="button">Skriv ut</button>
     </div>
   </section>
@@ -123,33 +116,15 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script type="text/plain" id="defaultPlantsCSV">id,name,type,status,source,acquired,location,notes
-c-calamondin,Calamondin,Calamondin,Aktiv,,,,
-c-limon-1,Citrus limon 1,Citron,Aktiv,Bauhaus,,,
-c-limon-2,Citrus limon 2,Citron,Aktiv,Bauhaus,,,
-c-okand-citrusstickling,citrusstickling,Okänd citrus,Aktiv,Jonas,,,
-c-kaffirlime,Kaffirlime – Citrus hystrix,Kaffirlime,Aktiv,Vivai Miano,,,
-c-kumquat-1,Kumquat 1,Kumquat,Aktiv,Vivai Miano,,,
-c-kumquat-2,Kumquat 2,Kumquat,Aktiv,Vivai Miano,,,
-c-limequat,Limequat,Limequat,Aktiv,Vivai Miano,,,
-c-rod-fingerlime,Röd fingerlime – Citrus australasica,Fingerlime,Aktiv,Vivai Miano,,,</script>
-  <script type="text/plain" id="defaultPhotosCSV">plant_id,date,type,file,label
-c-calamondin,2026-06-24,hel,bilder/citrus/c-calamondin_2026-06-24_hel.jpg,2026-06-24 · hel
-c-kaffirlime,2026-06-24,hel,bilder/citrus/c-kaffirlime_2026-06-24_hel.jpg,2026-06-24 · hel
-c-kumquat-1,2026-06-24,hel,bilder/citrus/c-kumquat-1_2026-06-24_hel.jpg,2026-06-24 · hel
-c-kumquat-2,2026-06-24,hel,bilder/citrus/c-kumquat-2_2026-06-24_hel.jpg,2026-06-24 · hel
-c-limequat,2026-06-24,hel,bilder/citrus/c-limequat_2026-06-24_hel.jpg,2026-06-24 · hel
-c-limon-1,2026-06-24,hel,bilder/citrus/c-limon-1_2026-06-24_hel.jpg,2026-06-24 · hel
-c-limon-2,2026-06-24,hel,bilder/citrus/c-limon-2_2026-06-24_hel.jpg,2026-06-24 · hel
-c-okand-citrusstickling,2026-06-24,hel,bilder/citrus/c-okand-citrusstickling_2026-06-24_hel.jpg,2026-06-24 · hel
-c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jpg,2026-06-24 · hel</script>
+  <script type="text/plain" id="defaultPlantsCSV">id,name,latin,type,tags,status,source,notes
+SP-002,Patchouli,Pogostemon cablin,Doftväxt,Tropisk;Sticklingar;Presentväxt,Aktiv,Sticklingar/frösådd,Flera plantor finns men dokumenteras som växttyp snarare än individer.
+SP-003,Salvia apiana,Salvia apiana,Salvia,Frösådd;Torrt/soligt;Pågående,Under uppdragning,Frö,Dokumenteras om frösådden tar sig.
+SP-001,Stapelia mix,Stapelia spp.,Suckulent,Frösådd;Samplantering;Blomning okänd,Aktiv,Frösådd,Frösådd samplantering med flera individer i samma kruka. Dokumenteras som grupp tills blomning visar skillnader.</script>
+  <script type="text/plain" id="defaultPhotosCSV">plant_id,date,type,file,label</script>
   <script src="common.js"></script>
   <script>
     let plants = [];
-    const plantStorageKey = "minaVaxterCitrusCSV";
-    const plantHeaders = ["id", "name", "type", "status", "source", "acquired", "location", "notes"];
-    let editMode = false;
-    let plantCSVText = getRememberedCSV(plantStorageKey) || document.querySelector("#defaultPlantsCSV").textContent;
+    let plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;
     let photoCSVText = document.querySelector("#defaultPhotosCSV").textContent;
 
     const grid = document.querySelector("#grid");
@@ -157,42 +132,18 @@ c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jp
     const typeFilter = document.querySelector("#typeFilter");
     const sortSelect = document.querySelector("#sortSelect");
     const clearBtn = document.querySelector("#clearBtn");
-    const editBtn = document.querySelector("#editBtn");
-    const downloadBtn = document.querySelector("#downloadBtn");
-    const resetBtn = document.querySelector("#resetBtn");
     const stats = document.querySelector("#stats");
     const printBtn = document.querySelector("#printBtn");
     const dialog = document.querySelector("#photoDialog");
     const modalImg = document.querySelector("#modalImg");
     const modalCaption = document.querySelector("#modalCaption");
 
-    function csvValue(value) {
-      const text = String(value || "");
-      return /[",\n\r]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
-    }
-
     function escapeText(value) {
       return String(value || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
     }
 
-    function plantsToCSV(rows) {
-      return [
-        plantHeaders.join(","),
-        ...rows.map(row => plantHeaders.map(key => csvValue(row[key])).join(","))
-      ].join("\n");
-    }
-
-    function savePlants() {
-      plantCSVText = plantsToCSV(plants);
-      rememberCSV(plantStorageKey, plantCSVText);
-    }
-
-    function updatePlant(id, field, value) {
-      const plant = plants.find(p => p.id === id);
-      if (!plant) return;
-      plant[field] = value;
-      savePlants();
-      render();
+    function tagList(value) {
+      return String(value || "").split(";").map(tag => tag.trim()).filter(Boolean);
     }
 
     function rebuild() {
@@ -234,46 +185,34 @@ c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jp
       const active = photos[photos.length - 1] || {};
       const activeFile = active.file || "";
       const activeLabel = active.label || (active.date ? `${active.date} · ${active.type}` : "");
+      const chips = [
+        `<span class="chip green">${escapeText(clean(p.type) || "Specialväxt")}</span>`,
+        `<span class="chip gold">${escapeText(clean(p.status) || "Status saknas")}</span>`,
+        ...tagList(p.tags).map(tag => `<span class="chip">${escapeText(tag)}</span>`),
+        `<span class="chip">${bildText(photos.length)}</span>`
+      ].join("");
       const searchable = [
-        p.id, p.name, p.type, p.status, p.source, p.acquired, p.location, p.notes,
+        p.id, p.name, p.latin, p.type, p.tags, p.status, p.source, p.notes,
         ...photos.map(x => `${x.date} ${x.type} ${x.file}`)
       ].join(" ").toLowerCase();
-
-      const details = editMode ? `
-        <div class="edit-form" data-id="${escapeAttr(p.id)}">
-          <div class="edit-row"><label>Namn</label><input data-field="name" value="${escapeAttr(p.name)}"></div>
-          <div class="edit-row"><label>Typ</label><input data-field="type" value="${escapeAttr(p.type)}"></div>
-          <div class="edit-row"><label>Status</label><input data-field="status" value="${escapeAttr(p.status)}"></div>
-          <div class="edit-row"><label>Källa</label><input data-field="source" value="${escapeAttr(p.source)}"></div>
-          <div class="edit-row"><label>Inköpt</label><input data-field="acquired" value="${escapeAttr(p.acquired)}"></div>
-          <div class="edit-row"><label>Plats</label><input data-field="location" value="${escapeAttr(p.location)}"></div>
-          <div class="edit-row"><label>Anteckn.</label><textarea data-field="notes">${escapeText(p.notes)}</textarea></div>
-        </div>
-      ` : `
-        <dl>
-          <dt>Källa</dt><dd>${clean(p.source) || "Ej ifyllt"}</dd>
-          <dt>Inköpt</dt><dd>${clean(p.acquired) || "Ej ifyllt"}</dd>
-          <dt>Plats</dt><dd>${clean(p.location) || "Ej ifyllt"}</dd>
-        </dl>
-        <div class="timeline">${photos.map(photo => `<span class="time-pill">${photo.date}</span>`).join("")}</div>
-        <div class="notes">${clean(p.notes) || "Anteckningar kan läggas till i CSV-filen."}</div>
-      `;
 
       return `
         <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}">
           <div class="image-wrap">
-            ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(p.name)}" data-caption="${escapeAttr(p.name + " · " + activeLabel)}">` : ""}
+            ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(p.name)}" data-caption="${escapeAttr(p.name + " · " + activeLabel)}">` : `<div class="image-empty">Bild saknas</div>`}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}</div>` : ""}
           </div>
           <div class="card-body">
-            <h2>${clean(p.name) || p.id}</h2>
-            <div class="chips">
-              <span class="chip green">${clean(p.type) || "Citrus"}</span>
-              <span class="chip gold">${clean(p.status) || "Status saknas"}</span>
-              <span class="chip">${bildText(photos.length)}</span>
-            </div>
+            <h2>${escapeText(clean(p.name) || p.id)}</h2>
+            <div class="latin">${escapeText(clean(p.latin))}</div>
+            <div class="chips">${chips}</div>
             ${photos.length > 1 ? `<div class="thumbs">${photoButtons(p, activeFile)}</div>` : ""}
-            ${details}
+            <dl>
+              <dt>ID</dt><dd>${escapeText(p.id)}</dd>
+              <dt>Ursprung</dt><dd>${escapeText(clean(p.source) || "Ej ifyllt")}</dd>
+            </dl>
+            ${photos.length ? `<div class="timeline">${photos.map(photo => `<span class="time-pill">${photo.date}</span>`).join("")}</div>` : ""}
+            <div class="notes">${escapeText(clean(p.notes) || "Anteckningar kan läggas till i CSV-filen.")}</div>
           </div>
         </article>
       `;
@@ -288,14 +227,14 @@ c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jp
         if (sortSelect.value === "type") {
           return sortNatural(clean(a.type) + a.name, clean(b.type) + b.name);
         }
+        if (sortSelect.value === "status") {
+          return sortNatural(clean(a.status) + a.name, clean(b.status) + b.name);
+        }
         if (sortSelect.value === "latest") {
           return sortNatural(latestDate(b), latestDate(a)) || sortNatural(a.name, b.name);
         }
         if (sortSelect.value === "photos") {
           return ((b.photos || []).length - (a.photos || []).length) || sortNatural(a.name, b.name);
-        }
-        if (sortSelect.value === "status") {
-          return sortNatural(clean(a.status) + a.name, clean(b.status) + b.name);
         }
         return sortNatural(a.name, b.name);
       });
@@ -306,25 +245,21 @@ c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jp
       const selectedType = typeFilter.value;
       const filtered = plants.filter(p => {
         const combined = [
-          p.id, p.name, p.type, p.status, p.source, p.acquired, p.location, p.notes,
+          p.id, p.name, p.latin, p.type, p.tags, p.status, p.source, p.notes,
           ...(p.photos || []).map(x => `${x.date} ${x.type} ${x.file}`)
         ].join(" ").toLowerCase();
         return (!query || combined.includes(query)) && (!selectedType || p.type === selectedType);
       });
       const visible = sortedPlants(filtered);
-      grid.innerHTML = visible.length ? visible.map(cardTemplate).join("") : '<div class="empty">Inga citrusplantor matchar sökningen just nu.</div>';
+      grid.innerHTML = visible.length ? visible.map(cardTemplate).join("") : '<div class="empty">Inga udda växter matchar sökningen just nu.</div>';
       const photoCount = plants.reduce((sum, p) => sum + (p.photos || []).length, 0);
-      const withPhoto = plants.filter(p => (p.photos || []).length > 0).length;
       const activeParts = [
         query ? `Sökning: “${search.value.trim()}”` : "",
         selectedType ? `Typ: ${selectedType}` : "",
-        `Sortering: ${sortSelect.options[sortSelect.selectedIndex].textContent}`,
-        editMode ? "Redigering aktiv" : "",
-        getRememberedCSV(plantStorageKey) ? "Sparat lokalt" : ""
+        `Sortering: ${sortSelect.options[sortSelect.selectedIndex].textContent}`
       ].filter(Boolean);
       stats.innerHTML = `
-        <span class="stat">${plants.length} citrusar</span>
-        <span class="stat">${withPhoto} med bild</span>
+        <span class="stat">${plants.length} poster</span>
         <span class="stat">${photoCount} bilder</span>
         <span class="stat">${visible.length} visas just nu</span>
         <span class="stat">${activeParts.join(" · ")}</span>
@@ -351,33 +286,8 @@ c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jp
         dialog.showModal();
       }
     });
-    grid.addEventListener("change", event => {
-      const field = event.target.dataset.field;
-      const form = event.target.closest(".edit-form");
-      if (!field || !form) return;
-      updatePlant(form.dataset.id, field, event.target.value.trim());
-    });
     dialog.addEventListener("click", () => dialog.close());
     printBtn.addEventListener("click", () => window.print());
-    editBtn.addEventListener("click", () => {
-      editMode = !editMode;
-      editBtn.textContent = editMode ? "Klar" : "Redigera";
-      render();
-    });
-    downloadBtn.addEventListener("click", () => {
-      if (document.activeElement && document.activeElement.dataset.field) {
-        document.activeElement.blur();
-      }
-      savePlants();
-      downloadText("citrus.csv", plantCSVText);
-    });
-    resetBtn.addEventListener("click", () => {
-      clearRememberedCSV([plantStorageKey]);
-      plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;
-      editMode = false;
-      editBtn.textContent = "Redigera";
-      rebuild();
-    });
     clearBtn.addEventListener("click", () => {
       search.value = "";
       typeFilter.value = "";
