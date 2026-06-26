@@ -1,0 +1,1 @@
+Lagg specialvaxtbilder har om de inte importeras via IMPORTERA_HAR/BILDER.
