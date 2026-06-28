@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Etiketter</title>
+  <style>
+    :root {
+      --bg: #f5f1ea; --paper: #fffdf8; --ink: #2b251f; --muted: #6f655b;
+      --line: #ded2c2; --accent: #7d4f3b; --chip: #efe6da;
+      --shadow: 0 14px 40px rgba(62,43,28,.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh;
+      background: radial-gradient(circle at top left, rgba(125,79,59,.10), transparent 35rem),
+                  radial-gradient(circle at top right, rgba(96,119,97,.10), transparent 30rem),
+                  var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    header { padding: 38px 22px 24px; text-align: center; }
+    nav { margin-bottom: 18px; display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
+    nav a { color: var(--accent); text-decoration: none; font-weight: 750; }
+    nav a.current { color: var(--ink); }
+    .eyebrow { letter-spacing: .18em; text-transform: uppercase; font-size: .78rem; color: var(--accent); font-weight: 800; }
+    h1 { margin: 8px 0 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.8rem, 8vw, 5.6rem); line-height: .92; font-weight: 500; }
+    .toolbar {
+      background: rgba(245,241,234,.84); border-top: 1px solid rgba(222,210,194,.75);
+      border-bottom: 1px solid rgba(222,210,194,.95); padding: 14px 18px;
+    }
+    .toolbar-inner {
+      max-width: 980px; margin: 0 auto; display: grid; grid-template-columns: auto 1fr 1fr auto auto;
+      gap: 10px; align-items: center;
+    }
+    select, button {
+      border: 1px solid var(--line); background: var(--paper); border-radius: 999px; color: var(--ink);
+      padding: 11px 14px; font-size: .95rem; font: inherit; min-width: 0;
+    }
+    button { cursor: pointer; background: var(--accent); color: white; border-color: var(--accent); font-weight: 750; white-space: nowrap; }
+    button.secondary { background: var(--paper); color: var(--accent); border-color: rgba(125,79,59,.35); }
+    main { max-width: 980px; margin: 0 auto; padding: 28px 18px 64px; display: grid; justify-items: center; gap: 18px; }
+    .sheet-frame {
+      background: white; padding: 26px; border: 1px solid var(--line); border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+    .label-sheet {
+      width: 57mm; height: 32mm; background: #fff; color: #111; border: 1px solid #ddd;
+      display: grid; grid-template-rows: 1fr 1fr; overflow: hidden;
+    }
+    .plant-label {
+      width: 57mm; height: 16mm; display: grid; align-content: center; justify-items: center;
+      padding: 1.8mm 2.4mm; text-align: center; line-height: 1.05; overflow: hidden;
+    }
+    .plant-label:first-child { border-bottom: 1px dashed #aaa; }
+    .label-id { font: 800 10pt ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .02em; max-width: 100%; white-space: nowrap; }
+    .label-name { font: 800 8pt -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; text-transform: uppercase; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .summary { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; color: var(--muted); }
+    .pill { background: rgba(255,253,248,.78); border: 1px solid var(--line); border-radius: 999px; padding: 7px 11px; font-size: .9rem; font-weight: 700; }
+    @media (max-width: 760px) { .toolbar-inner { grid-template-columns: 1fr; } select, button { width: 100%; text-align: center; } }
+    @media print {
+      @page { size: 57mm 32mm; margin: 0; }
+      html, body { width: 57mm; height: 32mm; margin: 0; padding: 0; background: #fff; }
+      header, .toolbar, .summary { display: none !important; }
+      main { width: 57mm; height: 32mm; margin: 0; padding: 0; display: block; }
+      .sheet-frame { padding: 0; border: 0; border-radius: 0; box-shadow: none; }
+      .label-sheet { border: 0; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html">← Mina Växter</a>
+      <a href="hibiskusar.html">Hibiskus</a>
+      <a href="pelargoner.html">Pelargon</a>
+      <a href="citrus.html">Citrus</a>
+      <a href="udda.html">Udda</a>
+      <a class="current" href="etiketter.html">Etiketter</a>
+    </nav>
+    <div class="eyebrow">DYMO 32 × 57 mm</div>
+    <h1>Etiketter</h1>
+  </header>
+  <section class="toolbar">
+    <div class="toolbar-inner">
+      <select id="categoryFilter"></select>
+      <select id="labelA"></select>
+      <select id="labelB"></select>
+      <button class="secondary" id="clearSecond" type="button">En etikett</button>
+      <button id="printBtn" type="button">Skriv ut</button>
+    </div>
+  </section>
+  <main>
+    <div class="sheet-frame">
+      <section class="label-sheet" aria-label="Etikettförhandsvisning">
+        <article class="plant-label" id="previewA"></article>
+        <article class="plant-label" id="previewB"></article>
+      </section>
+    </div>
+    <div class="summary" id="summary"></div>
+  </main>
+  <script id="labelData" type="application/json">[{"category": "Hibiskus", "id": "PL-H01-A", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-B", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-C", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-D", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-G", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-H", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-I", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-J", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-K", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-L", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-M", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-N", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-O", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-Q", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-R", "name": "Hibiskus"}, {"category": "Pelargon", "id": "p-acetosum", "name": "P. acetosum"}, {"category": "Pelargon", "id": "p-australe-1", "name": "P. australe 1"}, {"category": "Pelargon", "id": "p-australe-2", "name": "P. australe 2"}, {"category": "Pelargon", "id": "p-cotyledonis-1", "name": "P. cotyledonis 1"}, {"category": "Pelargon", "id": "p-cotyledonis-2", "name": "P. cotyledonis 2"}, {"category": "Pelargon", "id": "p-gibbosum-1", "name": "P. gibbosum 1"}, {"category": "Pelargon", "id": "p-gibbosum-2", "name": "P. gibbosum 2"}, {"category": "Pelargon", "id": "p-gibbosum-3", "name": "P. gibbosum 3"}, {"category": "Pelargon", "id": "p-gibbosum-4", "name": "P. gibbosum 4"}, {"category": "Pelargon", "id": "p-gibbosum-maroon-1", "name": "P. gibbosum ‘Maroon’ 1"}, {"category": "Pelargon", "id": "p-gibbosum-maroon-2", "name": "P. gibbosum ‘Maroon’ 2"}, {"category": "Pelargon", "id": "p-laxum-1", "name": "P. laxum 1"}, {"category": "Pelargon", "id": "p-laxum-2", "name": "P. laxum 2"}, {"category": "Pelargon", "id": "p-magenteum", "name": "P. magenteum"}, {"category": "Pelargon", "id": "p-odoratissimum-1", "name": "P. odoratissimum"}, {"category": "Pelargon", "id": "p-sidoides", "name": "P. sidoides"}, {"category": "Pelargon", "id": "p-triffidum", "name": "P. triffidum"}, {"category": "Pelargon", "id": "p-caffrum-diana", "name": "P. × caffrum ‘Diana’"}, {"category": "Pelargon", "id": "p-bontrosai-1", "name": "P. ‘Bontrosai’ 1"}, {"category": "Pelargon", "id": "p-bontrosai-2", "name": "P. ‘Bontrosai’ 2"}, {"category": "Pelargon", "id": "p-bothams-surprise-1", "name": "P. ‘Botham Surprise’ 1"}, {"category": "Pelargon", "id": "p-bothams-surprise-2", "name": "P. ‘Botham Surprise’ 2"}, {"category": "Pelargon", "id": "p-creamery", "name": "P. ‘Creamery’"}, {"category": "Pelargon", "id": "p-cys-sunburst-1", "name": "P. ‘Cy’s Sunburst’ 1"}, {"category": "Pelargon", "id": "p-cys-sunburst-2", "name": "P. ‘Cy’s Sunburst’ 2"}, {"category": "Pelargon", "id": "p-cys-sunburst-3", "name": "P. ‘Cy’s Sunburst’ 3"}, {"category": "Pelargon", "id": "p-dr-westerlund-1", "name": "P. ‘Dr Westerlund’ 1"}, {"category": "Pelargon", "id": "p-dr-westerlund-2", "name": "P. ‘Dr Westerlund’ 2"}, {"category": "Pelargon", "id": "p-lemon-queen", "name": "P. ‘Lemon Queen’"}, {"category": "Pelargon", "id": "p-nielsens-fragrans-1", "name": "P. ‘Nielsens Fragrans’"}, {"category": "Pelargon", "id": "p-prince-of-orange", "name": "P. ‘Prince of Orange’"}, {"category": "Pelargon", "id": "p-torento", "name": "P. ‘Torento’"}, {"category": "Citrus", "id": "c-calamondin", "name": "Calamondin"}, {"category": "Citrus", "id": "c-limon-1", "name": "Citrus limon 1"}, {"category": "Citrus", "id": "c-limon-2", "name": "Citrus limon 2"}, {"category": "Citrus", "id": "c-okand-citrusstickling", "name": "Citrusstickling"}, {"category": "Citrus", "id": "c-kaffirlime", "name": "Kaffirlime – Citrus hystrix"}, {"category": "Citrus", "id": "c-kumquat-1", "name": "Kumquat 1"}, {"category": "Citrus", "id": "c-kumquat-2", "name": "Kumquat 2"}, {"category": "Citrus", "id": "c-limequat", "name": "Limequat"}, {"category": "Citrus", "id": "c-rod-fingerlime", "name": "Röd fingerlime – Citrus australasica"}, {"category": "Udda", "id": "SP-006", "name": "Fredskalla"}, {"category": "Udda", "id": "SP-005", "name": "Hjärtbräken"}, {"category": "Udda", "id": "SP-002", "name": "Patchouli"}, {"category": "Udda", "id": "SP-004", "name": "Plumeria"}, {"category": "Udda", "id": "SP-003", "name": "Salvia apiana"}, {"category": "Udda", "id": "SP-001", "name": "Stapelia mix"}]</script>
+  <script>
+    const labels = JSON.parse(document.querySelector("#labelData").textContent);
+    const categoryFilter = document.querySelector("#categoryFilter");
+    const labelA = document.querySelector("#labelA");
+    const labelB = document.querySelector("#labelB");
+    const previewA = document.querySelector("#previewA");
+    const previewB = document.querySelector("#previewB");
+    const summary = document.querySelector("#summary");
+
+    function escapeHtml(value) {
+      return String(value || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+    }
+
+    function optionText(row) {
+      return `${row.category} · ${row.id} · ${row.name}`;
+    }
+
+    function visibleLabels() {
+      const category = categoryFilter.value;
+      return labels
+        .map((row, index) => ({...row, index}))
+        .filter(row => !category || row.category === category);
+    }
+
+    function fillCategoryFilter() {
+      const categories = [...new Set(labels.map(row => row.category))];
+      categoryFilter.innerHTML = '<option value="">Alla kategorier</option>';
+      categories.forEach(category => {
+        const option = document.createElement("option");
+        option.value = category;
+        option.textContent = category;
+        categoryFilter.appendChild(option);
+      });
+    }
+
+    function fillSelect(select, includeEmpty) {
+      const current = select.value;
+      select.innerHTML = includeEmpty ? '<option value="">Tom nedre etikett</option>' : "";
+      visibleLabels().forEach(row => {
+        const option = document.createElement("option");
+        option.value = String(row.index);
+        option.textContent = optionText(row);
+        select.appendChild(option);
+      });
+      if ([...select.options].some(option => option.value === current)) {
+        select.value = current;
+      }
+    }
+
+    function labelHtml(row) {
+      if (!row) return "";
+      return `<div class="label-id">${escapeHtml(row.id)}</div><div class="label-name">${escapeHtml(row.name)}</div>`;
+    }
+
+    function selected(select) {
+      if (select.value === "") return null;
+      return labels[Number(select.value)] || null;
+    }
+
+    function render() {
+      const a = selected(labelA);
+      const b = selected(labelB);
+      previewA.innerHTML = labelHtml(a);
+      previewB.innerHTML = labelHtml(b);
+      summary.innerHTML = [a, b].filter(Boolean).map(row => `<span class="pill">${escapeHtml(row.id)} · ${escapeHtml(row.name)}</span>`).join("");
+    }
+
+    function refillSelects() {
+      fillSelect(labelA, false);
+      fillSelect(labelB, true);
+      const visible = visibleLabels();
+      if (!visible.some(row => String(row.index) === labelA.value)) {
+        labelA.value = visible.length ? String(visible[0].index) : "";
+      }
+      if (!visible.some(row => String(row.index) === labelB.value)) {
+        labelB.value = visible.length > 1 ? String(visible[1].index) : "";
+      }
+      render();
+    }
+
+    fillCategoryFilter();
+    refillSelects();
+    categoryFilter.addEventListener("change", refillSelects);
+    labelA.addEventListener("change", render);
+    labelB.addEventListener("change", render);
+    document.querySelector("#clearSecond").addEventListener("click", () => { labelB.value = ""; render(); });
+    document.querySelector("#printBtn").addEventListener("click", () => window.print());
+  </script>
+</body>
+</html>
