@@ -105,8 +105,6 @@
       </select>
       <button class="secondary" id="clearBtn" type="button">Rensa</button>
       <button class="secondary" id="editBtn" type="button">Redigera</button>
-      <button class="secondary" id="downloadBtn" type="button">Ladda ner CSV</button>
-      <button class="secondary" id="resetBtn" type="button">Återställ</button>
       <button id="printBtn" type="button">Skriv ut</button>
     </div>
   </section>
@@ -124,10 +122,10 @@
   <footer>Serverfri lokal HTML-katalog.</footer>
 
   <script type="text/plain" id="defaultPlantsCSV">id,name,type,status,source,acquired,location,notes
-c-calamondin,Calamondin,Calamondin,Aktiv,,,,
+c-calamondin,Calamondin,Calamondin,Aktiv,Stina / Lena,,,
 c-limon-1,Citrus limon 1,Citron,Aktiv,Bauhaus,,,
 c-limon-2,Citrus limon 2,Citron,Aktiv,Bauhaus,,,
-c-okand-citrusstickling,citrusstickling,Okänd citrus,Aktiv,Jonas,,,
+c-okand-citrusstickling,Citrusstickling,Okänd citrus,Aktiv,Jonas,,,
 c-kaffirlime,Kaffirlime – Citrus hystrix,Kaffirlime,Aktiv,Vivai Miano,,,
 c-kumquat-1,Kumquat 1,Kumquat,Aktiv,Vivai Miano,,,
 c-kumquat-2,Kumquat 2,Kumquat,Aktiv,Vivai Miano,,,
@@ -146,10 +144,8 @@ c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jp
   <script src="common.js"></script>
   <script>
     let plants = [];
-    const plantStorageKey = "minaVaxterCitrusCSV";
-    const plantHeaders = ["id", "name", "type", "status", "source", "acquired", "location", "notes"];
     let editMode = false;
-    let plantCSVText = getRememberedCSV(plantStorageKey) || document.querySelector("#defaultPlantsCSV").textContent;
+    let plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;
     let photoCSVText = document.querySelector("#defaultPhotosCSV").textContent;
 
     const grid = document.querySelector("#grid");
@@ -158,40 +154,20 @@ c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jp
     const sortSelect = document.querySelector("#sortSelect");
     const clearBtn = document.querySelector("#clearBtn");
     const editBtn = document.querySelector("#editBtn");
-    const downloadBtn = document.querySelector("#downloadBtn");
-    const resetBtn = document.querySelector("#resetBtn");
     const stats = document.querySelector("#stats");
     const printBtn = document.querySelector("#printBtn");
     const dialog = document.querySelector("#photoDialog");
     const modalImg = document.querySelector("#modalImg");
     const modalCaption = document.querySelector("#modalCaption");
 
-    function csvValue(value) {
-      const text = String(value || "");
-      return /[",\n\r]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
-    }
-
     function escapeText(value) {
       return String(value || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-    }
-
-    function plantsToCSV(rows) {
-      return [
-        plantHeaders.join(","),
-        ...rows.map(row => plantHeaders.map(key => csvValue(row[key])).join(","))
-      ].join("\n");
-    }
-
-    function savePlants() {
-      plantCSVText = plantsToCSV(plants);
-      rememberCSV(plantStorageKey, plantCSVText);
     }
 
     function updatePlant(id, field, value) {
       const plant = plants.find(p => p.id === id);
       if (!plant) return;
       plant[field] = value;
-      savePlants();
       render();
     }
 
@@ -319,8 +295,7 @@ c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jp
         query ? `Sökning: “${search.value.trim()}”` : "",
         selectedType ? `Typ: ${selectedType}` : "",
         `Sortering: ${sortSelect.options[sortSelect.selectedIndex].textContent}`,
-        editMode ? "Redigering aktiv" : "",
-        getRememberedCSV(plantStorageKey) ? "Sparat lokalt" : ""
+        editMode ? "Redigering aktiv" : ""
       ].filter(Boolean);
       stats.innerHTML = `
         <span class="stat">${plants.length} citrusar</span>
@@ -363,20 +338,6 @@ c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jp
       editMode = !editMode;
       editBtn.textContent = editMode ? "Klar" : "Redigera";
       render();
-    });
-    downloadBtn.addEventListener("click", () => {
-      if (document.activeElement && document.activeElement.dataset.field) {
-        document.activeElement.blur();
-      }
-      savePlants();
-      downloadText("citrus.csv", plantCSVText);
-    });
-    resetBtn.addEventListener("click", () => {
-      clearRememberedCSV([plantStorageKey]);
-      plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;
-      editMode = false;
-      editBtn.textContent = "Redigera";
-      rebuild();
     });
     clearBtn.addEventListener("click", () => {
       search.value = "";
