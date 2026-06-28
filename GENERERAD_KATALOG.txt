@@ -21,3 +21,4 @@ Pelargonsidans småbilder visas nu under typ-/taggchipsen.
 Etikettbilderna har ersatts med roterade, mer läsbara versioner.
 
 Uppdatering: Korta visningschips i pelargonkatalogen: Vild/Doft/Zonal. Tags uppdaterade med Ampel och Bonsai.
+Senast uppdaterad: 2026-06-28
