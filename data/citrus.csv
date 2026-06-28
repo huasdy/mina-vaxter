@@ -1,8 +1,8 @@
 ﻿id,name,type,status,source,acquired,location,notes
-c-calamondin,Calamondin,Calamondin,Aktiv,,,,
+c-calamondin,Calamondin,Calamondin,Aktiv,Stina / Lena,,,
 c-limon-1,Citrus limon 1,Citron,Aktiv,Bauhaus,,,
 c-limon-2,Citrus limon 2,Citron,Aktiv,Bauhaus,,,
-c-okand-citrusstickling,citrusstickling,Okänd citrus,Aktiv,Jonas,,,
+c-okand-citrusstickling,Citrusstickling,Okänd citrus,Aktiv,Jonas,,,
 c-kaffirlime,Kaffirlime – Citrus hystrix,Kaffirlime,Aktiv,Vivai Miano,,,
 c-kumquat-1,Kumquat 1,Kumquat,Aktiv,Vivai Miano,,,
 c-kumquat-2,Kumquat 2,Kumquat,Aktiv,Vivai Miano,,,
