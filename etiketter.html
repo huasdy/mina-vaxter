@@ -55,6 +55,7 @@
     .plant-label:first-child { border-bottom: 1px dashed #aaa; }
     .label-id { font: 800 10pt ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .02em; max-width: 100%; white-space: nowrap; }
     .label-name { font: 800 8pt -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; text-transform: uppercase; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .plant-label.name-only .label-name { font-size: 10pt; }
     .summary { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; color: var(--muted); }
     .pill { background: rgba(255,253,248,.78); border: 1px solid var(--line); border-radius: 999px; padding: 7px 11px; font-size: .9rem; font-weight: 700; }
     @media (max-width: 760px) { .toolbar-inner { grid-template-columns: 1fr; } select, button { width: 100%; text-align: center; } }
@@ -151,6 +152,9 @@
 
     function labelHtml(row) {
       if (!row) return "";
+      if (row.category === "Pelargon" || row.category === "Citrus") {
+        return `<div class="label-name">${escapeHtml(row.name)}</div>`;
+      }
       return `<div class="label-id">${escapeHtml(row.id)}</div><div class="label-name">${escapeHtml(row.name)}</div>`;
     }
 
@@ -162,6 +166,8 @@
     function render() {
       const a = selected(labelA);
       const b = selected(labelB);
+      previewA.classList.toggle("name-only", !!a && (a.category === "Pelargon" || a.category === "Citrus"));
+      previewB.classList.toggle("name-only", !!b && (b.category === "Pelargon" || b.category === "Citrus"));
       previewA.innerHTML = labelHtml(a);
       previewB.innerHTML = labelHtml(b);
       summary.innerHTML = [a, b].filter(Boolean).map(row => `<span class="pill">${escapeHtml(row.id)} · ${escapeHtml(row.name)}</span>`).join("");
