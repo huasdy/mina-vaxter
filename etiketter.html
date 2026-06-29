@@ -53,8 +53,14 @@
       padding: 1.8mm 2.4mm; text-align: center; line-height: 1.05; overflow: hidden;
     }
     .plant-label:first-child { border-bottom: 1px dashed #aaa; }
+    .label-sheet.full-label { grid-template-rows: 1fr; }
+    .label-sheet.full-label .plant-label:first-child { height: 32mm; border-bottom: 0; }
+    .label-sheet.full-label #previewB { display: none; }
     .label-id { font: 800 10pt ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .02em; max-width: 100%; white-space: nowrap; }
     .label-name { font: 800 8pt -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; text-transform: uppercase; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .label-sheet.full-label .label-id { font-size: 15pt; }
+    .label-sheet.full-label .label-name { font-size: 12pt; }
+    .label-sheet.full-label .plant-label.name-only .label-name { font-size: 16pt; }
     .plant-label.name-only .label-name { font-size: 10pt; }
     .summary { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; color: var(--muted); }
     .pill { background: rgba(255,253,248,.78); border: 1px solid var(--line); border-radius: 999px; padding: 7px 11px; font-size: .9rem; font-weight: 700; }
@@ -106,6 +112,7 @@
     const categoryFilter = document.querySelector("#categoryFilter");
     const labelA = document.querySelector("#labelA");
     const labelB = document.querySelector("#labelB");
+    const labelSheet = document.querySelector(".label-sheet");
     const previewA = document.querySelector("#previewA");
     const previewB = document.querySelector("#previewB");
     const summary = document.querySelector("#summary");
@@ -166,6 +173,7 @@
     function render() {
       const a = selected(labelA);
       const b = selected(labelB);
+      labelSheet.classList.toggle("full-label", !!a && !b);
       previewA.classList.toggle("name-only", !!a && (a.category === "Pelargon" || a.category === "Citrus"));
       previewB.classList.toggle("name-only", !!b && (b.category === "Pelargon" || b.category === "Citrus"));
       previewA.innerHTML = labelHtml(a);
