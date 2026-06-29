@@ -211,6 +211,10 @@ c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jp
       const active = photos[photos.length - 1] || {};
       const activeFile = active.file || "";
       const activeLabel = active.label || (active.date ? `${active.date} · ${active.type}` : "");
+      const gallery = photos.map(photo => {
+        const label = photo.label || (photo.date + " · " + photo.type);
+        return {file: photo.file, title: p.name, caption: `${p.name} · ${label}`, alt: p.name};
+      });
       const searchable = [
         p.id, p.name, p.type, p.status, p.source, p.acquired, p.location, p.notes,
         ...photos.map(x => `${x.date} ${x.type} ${x.file}`)
@@ -237,7 +241,7 @@ c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jp
       `;
 
       return `
-        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}">
+        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}">
           <div class="image-wrap">
             ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(p.name)}" data-caption="${escapeAttr(p.name + " · " + activeLabel)}">` : ""}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}</div>` : ""}
@@ -321,10 +325,7 @@ c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jp
         ribbon.textContent = thumb.dataset.label;
       }
       if (main) {
-        modalImg.src = main.src;
-        modalImg.alt = main.alt;
-        modalCaption.textContent = main.dataset.caption || main.alt;
-        dialog.showModal();
+        openPlantPhotoGallery(main);
       }
     });
     grid.addEventListener("change", event => {
@@ -333,7 +334,7 @@ c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jp
       if (!field || !form) return;
       updatePlant(form.dataset.id, field, event.target.value.trim());
     });
-    dialog.addEventListener("click", () => dialog.close());
+    ensurePlantPhotoGallery();
     printBtn.addEventListener("click", () => window.print());
     editBtn.addEventListener("click", () => {
       editMode = !editMode;

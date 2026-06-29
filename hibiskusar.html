@@ -227,13 +227,17 @@ PL-H01-R,2026-06-07,hel,bilder/hibiskusar/PL-H01-R_2026-06-07_hel.jpg,2026-06-07
       const activeFile = active.file || "";
       const activeLabel = active.label || (active.date ? `${active.date} · ${active.type}` : "");
       const dayText = active.day ? ` · dag ${active.day}` : "";
+      const gallery = photos.map(photo => {
+        const label = (photo.label || (photo.date + " · " + photo.type)) + (photo.day ? " · dag " + photo.day : "");
+        return {file: photo.file, title: p.id, caption: `${p.id} · ${label}`, alt: p.id};
+      });
       const searchable = [
         p.id, p.batch, p.group, p.sown, p.status, p.decision, p.firstBloom, p.flowerColor, p.form, p.fertility, p.score, p.notes,
         ...photos.map(x => `${x.date} ${x.type} ${x.file}`)
       ].join(" ").toLowerCase();
 
       return `
-        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-status="${escapeAttr(p.status)}">
+        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-status="${escapeAttr(p.status)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}">
           <div class="image-wrap">
             ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(p.id)}" data-caption="${escapeAttr(p.id + " · " + activeLabel + dayText)}">` : ""}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}${dayText}</div>` : ""}
@@ -329,13 +333,10 @@ PL-H01-R,2026-06-07,hel,bilder/hibiskusar/PL-H01-R_2026-06-07_hel.jpg,2026-06-07
         ribbon.textContent = thumb.dataset.label;
       }
       if (main) {
-        modalImg.src = main.src;
-        modalImg.alt = main.alt;
-        modalCaption.textContent = main.dataset.caption || main.alt;
-        dialog.showModal();
+        openPlantPhotoGallery(main);
       }
     });
-    dialog.addEventListener("click", () => dialog.close());
+    ensurePlantPhotoGallery();
     printBtn.addEventListener("click", () => window.print());
     clearBtn.addEventListener("click", () => {
       search.value = "";

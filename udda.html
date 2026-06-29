@@ -194,6 +194,10 @@ SP-005,2026-06-26,hel,bilder/udda/SP-005_hjartbraken_2026-06-26_hel.jpg,2026-06-
       const active = photos[photos.length - 1] || {};
       const activeFile = active.file || "";
       const activeLabel = active.label || (active.date ? `${active.date} · ${active.type}` : "");
+      const gallery = photos.map(photo => {
+        const label = photo.label || (photo.date + " · " + photo.type);
+        return {file: photo.file, title: p.name, caption: `${p.name} · ${label}`, alt: p.name};
+      });
       const chips = [
         `<span class="chip green">${escapeText(clean(p.type) || "Specialväxt")}</span>`,
         `<span class="chip gold">${escapeText(clean(p.status) || "Status saknas")}</span>`,
@@ -206,7 +210,7 @@ SP-005,2026-06-26,hel,bilder/udda/SP-005_hjartbraken_2026-06-26_hel.jpg,2026-06-
       ].join(" ").toLowerCase();
 
       return `
-        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}">
+        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}">
           <div class="image-wrap">
             ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(p.name)}" data-caption="${escapeAttr(p.name + " · " + activeLabel)}">` : `<div class="image-empty">Bild saknas</div>`}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}</div>` : ""}
@@ -289,13 +293,10 @@ SP-005,2026-06-26,hel,bilder/udda/SP-005_hjartbraken_2026-06-26_hel.jpg,2026-06-
         ribbon.textContent = thumb.dataset.label;
       }
       if (main) {
-        modalImg.src = main.src;
-        modalImg.alt = main.alt;
-        modalCaption.textContent = main.dataset.caption || main.alt;
-        dialog.showModal();
+        openPlantPhotoGallery(main);
       }
     });
-    dialog.addEventListener("click", () => dialog.close());
+    ensurePlantPhotoGallery();
     printBtn.addEventListener("click", () => window.print());
     clearBtn.addEventListener("click", () => {
       search.value = "";
