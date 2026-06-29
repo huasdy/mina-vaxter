@@ -283,13 +283,17 @@ p-triffidum,2026-06-21,hel,bilder/pelargoner/p-triffidum_2026-06-21_hel.jpg,2026
       const active = photos[photos.length - 1] || {};
       const activeFile = active.file || "";
       const activeLabel = active.label || (active.date ? `${active.date} · ${active.type}` : "");
+      const gallery = photos.map(photo => {
+        const label = photo.label || (photo.date + " · " + photo.type);
+        return {file: photo.file, title: p.name, caption: `${p.name} · ${label}`, alt: p.name};
+      });
       const searchable = [
         p.id, p.name, p.type, p.tags, p.status, p.scent, p.source, p.notes,
         ...photos.map(x => `${x.date} ${x.type} ${x.file}`)
       ].join(" ").toLowerCase();
 
       return `
-        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}">
+        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}">
           <div class="image-wrap">
             ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(p.name)}" data-caption="${escapeAttr(p.name + " · " + activeLabel)}">` : ""}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}</div>` : ""}
@@ -371,13 +375,10 @@ p-triffidum,2026-06-21,hel,bilder/pelargoner/p-triffidum_2026-06-21_hel.jpg,2026
         ribbon.textContent = thumb.dataset.label;
       }
       if (main) {
-        modalImg.src = main.src;
-        modalImg.alt = main.alt;
-        modalCaption.textContent = main.dataset.caption || main.alt;
-        dialog.showModal();
+        openPlantPhotoGallery(main);
       }
     });
-    dialog.addEventListener("click", () => dialog.close());
+    ensurePlantPhotoGallery();
     printBtn.addEventListener("click", () => window.print());
     clearBtn.addEventListener("click", () => {
       search.value = "";
