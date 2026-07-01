@@ -85,6 +85,7 @@
       <a href="pelargoner.html">Pelargon</a>
       <a href="citrus.html">Citrus</a>
       <a href="udda.html">Udda</a>
+      <a href="favoriter.html">Favoriter</a>
       <a href="etiketter.html">Etiketter</a>
     </nav>
     <div class="eyebrow">Privat samling</div>
@@ -167,7 +168,7 @@ PL-H01-Q,2026-05-24,hel,bilder/hibiskusar/PL-H01-Q_2026-05-24_hel.jpg,2026-05-24
 PL-H01-Q,2026-06-07,hel,bilder/hibiskusar/PL-H01-Q_2026-06-07_hel.jpg,2026-06-07 · hel,203
 PL-H01-R,2026-05-24,hel,bilder/hibiskusar/PL-H01-R_2026-05-24_hel.jpg,2026-05-24 · hel,189
 PL-H01-R,2026-06-07,hel,bilder/hibiskusar/PL-H01-R_2026-06-07_hel.jpg,2026-06-07 · hel,203</script>
-  <script src="common.js?v=20260629-gallery"></script>
+  <script src="common.js?v=20260701-prepush4"></script>
   <script>
     let plants = [];
     let plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;
@@ -237,7 +238,7 @@ PL-H01-R,2026-06-07,hel,bilder/hibiskusar/PL-H01-R_2026-06-07_hel.jpg,2026-06-07
       ].join(" ").toLowerCase();
 
       return `
-        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-status="${escapeAttr(p.status)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}">
+        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-status="${escapeAttr(p.status)}" data-category="Hibiskus" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(p.id)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}">
           <div class="image-wrap">
             ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(p.id)}" data-caption="${escapeAttr(p.id + " · " + activeLabel + dayText)}">` : ""}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}${dayText}</div>` : ""}
@@ -245,6 +246,10 @@ PL-H01-R,2026-06-07,hel,bilder/hibiskusar/PL-H01-R_2026-06-07_hel.jpg,2026-06-07
           ${photos.length > 1 ? `<div class="thumbs">${photoButtons(p, activeFile)}</div>` : ""}
           <div class="card-body">
             <div class="plant-head"><h2>${p.id}</h2><div class="score">${clean(p.score) || "—"}</div></div>
+            <div class="import-actions">
+              <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
+              <span class="import-badge" data-import-badge hidden></span>
+            </div>
             <div class="chips">
               <span class="chip green">${p.batch}</span>
               <span class="chip gold">${p.decision}</span>
@@ -305,6 +310,8 @@ PL-H01-R,2026-06-07,hel,bilder/hibiskusar/PL-H01-R_2026-06-07_hel.jpg,2026-06-07
       });
       const visible = sortedPlants(filtered);
       grid.innerHTML = visible.length ? visible.map(cardTemplate).join("") : '<div class="empty">Inga hibiskusar matchar sökningen just nu.</div>';
+      updatePlantImageImportUI();
+      updatePlantFavoriteUI();
       const photoCount = plants.reduce((sum, p) => sum + (p.photos || []).length, 0);
       const activeParts = [
         query ? `Sökning: “${search.value.trim()}”` : "",
@@ -337,6 +344,8 @@ PL-H01-R,2026-06-07,hel,bilder/hibiskusar/PL-H01-R_2026-06-07_hel.jpg,2026-06-07
       }
     });
     ensurePlantPhotoGallery();
+    ensurePlantImageImport();
+    ensurePlantFavorites();
     printBtn.addEventListener("click", () => window.print());
     clearBtn.addEventListener("click", () => {
       search.value = "";

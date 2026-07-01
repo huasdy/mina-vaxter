@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Mina Vaxter appikon</title>
+  <desc id="desc">En matt mork olivgron rundad kvadrat med en elfenbensfarad asymmetrisk salviakvist i mjuk relief.</desc>
+  <defs>
+    <linearGradient id="background" x1="180" y1="82" x2="844" y2="942" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#374320"/>
+      <stop offset=".55" stop-color="#253016"/>
+      <stop offset="1" stop-color="#19220f"/>
+    </linearGradient>
+    <radialGradient id="matteLight" cx="38%" cy="22%" r="72%">
+      <stop offset="0" stop-color="#516035" stop-opacity=".26"/>
+      <stop offset=".55" stop-color="#2e391d" stop-opacity=".08"/>
+      <stop offset="1" stop-color="#11170b" stop-opacity=".34"/>
+    </radialGradient>
+    <linearGradient id="leaf" x1="250" y1="760" x2="760" y2="170" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f8f0dc"/>
+      <stop offset=".46" stop-color="#efe6ce"/>
+      <stop offset="1" stop-color="#fff9e8"/>
+    </linearGradient>
+    <linearGradient id="leafShade" x1="206" y1="754" x2="725" y2="183" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#d8ceb6"/>
+      <stop offset=".56" stop-color="#fff7e5"/>
+      <stop offset="1" stop-color="#cfc4ab"/>
+    </linearGradient>
+    <filter id="innerShadow" x="-8%" y="-8%" width="116%" height="116%">
+      <feOffset dx="0" dy="10"/>
+      <feGaussianBlur stdDeviation="16" result="blur"/>
+      <feComposite in="blur" in2="SourceAlpha" operator="out" result="outer"/>
+      <feColorMatrix in="outer" type="matrix" values="0 0 0 0 0.04 0 0 0 0 0.055 0 0 0 0 0.025 0 0 0 .62 0"/>
+      <feBlend in2="SourceGraphic" mode="multiply"/>
+    </filter>
+    <filter id="symbolShadow" x="-18%" y="-18%" width="136%" height="136%">
+      <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#070a05" flood-opacity=".38"/>
+      <feDropShadow dx="-2" dy="-3" stdDeviation="3" flood-color="#fff8df" flood-opacity=".20"/>
+    </filter>
+    <filter id="softEmboss" x="-18%" y="-18%" width="136%" height="136%">
+      <feDropShadow dx="0" dy="6" stdDeviation="4" flood-color="#0b0f08" flood-opacity=".20"/>
+      <feDropShadow dx="-2" dy="-2" stdDeviation="2" flood-color="#fff8df" flood-opacity=".18"/>
+    </filter>
+    <clipPath id="iconClip">
+      <rect x="32" y="32" width="960" height="960" rx="188" ry="188"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#iconClip)">
+    <rect x="32" y="32" width="960" height="960" rx="188" fill="url(#background)"/>
+    <rect x="32" y="32" width="960" height="960" rx="188" fill="url(#matteLight)"/>
+    <rect x="49" y="49" width="926" height="926" rx="170" fill="none" stroke="#66724b" stroke-opacity=".22" stroke-width="5"/>
+    <rect x="67" y="67" width="890" height="890" rx="152" fill="none" stroke="#0e1508" stroke-opacity=".44" stroke-width="6" filter="url(#innerShadow)"/>
+  </g>
+
+  <g filter="url(#symbolShadow)">
+    <path d="M230 824 C294 740 348 674 404 592 C462 506 523 404 594 286 C607 264 626 245 649 232"
+      fill="none" stroke="#f3ead3" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M240 818 C305 736 355 668 410 588 C470 500 526 398 598 282 C610 263 627 246 647 234"
+      fill="none" stroke="url(#leafShade)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <g fill="url(#leaf)" stroke="#e1d6bd" stroke-width="5" stroke-linejoin="round" filter="url(#softEmboss)">
+      <path d="M626 260 C678 185 756 128 822 121 C819 189 771 260 705 302 C672 323 640 322 616 303 C606 292 608 278 626 260 Z"/>
+      <path d="M443 496 C429 418 445 340 486 285 C530 342 546 424 523 491 C511 528 492 548 467 548 C454 542 447 525 443 496 Z"/>
+      <path d="M547 506 C588 453 641 430 697 434 C685 492 640 537 583 558 C552 570 529 566 518 548 C517 533 527 519 547 506 Z"/>
+      <path d="M403 611 C361 571 334 515 338 464 C389 482 431 527 446 579 C455 609 450 630 433 640 C420 640 410 631 403 611 Z"/>
+      <path d="M344 695 C310 665 287 625 286 587 C325 598 361 631 376 673 C385 699 383 716 370 725 C360 725 351 715 344 695 Z"/>
+      <path d="M459 696 C507 672 554 673 592 697 C554 731 500 746 452 733 C427 726 413 713 414 697 C424 688 439 688 459 696 Z"/>
+    </g>
+
+    <g fill="none" stroke="#d6cbb3" stroke-width="5" stroke-linecap="round" opacity=".72">
+      <path d="M650 283 C698 220 747 170 804 136"/>
+      <path d="M478 527 C482 458 486 379 486 306"/>
+      <path d="M540 538 C585 501 632 469 684 443"/>
+      <path d="M422 623 C397 577 373 525 349 477"/>
+      <path d="M358 711 C340 677 320 635 296 599"/>
+      <path d="M438 707 C485 711 537 708 579 699"/>
+    </g>
+
+    <g fill="none" stroke="#fff8e7" stroke-width="3" stroke-linecap="round" opacity=".48">
+      <path d="M664 272 C711 223 757 174 807 143"/>
+      <path d="M491 518 C497 448 498 378 490 312"/>
+      <path d="M553 528 C596 496 639 467 681 448"/>
+      <path d="M430 611 C405 561 380 517 354 482"/>
+      <path d="M365 700 C344 665 324 629 302 602"/>
+      <path d="M450 716 C492 724 532 717 574 702"/>
+    </g>
+  </g>
+</svg>

@@ -82,6 +82,7 @@
       <a href="pelargoner.html">Pelargon</a>
       <a href="citrus.html">Citrus</a>
       <a class="current" href="udda.html">Udda</a>
+      <a href="favoriter.html">Favoriter</a>
       <a href="etiketter.html">Etiketter</a>
     </nav>
     <div class="eyebrow">Privat samling</div>
@@ -125,12 +126,13 @@ SP-004,Plumeria,Plumeria spp.,Tropisk växt,Tropisk;Blomning okänd,Aktiv,Frö,D
 SP-003,Salvia apiana,Salvia apiana,Salvia,Frö;Torrt/soligt;Pågående,Under uppdragning,Frö,Dokumenteras om sådden tar sig.
 SP-001,Stapelia mix,Stapelia spp.,Suckulent,Frö;Samplantering;Blomning okänd,Aktiv,Frö,Samplantering med flera individer i samma kruka. Dokumenteras som grupp tills blomning visar skillnader.</script>
   <script type="text/plain" id="defaultPhotosCSV">plant_id,date,type,file,label
+SP-006,2026-07-01,hel,bilder/udda/SP-006_fredskalla_2026-07-01_hel.jpg,2026-07-01 · hel
 SP-001,2026-06-26,hel,bilder/udda/SP-001_stapelia_2026-06-26_hel.jpg,2026-06-26 · hel
 SP-002,2026-06-26,hel,bilder/udda/SP-002_patchouli_2026-06-26_hel.jpg,2026-06-26 · hel
 SP-003,2026-06-26,sådd,bilder/udda/SP-003_salvia_apiana_2026-06-26_sadd.jpg,2026-06-26 · sådd
 SP-004,2026-06-27,hel,bilder/udda/SP-004_plumeria_2026-06-27_hel.jpg,2026-06-27 · hel
 SP-005,2026-06-26,hel,bilder/udda/SP-005_hjartbraken_2026-06-26_hel.jpg,2026-06-26 · hel</script>
-  <script src="common.js?v=20260629-gallery"></script>
+  <script src="common.js?v=20260701-prepush4"></script>
   <script>
     let plants = [];
     let plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;
@@ -210,13 +212,17 @@ SP-005,2026-06-26,hel,bilder/udda/SP-005_hjartbraken_2026-06-26_hel.jpg,2026-06-
       ].join(" ").toLowerCase();
 
       return `
-        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}">
+        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-category="Udda" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(clean(p.name) || p.id)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}">
           <div class="image-wrap">
             ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(p.name)}" data-caption="${escapeAttr(p.name + " · " + activeLabel)}">` : `<div class="image-empty">Bild saknas</div>`}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}</div>` : ""}
           </div>
           <div class="card-body">
             <h2>${escapeText(clean(p.name) || p.id)}</h2>
+            <div class="import-actions">
+              <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
+              <span class="import-badge" data-import-badge hidden></span>
+            </div>
             <div class="latin">${escapeText(clean(p.latin))}</div>
             <div class="chips">${chips}</div>
             ${photos.length > 1 ? `<div class="thumbs">${photoButtons(p, activeFile)}</div>` : ""}
@@ -265,6 +271,8 @@ SP-005,2026-06-26,hel,bilder/udda/SP-005_hjartbraken_2026-06-26_hel.jpg,2026-06-
       });
       const visible = sortedPlants(filtered);
       grid.innerHTML = visible.length ? visible.map(cardTemplate).join("") : '<div class="empty">Inga udda växter matchar sökningen just nu.</div>';
+      updatePlantImageImportUI();
+      updatePlantFavoriteUI();
       const photoCount = plants.reduce((sum, p) => sum + (p.photos || []).length, 0);
       const activeParts = [
         query ? `Sökning: “${search.value.trim()}”` : "",
@@ -297,6 +305,8 @@ SP-005,2026-06-26,hel,bilder/udda/SP-005_hjartbraken_2026-06-26_hel.jpg,2026-06-
       }
     });
     ensurePlantPhotoGallery();
+    ensurePlantImageImport();
+    ensurePlantFavorites();
     printBtn.addEventListener("click", () => window.print());
     clearBtn.addEventListener("click", () => {
       search.value = "";
