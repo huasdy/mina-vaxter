@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Favoriter</title>
+  <style>
+    :root {
+      --bg: #f5f1ea; --paper: #fffdf8; --ink: #2b251f; --muted: #6f655b;
+      --line: #ded2c2; --accent: #7d4f3b; --chip: #efe6da;
+      --shadow: 0 14px 40px rgba(62, 43, 28, 0.12); --radius: 22px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top left, rgba(125,79,59,0.10), transparent 35rem),
+                  radial-gradient(circle at top right, rgba(96,119,97,0.10), transparent 30rem),
+                  var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+    }
+    header { padding: 46px 22px 30px; text-align: center; }
+    nav { margin-bottom: 18px; text-align: center; display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
+    nav a { color: var(--accent); text-decoration: none; font-weight: 750; }
+    nav a.current { color: var(--ink); }
+    .eyebrow { letter-spacing: .18em; text-transform: uppercase; font-size: .78rem; color: var(--accent); font-weight: 800; }
+    h1 { margin: 8px 0 8px; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.7rem, 8vw, 5.6rem); line-height: .92; font-weight: 500; }
+    .subtitle { margin: 0 auto; max-width: 760px; color: var(--muted); font-size: 1.05rem; }
+    main { max-width: 1240px; margin: 0 auto; padding: 26px 18px 64px; }
+    .stats { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 22px; color: var(--muted); }
+    .stat { background: rgba(255,253,248,.74); border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; font-size: .92rem; font-weight: 650; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(285px, 1fr)); gap: 18px; }
+    .plant-card { background: var(--paper); border: 1px solid rgba(222,210,194,.95); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column; min-height: 100%; }
+    .image-wrap { position: relative; aspect-ratio: 4 / 5; background: linear-gradient(135deg, rgba(125,79,59,.16), rgba(96,119,97,.14)), #eadfce; overflow: hidden; }
+    .image-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in; }
+    .image-empty { height: 100%; display: grid; place-items: center; color: var(--muted); font-weight: 800; }
+    .date-ribbon { position: absolute; left: 12px; bottom: 12px; background: rgba(43,37,31,.76); color: white; border-radius: 999px; padding: 6px 10px; font-size: .8rem; font-weight: 750; backdrop-filter: blur(8px); }
+    .card-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 12px; flex: 1; position: relative; }
+    h2 { margin: 0; padding-right: 54px; font-family: Georgia, "Times New Roman", serif; font-size: 1.55rem; line-height: 1.08; font-weight: 650; }
+    .latin { margin-top: -8px; color: var(--muted); font-style: italic; font-size: 1.02rem; }
+    .chips { display: flex; flex-wrap: wrap; gap: 7px; }
+    .chip { background: var(--chip); color: var(--muted); border-radius: 999px; padding: 5px 9px; font-size: .8rem; font-weight: 700; }
+    .chip.green { background: rgba(96,119,97,.17); color: #435943; }
+    dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; margin: 0; font-size: .94rem; }
+    dt { color: var(--muted); font-weight: 800; }
+    dd { margin: 0; }
+    .notes { color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; margin-top: auto; font-size: .94rem; min-height: 2.2em; }
+    .open-link { color: var(--accent); text-decoration: none; font-weight: 850; }
+    footer { text-align: center; color: var(--muted); padding: 26px 18px 44px; font-size: .92rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html">← Mina Växter</a>
+      <a href="hibiskusar.html">Hibiskus</a>
+      <a href="pelargoner.html">Pelargon</a>
+      <a href="citrus.html">Citrus</a>
+      <a href="udda.html">Udda</a>
+      <a class="current" href="favoriter.html">Favoriter</a>
+      <a href="etiketter.html">Etiketter</a>
+    </nav>
+    <div class="eyebrow">Arbetsvy</div>
+    <h1>Favoriter</h1>
+    <p class="subtitle">Växter med hundöra, sådant du arbetar med eller vill ha nära just nu.</p>
+  </header>
+
+  <main>
+    <div class="stats" id="stats"></div>
+    <section class="grid" id="favoriteGrid"></section>
+  </main>
+
+  <footer>Favoriter sparas lokalt i den här webbläsaren.</footer>
+
+  <script src="common.js?v=20260701-prepush4"></script>
+  <script>
+    const grid = document.querySelector("#favoriteGrid");
+    const stats = document.querySelector("#stats");
+
+    function favoriteCard(item) {
+      const chips = [item.category, ...(item.chips || [])].filter(Boolean).slice(0, 6);
+      const gallery = item.image ? [{file: item.image, title: item.plantName, caption: `${item.plantName} · ${item.dateLabel || ""}`, alt: item.plantName}] : [];
+      return `
+        <article class="plant-card" data-category="${escapeAttr(item.category)}" data-plant-id="${escapeAttr(item.plantId)}" data-plant-name="${escapeAttr(item.plantName)}" data-page="${escapeAttr(item.page || "index.html")}" data-gallery="${escapeAttr(JSON.stringify(gallery))}">
+          <div class="image-wrap">
+            ${item.image ? `<img class="main-photo" src="${escapeAttr(item.image)}" alt="${escapeAttr(item.plantName)}" data-caption="${escapeAttr(item.plantName + (item.dateLabel ? " · " + item.dateLabel : ""))}">` : `<div class="image-empty">Bild saknas</div>`}
+            ${item.dateLabel ? `<div class="date-ribbon">${escapeAttr(item.dateLabel)}</div>` : ""}
+          </div>
+          <div class="card-body">
+            <h2>${htmlEscape(item.plantName)}</h2>
+            ${item.latin ? `<div class="latin">${htmlEscape(item.latin)}</div>` : ""}
+            <div class="chips">
+              ${chips.map((chip, index) => `<span class="chip ${index === 0 ? "green" : ""}">${htmlEscape(chip)}</span>`).join("")}
+            </div>
+            <dl>
+              <dt>ID</dt><dd>${htmlEscape(item.plantId)}</dd>
+              <dt>Kategori</dt><dd>${htmlEscape(item.category)}</dd>
+            </dl>
+            <a class="open-link" href="${escapeAttr(item.page || "index.html")}">Öppna i katalogen</a>
+            <div class="notes">${htmlEscape(item.notes || "Markerad med hundöra.")}</div>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderFavoritesPage() {
+      const favorites = Object.values(getPlantFavorites()).sort((a, b) =>
+        sortNatural(`${a.category} ${a.plantName}`, `${b.category} ${b.plantName}`)
+      );
+      stats.innerHTML = `<span class="stat">${favorites.length} favoriter</span>`;
+      grid.innerHTML = favorites.length
+        ? favorites.map(favoriteCard).join("")
+        : '<div class="favorite-empty">Inga favoriter ännu. Markera en växt med hundörat på ett kort.</div>';
+      updatePlantFavoriteUI();
+    }
+
+    document.addEventListener("click", event => {
+      const main = event.target.closest(".main-photo");
+      if (main) openPlantPhotoGallery(main);
+    });
+
+    ensurePlantPhotoGallery();
+    ensurePlantFavorites();
+    renderFavoritesPage();
+  </script>
+</body>
+</html>

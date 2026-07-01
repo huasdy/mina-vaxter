@@ -85,6 +85,7 @@
       <a class="current" href="pelargoner.html">Pelargon</a>
       <a href="citrus.html">Citrus</a>
       <a href="udda.html">Udda</a>
+      <a href="favoriter.html">Favoriter</a>
       <a href="etiketter.html">Etiketter</a>
     </nav>
     <div class="eyebrow">Privat samling</div>
@@ -196,7 +197,7 @@ p-sidoides,2026-06-21,hel,bilder/pelargoner/p-sidoides_2026-06-21_hel.jpg,2026-0
 p-torento,2026-06-21,hel,bilder/pelargoner/p-torento_2026-06-21_hel.jpg,2026-06-21 · hel
 p-triffidum,2026-06-21,blomma,bilder/pelargoner/p-triffidum_2026-06-21_blomma.jpg,2026-06-21 · blomma
 p-triffidum,2026-06-21,hel,bilder/pelargoner/p-triffidum_2026-06-21_hel.jpg,2026-06-21 · hel</script>
-  <script src="common.js?v=20260629-gallery"></script>
+  <script src="common.js?v=20260701-prepush4"></script>
   <script>
     let plants = [];
     let plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;
@@ -293,13 +294,17 @@ p-triffidum,2026-06-21,hel,bilder/pelargoner/p-triffidum_2026-06-21_hel.jpg,2026
       ].join(" ").toLowerCase();
 
       return `
-        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}">
+        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-category="Pelargon" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(p.name)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}">
           <div class="image-wrap">
             ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(p.name)}" data-caption="${escapeAttr(p.name + " · " + activeLabel)}">` : ""}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}</div>` : ""}
           </div>
           <div class="card-body">
             <h2>${p.name}</h2>
+            <div class="import-actions">
+              <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
+              <span class="import-badge" data-import-badge hidden></span>
+            </div>
             <div class="chips">
               ${cardChips(p)}
             </div>
@@ -345,6 +350,8 @@ p-triffidum,2026-06-21,hel,bilder/pelargoner/p-triffidum_2026-06-21_hel.jpg,2026
       });
       const visible = sortedPlants(filtered);
       grid.innerHTML = visible.length ? visible.map(cardTemplate).join("") : '<div class="empty">Inga pelargoner matchar sökningen just nu.</div>';
+      updatePlantImageImportUI();
+      updatePlantFavoriteUI();
       const photoCount = plants.reduce((sum, p) => sum + (p.photos || []).length, 0);
       const withPhoto = plants.filter(p => (p.photos || []).length > 0).length;
       const activeParts = [
@@ -379,6 +386,8 @@ p-triffidum,2026-06-21,hel,bilder/pelargoner/p-triffidum_2026-06-21_hel.jpg,2026
       }
     });
     ensurePlantPhotoGallery();
+    ensurePlantImageImport();
+    ensurePlantFavorites();
     printBtn.addEventListener("click", () => window.print());
     clearBtn.addEventListener("click", () => {
       search.value = "";
