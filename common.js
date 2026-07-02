@@ -445,6 +445,13 @@ function extensionForImage(item) {
   return "jpg";
 }
 
+function imageImportBlob(item) {
+  if (item.blob instanceof Blob) return item.blob;
+  if (item.data instanceof Blob) return item.data;
+  if (item.data) return new Blob([item.data], {type: item.mime || "image/jpeg"});
+  return new Blob([], {type: item.mime || "application/octet-stream"});
+}
+
 function dosDateTime(date = new Date()) {
   const year = Math.max(1980, date.getFullYear());
   const dosTime = (date.getHours() << 11) | (date.getMinutes() << 5) | Math.floor(date.getSeconds() / 2);
@@ -779,6 +786,7 @@ async function openImageImportForm(file) {
     const form = event.currentTarget;
     const data = new FormData(form);
     const createdAt = new Date().toISOString();
+    const imageData = await file.arrayBuffer();
     await addImageImportItem({
       id: `${createdAt}-${Math.random().toString(16).slice(2)}`,
       createdAt,
@@ -791,7 +799,7 @@ async function openImageImportForm(file) {
       originalFileName: file.name || "iphone-bild.jpg",
       mime: file.type || "image/jpeg",
       size: file.size || 0,
-      blob: file
+      data: imageData
     });
     dialog.close();
     plantImageImportPending = null;
@@ -828,7 +836,7 @@ async function openImageImportQueue() {
   try { items = await getImageImportItems(); } catch (error) { items = []; }
   const urls = [];
   const rows = items.map(item => {
-    const url = URL.createObjectURL(item.blob);
+    const url = URL.createObjectURL(imageImportBlob(item));
     urls.push(url);
     const meta = [item.category, item.plantId, item.date, item.type, item.originalFileName].filter(Boolean).join(" · ");
     return `
@@ -934,7 +942,7 @@ async function createImageImportPackage(items) {
   manifest.items.forEach((manifestItem, index) => {
     entries.push({
       name: manifestItem.packagePath,
-      blob: items[index].blob
+      blob: imageImportBlob(items[index])
     });
   });
   return createZipBlob(entries);
