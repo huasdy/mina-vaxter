@@ -1053,7 +1053,10 @@ function updatePlantFavoriteUI() {
     button.classList.toggle("active", active);
     button.setAttribute("aria-pressed", active ? "true" : "false");
     button.setAttribute("aria-label", active ? "Ta bort favorit" : "Markera som favorit");
-    if (active) favorites[key] = {...favorites[key], ...favoriteFromCard(card)};
-  });
+	    if (active) {
+	      const existing = favorites[key] || {};
+	      favorites[key] = {...existing, ...favoriteFromCard(card), focusNote: existing.focusNote || ""};
+	    }
+	  });
   savePlantFavorites(favorites);
 }

@@ -62,16 +62,64 @@
     .label-sheet.full-label .label-name { font-size: 12pt; }
     .label-sheet.full-label .plant-label.name-only .label-name { font-size: 16pt; }
     .plant-label.name-only .label-name { font-size: 10pt; }
+    .label-meta { font: 650 6.8pt -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .batch-panel {
+      width: min(100%, 980px); background: rgba(255,253,248,.78); border: 1px solid var(--line);
+      border-radius: 22px; box-shadow: var(--shadow); padding: 18px; display: grid; gap: 14px;
+    }
+    .batch-head { display: flex; justify-content: space-between; gap: 12px; align-items: end; flex-wrap: wrap; }
+    .batch-head h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 1.9rem; line-height: 1; font-weight: 600; }
+    .batch-head p { margin: 4px 0 0; color: var(--muted); }
+    .batch-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .batch-controls select { min-width: 180px; }
+    .batch-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .batch-list {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px;
+      max-height: 340px; overflow: auto; padding: 2px;
+    }
+    .batch-item {
+      display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; cursor: pointer;
+      background: rgba(245,241,234,.72); border: 1px solid rgba(222,210,194,.82); border-radius: 14px; padding: 10px;
+    }
+    .batch-item input { margin-top: 4px; accent-color: var(--accent); }
+    .batch-id { display: block; font-weight: 850; }
+    .batch-extra { display: block; color: var(--muted); font-size: .88rem; line-height: 1.25; margin-top: 2px; }
+    .batch-print-area { display: none; }
+    .batch-preview {
+      width: min(100%, 980px); background: white; border: 1px solid var(--line);
+      border-radius: 22px; box-shadow: var(--shadow); padding: 18px; display: none; gap: 14px;
+    }
+    .batch-preview.visible { display: grid; }
+    .batch-preview-head { display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .batch-preview-title { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 1.6rem; line-height: 1; }
+    .batch-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(57mm, 1fr)); gap: 12px; justify-items: center; }
+    .batch-preview-grid .plant-label {
+      height: 32mm; border: 1px solid #ddd; align-content: center; justify-items: center;
+      text-align: center; row-gap: .8mm; padding: 3mm 3.5mm; background: #fff;
+    }
+    .batch-preview-grid .label-id { font-size: 16pt; }
+    .batch-preview-grid .label-name { margin-top: 1.8mm; font-size: 11pt; }
+    .batch-preview-grid .label-meta { font-size: 7.5pt; }
     .summary { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; color: var(--muted); }
     .pill { background: rgba(255,253,248,.78); border: 1px solid var(--line); border-radius: 999px; padding: 7px 11px; font-size: .9rem; font-weight: 700; }
-    @media (max-width: 760px) { .toolbar-inner { grid-template-columns: 1fr; } select, button { width: 100%; text-align: center; } }
+    @media (max-width: 760px) { .toolbar-inner { grid-template-columns: 1fr; } select, button { width: 100%; text-align: center; } .batch-head { display: grid; } }
     @media print {
       @page { size: 57mm 32mm; margin: 0; }
       html, body { width: 57mm; height: 32mm; margin: 0; padding: 0; background: #fff; }
-      header, .toolbar, .summary { display: none !important; }
+      header, .toolbar, .summary, .batch-panel, .batch-preview { display: none !important; }
       main { width: 57mm; height: 32mm; margin: 0; padding: 0; display: block; }
       .sheet-frame { padding: 0; border: 0; border-radius: 0; box-shadow: none; }
       .label-sheet { border: 0; }
+      body.batch-printing main { display: none !important; }
+      body.batch-printing .batch-print-area { display: block; width: 57mm; margin: 0; padding: 0; }
+      body.batch-printing .plant-label {
+        width: 57mm; height: 32mm; padding: 3mm 3.5mm; border: 0;
+        align-content: center; justify-items: center; text-align: center; row-gap: .8mm;
+        page-break-after: always; break-after: page; page-break-inside: avoid; break-inside: avoid;
+      }
+      body.batch-printing .label-id { font-size: 16pt; }
+      body.batch-printing .label-name { margin-top: 1.8mm; font-size: 11pt; }
+      body.batch-printing .label-meta { font-size: 7.5pt; }
     }
   </style>
 </head>
@@ -95,7 +143,7 @@
       <select id="labelA"></select>
       <select id="labelB"></select>
       <button class="secondary" id="clearSecond" type="button">En etikett</button>
-      <button id="printBtn" type="button">Skriv ut</button>
+      <button id="printBtn" type="button">Förhandsvisa</button>
     </div>
   </section>
   <main>
@@ -106,7 +154,36 @@
       </section>
     </div>
     <div class="summary" id="summary"></div>
+    <section class="batch-panel" aria-label="Batch-utskrift">
+      <div class="batch-head">
+        <div>
+          <h2>Batch-utskrift</h2>
+          <p>Välj flera hibiskusar och skriv ut en etikett per planta.</p>
+        </div>
+        <div class="batch-controls">
+          <select id="batchCategory">
+            <option value="Hibiskus">Hibiskus</option>
+          </select>
+          <select id="batchParti"></select>
+        </div>
+      </div>
+      <div class="batch-actions">
+        <button class="secondary" id="selectAllBatch" type="button">Markera alla</button>
+        <button class="secondary" id="clearAllBatch" type="button">Avmarkera alla</button>
+        <button id="previewBatchBtn" type="button">Förhandsvisa valda etiketter</button>
+      </div>
+      <div class="summary" id="batchSummary"></div>
+      <div class="batch-list" id="batchList"></div>
+    </section>
+    <section class="batch-preview" id="batchPreview" aria-label="Förhandsvisning av batch">
+      <div class="batch-preview-head">
+        <h2 class="batch-preview-title">Förhandsvisning</h2>
+        <button class="secondary" id="closeBatchPreview" type="button">Stäng förhandsvisning</button>
+      </div>
+      <div class="batch-preview-grid" id="batchPreviewGrid"></div>
+    </section>
   </main>
+  <section class="batch-print-area" id="batchPrintArea" aria-label="Batchutskrift"></section>
   <script id="labelData" type="application/json">[{"category": "Hibiskus", "id": "PL-H01-A", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-B", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-C", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-D", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-G", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-H", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-I", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-J", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-K", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-L", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-M", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-N", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-O", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-Q", "name": "Hibiskus"}, {"category": "Hibiskus", "id": "PL-H01-R", "name": "Hibiskus"}, {"category": "Pelargon", "id": "p-acetosum", "name": "P. acetosum"}, {"category": "Pelargon", "id": "p-australe-1", "name": "P. australe 1"}, {"category": "Pelargon", "id": "p-australe-2", "name": "P. australe 2"}, {"category": "Pelargon", "id": "p-cotyledonis-1", "name": "P. cotyledonis 1"}, {"category": "Pelargon", "id": "p-cotyledonis-2", "name": "P. cotyledonis 2"}, {"category": "Pelargon", "id": "p-gibbosum-1", "name": "P. gibbosum 1"}, {"category": "Pelargon", "id": "p-gibbosum-2", "name": "P. gibbosum 2"}, {"category": "Pelargon", "id": "p-gibbosum-3", "name": "P. gibbosum 3"}, {"category": "Pelargon", "id": "p-gibbosum-4", "name": "P. gibbosum 4"}, {"category": "Pelargon", "id": "p-gibbosum-maroon-1", "name": "P. gibbosum ‘Maroon’ 1"}, {"category": "Pelargon", "id": "p-gibbosum-maroon-2", "name": "P. gibbosum ‘Maroon’ 2"}, {"category": "Pelargon", "id": "p-laxum-1", "name": "P. laxum 1"}, {"category": "Pelargon", "id": "p-laxum-2", "name": "P. laxum 2"}, {"category": "Pelargon", "id": "p-magenteum", "name": "P. magenteum"}, {"category": "Pelargon", "id": "p-odoratissimum-1", "name": "P. odoratissimum"}, {"category": "Pelargon", "id": "p-sidoides", "name": "P. sidoides"}, {"category": "Pelargon", "id": "p-triffidum", "name": "P. triffidum"}, {"category": "Pelargon", "id": "p-caffrum-diana", "name": "P. × caffrum ‘Diana’"}, {"category": "Pelargon", "id": "p-bontrosai-1", "name": "P. ‘Bontrosai’ 1"}, {"category": "Pelargon", "id": "p-bontrosai-2", "name": "P. ‘Bontrosai’ 2"}, {"category": "Pelargon", "id": "p-bothams-surprise-1", "name": "P. ‘Botham Surprise’ 1"}, {"category": "Pelargon", "id": "p-bothams-surprise-2", "name": "P. ‘Botham Surprise’ 2"}, {"category": "Pelargon", "id": "p-creamery", "name": "P. ‘Creamery’"}, {"category": "Pelargon", "id": "p-cys-sunburst-1", "name": "P. ‘Cy’s Sunburst’ 1"}, {"category": "Pelargon", "id": "p-cys-sunburst-2", "name": "P. ‘Cy’s Sunburst’ 2"}, {"category": "Pelargon", "id": "p-cys-sunburst-3", "name": "P. ‘Cy’s Sunburst’ 3"}, {"category": "Pelargon", "id": "p-dr-westerlund-1", "name": "P. ‘Dr Westerlund’ 1"}, {"category": "Pelargon", "id": "p-dr-westerlund-2", "name": "P. ‘Dr Westerlund’ 2"}, {"category": "Pelargon", "id": "p-lemon-queen", "name": "P. ‘Lemon Queen’"}, {"category": "Pelargon", "id": "p-nielsens-fragrans-1", "name": "P. ‘Nielsens Fragrans’"}, {"category": "Pelargon", "id": "p-prince-of-orange", "name": "P. ‘Prince of Orange’"}, {"category": "Pelargon", "id": "p-torento", "name": "P. ‘Torento’"}, {"category": "Citrus", "id": "c-calamondin", "name": "Calamondin"}, {"category": "Citrus", "id": "c-limon-1", "name": "Citrus limon 1"}, {"category": "Citrus", "id": "c-limon-2", "name": "Citrus limon 2"}, {"category": "Citrus", "id": "c-okand-citrusstickling", "name": "Citrusstickling"}, {"category": "Citrus", "id": "c-kaffirlime", "name": "Kaffirlime – Citrus hystrix"}, {"category": "Citrus", "id": "c-kumquat-1", "name": "Kumquat 1"}, {"category": "Citrus", "id": "c-kumquat-2", "name": "Kumquat 2"}, {"category": "Citrus", "id": "c-limequat", "name": "Limequat"}, {"category": "Citrus", "id": "c-rod-fingerlime", "name": "Röd fingerlime – Citrus australasica"}, {"category": "Udda", "id": "SP-006", "name": "Fredskalla"}, {"category": "Udda", "id": "SP-005", "name": "Hjärtbräken"}, {"category": "Udda", "id": "SP-002", "name": "Patchouli"}, {"category": "Udda", "id": "SP-004", "name": "Plumeria"}, {"category": "Udda", "id": "SP-003", "name": "Salvia apiana"}, {"category": "Udda", "id": "SP-001", "name": "Stapelia mix"}]</script>
   <script>
     const labels = JSON.parse(document.querySelector("#labelData").textContent);
@@ -117,13 +194,37 @@
     const previewA = document.querySelector("#previewA");
     const previewB = document.querySelector("#previewB");
     const summary = document.querySelector("#summary");
+    const batchCategory = document.querySelector("#batchCategory");
+    const batchParti = document.querySelector("#batchParti");
+    const batchList = document.querySelector("#batchList");
+    const batchSummary = document.querySelector("#batchSummary");
+    const batchPrintArea = document.querySelector("#batchPrintArea");
+    const batchPreview = document.querySelector("#batchPreview");
+    const batchPreviewGrid = document.querySelector("#batchPreviewGrid");
 
     function escapeHtml(value) {
       return String(value || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
     }
 
+    function hibiscusMeta(row) {
+      if (!row || row.category !== "Hibiskus") return {};
+      if (row.id.startsWith("PL-H01-")) {
+        return {
+          parti: "PL-H01",
+          name: "SURPRISE PACK",
+          sown: "Sådd 2025-11-16"
+        };
+      }
+      return {};
+    }
+
     function optionText(row) {
-      return `${row.category} · ${row.id} · ${row.name}`;
+      if (row.category === "Hibiskus") {
+        const meta = hibiscusMeta(row);
+        return [row.id, meta.name || row.name].filter(Boolean).join(" · ");
+      }
+      if (categoryFilter.value) return row.name;
+      return `${row.category} · ${row.name}`;
     }
 
     function visibleLabels() {
@@ -163,6 +264,16 @@
       if (row.category === "Pelargon" || row.category === "Citrus") {
         return `<div class="label-name">${escapeHtml(row.name)}</div>`;
       }
+      if (row.category === "Hibiskus") {
+        const meta = hibiscusMeta(row);
+        const name = meta.name || row.name;
+        const extra = [meta.sown].filter(Boolean).join(" · ");
+        return `
+          <div class="label-id">${escapeHtml(row.id)}</div>
+          <div class="label-name">${escapeHtml(name)}</div>
+          ${extra ? `<div class="label-meta">${escapeHtml(extra)}</div>` : ""}
+        `;
+      }
       return `<div class="label-id">${escapeHtml(row.id)}</div><div class="label-name">${escapeHtml(row.name)}</div>`;
     }
 
@@ -182,6 +293,69 @@
       summary.innerHTML = [a, b].filter(Boolean).map(row => `<span class="pill">${escapeHtml(row.id)} · ${escapeHtml(row.name)}</span>`).join("");
     }
 
+    function batchRows() {
+      return labels.filter(row => {
+        const meta = hibiscusMeta(row);
+        return row.category === batchCategory.value && (!batchParti.value || meta.parti === batchParti.value);
+      });
+    }
+
+    function fillBatchParti() {
+      const current = batchParti.value;
+      const partier = [...new Set(labels
+        .filter(row => row.category === batchCategory.value)
+        .map(row => hibiscusMeta(row).parti)
+        .filter(Boolean)
+      )].sort((a, b) => a.localeCompare(b, "sv"));
+      batchParti.innerHTML = '<option value="">Alla partier</option>';
+      partier.forEach(parti => {
+        const option = document.createElement("option");
+        option.value = parti;
+        option.textContent = parti;
+        batchParti.appendChild(option);
+      });
+      if (partier.includes(current)) batchParti.value = current;
+    }
+
+    function selectedBatchRows() {
+      const selected = new Set([...batchList.querySelectorAll("input:checked")].map(input => input.value));
+      return batchRows().filter(row => selected.has(row.id));
+    }
+
+    function updateBatchSummary() {
+      const selectedCount = batchList.querySelectorAll("input:checked").length;
+      const totalCount = batchRows().length;
+      batchSummary.innerHTML = `<span class="pill">${selectedCount} av ${totalCount} valda</span>`;
+    }
+
+    function renderBatchList() {
+      const rows = batchRows();
+      batchList.innerHTML = rows.map(row => {
+        const meta = hibiscusMeta(row);
+        const extra = [meta.name, meta.sown].filter(Boolean).join(" · ");
+        return `
+          <label class="batch-item">
+            <input type="checkbox" value="${escapeHtml(row.id)}" checked>
+            <span>
+              <span class="batch-id">${escapeHtml(row.id)}</span>
+              <span class="batch-extra">${escapeHtml(extra || row.name)}</span>
+            </span>
+          </label>
+        `;
+      }).join("");
+      updateBatchSummary();
+    }
+
+    function renderBatchPrintArea(rows) {
+      batchPrintArea.innerHTML = rows.map(row => `<article class="plant-label">${labelHtml(row)}</article>`).join("");
+    }
+
+    function renderBatchPreview(rows) {
+      batchPreviewGrid.innerHTML = rows.map(row => `<article class="plant-label">${labelHtml(row)}</article>`).join("");
+      batchPreview.classList.add("visible");
+      batchPreview.scrollIntoView({behavior: "smooth", block: "start"});
+    }
+
     function refillSelects() {
       fillSelect(labelA, false);
       fillSelect(labelB, true);
@@ -197,11 +371,41 @@
 
     fillCategoryFilter();
     refillSelects();
+    fillBatchParti();
+    renderBatchList();
     categoryFilter.addEventListener("change", refillSelects);
     labelA.addEventListener("change", render);
     labelB.addEventListener("change", render);
+    batchCategory.addEventListener("change", () => {
+      fillBatchParti();
+      renderBatchList();
+    });
+    batchParti.addEventListener("change", renderBatchList);
+    batchList.addEventListener("change", updateBatchSummary);
+    document.querySelector("#selectAllBatch").addEventListener("click", () => {
+      batchList.querySelectorAll("input").forEach(input => { input.checked = true; });
+      updateBatchSummary();
+    });
+    document.querySelector("#clearAllBatch").addEventListener("click", () => {
+      batchList.querySelectorAll("input").forEach(input => { input.checked = false; });
+      updateBatchSummary();
+    });
     document.querySelector("#clearSecond").addEventListener("click", () => { labelB.value = ""; render(); });
-    document.querySelector("#printBtn").addEventListener("click", () => window.print());
+    document.querySelector("#printBtn").addEventListener("click", () => {
+      alert("Direktutskrift är pausad medan vi testar etiketterna. Använd förhandsvisningen på sidan först.");
+    });
+    document.querySelector("#previewBatchBtn").addEventListener("click", () => {
+      const rows = selectedBatchRows();
+      if (!rows.length) {
+        alert("Välj minst en hibiskus att förhandsvisa.");
+        return;
+      }
+      renderBatchPreview(rows);
+    });
+    document.querySelector("#closeBatchPreview").addEventListener("click", () => {
+      batchPreview.classList.remove("visible");
+      batchPreviewGrid.innerHTML = "";
+    });
   </script>
 </body>
 </html>
