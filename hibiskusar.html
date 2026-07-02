@@ -32,7 +32,7 @@
       background: rgba(245,241,234,.84); border-top: 1px solid rgba(222,210,194,.75);
       border-bottom: 1px solid rgba(222,210,194,.95); padding: 14px 18px;
     }
-    .toolbar-inner { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto auto auto auto; gap: 10px; align-items: center; }
+    .toolbar-inner { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto auto auto auto auto; gap: 10px; align-items: center; }
     input, select, button, label.filebutton {
       border: 1px solid var(--line); background: var(--paper); border-radius: 999px; color: var(--ink);
       padding: 11px 14px; font-size: .95rem; font: inherit;
@@ -96,6 +96,7 @@
   <section class="toolbar">
     <div class="toolbar-inner">
       <input id="search" type="search" placeholder="Sök ID, status, anteckning, blomfärg, bilddatum…">
+      <select id="batchFilter"><option value="">Alla partier</option></select>
       <select id="statusFilter"><option value="">Alla statusar</option></select>
       <select id="sortSelect">
         <option value="id">ID A-Ö</option>
@@ -122,21 +123,21 @@
   <footer>Serverfri lokal HTML-katalog.</footer>
 
   <script type="text/plain" id="defaultPlantsCSV">id,batch,group,sown,status,decision,firstBloom,flowerColor,form,fertility,score,notes
-PL-H01-A,PL-H01,Tropical Hibiscus Hybrid – Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
-PL-H01-B,PL-H01,Tropical Hibiscus Hybrid – Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
-PL-H01-C,PL-H01,Tropical Hibiscus Hybrid – Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
-PL-H01-D,PL-H01,Tropical Hibiscus Hybrid – Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
-PL-H01-G,PL-H01,Tropical Hibiscus Hybrid – Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
-PL-H01-H,PL-H01,Tropical Hibiscus Hybrid – Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
-PL-H01-I,PL-H01,Tropical Hibiscus Hybrid – Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
-PL-H01-J,PL-H01,Tropical Hibiscus Hybrid – Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
-PL-H01-K,PL-H01,Tropical Hibiscus Hybrid – Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
-PL-H01-L,PL-H01,Tropical Hibiscus Hybrid – Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
-PL-H01-M,PL-H01,Tropical Hibiscus Hybrid – Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
-PL-H01-N,PL-H01,Tropical Hibiscus Hybrid – Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
-PL-H01-O,PL-H01,Tropical Hibiscus Hybrid – Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
-PL-H01-Q,PL-H01,Tropical Hibiscus Hybrid – Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
-PL-H01-R,PL-H01,Tropical Hibiscus Hybrid – Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,</script>
+PL-H01-A,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
+PL-H01-B,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
+PL-H01-C,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
+PL-H01-D,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
+PL-H01-G,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
+PL-H01-H,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
+PL-H01-I,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
+PL-H01-J,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
+PL-H01-K,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
+PL-H01-L,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
+PL-H01-M,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
+PL-H01-N,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
+PL-H01-O,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
+PL-H01-Q,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
+PL-H01-R,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,</script>
   <script type="text/plain" id="defaultPhotosCSV">plant_id,date,type,file,label,day
 PL-H01-A,2026-05-24,hel,bilder/hibiskusar/PL-H01-A_2026-05-24_hel.jpg,2026-05-24 · hel,189
 PL-H01-A,2026-06-07,hel,bilder/hibiskusar/PL-H01-A_2026-06-07_hel.jpg,2026-06-07 · hel,203
@@ -176,6 +177,7 @@ PL-H01-R,2026-06-07,hel,bilder/hibiskusar/PL-H01-R_2026-06-07_hel.jpg,2026-06-07
 
     const grid = document.querySelector("#grid");
     const search = document.querySelector("#search");
+    const batchFilter = document.querySelector("#batchFilter");
     const statusFilter = document.querySelector("#statusFilter");
     const sortSelect = document.querySelector("#sortSelect");
     const clearBtn = document.querySelector("#clearBtn");
@@ -197,6 +199,16 @@ PL-H01-R,2026-06-07,hel,bilder/hibiskusar/PL-H01-R_2026-06-07_hel.jpg,2026-06-07
         ...p,
         photos: (photoMap.get(p.id) || []).sort((a,b) => sortNatural(a.date + a.type, b.date + b.type))
       })).sort((a,b) => sortNatural(a.id, b.id));
+
+      batchFilter.innerHTML = '<option value="">Alla partier</option>';
+      [...new Set(plants.map(p => clean(p.batch)).filter(Boolean))]
+        .sort((a,b) => sortNatural(a, b))
+        .forEach(batch => {
+          const option = document.createElement("option");
+          option.value = batch;
+          option.textContent = batch;
+          batchFilter.appendChild(option);
+        });
 
       statusFilter.innerHTML = '<option value="">Alla statusar</option>';
       [...new Set(plants.map(p => clean(p.status)).filter(Boolean))]
@@ -238,7 +250,7 @@ PL-H01-R,2026-06-07,hel,bilder/hibiskusar/PL-H01-R_2026-06-07_hel.jpg,2026-06-07
       ].join(" ").toLowerCase();
 
       return `
-        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-status="${escapeAttr(p.status)}" data-category="Hibiskus" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(p.id)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}">
+        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-batch="${escapeAttr(p.batch)}" data-status="${escapeAttr(p.status)}" data-category="Hibiskus" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(p.id)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}">
           <div class="image-wrap">
             ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(p.id)}" data-caption="${escapeAttr(p.id + " · " + activeLabel + dayText)}">` : ""}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}${dayText}</div>` : ""}
@@ -257,7 +269,8 @@ PL-H01-R,2026-06-07,hel,bilder/hibiskusar/PL-H01-R_2026-06-07_hel.jpg,2026-06-07
               <span class="chip">${bildText(photos.length)}</span>
             </div>
             <dl>
-              <dt>Grupp</dt><dd>${clean(p.group) || "Ej ifyllt"}</dd>
+              <dt>Parti</dt><dd>${clean(p.batch) || "Ej ifyllt"}</dd>
+              <dt>Korsning/fröparti</dt><dd>${clean(p.group) || "Ej ifyllt"}</dd>
               <dt>Sådd</dt><dd>${clean(p.sown) || "Ej ifyllt"}</dd>
               <dt>Första blomning</dt><dd>${clean(p.firstBloom) || "Ej ännu"}</dd>
               <dt>Blomfärg</dt><dd>${clean(p.flowerColor) || "Ej ännu"}</dd>
@@ -300,13 +313,16 @@ PL-H01-R,2026-06-07,hel,bilder/hibiskusar/PL-H01-R_2026-06-07_hel.jpg,2026-06-07
 
     function render() {
       const query = search.value.trim().toLowerCase();
+      const selectedBatch = batchFilter.value;
       const selectedStatus = statusFilter.value;
       const filtered = plants.filter(p => {
         const combined = [
           p.id, p.batch, p.group, p.sown, p.status, p.decision, p.firstBloom, p.flowerColor, p.form, p.fertility, p.score, p.notes,
           ...(p.photos || []).map(x => `${x.date} ${x.type} ${x.file}`)
         ].join(" ").toLowerCase();
-        return (!query || combined.includes(query)) && (!selectedStatus || p.status === selectedStatus);
+        return (!query || combined.includes(query))
+          && (!selectedBatch || p.batch === selectedBatch)
+          && (!selectedStatus || p.status === selectedStatus);
       });
       const visible = sortedPlants(filtered);
       grid.innerHTML = visible.length ? visible.map(cardTemplate).join("") : '<div class="empty">Inga hibiskusar matchar sökningen just nu.</div>';
@@ -315,6 +331,7 @@ PL-H01-R,2026-06-07,hel,bilder/hibiskusar/PL-H01-R_2026-06-07_hel.jpg,2026-06-07
       const photoCount = plants.reduce((sum, p) => sum + (p.photos || []).length, 0);
       const activeParts = [
         query ? `Sökning: “${search.value.trim()}”` : "",
+        selectedBatch ? `Parti: ${selectedBatch}` : "",
         selectedStatus ? `Status: ${selectedStatus}` : "",
         `Sortering: ${sortSelect.options[sortSelect.selectedIndex].textContent}`
       ].filter(Boolean);
@@ -349,11 +366,13 @@ PL-H01-R,2026-06-07,hel,bilder/hibiskusar/PL-H01-R_2026-06-07_hel.jpg,2026-06-07
     printBtn.addEventListener("click", () => window.print());
     clearBtn.addEventListener("click", () => {
       search.value = "";
+      batchFilter.value = "";
       statusFilter.value = "";
       sortSelect.value = "id";
       render();
     });
     search.addEventListener("input", render);
+    batchFilter.addEventListener("change", render);
     statusFilter.addEventListener("change", render);
     sortSelect.addEventListener("change", render);
     rebuild();
