@@ -50,19 +50,23 @@
     }
     .plant-label {
       width: 57mm; height: 16mm; display: grid; align-content: center; justify-items: center;
-      padding: 1.8mm 2.4mm; text-align: center; line-height: 1.05; overflow: hidden;
+      padding: 1.8mm 2.4mm; text-align: center; line-height: 1.05; overflow: hidden; row-gap: .35mm;
     }
     .plant-label:first-child { border-bottom: 1px dashed #aaa; }
     .label-sheet.full-label { grid-template-rows: 1fr; }
     .label-sheet.full-label .plant-label:first-child { height: 32mm; border-bottom: 0; }
     .label-sheet.full-label #previewB { display: none; }
-    .label-id { font: 800 10pt ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .02em; max-width: 100%; white-space: nowrap; }
-    .label-name { font: 800 8pt -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; text-transform: uppercase; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .label-id { font: 900 10pt ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .015em; max-width: 100%; white-space: nowrap; }
+    .label-name { font: 750 8pt -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .label-sheet.full-label .label-id { font-size: 15pt; }
     .label-sheet.full-label .label-name { font-size: 12pt; }
     .label-sheet.full-label .plant-label.name-only .label-name { font-size: 16pt; }
     .plant-label.name-only .label-name { font-size: 10pt; }
     .label-meta { font: 650 6.8pt -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .plant-label.id-badge { align-content: center; row-gap: 1mm; padding: 4.2mm 3.2mm 3.4mm; }
+    .plant-label.id-badge .label-id { font-size: 23pt; line-height: .95; margin-bottom: 1.6mm; }
+    .plant-label.id-badge .label-name { font-size: 9.4pt; line-height: 1; font-weight: 760; }
+    .plant-label.id-badge .label-meta { font-size: 7.4pt; line-height: 1; }
     .batch-panel {
       width: min(100%, 980px); background: rgba(255,253,248,.78); border: 1px solid var(--line);
       border-radius: 22px; box-shadow: var(--shadow); padding: 18px; display: grid; gap: 14px;
@@ -95,31 +99,36 @@
     .batch-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(57mm, 1fr)); gap: 12px; justify-items: center; }
     .batch-preview-grid .plant-label {
       height: 32mm; border: 1px solid #ddd; align-content: center; justify-items: center;
-      text-align: center; row-gap: .8mm; padding: 3mm 3.5mm; background: #fff;
+      text-align: center; row-gap: 1mm; padding: 4.2mm 3.2mm 3.4mm; background: #fff;
     }
-    .batch-preview-grid .label-id { font-size: 16pt; }
-    .batch-preview-grid .label-name { margin-top: 1.8mm; font-size: 11pt; }
-    .batch-preview-grid .label-meta { font-size: 7.5pt; }
+    .batch-preview-grid .label-id { font-size: 23pt; line-height: .95; margin-bottom: 1.6mm; }
+    .batch-preview-grid .label-name { font-size: 9.4pt; line-height: 1; }
+    .batch-preview-grid .label-meta { font-size: 7.4pt; line-height: 1; }
+    .print-note {
+      width: min(100%, 980px); color: var(--muted); text-align: center; font-size: .92rem;
+      background: rgba(255,253,248,.58); border: 1px solid rgba(222,210,194,.7);
+      border-radius: 999px; padding: 9px 13px;
+    }
     .summary { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; color: var(--muted); }
     .pill { background: rgba(255,253,248,.78); border: 1px solid var(--line); border-radius: 999px; padding: 7px 11px; font-size: .9rem; font-weight: 700; }
     @media (max-width: 760px) { .toolbar-inner { grid-template-columns: 1fr; } select, button { width: 100%; text-align: center; } .batch-head { display: grid; } }
     @media print {
       @page { size: 57mm 32mm; margin: 0; }
       html, body { width: 57mm; height: 32mm; margin: 0; padding: 0; background: #fff; }
-      header, .toolbar, .summary, .batch-panel, .batch-preview { display: none !important; }
+      header, .toolbar, .summary, .print-note, .batch-panel, .batch-preview { display: none !important; }
       main { width: 57mm; height: 32mm; margin: 0; padding: 0; display: block; }
       .sheet-frame { padding: 0; border: 0; border-radius: 0; box-shadow: none; }
       .label-sheet { border: 0; }
       body.batch-printing main { display: none !important; }
       body.batch-printing .batch-print-area { display: block; width: 57mm; margin: 0; padding: 0; }
       body.batch-printing .plant-label {
-        width: 57mm; height: 32mm; padding: 3mm 3.5mm; border: 0;
-        align-content: center; justify-items: center; text-align: center; row-gap: .8mm;
+        width: 57mm; height: 32mm; padding: 4.2mm 3.2mm 3.4mm; border: 0;
+        align-content: center; justify-items: center; text-align: center; row-gap: 1mm;
         page-break-after: always; break-after: page; page-break-inside: avoid; break-inside: avoid;
       }
-      body.batch-printing .label-id { font-size: 16pt; }
-      body.batch-printing .label-name { margin-top: 1.8mm; font-size: 11pt; }
-      body.batch-printing .label-meta { font-size: 7.5pt; }
+      body.batch-printing .label-id { font-size: 23pt; line-height: .95; margin-bottom: 1.6mm; }
+      body.batch-printing .label-name { font-size: 9.4pt; line-height: 1; }
+      body.batch-printing .label-meta { font-size: 7.4pt; line-height: 1; }
     }
   </style>
 </head>
@@ -143,7 +152,7 @@
       <select id="labelA"></select>
       <select id="labelB"></select>
       <button class="secondary" id="clearSecond" type="button">En etikett</button>
-      <button id="printBtn" type="button">Förhandsvisa</button>
+      <button id="printBtn" type="button">Skriv ut</button>
     </div>
   </section>
   <main>
@@ -154,6 +163,7 @@
       </section>
     </div>
     <div class="summary" id="summary"></div>
+    <div class="print-note">Skriv ut från Chrome med DYMO 32 × 57 mm.</div>
     <section class="batch-panel" aria-label="Batch-utskrift">
       <div class="batch-head">
         <div>
@@ -170,7 +180,8 @@
       <div class="batch-actions">
         <button class="secondary" id="selectAllBatch" type="button">Markera alla</button>
         <button class="secondary" id="clearAllBatch" type="button">Avmarkera alla</button>
-        <button id="previewBatchBtn" type="button">Förhandsvisa valda etiketter</button>
+        <button class="secondary" id="previewBatchBtn" type="button">Förhandsvisa valda etiketter</button>
+        <button id="printBatchBtn" type="button">Skriv ut valda etiketter</button>
       </div>
       <div class="summary" id="batchSummary"></div>
       <div class="batch-list" id="batchList"></div>
@@ -201,6 +212,7 @@
     const batchPrintArea = document.querySelector("#batchPrintArea");
     const batchPreview = document.querySelector("#batchPreview");
     const batchPreviewGrid = document.querySelector("#batchPreviewGrid");
+    let printCleanupTimer = null;
 
     function escapeHtml(value) {
       return String(value || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
@@ -211,7 +223,7 @@
       if (row.id.startsWith("PL-H01-")) {
         return {
           parti: "PL-H01",
-          name: "SURPRISE PACK",
+          name: "Surprise Pack",
           sown: "Sådd 2025-11-16"
         };
       }
@@ -269,7 +281,9 @@
         const name = meta.name || row.name;
         const extra = [meta.sown].filter(Boolean).join(" · ");
         return `
-          <div class="label-id">${escapeHtml(row.id)}</div>
+          <div class="label-id-badge">
+            <div class="label-id">${escapeHtml(row.id)}</div>
+          </div>
           <div class="label-name">${escapeHtml(name)}</div>
           ${extra ? `<div class="label-meta">${escapeHtml(extra)}</div>` : ""}
         `;
@@ -347,11 +361,38 @@
     }
 
     function renderBatchPrintArea(rows) {
-      batchPrintArea.innerHTML = rows.map(row => `<article class="plant-label">${labelHtml(row)}</article>`).join("");
+      batchPrintArea.innerHTML = rows.map(row => `<article class="plant-label ${row.category === "Hibiskus" ? "id-badge" : ""}">${labelHtml(row)}</article>`).join("");
+    }
+
+    function resetBatchPrintMode() {
+      document.body.classList.remove("batch-printing");
+      batchPrintArea.innerHTML = "";
+      clearTimeout(printCleanupTimer);
+      printCleanupTimer = null;
+    }
+
+    function scheduleBatchPrintCleanup() {
+      clearTimeout(printCleanupTimer);
+      printCleanupTimer = setTimeout(resetBatchPrintMode, 1200);
+    }
+
+    function printCurrentSheet() {
+      resetBatchPrintMode();
+      window.print();
+    }
+
+    function printBatchRows(rows) {
+      if (!rows.length) {
+        alert("Välj minst en hibiskus att skriva ut.");
+        return;
+      }
+      renderBatchPrintArea(rows);
+      document.body.classList.add("batch-printing");
+      window.print();
     }
 
     function renderBatchPreview(rows) {
-      batchPreviewGrid.innerHTML = rows.map(row => `<article class="plant-label">${labelHtml(row)}</article>`).join("");
+      batchPreviewGrid.innerHTML = rows.map(row => `<article class="plant-label ${row.category === "Hibiskus" ? "id-badge" : ""}">${labelHtml(row)}</article>`).join("");
       batchPreview.classList.add("visible");
       batchPreview.scrollIntoView({behavior: "smooth", block: "start"});
     }
@@ -391,9 +432,7 @@
       updateBatchSummary();
     });
     document.querySelector("#clearSecond").addEventListener("click", () => { labelB.value = ""; render(); });
-    document.querySelector("#printBtn").addEventListener("click", () => {
-      alert("Direktutskrift är pausad medan vi testar etiketterna. Använd förhandsvisningen på sidan först.");
-    });
+    document.querySelector("#printBtn").addEventListener("click", printCurrentSheet);
     document.querySelector("#previewBatchBtn").addEventListener("click", () => {
       const rows = selectedBatchRows();
       if (!rows.length) {
@@ -402,9 +441,16 @@
       }
       renderBatchPreview(rows);
     });
+    document.querySelector("#printBatchBtn").addEventListener("click", () => {
+      printBatchRows(selectedBatchRows());
+    });
     document.querySelector("#closeBatchPreview").addEventListener("click", () => {
       batchPreview.classList.remove("visible");
       batchPreviewGrid.innerHTML = "";
+    });
+    window.addEventListener("afterprint", resetBatchPrintMode);
+    window.addEventListener("focus", () => {
+      if (document.body.classList.contains("batch-printing")) scheduleBatchPrintCleanup();
     });
   </script>
 </body>
