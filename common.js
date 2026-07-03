@@ -99,10 +99,16 @@ function ensurePlantPhotoGallery() {
         padding: max(12px, env(safe-area-inset-top)) 14px 10px;
       }
       .gallery-title { min-width: 0; font-weight: 800; color: rgba(255,255,255,.88); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .gallery-close, .gallery-nav {
-          border: 0; background: rgba(255,255,255,.14); color: white; border-radius: 999px;
-          width: 44px; height: 44px; display: grid; place-items: center; font: 800 1.6rem/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        }
+      .gallery-actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+      .gallery-tools { display: flex; align-items: center; gap: 6px; padding: 4px; border-radius: 999px; background: rgba(255,255,255,.08); }
+      .gallery-tool, .gallery-close, .gallery-nav {
+        border: 0; background: rgba(255,255,255,.14); color: white; border-radius: 999px;
+        width: 44px; height: 44px; display: grid; place-items: center; font: 800 1.25rem/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      .gallery-tool { width: 38px; height: 36px; font-size: 1rem; }
+      .gallery-reset { width: auto; min-width: 56px; padding: 0 12px; font-size: .82rem; }
+      .gallery-tool:disabled { opacity: .38; cursor: default; }
+      .gallery-close { font-size: 1.6rem; }
         .gallery-stage { position: relative; min-height: 0; display: grid; place-items: center; overflow: hidden; touch-action: none; overscroll-behavior: contain; }
         .gallery-image {
           max-width: calc(100% - 16px); max-height: 100%; object-fit: contain; display: block;
@@ -114,6 +120,7 @@ function ensurePlantPhotoGallery() {
       .gallery-nav { position: absolute; top: 50%; transform: translateY(-50%); z-index: 2; }
       .gallery-prev { left: 12px; }
       .gallery-next { right: 12px; }
+      .gallery-nav[hidden] { display: none; }
       .gallery-bottom { padding: 10px 16px max(16px, env(safe-area-inset-bottom)); text-align: center; }
       .gallery-caption { font-weight: 800; color: rgba(255,255,255,.92); }
       .gallery-count { margin-top: 6px; color: rgba(255,255,255,.66); font-size: .9rem; font-weight: 700; }
@@ -121,10 +128,12 @@ function ensurePlantPhotoGallery() {
       .gallery-dot { width: 7px; height: 7px; border-radius: 999px; background: rgba(255,255,255,.32); }
       .gallery-dot.active { background: white; }
       @media (max-width: 700px) {
+        .gallery-tools { display: none; }
         .gallery-nav {
           display: grid; width: 42px; height: 52px; border-radius: 999px;
           background: rgba(0,0,0,.32); backdrop-filter: blur(8px);
         }
+        .gallery-nav[hidden] { display: none; }
         .gallery-prev { left: 8px; }
           .gallery-next { right: 8px; }
           .gallery-image { max-width: calc(100% - 16px); max-height: 100%; }
@@ -138,7 +147,14 @@ function ensurePlantPhotoGallery() {
     <div class="gallery-shell">
       <div class="gallery-top">
         <div class="gallery-title" id="galleryTitle"></div>
-        <button class="gallery-close" type="button" aria-label="Stäng">×</button>
+        <div class="gallery-actions">
+          <div class="gallery-tools" aria-label="Bildzoom">
+            <button class="gallery-tool gallery-zoom-out" type="button" aria-label="Zooma ut">−</button>
+            <button class="gallery-tool gallery-reset" type="button" aria-label="Återställ zoom">100%</button>
+            <button class="gallery-tool gallery-zoom-in" type="button" aria-label="Zooma in">+</button>
+          </div>
+          <button class="gallery-close" type="button" aria-label="Stäng">×</button>
+        </div>
       </div>
       <div class="gallery-stage">
         <button class="gallery-nav gallery-prev" type="button" aria-label="Föregående bild">‹</button>
@@ -161,6 +177,15 @@ function ensurePlantPhotoGallery() {
   const isGallerySwipe = (dx, dy) => Math.abs(dx) > 28 && Math.abs(dx) > Math.abs(dy) * 1.08;
 
   const img = dialog.querySelector("#modalImg");
+  const zoomOutButton = dialog.querySelector(".gallery-zoom-out");
+  const zoomInButton = dialog.querySelector(".gallery-zoom-in");
+  const resetButton = dialog.querySelector(".gallery-reset");
+  const updateZoomControls = () => {
+    const state = dialog.galleryState;
+    zoomOutButton.disabled = state.zoom <= 1.01;
+    zoomInButton.disabled = state.zoom >= 3.99;
+    resetButton.textContent = state.zoom <= 1.01 ? "100%" : `${Math.round(state.zoom * 100)}%`;
+  };
   const clampPan = () => {
     const state = dialog.galleryState;
     const maxX = Math.max(0, ((img.clientWidth || 0) * state.zoom - stage.clientWidth) / 2);
@@ -179,6 +204,7 @@ function ensurePlantPhotoGallery() {
     img.style.setProperty("--pan-x", `${state.panX}px`);
     img.style.setProperty("--pan-y", `${state.panY}px`);
     img.classList.toggle("zoomed", state.zoom > 1);
+    updateZoomControls();
   };
   const resetZoom = () => {
     const state = dialog.galleryState;
@@ -190,6 +216,7 @@ function ensurePlantPhotoGallery() {
     state.zoom = Math.min(4, Math.max(1, zoom));
     applyZoom();
   };
+  const zoomBy = amount => setZoom(dialog.galleryState.zoom + amount);
   const toggleZoom = () => {
     const state = dialog.galleryState;
     if (state.zoom > 1) resetZoom();
@@ -211,6 +238,8 @@ function ensurePlantPhotoGallery() {
     dialog.querySelector("#galleryDots").innerHTML = state.items.map((_, dotIndex) =>
       `<span class="gallery-dot ${dotIndex === state.index ? "active" : ""}"></span>`
     ).join("");
+    dialog.querySelector(".gallery-prev").hidden = state.items.length < 2;
+    dialog.querySelector(".gallery-next").hidden = state.items.length < 2;
   };
   dialog.galleryShow = show;
   dialog.querySelector(".gallery-close").addEventListener("click", () => dialog.close());
@@ -222,12 +251,26 @@ function ensurePlantPhotoGallery() {
     event.stopPropagation();
     show(dialog.galleryState.index + 1);
   });
+  zoomOutButton.addEventListener("click", event => {
+    event.stopPropagation();
+    zoomBy(-.35);
+  });
+  zoomInButton.addEventListener("click", event => {
+    event.stopPropagation();
+    zoomBy(.35);
+  });
+  resetButton.addEventListener("click", event => {
+    event.stopPropagation();
+    resetZoom();
+  });
   dialog.addEventListener("click", event => {
     if (event.target === dialog) dialog.close();
   });
   dialog.addEventListener("keydown", event => {
     if (event.key === "ArrowLeft") show(dialog.galleryState.index - 1);
     if (event.key === "ArrowRight") show(dialog.galleryState.index + 1);
+    if (event.key === "+" || event.key === "=") zoomBy(.35);
+    if (event.key === "-" || event.key === "_") zoomBy(-.35);
     if (event.key === "0" || event.key === "Escape") resetZoom();
   });
 
