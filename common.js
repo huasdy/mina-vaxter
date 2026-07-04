@@ -676,6 +676,17 @@ function ensurePlantImageImport() {
       border-radius: 999px; padding: 0 5px; font-size: .68rem; font-weight: 900; box-shadow: 0 3px 10px rgba(43,37,31,.18);
     }
     .import-badge[hidden] { display: none; }
+    .plant-card.image-drop-target {
+      outline: 3px solid rgba(125,79,59,.48); outline-offset: 5px;
+      box-shadow: 0 18px 54px rgba(125,79,59,.20);
+    }
+    .plant-card.image-drop-target::after {
+      content: "Släpp bild här"; position: absolute; inset: 10px; z-index: 8; display: grid; place-items: center;
+      border: 2px dashed rgba(125,79,59,.55); border-radius: inherit;
+      background: rgba(255,253,248,.82); color: var(--accent, #7d4f3b);
+      font-weight: 900; font-size: 1.05rem; pointer-events: none;
+      backdrop-filter: blur(4px);
+    }
     .import-queue-button {
       position: fixed; right: 16px; bottom: max(16px, env(safe-area-inset-bottom)); z-index: 20;
       border: 0; border-radius: 999px; width: 48px; height: 48px; padding: 0; background: rgba(125,79,59,.86); color: white;
@@ -751,19 +762,82 @@ function ensurePlantImageImport() {
   dialog.className = "import-dialog";
   document.body.appendChild(dialog);
 
-  document.addEventListener("click", event => {
-    const button = event.target.closest(".add-photo-btn");
-    if (!button) return;
-    const card = button.closest(".plant-card");
-    if (!card) return;
+  const imageFileFromTransfer = dataTransfer => {
+    if (!dataTransfer) return null;
+    return [...(dataTransfer.files || [])].find(file => file && file.type && file.type.startsWith("image/")) || null;
+  };
+
+  const hasImageTransfer = dataTransfer => {
+    if (!dataTransfer) return false;
+    if (imageFileFromTransfer(dataTransfer)) return true;
+    return [...(dataTransfer.items || [])].some(item => item.kind === "file" && item.type && item.type.startsWith("image/"));
+  };
+
+  const setPendingPlantFromCard = card => {
     plantImageImportPending = {
       category: card.dataset.category || document.title || "",
       plantId: card.dataset.plantId || "",
       plantName: card.dataset.plantName || card.dataset.plantId || ""
     };
+  };
+
+  const clearDropTargets = () => {
+    document.querySelectorAll(".plant-card.image-drop-target").forEach(card => card.classList.remove("image-drop-target"));
+  };
+
+  const closestPlantCard = target => {
+    return target && typeof target.closest === "function" ? target.closest(".plant-card[data-plant-id]") : null;
+  };
+
+  document.addEventListener("click", event => {
+    const button = event.target.closest(".add-photo-btn");
+    if (!button) return;
+    const card = button.closest(".plant-card");
+    if (!card) return;
+    setPendingPlantFromCard(card);
     input.value = "";
     input.click();
   });
+
+  document.addEventListener("dragenter", event => {
+    const hasImage = hasImageTransfer(event.dataTransfer);
+    const card = closestPlantCard(event.target);
+    if (!hasImage || !card) return;
+    event.preventDefault();
+    clearDropTargets();
+    card.classList.add("image-drop-target");
+  });
+
+  document.addEventListener("dragover", event => {
+    const hasImage = hasImageTransfer(event.dataTransfer);
+    const card = closestPlantCard(event.target);
+    if (!hasImage || !card) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "copy";
+    if (!card.classList.contains("image-drop-target")) {
+      clearDropTargets();
+      card.classList.add("image-drop-target");
+    }
+  });
+
+  document.addEventListener("dragleave", event => {
+    if (!event.target || typeof event.target.closest !== "function" || !event.target.closest(".plant-card.image-drop-target")) return;
+    const next = event.relatedTarget;
+    if (next && event.target.closest(".plant-card")?.contains(next)) return;
+    clearDropTargets();
+  });
+
+  document.addEventListener("drop", event => {
+    const file = imageFileFromTransfer(event.dataTransfer);
+    const card = closestPlantCard(event.target);
+    clearDropTargets();
+    if (!file || !card) return;
+    event.preventDefault();
+    setPendingPlantFromCard(card);
+    openImageImportForm(file);
+  });
+
+  document.addEventListener("dragend", clearDropTargets);
 
   input.addEventListener("change", () => {
     const file = input.files && input.files[0];
