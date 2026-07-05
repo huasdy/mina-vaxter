@@ -37,8 +37,9 @@
     .image-empty { height: 100%; display: grid; place-items: center; color: var(--muted); font-weight: 800; }
     .date-ribbon { position: absolute; left: 12px; bottom: 12px; background: rgba(43,37,31,.76); color: white; border-radius: 999px; padding: 6px 10px; font-size: .8rem; font-weight: 750; backdrop-filter: blur(8px); }
     .card-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 12px; flex: 1; position: relative; }
-    h2 { margin: 0; padding-right: 54px; font-family: Georgia, "Times New Roman", serif; font-size: 1.55rem; line-height: 1.08; font-weight: 650; }
+    h2 { margin: 0; padding-right: 0; font-family: Georgia, "Times New Roman", serif; font-size: 1.55rem; line-height: 1.08; font-weight: 650; overflow-wrap: normal; word-break: normal; hyphens: none; }
     .latin { margin-top: -8px; color: var(--muted); font-style: italic; font-size: 1.02rem; }
+    .favorite-log-action { display: flex; justify-content: flex-end; }
     dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; margin: 0; font-size: .94rem; }
     dt { color: var(--muted); font-weight: 800; }
     dd { margin: 0; }
@@ -76,26 +77,43 @@
 
   <footer>Favoriter sparas lokalt i den här webbläsaren.</footer>
 
-  <script src="common.js?v=20260704-dragdrop1"></script>
+  <script src="common.js?v=20260705-layout1"></script>
+  <script type="text/plain" id="defaultLogsCSV">id,date,type,note
+SP-003,2026-06-25,Sådd,Frön blötlagda 24 h med rökpapper före sådd.
+SP-003,2026-07-04,Grodd,Första synliga grodd.
+p-creamery,2026-07-04,Blomning,Ny blommbild importerad och gammal knoppbild ersatt.
+p-prince-of-orange,2026-07-01,Blomning,Ny blommbild dokumenterad.
+PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.</script>
   <script>
     const grid = document.querySelector("#favoriteGrid");
     const stats = document.querySelector("#stats");
+    const favoriteLogs = logsByPlant(parseCSV(document.querySelector("#defaultLogsCSV").textContent));
 
     function favoriteCard(item) {
       const gallery = item.image ? [{file: item.image, title: item.plantName, caption: `${item.plantName} · ${item.dateLabel || ""}`, alt: item.plantName}] : [];
+      const logs = favoriteLogs.get(item.plantId) || [];
+      const latestLog = latestPlantLog(logs);
       return `
-        <article class="plant-card" data-category="${escapeAttr(item.category)}" data-plant-id="${escapeAttr(item.plantId)}" data-plant-name="${escapeAttr(item.plantName)}" data-page="${escapeAttr(item.page || "index.html")}" data-gallery="${escapeAttr(JSON.stringify(gallery))}">
+        <article class="plant-card" data-category="${escapeAttr(item.category)}" data-plant-id="${escapeAttr(item.plantId)}" data-plant-name="${escapeAttr(item.plantName)}" data-page="${escapeAttr(item.page || "index.html")}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-log="${escapeAttr(JSON.stringify(logs))}">
           <div class="image-wrap">
             ${item.image ? `<img class="main-photo" src="${escapeAttr(item.image)}" alt="${escapeAttr(item.plantName)}" data-caption="${escapeAttr(item.plantName + (item.dateLabel ? " · " + item.dateLabel : ""))}">` : `<div class="image-empty">Bild saknas</div>`}
             ${item.dateLabel ? `<div class="date-ribbon">${escapeAttr(item.dateLabel)}</div>` : ""}
           </div>
           <div class="card-body">
-            <h2>${htmlEscape(item.plantName)}</h2>
+            <div class="plant-card-head">
+              <h2>${htmlEscape(item.plantName)}</h2>
+              <div class="favorite-log-action">
+                <button class="plant-log-btn" type="button" aria-label="Odlingslogg" title="Odlingslogg">${logBookIcon()}</button>
+                <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
+                <span class="import-badge" data-import-badge hidden></span>
+              </div>
+            </div>
             ${item.latin ? `<div class="latin">${htmlEscape(item.latin)}</div>` : ""}
             <dl>
               <dt>ID</dt><dd>${htmlEscape(item.plantId)}</dd>
               <dt>Kategori</dt><dd>${htmlEscape(item.category)}</dd>
             </dl>
+            ${milestoneSummary(latestLog)}
             <div class="favorite-focus">
               <label for="focus-${escapeAttr(item.key)}">Fokus</label>
               <textarea id="focus-${escapeAttr(item.key)}" data-focus-key="${escapeAttr(item.key)}" maxlength="120" rows="2" placeholder="Att göra...">${htmlEscape(item.focusNote || "")}</textarea>
@@ -131,6 +149,8 @@
 	    });
 
     ensurePlantPhotoGallery();
+    ensurePlantLogs();
+    ensurePlantImageImport();
     ensurePlantFavorites();
     renderFavoritesPage();
   </script>
