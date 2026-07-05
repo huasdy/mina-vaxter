@@ -67,13 +67,14 @@
     dt { color: var(--muted); font-weight: 800; }
     dd { margin: 0; }
     .notes { color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; margin-top: auto; font-size: .94rem; min-height: 2.2em; }
-    .timeline { border-top: 1px solid var(--line); padding-top: 11px; display: flex; flex-wrap: wrap; gap: 7px; }
-    .time-pill { background: rgba(0,0,0,.04); border-radius: 999px; padding: 5px 8px; color: var(--muted); font-size: .78rem; font-weight: 700; }
     dialog { border: none; padding: 0; background: transparent; max-width: min(92vw, 1000px); max-height: 92vh; }
     dialog::backdrop { background: rgba(0,0,0,.72); }
     .modal-img { display: block; max-width: 100%; max-height: 88vh; border-radius: 18px; background: white; }
     .modal-caption { color: white; text-align: center; padding-top: 10px; font-weight: 700; }
     footer { text-align: center; color: var(--muted); padding: 26px 18px 44px; font-size: .92rem; }
+    @media (max-width: 700px) {
+      .image-wrap { aspect-ratio: auto; height: min(280px, 65vw); }
+    }
     @media (max-width: 900px) { .toolbar-inner { grid-template-columns: 1fr; } select, button, label.filebutton { width: 100%; text-align: center; } }
 </style>
 </head>
@@ -199,11 +200,18 @@ p-sidoides,2026-06-21,hel,bilder/pelargoner/p-sidoides_2026-06-21_hel.jpg,2026-0
 p-torento,2026-06-21,hel,bilder/pelargoner/p-torento_2026-06-21_hel.jpg,2026-06-21 · hel
 p-triffidum,2026-06-21,blomma,bilder/pelargoner/p-triffidum_2026-06-21_blomma.jpg,2026-06-21 · blomma
 p-triffidum,2026-06-21,hel,bilder/pelargoner/p-triffidum_2026-06-21_hel.jpg,2026-06-21 · hel</script>
-  <script src="common.js?v=20260704-dragdrop1"></script>
+  <script type="text/plain" id="defaultLogsCSV">id,date,type,note
+SP-003,2026-06-25,Sådd,Frön blötlagda 24 h med rökpapper före sådd.
+SP-003,2026-07-04,Grodd,Första synliga grodd.
+p-creamery,2026-07-04,Blomning,Ny blommbild importerad och gammal knoppbild ersatt.
+p-prince-of-orange,2026-07-01,Blomning,Ny blommbild dokumenterad.
+PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.</script>
+  <script src="common.js?v=20260705-layout1"></script>
   <script>
     let plants = [];
     let plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;
     let photoCSVText = document.querySelector("#defaultPhotosCSV").textContent;
+    let logCSVText = document.querySelector("#defaultLogsCSV").textContent;
 
     const grid = document.querySelector("#grid");
     const search = document.querySelector("#search");
@@ -219,6 +227,7 @@ p-triffidum,2026-06-21,hel,bilder/pelargoner/p-triffidum_2026-06-21_hel.jpg,2026
     function rebuild() {
       const rows = parseCSV(plantCSVText);
       const photos = parseCSV(photoCSVText);
+      const logMap = logsByPlant(parseCSV(logCSVText));
       const photoMap = new Map();
       photos.forEach(ph => {
         if (!photoMap.has(ph.plant_id)) photoMap.set(ph.plant_id, []);
@@ -226,7 +235,8 @@ p-triffidum,2026-06-21,hel,bilder/pelargoner/p-triffidum_2026-06-21_hel.jpg,2026
       });
       plants = rows.map(p => ({
         ...p,
-        photos: (photoMap.get(p.id) || []).sort((a,b) => sortNatural(a.date + a.type, b.date + b.type))
+        photos: (photoMap.get(p.id) || []).sort((a,b) => sortNatural(a.date + a.type, b.date + b.type)),
+        logs: logMap.get(p.id) || []
       })).sort((a,b) => sortNatural(a.name, b.name));
 
       typeFilter.innerHTML = '<option value="">Alla typer</option>';
@@ -286,17 +296,19 @@ p-triffidum,2026-06-21,hel,bilder/pelargoner/p-triffidum_2026-06-21_hel.jpg,2026
       const active = photos[photos.length - 1] || {};
       const activeFile = active.file || "";
       const activeLabel = active.label || (active.date ? `${active.date} · ${active.type}` : "");
+      const latestLog = latestPlantLog(p.logs);
       const gallery = photos.map(photo => {
         const label = photo.label || (photo.date + " · " + photo.type);
         return {file: photo.file, title: p.name, caption: `${p.name} · ${label}`, alt: p.name};
       });
       const searchable = [
         p.id, p.name, p.type, p.tags, p.status, p.scent, p.source, p.notes,
-        ...photos.map(x => `${x.date} ${x.type} ${x.file}`)
+        ...photos.map(x => `${x.date} ${x.type} ${x.file}`),
+        ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
       ].join(" ").toLowerCase();
 
       return `
-        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-category="Pelargon" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(p.name)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}">
+        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-category="Pelargon" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(p.name)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-log="${escapeAttr(JSON.stringify(p.logs || []))}">
           <div class="image-wrap">
             ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(p.name)}" data-caption="${escapeAttr(p.name + " · " + activeLabel)}">` : ""}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}</div>` : ""}
@@ -304,6 +316,7 @@ p-triffidum,2026-06-21,hel,bilder/pelargoner/p-triffidum_2026-06-21_hel.jpg,2026
           <div class="card-body">
             <h2>${p.name}</h2>
             <div class="import-actions">
+              <button class="plant-log-btn" type="button" aria-label="Odlingslogg" title="Odlingslogg">${logBookIcon()}</button>
               <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
               <span class="import-badge" data-import-badge hidden></span>
             </div>
@@ -315,7 +328,8 @@ p-triffidum,2026-06-21,hel,bilder/pelargoner/p-triffidum_2026-06-21_hel.jpg,2026
               <dt>Doft</dt><dd>${clean(p.scent) || "Ej ifyllt"}</dd>
               <dt>Källa</dt><dd>${clean(p.source) || "Ej ifyllt"}</dd>
             </dl>
-            <div class="notes">${clean(p.notes) || "Anteckningar kan läggas till i CSV-filen."}</div>
+            ${milestoneSummary(latestLog)}
+            ${clean(p.notes) ? `<div class="notes">${clean(p.notes)}</div>` : ""}
           </div>
         </article>
       `;
@@ -346,7 +360,8 @@ p-triffidum,2026-06-21,hel,bilder/pelargoner/p-triffidum_2026-06-21_hel.jpg,2026
       const filtered = plants.filter(p => {
         const combined = [
           p.id, p.name, p.type, p.tags, p.status, p.scent, p.source, p.notes,
-          ...(p.photos || []).map(x => `${x.date} ${x.type} ${x.file}`)
+          ...(p.photos || []).map(x => `${x.date} ${x.type} ${x.file}`),
+          ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
         ].join(" ").toLowerCase();
         return (!query || combined.includes(query)) && (!selectedType || p.type === selectedType);
       });
@@ -388,6 +403,7 @@ p-triffidum,2026-06-21,hel,bilder/pelargoner/p-triffidum_2026-06-21_hel.jpg,2026
       }
     });
     ensurePlantPhotoGallery();
+    ensurePlantLogs();
     ensurePlantImageImport();
     ensurePlantFavorites();
     printBtn.addEventListener("click", () => window.print());

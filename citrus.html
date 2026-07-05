@@ -68,13 +68,14 @@
     .edit-row input, .edit-row textarea { width: 100%; border-radius: 12px; padding: 9px 10px; min-width: 0; }
     .edit-row textarea { min-height: 70px; resize: vertical; }
     .notes { color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; margin-top: auto; font-size: .94rem; min-height: 2.2em; }
-    .timeline { border-top: 1px solid var(--line); padding-top: 11px; display: flex; flex-wrap: wrap; gap: 7px; }
-    .time-pill { background: rgba(0,0,0,.04); border-radius: 999px; padding: 5px 8px; color: var(--muted); font-size: .78rem; font-weight: 700; }
     dialog { border: none; padding: 0; background: transparent; max-width: min(92vw, 1000px); max-height: 92vh; }
     dialog::backdrop { background: rgba(0,0,0,.72); }
     .modal-img { display: block; max-width: 100%; max-height: 88vh; border-radius: 18px; background: white; }
     .modal-caption { color: white; text-align: center; padding-top: 10px; font-weight: 700; }
     footer { text-align: center; color: var(--muted); padding: 26px 18px 44px; font-size: .92rem; }
+    @media (max-width: 700px) {
+      .image-wrap { aspect-ratio: auto; height: min(280px, 65vw); }
+    }
     @media (max-width: 900px) { .toolbar-inner { grid-template-columns: 1fr; } select, button { width: 100%; text-align: center; } }
   </style>
 </head>
@@ -143,12 +144,19 @@ c-limon-1,2026-06-24,hel,bilder/citrus/c-limon-1_2026-06-24_hel.jpg,2026-06-24 �
 c-limon-2,2026-06-24,hel,bilder/citrus/c-limon-2_2026-06-24_hel.jpg,2026-06-24 · hel
 c-okand-citrusstickling,2026-06-24,hel,bilder/citrus/c-okand-citrusstickling_2026-06-24_hel.jpg,2026-06-24 · hel
 c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jpg,2026-06-24 · hel</script>
-  <script src="common.js?v=20260704-dragdrop1"></script>
+  <script type="text/plain" id="defaultLogsCSV">id,date,type,note
+SP-003,2026-06-25,Sådd,Frön blötlagda 24 h med rökpapper före sådd.
+SP-003,2026-07-04,Grodd,Första synliga grodd.
+p-creamery,2026-07-04,Blomning,Ny blommbild importerad och gammal knoppbild ersatt.
+p-prince-of-orange,2026-07-01,Blomning,Ny blommbild dokumenterad.
+PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.</script>
+  <script src="common.js?v=20260705-layout1"></script>
   <script>
     let plants = [];
     let editMode = false;
     let plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;
     let photoCSVText = document.querySelector("#defaultPhotosCSV").textContent;
+    let logCSVText = document.querySelector("#defaultLogsCSV").textContent;
 
     const grid = document.querySelector("#grid");
     const search = document.querySelector("#search");
@@ -176,6 +184,7 @@ c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jp
     function rebuild() {
       const rows = parseCSV(plantCSVText);
       const photos = parseCSV(photoCSVText);
+      const logMap = logsByPlant(parseCSV(logCSVText));
       const photoMap = new Map();
       photos.forEach(ph => {
         if (!photoMap.has(ph.plant_id)) photoMap.set(ph.plant_id, []);
@@ -183,7 +192,8 @@ c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jp
       });
       plants = rows.map(p => ({
         ...p,
-        photos: (photoMap.get(p.id) || []).sort((a,b) => sortNatural(a.date + a.type, b.date + b.type))
+        photos: (photoMap.get(p.id) || []).sort((a,b) => sortNatural(a.date + a.type, b.date + b.type)),
+        logs: logMap.get(p.id) || []
       })).sort((a,b) => sortNatural(a.name, b.name));
 
       typeFilter.innerHTML = '<option value="">Alla typer</option>';
@@ -212,13 +222,15 @@ c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jp
       const active = photos[photos.length - 1] || {};
       const activeFile = active.file || "";
       const activeLabel = active.label || (active.date ? `${active.date} · ${active.type}` : "");
+      const latestLog = latestPlantLog(p.logs);
       const gallery = photos.map(photo => {
         const label = photo.label || (photo.date + " · " + photo.type);
         return {file: photo.file, title: p.name, caption: `${p.name} · ${label}`, alt: p.name};
       });
       const searchable = [
         p.id, p.name, p.type, p.status, p.source, p.acquired, p.location, p.notes,
-        ...photos.map(x => `${x.date} ${x.type} ${x.file}`)
+        ...photos.map(x => `${x.date} ${x.type} ${x.file}`),
+        ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
       ].join(" ").toLowerCase();
 
       const details = editMode ? `
@@ -237,12 +249,12 @@ c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jp
           <dt>Inköpt</dt><dd>${clean(p.acquired) || "Ej ifyllt"}</dd>
           <dt>Plats</dt><dd>${clean(p.location) || "Ej ifyllt"}</dd>
         </dl>
-        <div class="timeline">${photos.map(photo => `<span class="time-pill">${photo.date}</span>`).join("")}</div>
-        <div class="notes">${clean(p.notes) || "Anteckningar kan läggas till i CSV-filen."}</div>
+        ${milestoneSummary(latestLog)}
+        ${clean(p.notes) ? `<div class="notes">${clean(p.notes)}</div>` : ""}
       `;
 
       return `
-        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-category="Citrus" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(p.name)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}">
+        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-category="Citrus" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(p.name)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-log="${escapeAttr(JSON.stringify(p.logs || []))}">
           <div class="image-wrap">
             ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(p.name)}" data-caption="${escapeAttr(p.name + " · " + activeLabel)}">` : ""}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}</div>` : ""}
@@ -250,13 +262,13 @@ c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jp
           <div class="card-body">
             <h2>${clean(p.name) || p.id}</h2>
             <div class="import-actions">
+              <button class="plant-log-btn" type="button" aria-label="Odlingslogg" title="Odlingslogg">${logBookIcon()}</button>
               <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
               <span class="import-badge" data-import-badge hidden></span>
             </div>
             <div class="chips">
               <span class="chip green">${clean(p.type) || "Citrus"}</span>
               <span class="chip gold">${clean(p.status) || "Status saknas"}</span>
-              <span class="chip">${bildText(photos.length)}</span>
             </div>
             ${photos.length > 1 ? `<div class="thumbs">${photoButtons(p, activeFile)}</div>` : ""}
             ${details}
@@ -293,7 +305,8 @@ c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jp
       const filtered = plants.filter(p => {
         const combined = [
           p.id, p.name, p.type, p.status, p.source, p.acquired, p.location, p.notes,
-          ...(p.photos || []).map(x => `${x.date} ${x.type} ${x.file}`)
+          ...(p.photos || []).map(x => `${x.date} ${x.type} ${x.file}`),
+          ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
         ].join(" ").toLowerCase();
         return (!query || combined.includes(query)) && (!selectedType || p.type === selectedType);
       });
@@ -342,6 +355,7 @@ c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jp
       updatePlant(form.dataset.id, field, event.target.value.trim());
     });
     ensurePlantPhotoGallery();
+    ensurePlantLogs();
     ensurePlantImageImport();
     ensurePlantFavorites();
     printBtn.addEventListener("click", () => window.print());

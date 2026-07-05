@@ -25,7 +25,11 @@ function parseCSV(text) {
 }
 
 function escapeAttr(value) {
-  return String(value || "").replaceAll('"', "&quot;");
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
 }
 
 function clean(value) {
@@ -34,6 +38,61 @@ function clean(value) {
 
 function bildText(n) {
   return Number(n) === 1 ? "1 bild" : `${n} bilder`;
+}
+
+function logBookIcon() {
+  return `
+    <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <path d="M9 5.5 H21.5 C23.4 5.5 25 7.1 25 9 V26.5 H9 C7.3 26.5 6 25.2 6 23.5 V8.5 C6 6.8 7.3 5.5 9 5.5 Z"
+        fill="none" stroke-width="2.4" stroke-linejoin="round"/>
+      <path d="M10.5 5.5 V26.5" fill="none" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M14.5 12 H21.2 M14.5 17 H20" fill="none" stroke-width="2.2" stroke-linecap="round"/>
+    </svg>
+  `;
+}
+
+function milestoneIcon(type) {
+  const key = clean(type).toLowerCase();
+  const icons = {
+    "sådd": "🌱",
+    "grodd": "🌿",
+    "omplantering": "🪴",
+    "beskärning": "✂️",
+    "flytt": "↔",
+    "näring": "+",
+    "problem": "!",
+    "behandling": "•",
+    "blomning": "✿",
+    "skörd": "◉",
+    "observation": "◌"
+  };
+  return icons[key] || "•";
+}
+
+function logsByPlant(rows) {
+  const map = new Map();
+  rows.forEach(row => {
+    const id = clean(row.id);
+    if (!id) return;
+    if (!map.has(id)) map.set(id, []);
+    map.get(id).push(row);
+  });
+  map.forEach(list => list.sort((a, b) => sortNatural(b.date, a.date) || sortNatural(b.type, a.type)));
+  return map;
+}
+
+function latestPlantLog(logs) {
+  return (logs || []).slice().sort((a, b) => sortNatural(b.date, a.date) || sortNatural(b.type, a.type))[0] || null;
+}
+
+function milestoneSummary(log) {
+  if (!log) return "";
+  return `
+    <div class="milestone">
+      <div class="milestone-label">Senaste milstolpe</div>
+      <div class="milestone-value"><span>${htmlEscape(milestoneIcon(log.type))}</span><strong>${htmlEscape(log.type)}</strong><span>${htmlEscape(log.date)}</span></div>
+    </div>
+  `;
 }
 
 function sortNatural(a, b) {
@@ -450,6 +509,121 @@ function openPlantPhotoGallery(mainPhoto) {
   dialog.showModal();
 }
 
+function ensurePlantLogs() {
+  if (document.body.dataset.plantLogsReady === "true") return;
+  document.body.dataset.plantLogsReady = "true";
+
+  const style = document.createElement("style");
+  style.id = "plantLogStyles";
+  style.textContent = `
+    .plant-card .card-body { position: relative; }
+    .plant-card .card-body h2 { padding-right: 0; overflow-wrap: normal; word-break: normal; hyphens: none; }
+    .plant-log-btn {
+      border: 1px solid rgba(125,79,59,.35); background: var(--paper, #fffdf8); color: var(--accent, #7d4f3b);
+      border-radius: 999px; width: 38px; height: 38px; padding: 0; display: grid; place-items: center;
+      font: inherit; font-size: 1rem; font-weight: 800; cursor: pointer; line-height: 1;
+    }
+    .plant-log-btn svg { width: 21px; height: 21px; display: block; stroke: currentColor; }
+    .plant-log-btn:active { transform: scale(.96); }
+    .plant-card-head {
+      display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 10px; margin-bottom: 10px;
+    }
+    .plant-card-head h2 { min-width: 0; }
+    .plant-card-head .import-actions, .plant-card-head .favorite-log-action {
+      position: static; display: flex; align-items: center; justify-content: flex-end; gap: 6px;
+    }
+    .milestone {
+      border-top: 1px solid var(--line, #ded2c2); padding-top: 11px; display: grid; gap: 4px;
+    }
+    .milestone-label {
+      color: var(--accent, #7d4f3b); text-transform: uppercase; letter-spacing: .16em;
+      font-size: .72rem; font-weight: 900;
+    }
+    .milestone-value {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 7px; color: var(--muted, #6f655b);
+      font-size: .9rem; font-weight: 750;
+    }
+    .milestone-value strong { color: var(--ink, #2b251f); }
+    dialog.plant-log-dialog {
+      width: min(94vw, 680px); max-height: 86vh; overflow: auto; border: 0; border-radius: 22px;
+      padding: 0; background: var(--paper, #fffdf8); color: var(--ink, #2b251f);
+      box-shadow: 0 24px 80px rgba(0,0,0,.26);
+    }
+    dialog.plant-log-dialog::backdrop { background: rgba(22,18,15,.50); }
+    .plant-log-panel { padding: 20px; display: grid; gap: 16px; }
+    .plant-log-panel header { padding: 0; text-align: left; display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+    .plant-log-panel h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 2rem; line-height: 1.02; }
+    .plant-log-panel p { margin: 5px 0 0; color: var(--muted, #6f655b); font-weight: 700; }
+    .plant-log-close {
+      border: 1px solid var(--line, #ded2c2); background: transparent; color: var(--ink, #2b251f);
+      border-radius: 999px; width: 42px; height: 42px; font-size: 1.4rem; line-height: 1; cursor: pointer;
+    }
+    .plant-log-list { display: grid; gap: 10px; }
+    .plant-log-item {
+      border: 1px solid var(--line, #ded2c2); border-radius: 16px; padding: 12px 13px;
+      background: rgba(255,255,255,.48);
+    }
+    .plant-log-meta {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 7px; font-size: .88rem; font-weight: 850;
+    }
+    .plant-log-date { color: var(--muted, #6f655b); }
+    .plant-log-type { color: var(--ink, #2b251f); }
+    .plant-log-note { margin-top: 6px; color: var(--muted, #6f655b); line-height: 1.42; }
+    .plant-log-empty {
+      color: var(--muted, #6f655b); border: 1px dashed var(--line, #ded2c2);
+      border-radius: 16px; padding: 18px; text-align: center; font-weight: 800;
+    }
+  `;
+  document.head.appendChild(style);
+
+  const dialog = document.createElement("dialog");
+  dialog.id = "plantLogDialog";
+  dialog.className = "plant-log-dialog";
+  document.body.appendChild(dialog);
+
+  document.addEventListener("click", event => {
+    const button = event.target.closest(".plant-log-btn");
+    if (!button) return;
+    const card = button.closest(".plant-card");
+    if (!card) return;
+    openPlantLog(card);
+  });
+}
+
+function openPlantLog(card) {
+  const dialog = document.querySelector("#plantLogDialog");
+  if (!dialog) return;
+  let logs = [];
+  try { logs = JSON.parse(card.dataset.log || "[]"); } catch (e) { logs = []; }
+  logs = logs.slice().sort((a, b) => sortNatural(b.date, a.date) || sortNatural(b.type, a.type));
+  const title = card.dataset.plantName || card.dataset.plantId || "Växt";
+  const id = card.dataset.plantId || "";
+  const rows = logs.map(log => `
+    <article class="plant-log-item">
+      <div class="plant-log-meta">
+        <span>${htmlEscape(milestoneIcon(log.type))}</span>
+        <span class="plant-log-date">${htmlEscape(log.date)}</span>
+        <span class="plant-log-type">${htmlEscape(log.type)}</span>
+      </div>
+      ${clean(log.note) ? `<div class="plant-log-note">${htmlEscape(log.note)}</div>` : ""}
+    </article>
+  `).join("");
+  dialog.innerHTML = `
+    <div class="plant-log-panel">
+      <header>
+        <div>
+          <h2>${htmlEscape(title)}</h2>
+          <p>${htmlEscape(id)}</p>
+        </div>
+        <button class="plant-log-close" type="button" aria-label="Stäng">×</button>
+      </header>
+      <div class="plant-log-list">${rows || '<div class="plant-log-empty">Ingen odlingslogg ännu.</div>'}</div>
+    </div>
+  `;
+  dialog.querySelector(".plant-log-close").addEventListener("click", () => dialog.close(), {once: true});
+  dialog.showModal();
+}
+
 const plantImageImportDB = "mina-vaxter-image-import";
 const plantImageImportDBVersion = 2;
 const plantImageImportStore = "photos";
@@ -659,9 +833,12 @@ function ensurePlantImageImport() {
   style.id = "plantImageImportStyles";
   style.textContent = `
     .plant-card .card-body { position: relative; }
-    .plant-card .card-body h2 { padding-right: 54px; }
+    .plant-card .card-body h2 { padding-right: 0; overflow-wrap: normal; word-break: normal; hyphens: none; }
     .import-actions {
       position: absolute; top: 13px; right: 14px; display: flex; align-items: center; gap: 6px;
+    }
+    .plant-card-head .import-actions, .plant-card-head .favorite-log-action {
+      position: static; top: auto; right: auto; display: flex; align-items: center; justify-content: flex-end; gap: 6px;
     }
     .add-photo-btn {
       border: 1px solid rgba(125,79,59,.35); background: var(--paper, #fffdf8); color: var(--accent, #7d4f3b);
@@ -1112,7 +1289,7 @@ function ensurePlantFavorites() {
     style.textContent = `
       .plant-card { position: relative; }
       .favorite-corner {
-        position: absolute; top: 0; right: 0; z-index: 3; width: 46px; height: 46px; border: 0; padding: 0;
+        position: absolute; top: 0; right: 0; z-index: 2; width: 46px; height: 46px; border: 0; padding: 0;
         background: transparent; cursor: pointer; color: rgba(125,79,59,.34);
       }
       .favorite-corner::before {
