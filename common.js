@@ -36,6 +36,50 @@ function clean(value) {
   return (value || "").toString().trim();
 }
 
+function collectionChips(category, row) {
+  const haystack = [
+    category,
+    row && row.id,
+    row && row.name,
+    row && row.latin,
+    row && row.type,
+    row && row.tags,
+    row && row.status,
+    row && row.scent,
+    row && row.source,
+    row && row.notes,
+    row && row.group,
+    row && row.batch
+  ].map(clean).join(" ").toLowerCase();
+  const chips = [];
+  const add = value => {
+    if (value && !chips.includes(value)) chips.push(value);
+  };
+
+  if (category === "Hibiskus") {
+    add("Projekt");
+    add("Egen frösådd");
+  } else if (category === "Pelargon") {
+    if (haystack.includes("doft")) add("Doft");
+    if (haystack.includes("vild") || haystack.includes("bonsai") || haystack.includes("brokbladig")) add("Unik");
+  } else if (category === "Citrus") {
+    add("Inne");
+  } else if (category === "Udda") {
+    if (haystack.includes("doft") || haystack.includes("patchouli") || haystack.includes("salvia")) add("Doft");
+    if (haystack.includes("frö") || haystack.includes("sådd")) add("Egen frösådd");
+    if (!haystack.includes("fredskalla")) add("Unik");
+    if (haystack.includes("fredskalla") || haystack.includes("hjärtbräken")) add("Inne");
+  }
+
+  return chips.length ? chips : [category];
+}
+
+function collectionChipHtml(category, row, escapeFn = htmlEscape) {
+  return collectionChips(category, row)
+    .map((label, index) => `<span class="chip ${index === 0 ? "green" : ""}">${escapeFn(label)}</span>`)
+    .join("");
+}
+
 function bildText(n) {
   return Number(n) === 1 ? "1 bild" : `${n} bilder`;
 }

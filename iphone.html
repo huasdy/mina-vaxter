@@ -56,7 +56,7 @@ SP-003,2026-07-04,Grodd,Första synliga grodd.
 p-creamery,2026-07-04,Blomning,Ny blommbild importerad och gammal knoppbild ersatt.
 p-prince-of-orange,2026-07-01,Blomning,Ny blommbild dokumenterad.
 PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.</script>
-  <script src="common.js?v=20260705-layout1"></script>
+  <script src="common.js?v=20260707-values1"></script>
   <script>
     const data = JSON.parse(document.querySelector('#catalogData').textContent);
     const logMap = logsByPlant(parseCSV(document.querySelector('#defaultLogsCSV').textContent));
@@ -75,28 +75,6 @@ PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.</scri
         Citrus: "citrus.html",
         Udda: "udda.html"
       }[category] || "index.html";
-    }
-    function collectionChips(category, row) {
-      const haystack = [
-        category, row.id, row.name, row.latin, row.type, row.tags, row.status, row.scent, row.source, row.notes
-      ].map(clean).join(" ").toLowerCase();
-      const chips = [];
-      const add = value => { if (value && !chips.includes(value)) chips.push(value); };
-      if (category === "Hibiskus") {
-        add("Projekt");
-        add("Egen frösådd");
-      } else if (category === "Pelargon") {
-        if (haystack.includes("doft")) add("Doft");
-        if (haystack.includes("vild") || haystack.includes("bonsai") || haystack.includes("brokbladig")) add("Unik");
-      } else if (category === "Citrus") {
-        add("Inne");
-      } else if (category === "Udda") {
-        if (haystack.includes("doft") || haystack.includes("patchouli") || haystack.includes("salvia")) add("Doft");
-        if (haystack.includes("frö") || haystack.includes("sådd")) add("Egen frösådd");
-        if (!haystack.includes("fredskalla")) add("Unik");
-        if (haystack.includes("fredskalla") || haystack.includes("hjärtbräken")) add("Inne");
-      }
-      return chips.length ? chips : [category];
     }
     function renderTabs() {
       const names = [...Object.keys(data), "Favoriter"];
@@ -117,7 +95,7 @@ PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.</scri
         <button class="photo-button ${photo.file === activePhoto.file ? 'active' : ''}" type="button" data-file="${escapeHtml(photo.file)}" data-label="${escapeHtml(photo.label || photo.date || title)}" aria-label="${escapeHtml(photo.label || photo.date || title)}">
           <img src="${escapeHtml(photo.file)}" alt="" loading="lazy">
         </button>`).join('')}</div>` : '';
-      const chips = collectionChips(categoryName, row).map(value => `<span class="chip">${escapeHtml(value)}</span>`).join('');
+      const chips = collectionChipHtml(categoryName, row, escapeHtml);
       const notes = clean(row[section.notes]);
       return `<article class="card plant-card" data-category="${escapeHtml(categoryName)}" data-plant-id="${escapeHtml(row.id)}" data-plant-name="${escapeHtml(title)}" data-page="${escapeHtml(pageForCategory(categoryName))}" data-gallery="${escapeHtml(JSON.stringify(gallery))}" data-log="${escapeHtml(JSON.stringify(logs))}">
         ${image}
