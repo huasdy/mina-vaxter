@@ -23,7 +23,7 @@
     .stats { color: var(--muted); font-weight: 750; margin: 4px 0 14px; }
     .grid { display: grid; gap: 12px; }
     .card { background: var(--paper); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
-    .image { aspect-ratio: 4 / 3; background: linear-gradient(135deg, rgba(125,79,59,.15), rgba(96,119,97,.15)); overflow: hidden; }
+    .image { height: min(260px, 62vw); background: linear-gradient(135deg, rgba(125,79,59,.15), rgba(96,119,97,.15)); overflow: hidden; }
     .image img { width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in; }
     .photo-strip { display: flex; gap: 8px; overflow-x: auto; padding: 10px 12px 0; scrollbar-width: none; }
     .photo-strip::-webkit-scrollbar { display: none; }
@@ -76,6 +76,28 @@ PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.</scri
         Udda: "udda.html"
       }[category] || "index.html";
     }
+    function collectionChips(category, row) {
+      const haystack = [
+        category, row.id, row.name, row.latin, row.type, row.tags, row.status, row.scent, row.source, row.notes
+      ].map(clean).join(" ").toLowerCase();
+      const chips = [];
+      const add = value => { if (value && !chips.includes(value)) chips.push(value); };
+      if (category === "Hibiskus") {
+        add("Projekt");
+        add("Egen frösådd");
+      } else if (category === "Pelargon") {
+        if (haystack.includes("doft")) add("Doft");
+        if (haystack.includes("vild") || haystack.includes("bonsai") || haystack.includes("brokbladig")) add("Unik");
+      } else if (category === "Citrus") {
+        add("Inne");
+      } else if (category === "Udda") {
+        if (haystack.includes("doft") || haystack.includes("patchouli") || haystack.includes("salvia")) add("Doft");
+        if (haystack.includes("frö") || haystack.includes("sådd")) add("Egen frösådd");
+        if (!haystack.includes("fredskalla")) add("Unik");
+        if (haystack.includes("fredskalla") || haystack.includes("hjärtbräken")) add("Inne");
+      }
+      return chips.length ? chips : [category];
+    }
     function renderTabs() {
       const names = [...Object.keys(data), "Favoriter"];
       tabs.innerHTML = names.map(name => `<button class="tab ${name === active ? 'active' : ''}" type="button" data-name="${escapeHtml(name)}">${escapeHtml(name)}</button>`).join('');
@@ -95,7 +117,7 @@ PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.</scri
         <button class="photo-button ${photo.file === activePhoto.file ? 'active' : ''}" type="button" data-file="${escapeHtml(photo.file)}" data-label="${escapeHtml(photo.label || photo.date || title)}" aria-label="${escapeHtml(photo.label || photo.date || title)}">
           <img src="${escapeHtml(photo.file)}" alt="" loading="lazy">
         </button>`).join('')}</div>` : '';
-      const chips = section.meta.map(key => clean(row[key])).filter(Boolean).map(value => `<span class="chip">${escapeHtml(value)}</span>`).join('');
+      const chips = collectionChips(categoryName, row).map(value => `<span class="chip">${escapeHtml(value)}</span>`).join('');
       const notes = clean(row[section.notes]);
       return `<article class="card plant-card" data-category="${escapeHtml(categoryName)}" data-plant-id="${escapeHtml(row.id)}" data-plant-name="${escapeHtml(title)}" data-page="${escapeHtml(pageForCategory(categoryName))}" data-gallery="${escapeHtml(JSON.stringify(gallery))}" data-log="${escapeHtml(JSON.stringify(logs))}">
         ${image}
