@@ -879,7 +879,9 @@ function ensurePlantImageImport() {
     .plant-card .card-body { position: relative; }
     .plant-card .card-body h2 { padding-right: 0; overflow-wrap: normal; word-break: normal; hyphens: none; }
     .import-actions {
-      position: absolute; top: 13px; right: 14px; display: flex; align-items: center; gap: 6px;
+      position: relative; top: auto; right: auto; align-self: flex-end;
+      display: flex; align-items: center; justify-content: flex-end; gap: 6px;
+      margin-top: -4px;
     }
     .plant-card-head .import-actions, .plant-card-head .favorite-log-action {
       position: static; top: auto; right: auto; display: flex; align-items: center; justify-content: flex-end; gap: 6px;
