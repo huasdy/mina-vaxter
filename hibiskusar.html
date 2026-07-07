@@ -176,7 +176,7 @@ SP-003,2026-07-04,Grodd,Första synliga grodd.
 p-creamery,2026-07-04,Blomning,Ny blommbild importerad och gammal knoppbild ersatt.
 p-prince-of-orange,2026-07-01,Blomning,Ny blommbild dokumenterad.
 PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.</script>
-  <script src="common.js?v=20260705-layout1"></script>
+  <script src="common.js?v=20260707-values1"></script>
   <script>
     let plants = [];
     let plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;
@@ -194,6 +194,13 @@ PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.</scri
     const dialog = document.querySelector("#photoDialog");
     const modalImg = document.querySelector("#modalImg");
     const modalCaption = document.querySelector("#modalCaption");
+
+    function escapeText(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
 
     function rebuild() {
       const rows = parseCSV(plantCSVText);
@@ -275,11 +282,7 @@ PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.</scri
               <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
               <span class="import-badge" data-import-badge hidden></span>
             </div>
-            <div class="chips">
-              <span class="chip green">${p.batch}</span>
-              <span class="chip gold">${p.decision}</span>
-              <span class="chip">${p.status}</span>
-            </div>
+            <div class="chips">${collectionChipHtml("Hibiskus", p, escapeText)}</div>
             <dl>
               <dt>Parti</dt><dd>${clean(p.batch) || "Ej ifyllt"}</dd>
               <dt>Korsning/fröparti</dt><dd>${clean(p.group) || "Ej ifyllt"}</dd>

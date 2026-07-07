@@ -139,7 +139,7 @@ SP-003,2026-07-04,Grodd,Första synliga grodd.
 p-creamery,2026-07-04,Blomning,Ny blommbild importerad och gammal knoppbild ersatt.
 p-prince-of-orange,2026-07-01,Blomning,Ny blommbild dokumenterad.
 PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.</script>
-  <script src="common.js?v=20260705-layout1"></script>
+  <script src="common.js?v=20260707-values1"></script>
   <script>
     let plants = [];
     let plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;
@@ -211,11 +211,7 @@ PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.</scri
         const label = photo.label || (photo.date + " · " + photo.type);
         return {file: photo.file, title: p.name, caption: `${p.name} · ${label}`, alt: p.name};
       });
-      const chips = [
-        `<span class="chip green">${escapeText(clean(p.type) || "Specialväxt")}</span>`,
-        `<span class="chip gold">${escapeText(clean(p.status) || "Status saknas")}</span>`,
-        ...tagList(p.tags).map(tag => `<span class="chip">${escapeText(tag)}</span>`)
-      ].join("");
+      const chips = collectionChipHtml("Udda", p, escapeText);
       const searchable = [
         p.id, p.name, p.latin, p.type, p.tags, p.status, p.source, p.notes,
         ...photos.map(x => `${x.date} ${x.type} ${x.file}`),
