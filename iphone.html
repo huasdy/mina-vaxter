@@ -60,10 +60,10 @@ PL-H02,2026-06-25,Sådd,29 frön från Rareplants.eu såddes i fyra delpartier.
 PL-H02,2026-07-06,Första grodd,Första grodd observerad. Delpartier B och D har grott.
 PL-H02-B-01,2026-07-06,Grodd,Första individuella plantan från delparti B.
 PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.</script>
-  <script src="common.js?v=20260707-actions1"></script>
+  <script src="common.js?v=20260708-logform1"></script>
   <script>
     const data = JSON.parse(document.querySelector('#catalogData').textContent);
-    const logMap = logsByPlant(parseCSV(document.querySelector('#defaultLogsCSV').textContent));
+    let logMap = combinedLogsByPlant(parseCSV(document.querySelector('#defaultLogsCSV').textContent));
     const tabs = document.querySelector('#tabs');
     const grid = document.querySelector('#grid');
     const stats = document.querySelector('#stats');
@@ -188,6 +188,10 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.</scr
       }
     });
     search.addEventListener('input', render);
+    window.addEventListener('plant-log-added', () => {
+      logMap = combinedLogsByPlant(parseCSV(document.querySelector('#defaultLogsCSV').textContent));
+      render();
+    });
     render();
   </script>
 </body>

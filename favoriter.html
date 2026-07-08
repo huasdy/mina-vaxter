@@ -77,17 +77,21 @@
 
   <footer>Favoriter sparas lokalt i den här webbläsaren.</footer>
 
-  <script src="common.js?v=20260707-actions1"></script>
+  <script src="common.js?v=20260708-logform1"></script>
   <script type="text/plain" id="defaultLogsCSV">id,date,type,note
 SP-003,2026-06-25,Sådd,Frön blötlagda 24 h med rökpapper före sådd.
 SP-003,2026-07-04,Grodd,Första synliga grodd.
 p-creamery,2026-07-04,Blomning,Ny blommbild importerad och gammal knoppbild ersatt.
 p-prince-of-orange,2026-07-01,Blomning,Ny blommbild dokumenterad.
-PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.</script>
+PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.
+PL-H02,2026-06-25,Sådd,29 frön från Rareplants.eu såddes i fyra delpartier.
+PL-H02,2026-07-06,Första grodd,Första grodd observerad. Delpartier B och D har grott.
+PL-H02-B-01,2026-07-06,Grodd,Första individuella plantan från delparti B.
+PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.</script>
   <script>
     const grid = document.querySelector("#favoriteGrid");
     const stats = document.querySelector("#stats");
-    const favoriteLogs = logsByPlant(parseCSV(document.querySelector("#defaultLogsCSV").textContent));
+    let favoriteLogs = combinedLogsByPlant(parseCSV(document.querySelector("#defaultLogsCSV").textContent));
 
     function favoriteCard(item) {
       const gallery = item.image ? [{file: item.image, title: item.plantName, caption: `${item.plantName} · ${item.dateLabel || ""}`, alt: item.plantName}] : [];
@@ -152,6 +156,10 @@ PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.</scri
     ensurePlantLogs();
     ensurePlantImageImport();
     ensurePlantFavorites();
+    window.addEventListener("plant-log-added", () => {
+      favoriteLogs = combinedLogsByPlant(parseCSV(document.querySelector("#defaultLogsCSV").textContent));
+      renderFavoritesPage();
+    });
     renderFavoritesPage();
   </script>
 </body>

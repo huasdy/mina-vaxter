@@ -201,7 +201,7 @@ PL-H02,2026-06-25,Sådd,29 frön från Rareplants.eu såddes i fyra delpartier.
 PL-H02,2026-07-06,Första grodd,Första grodd observerad. Delpartier B och D har grott.
 PL-H02-B-01,2026-07-06,Grodd,Första individuella plantan från delparti B.
 PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.</script>
-  <script src="common.js?v=20260707-actions1"></script>
+  <script src="common.js?v=20260708-logform1"></script>
   <script>
     let plants = [];
     let plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;
@@ -244,7 +244,7 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.</scr
     function rebuild() {
       const rows = parseCSV(plantCSVText);
       const photos = parseCSV(photoCSVText);
-      const logMap = logsByPlant(parseCSV(logCSVText));
+      const logMap = combinedLogsByPlant(parseCSV(logCSVText));
       const photoMap = new Map();
       photos.forEach(ph => {
         if (!photoMap.has(ph.plant_id)) photoMap.set(ph.plant_id, []);
@@ -483,6 +483,7 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.</scr
     batchFilter.addEventListener("change", render);
     statusFilter.addEventListener("change", render);
     sortSelect.addEventListener("change", render);
+    window.addEventListener("plant-log-added", rebuild);
     rebuild();
   </script>
 </body>
