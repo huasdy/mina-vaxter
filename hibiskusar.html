@@ -45,6 +45,22 @@
     .helpbox { max-width: 1240px; margin: 0 auto 18px; background: rgba(255,253,248,.78); border: 1px solid var(--line); border-radius: 18px; padding: 13px 16px; color: var(--muted); font-size: .92rem; }
     .stats { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 22px; color: var(--muted); }
     .stat { background: rgba(255,253,248,.74); border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; font-size: .92rem; font-weight: 650; }
+    .batch-log { background: rgba(255,253,248,.78); border: 1px solid var(--line); border-radius: 18px; padding: 14px 16px; margin-bottom: 22px; box-shadow: var(--shadow); }
+    .batch-log-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .batch-log h2 { font-size: 1.35rem; margin: 0 0 4px; }
+    .batch-log-summary { color: var(--muted); font-size: .94rem; font-weight: 650; }
+    .batch-log-toggle { background: var(--paper); color: var(--accent); border-color: rgba(125,79,59,.35); padding: 8px 12px; flex: 0 0 auto; }
+    .batch-log-detail { display: grid; gap: 14px; margin-top: 14px; }
+    .batch-log-detail[hidden] { display: none; }
+    .batch-log-section h3 { margin: 0 0 7px; color: var(--accent); text-transform: uppercase; letter-spacing: .14em; font-size: .75rem; }
+    .batch-facts, .batch-log-list { display: grid; gap: 8px; }
+    .batch-fact { color: var(--muted); font-weight: 650; }
+    .batch-method { color: var(--muted); margin: 0; }
+    .batch-log-item { border-top: 1px solid var(--line); padding-top: 10px; color: var(--muted); }
+    .batch-log-item:first-child { border-top: 0; padding-top: 0; }
+    .batch-log-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; color: var(--ink); font-weight: 800; }
+    .batch-log-id { color: var(--accent); }
+    .batch-log-note { margin-top: 3px; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(285px, 1fr)); gap: 18px; }
     .empty { grid-column: 1 / -1; background: rgba(255,253,248,.78); border: 1px solid var(--line); border-radius: 18px; padding: 24px; color: var(--muted); text-align: center; font-weight: 650; }
     .plant-card { background: var(--paper); border: 1px solid rgba(222,210,194,.95); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column; min-height: 100%; }
@@ -113,6 +129,7 @@
 
   <main>
 <div class="stats" id="stats"></div>
+    <section class="batch-log" id="batchLog" hidden></section>
     <section class="grid" id="grid"></section>
   </main>
 
@@ -138,7 +155,9 @@ PL-H01-M,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärd
 PL-H01-N,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
 PL-H01-O,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
 PL-H01-Q,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
-PL-H01-R,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,</script>
+PL-H01-R,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,Utvärdera,,,,,,
+PL-H02-B-01,PL-H02,012 × 030,2026-06-25,Grodd,Utvärdera,,,,,,
+PL-H02-D-01,PL-H02,012 × okänd,2026-06-25,Grodd,Utvärdera,,,,,,</script>
   <script type="text/plain" id="defaultPhotosCSV">plant_id,date,type,file,label,day
 PL-H01-A,2026-05-24,hel,bilder/hibiskusar/PL-H01-A_2026-05-24_hel.jpg,2026-05-24 · hel,189
 PL-H01-A,2026-06-07,hel,bilder/hibiskusar/PL-H01-A_2026-06-07_hel.jpg,2026-06-07 · hel,203
@@ -169,13 +188,19 @@ PL-H01-O,2026-06-07,hel,bilder/hibiskusar/PL-H01-O_2026-06-07_hel.jpg,2026-06-07
 PL-H01-Q,2026-05-24,hel,bilder/hibiskusar/PL-H01-Q_2026-05-24_hel.jpg,2026-05-24 · hel,189
 PL-H01-Q,2026-06-07,hel,bilder/hibiskusar/PL-H01-Q_2026-06-07_hel.jpg,2026-06-07 · hel,203
 PL-H01-R,2026-05-24,hel,bilder/hibiskusar/PL-H01-R_2026-05-24_hel.jpg,2026-05-24 · hel,189
-PL-H01-R,2026-06-07,hel,bilder/hibiskusar/PL-H01-R_2026-06-07_hel.jpg,2026-06-07 · hel,203</script>
+PL-H01-R,2026-06-07,hel,bilder/hibiskusar/PL-H01-R_2026-06-07_hel.jpg,2026-06-07 · hel,203
+PL-H02-B-01,2026-07-08,grodd,bilder/hibiskusar/PL-H02-B-01_2026-07-08_grodd.jpg,2026-07-08 · grodd,13
+PL-H02-D-01,2026-07-08,grodd,bilder/hibiskusar/PL-H02-D-01_2026-07-08_grodd.jpg,2026-07-08 · grodd,13</script>
   <script type="text/plain" id="defaultLogsCSV">id,date,type,note
 SP-003,2026-06-25,Sådd,Frön blötlagda 24 h med rökpapper före sådd.
 SP-003,2026-07-04,Grodd,Första synliga grodd.
 p-creamery,2026-07-04,Blomning,Ny blommbild importerad och gammal knoppbild ersatt.
 p-prince-of-orange,2026-07-01,Blomning,Ny blommbild dokumenterad.
-PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.</script>
+PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.
+PL-H02,2026-06-25,Sådd,29 frön från Rareplants.eu såddes i fyra delpartier.
+PL-H02,2026-07-06,Första grodd,Första grodd observerad. Delpartier B och D har grott.
+PL-H02-B-01,2026-07-06,Grodd,Första individuella plantan från delparti B.
+PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.</script>
   <script src="common.js?v=20260707-actions1"></script>
   <script>
     let plants = [];
@@ -190,6 +215,20 @@ PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.</scri
     const sortSelect = document.querySelector("#sortSelect");
     const clearBtn = document.querySelector("#clearBtn");
     const stats = document.querySelector("#stats");
+    const batchLog = document.querySelector("#batchLog");
+    let batchLogOpen = false;
+    const hibiscusBatches = {
+      "PL-H02": {
+        summary: "PL-H02 · Sådd 2026-06-25 · Jord · undervärme ca 25 °C · första grodd 2026-07-06 · B, D grodda",
+        method: "Sådd i jord med undervärme ca 25 °C. Djupare sådd än tidigare rockwool-försök. Fukten hålls främst via kapillärmatta, med mistning ovanifrån, för att undvika övervattning.",
+        facts: [
+          "PL-H02-A · 11 frön · Surprise Pack",
+          "PL-H02-B · 6 frön · 012 × 030",
+          "PL-H02-C · 6 frön · 030 × 041",
+          "PL-H02-D · 6 frön · 012 × okänd"
+        ]
+      }
+    };
     const printBtn = document.querySelector("#printBtn");
     const dialog = document.querySelector("#photoDialog");
     const modalImg = document.querySelector("#modalImg");
@@ -308,6 +347,52 @@ PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.</scri
       return Number.isFinite(score) ? score : -1;
     }
 
+    function batchLogRows() {
+      return parseCSV(logCSVText)
+        .filter(row => clean(row.id) === "PL-H02")
+        .sort((a, b) => sortNatural(b.date + b.id + b.type, a.date + a.id + a.type));
+    }
+
+    function renderBatchLog() {
+      const batch = hibiscusBatches["PL-H02"];
+      const rows = batchLogRows();
+      batchLog.hidden = !rows.length;
+      if (!rows.length) return;
+      batchLog.innerHTML = `
+        <div class="batch-log-head">
+          <div>
+            <h2>Batchlogg PL-H02</h2>
+            <div class="batch-log-summary">${escapeText(batch.summary)}</div>
+          </div>
+          <button class="batch-log-toggle" type="button" aria-expanded="${batchLogOpen ? "true" : "false"}">${batchLogOpen ? "Dölj logg" : "Visa logg"}</button>
+        </div>
+        <div class="batch-log-detail" ${batchLogOpen ? "" : "hidden"}>
+          <section class="batch-log-section">
+            <h3>Batchfakta</h3>
+            <div class="batch-facts">${batch.facts.map(fact => `<div class="batch-fact">${escapeText(fact)}</div>`).join("")}</div>
+          </section>
+          <section class="batch-log-section">
+            <h3>Metod</h3>
+            <p class="batch-method">${escapeText(batch.method)}</p>
+          </section>
+          <section class="batch-log-section">
+            <h3>Händelser</h3>
+            <div class="batch-log-list">
+              ${rows.map(row => `
+                <article class="batch-log-item">
+                  <div class="batch-log-meta">
+                    <span>${escapeText(row.date)}</span>
+                    <span>${escapeText(row.type)}</span>
+                  </div>
+                  ${clean(row.note) ? `<div class="batch-log-note">${escapeText(row.note)}</div>` : ""}
+                </article>
+              `).join("")}
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
     function sortedPlants(list) {
       return [...list].sort((a, b) => {
         if (sortSelect.value === "latest") {
@@ -357,6 +442,7 @@ PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.</scri
         <span class="stat">${visible.length} visas just nu</span>
         <span class="stat">${activeParts.join(" · ")}</span>
       `;
+      renderBatchLog();
     }
 
     grid.addEventListener("click", event => {
@@ -375,6 +461,11 @@ PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.</scri
       if (main) {
         openPlantPhotoGallery(main);
       }
+    });
+    batchLog.addEventListener("click", event => {
+      if (!event.target.closest(".batch-log-toggle")) return;
+      batchLogOpen = !batchLogOpen;
+      renderBatchLog();
     });
     ensurePlantPhotoGallery();
     ensurePlantLogs();
