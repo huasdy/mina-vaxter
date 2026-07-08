@@ -100,17 +100,95 @@ function milestoneIcon(type) {
   const icons = {
     "sådd": "🌱",
     "grodd": "🌿",
+    "första riktiga blad": "🌿",
+    "omplanterad": "🪴",
     "omplantering": "🪴",
+    "toppad/beskuren": "✂️",
     "beskärning": "✂️",
+    "knopp": "●",
+    "stickling rotad": "⌁",
+    "ohyra behandlad": "!",
+    "ohyra upptäckt/behandlad": "!",
+    "återhämtad": "✓",
+    "flyttad ut/in": "↔",
     "flytt": "↔",
     "näring": "+",
     "problem": "!",
     "behandling": "•",
     "blomning": "✿",
     "skörd": "◉",
+    "avslutad/död": "×",
     "observation": "◌"
   };
   return icons[key] || "•";
+}
+
+const plantMilestoneTypes = [
+  "Sådd",
+  "Grodd",
+  "Första riktiga blad",
+  "Omplanterad",
+  "Toppad/beskuren",
+  "Knopp",
+  "Blomning",
+  "Stickling rotad",
+  "Ohyra behandlad",
+  "Återhämtad",
+  "Flyttad ut/in",
+  "Avslutad/död"
+];
+
+const plantLogStorageKey = "mina-vaxter-plant-log-additions-v1";
+
+function getPlantLogAdditions() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(plantLogStorageKey) || "[]");
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function savePlantLogAdditions(rows) {
+  try { localStorage.setItem(plantLogStorageKey, JSON.stringify(rows || [])); } catch (e) {}
+}
+
+function addPlantLogEntry(entry) {
+  const id = clean(entry && entry.id);
+  const date = clean(entry && entry.date);
+  const type = clean(entry && entry.type);
+  if (!id || !date || !type) return null;
+  const row = {
+    id,
+    date,
+    type,
+    note: clean(entry.note),
+    local: "true",
+    createdAt: new Date().toISOString()
+  };
+  const rows = getPlantLogAdditions();
+  rows.push(row);
+  savePlantLogAdditions(rows);
+  return row;
+}
+
+function combinedPlantLogs(baseLogs, plantId) {
+  const id = clean(plantId);
+  const localRows = getPlantLogAdditions().filter(row => clean(row.id) === id);
+  return [...(baseLogs || []), ...localRows]
+    .sort((a, b) => sortNatural(b.date, a.date) || sortNatural(b.createdAt || "", a.createdAt || "") || sortNatural(b.type, a.type));
+}
+
+function combinedLogsByPlant(rows) {
+  const map = logsByPlant(rows || []);
+  getPlantLogAdditions().forEach(row => {
+    const id = clean(row.id);
+    if (!id) return;
+    if (!map.has(id)) map.set(id, []);
+    map.get(id).push(row);
+  });
+  map.forEach(list => list.sort((a, b) => sortNatural(b.date, a.date) || sortNatural(b.createdAt || "", a.createdAt || "") || sortNatural(b.type, a.type)));
+  return map;
 }
 
 function logsByPlant(rows) {
@@ -603,6 +681,25 @@ function ensurePlantLogs() {
       border-radius: 999px; width: 42px; height: 42px; font-size: 1.4rem; line-height: 1; cursor: pointer;
     }
     .plant-log-list { display: grid; gap: 10px; }
+    .plant-log-form {
+      border: 1px solid var(--line, #ded2c2); border-radius: 18px; padding: 13px;
+      background: rgba(255,255,255,.48); display: grid; gap: 10px;
+    }
+    .plant-log-form-title {
+      color: var(--accent, #7d4f3b); text-transform: uppercase; letter-spacing: .14em;
+      font-size: .72rem; font-weight: 900;
+    }
+    .plant-log-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 8px; }
+    .plant-log-form input, .plant-log-form select, .plant-log-form textarea {
+      width: 100%; border: 1px solid var(--line, #ded2c2); border-radius: 13px;
+      padding: 10px 11px; background: var(--paper, #fffdf8); color: var(--ink, #2b251f);
+      font: inherit; font-weight: 750; box-sizing: border-box;
+    }
+    .plant-log-form textarea { min-height: 74px; resize: vertical; }
+    .plant-log-submit {
+      border: 0; border-radius: 999px; padding: 11px 15px; background: var(--accent, #7d4f3b);
+      color: white; font: inherit; font-weight: 900; cursor: pointer;
+    }
     .plant-log-item {
       border: 1px solid var(--line, #ded2c2); border-radius: 16px; padding: 12px 13px;
       background: rgba(255,255,255,.48);
@@ -616,6 +713,10 @@ function ensurePlantLogs() {
     .plant-log-empty {
       color: var(--muted, #6f655b); border: 1px dashed var(--line, #ded2c2);
       border-radius: 16px; padding: 18px; text-align: center; font-weight: 800;
+    }
+    @media (max-width: 560px) {
+      .plant-log-fields { grid-template-columns: 1fr; }
+      .plant-log-panel { padding: 16px; }
     }
   `;
   document.head.appendChild(style);
@@ -639,9 +740,12 @@ function openPlantLog(card) {
   if (!dialog) return;
   let logs = [];
   try { logs = JSON.parse(card.dataset.log || "[]"); } catch (e) { logs = []; }
-  logs = logs.slice().sort((a, b) => sortNatural(b.date, a.date) || sortNatural(b.type, a.type));
   const title = card.dataset.plantName || card.dataset.plantId || "Växt";
   const id = card.dataset.plantId || "";
+  logs = combinedPlantLogs(logs, id);
+  const options = plantMilestoneTypes
+    .map(type => `<option value="${htmlEscape(type)}">${htmlEscape(type)}</option>`)
+    .join("");
   const rows = logs.map(log => `
     <article class="plant-log-item">
       <div class="plant-log-meta">
@@ -661,10 +765,33 @@ function openPlantLog(card) {
         </div>
         <button class="plant-log-close" type="button" aria-label="Stäng">×</button>
       </header>
+      <form class="plant-log-form" method="dialog">
+        <div class="plant-log-form-title">Ny milstolpe</div>
+        <div class="plant-log-fields">
+          <input name="date" type="date" value="${htmlEscape(localDateString())}" aria-label="Datum" required>
+          <select name="type" aria-label="Typ av milstolpe" required>${options}</select>
+        </div>
+        <textarea name="note" maxlength="160" placeholder="Kort anteckning, frivilligt"></textarea>
+        <button class="plant-log-submit" type="submit">Spara milstolpe</button>
+      </form>
       <div class="plant-log-list">${rows || '<div class="plant-log-empty">Ingen odlingslogg ännu.</div>'}</div>
     </div>
   `;
   dialog.querySelector(".plant-log-close").addEventListener("click", () => dialog.close(), {once: true});
+  dialog.querySelector(".plant-log-form").addEventListener("submit", event => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const entry = addPlantLogEntry({
+      id,
+      date: form.elements.date.value,
+      type: form.elements.type.value,
+      note: form.elements.note.value
+    });
+    if (entry) {
+      window.dispatchEvent(new CustomEvent("plant-log-added", {detail: entry}));
+      dialog.close();
+    }
+  });
   dialog.showModal();
 }
 
