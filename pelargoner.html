@@ -200,22 +200,21 @@ p-sidoides,2026-06-21,hel,bilder/pelargoner/p-sidoides_2026-06-21_hel.jpg,2026-0
 p-torento,2026-06-21,hel,bilder/pelargoner/p-torento_2026-06-21_hel.jpg,2026-06-21 · hel
 p-triffidum,2026-06-21,blomma,bilder/pelargoner/p-triffidum_2026-06-21_blomma.jpg,2026-06-21 · blomma
 p-triffidum,2026-06-21,hel,bilder/pelargoner/p-triffidum_2026-06-21_hel.jpg,2026-06-21 · hel</script>
-  <script type="text/plain" id="defaultLogsCSV">id,date,type,note
+  <script type="text/plain" id="defaultMilestonesCSV">id,date,type,note
 SP-003,2026-06-25,Sådd,Frön blötlagda 24 h med rökpapper före sådd.
 SP-003,2026-07-04,Grodd,Första synliga grodd.
 p-creamery,2026-07-04,Blomning,Ny blommbild importerad och gammal knoppbild ersatt.
 p-prince-of-orange,2026-07-01,Blomning,Ny blommbild dokumenterad.
 PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.
-PL-H02,2026-06-25,Sådd,29 frön från Rareplants.eu såddes i fyra delpartier.
-PL-H02,2026-07-06,Första grodd,Första grodd observerad. Delpartier B och D har grott.
 PL-H02-B-01,2026-07-06,Grodd,Första individuella plantan från delparti B.
-PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.</script>
-  <script src="common.js?v=20260708-logform1"></script>
+PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
+</script>
+  <script src="common.js?v=20260709-milstolpar1"></script>
   <script>
     let plants = [];
     let plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;
     let photoCSVText = document.querySelector("#defaultPhotosCSV").textContent;
-    let logCSVText = document.querySelector("#defaultLogsCSV").textContent;
+    let milestoneCSVText = document.querySelector("#defaultMilestonesCSV").textContent;
 
     const grid = document.querySelector("#grid");
     const search = document.querySelector("#search");
@@ -231,7 +230,7 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.</scr
     function rebuild() {
       const rows = parseCSV(plantCSVText);
       const photos = parseCSV(photoCSVText);
-      const logMap = combinedLogsByPlant(parseCSV(logCSVText));
+      const logMap = combinedMilestonesByPlant(parseCSV(milestoneCSVText));
       const photoMap = new Map();
       photos.forEach(ph => {
         if (!photoMap.has(ph.plant_id)) photoMap.set(ph.plant_id, []);
@@ -290,7 +289,7 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.</scr
       const active = photos[photos.length - 1] || {};
       const activeFile = active.file || "";
       const activeLabel = active.label || (active.date ? `${active.date} · ${active.type}` : "");
-      const latestLog = latestPlantLog(p.logs);
+      const latestMilestone = latestPlantMilestone(p.logs);
       const gallery = photos.map(photo => {
         const label = photo.label || (photo.date + " · " + photo.type);
         return {file: photo.file, title: p.name, caption: `${p.name} · ${label}`, alt: p.name};
@@ -302,7 +301,7 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.</scr
       ].join(" ").toLowerCase();
 
       return `
-        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-category="Pelargon" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(p.name)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-log="${escapeAttr(JSON.stringify(p.logs || []))}">
+        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-category="Pelargon" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(p.name)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(p.logs || []))}">
           <div class="image-wrap">
             ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(p.name)}" data-caption="${escapeAttr(p.name + " · " + activeLabel)}">` : ""}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}</div>` : ""}
@@ -310,7 +309,7 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.</scr
           <div class="card-body">
             <h2>${p.name}</h2>
             <div class="import-actions">
-              <button class="plant-log-btn" type="button" aria-label="Odlingslogg" title="Odlingslogg">${logBookIcon()}</button>
+              <button class="plant-log-btn" type="button" aria-label="Milstolpar" title="Milstolpar">${logBookIcon()}</button>
               <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
               <span class="import-badge" data-import-badge hidden></span>
             </div>
@@ -322,7 +321,7 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.</scr
               <dt>Doft</dt><dd>${clean(p.scent) || "Ej ifyllt"}</dd>
               <dt>Källa</dt><dd>${clean(p.source) || "Ej ifyllt"}</dd>
             </dl>
-            ${milestoneSummary(latestLog)}
+            ${milestoneSummary(latestMilestone)}
             ${clean(p.notes) ? `<div class="notes">${clean(p.notes)}</div>` : ""}
           </div>
         </article>
@@ -397,7 +396,7 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.</scr
       }
     });
     ensurePlantPhotoGallery();
-    ensurePlantLogs();
+    ensurePlantMilestones();
     ensurePlantImageImport();
     ensurePlantFavorites();
     printBtn.addEventListener("click", () => window.print());
@@ -410,7 +409,7 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.</scr
     search.addEventListener("input", render);
     typeFilter.addEventListener("change", render);
     sortSelect.addEventListener("change", render);
-    window.addEventListener("plant-log-added", rebuild);
+    window.addEventListener("plant-milestone-added", rebuild);
     rebuild();
   </script>
 </body>

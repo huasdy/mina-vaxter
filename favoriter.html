@@ -28,6 +28,11 @@
     h1 { margin: 8px 0 8px; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.7rem, 8vw, 5.6rem); line-height: .92; font-weight: 500; }
     .subtitle { margin: 0 auto; max-width: 760px; color: var(--muted); font-size: 1.05rem; }
     main { max-width: 1240px; margin: 0 auto; padding: 26px 18px 64px; }
+    .favorite-tools { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+    .favorite-tools button {
+      border: 1px solid var(--line); border-radius: 999px; padding: 9px 14px; background: var(--paper);
+      color: var(--accent); font: inherit; font-weight: 850; cursor: pointer;
+    }
     .stats { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 22px; color: var(--muted); }
     .stat { background: rgba(255,253,248,.74); border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; font-size: .92rem; font-weight: 650; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(285px, 1fr)); gap: 18px; }
@@ -71,34 +76,41 @@
   </header>
 
   <main>
+    <div class="favorite-tools">
+      <button type="button" id="exportFavoritesBtn">Exportera bevakning</button>
+      <button type="button" id="importFavoritesBtn">Importera bevakning</button>
+      <input id="importFavoritesInput" type="file" accept="application/json,.json" hidden>
+    </div>
     <div class="stats" id="stats"></div>
     <section class="grid" id="favoriteGrid"></section>
   </main>
 
-  <footer>Favoriter sparas lokalt i den här webbläsaren.</footer>
+  <footer>Favoriter och Fokus kan exporteras och importeras mellan desktop och iPhone.</footer>
 
-  <script src="common.js?v=20260708-logform1"></script>
-  <script type="text/plain" id="defaultLogsCSV">id,date,type,note
+  <script src="common.js?v=20260709-milstolpar1"></script>
+  <script type="text/plain" id="defaultMilestonesCSV">id,date,type,note
 SP-003,2026-06-25,Sådd,Frön blötlagda 24 h med rökpapper före sådd.
 SP-003,2026-07-04,Grodd,Första synliga grodd.
 p-creamery,2026-07-04,Blomning,Ny blommbild importerad och gammal knoppbild ersatt.
 p-prince-of-orange,2026-07-01,Blomning,Ny blommbild dokumenterad.
 PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.
-PL-H02,2026-06-25,Sådd,29 frön från Rareplants.eu såddes i fyra delpartier.
-PL-H02,2026-07-06,Första grodd,Första grodd observerad. Delpartier B och D har grott.
 PL-H02-B-01,2026-07-06,Grodd,Första individuella plantan från delparti B.
-PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.</script>
+PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
+</script>
   <script>
     const grid = document.querySelector("#favoriteGrid");
     const stats = document.querySelector("#stats");
-    let favoriteLogs = combinedLogsByPlant(parseCSV(document.querySelector("#defaultLogsCSV").textContent));
+    const exportFavoritesBtn = document.querySelector("#exportFavoritesBtn");
+    const importFavoritesBtn = document.querySelector("#importFavoritesBtn");
+    const importFavoritesInput = document.querySelector("#importFavoritesInput");
+    let favoriteLogs = combinedMilestonesByPlant(parseCSV(document.querySelector("#defaultMilestonesCSV").textContent));
 
     function favoriteCard(item) {
       const gallery = item.image ? [{file: item.image, title: item.plantName, caption: `${item.plantName} · ${item.dateLabel || ""}`, alt: item.plantName}] : [];
       const logs = favoriteLogs.get(item.plantId) || [];
-      const latestLog = latestPlantLog(logs);
+      const latestMilestone = latestPlantMilestone(logs);
       return `
-        <article class="plant-card" data-category="${escapeAttr(item.category)}" data-plant-id="${escapeAttr(item.plantId)}" data-plant-name="${escapeAttr(item.plantName)}" data-page="${escapeAttr(item.page || "index.html")}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-log="${escapeAttr(JSON.stringify(logs))}">
+        <article class="plant-card" data-category="${escapeAttr(item.category)}" data-plant-id="${escapeAttr(item.plantId)}" data-plant-name="${escapeAttr(item.plantName)}" data-page="${escapeAttr(item.page || "index.html")}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(logs))}">
           <div class="image-wrap">
             ${item.image ? `<img class="main-photo" src="${escapeAttr(item.image)}" alt="${escapeAttr(item.plantName)}" data-caption="${escapeAttr(item.plantName + (item.dateLabel ? " · " + item.dateLabel : ""))}">` : `<div class="image-empty">Bild saknas</div>`}
             ${item.dateLabel ? `<div class="date-ribbon">${escapeAttr(item.dateLabel)}</div>` : ""}
@@ -107,7 +119,7 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.</scr
             <div class="plant-card-head">
               <h2>${htmlEscape(item.plantName)}</h2>
               <div class="favorite-log-action">
-                <button class="plant-log-btn" type="button" aria-label="Odlingslogg" title="Odlingslogg">${logBookIcon()}</button>
+                <button class="plant-log-btn" type="button" aria-label="Milstolpar" title="Milstolpar">${logBookIcon()}</button>
                 <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
                 <span class="import-badge" data-import-badge hidden></span>
               </div>
@@ -117,7 +129,7 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.</scr
               <dt>ID</dt><dd>${htmlEscape(item.plantId)}</dd>
               <dt>Kategori</dt><dd>${htmlEscape(item.category)}</dd>
             </dl>
-            ${milestoneSummary(latestLog)}
+            ${milestoneSummary(latestMilestone)}
             <div class="favorite-focus">
               <label for="focus-${escapeAttr(item.key)}">Fokus</label>
               <textarea id="focus-${escapeAttr(item.key)}" data-focus-key="${escapeAttr(item.key)}" maxlength="120" rows="2" placeholder="Att göra...">${htmlEscape(item.focusNote || "")}</textarea>
@@ -143,21 +155,59 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.</scr
 	      if (main) openPlantPhotoGallery(main);
 	    });
 
-	    grid.addEventListener("input", event => {
+    grid.addEventListener("input", event => {
 	      const field = event.target.closest("[data-focus-key]");
 	      if (!field) return;
 	      const favorites = getPlantFavorites();
 	      if (!favorites[field.dataset.focusKey]) return;
 	      favorites[field.dataset.focusKey].focusNote = field.value.trim();
 	      savePlantFavorites(favorites);
-	    });
+    });
+
+    exportFavoritesBtn.addEventListener("click", () => {
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        favorites: getPlantFavorites()
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {type: "application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "mina-vaxter-bevakning.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    importFavoritesBtn.addEventListener("click", () => importFavoritesInput.click());
+    importFavoritesInput.addEventListener("change", async () => {
+      const file = importFavoritesInput.files && importFavoritesInput.files[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+        const incoming = parsed && parsed.favorites && typeof parsed.favorites === "object" ? parsed.favorites : parsed;
+        if (!incoming || typeof incoming !== "object" || Array.isArray(incoming)) throw new Error("Fel format");
+        const exportedAt = parsed && parsed.exportedAt ? new Date(parsed.exportedAt).toLocaleString("sv-SE") : "okänd tid";
+        const count = Object.keys(incoming).length;
+        const ok = confirm(`Importera bevakning?\n\nFilen innehåller ${count} favoriter.\nExporterad: ${exportedAt}\n\nNuvarande bevakning i den här webbläsaren ersätts.`);
+        if (!ok) return;
+        savePlantFavorites(incoming);
+        renderFavoritesPage();
+      } catch (error) {
+        alert("Kunde inte läsa bevakningsfilen.");
+      } finally {
+        importFavoritesInput.value = "";
+      }
+    });
 
     ensurePlantPhotoGallery();
-    ensurePlantLogs();
+    ensurePlantMilestones();
     ensurePlantImageImport();
     ensurePlantFavorites();
-    window.addEventListener("plant-log-added", () => {
-      favoriteLogs = combinedLogsByPlant(parseCSV(document.querySelector("#defaultLogsCSV").textContent));
+    window.addEventListener("plant-milestone-added", () => {
+      favoriteLogs = combinedMilestonesByPlant(parseCSV(document.querySelector("#defaultMilestonesCSV").textContent));
       renderFavoritesPage();
     });
     renderFavoritesPage();

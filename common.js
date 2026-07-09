@@ -100,25 +100,14 @@ function milestoneIcon(type) {
   const icons = {
     "sådd": "🌱",
     "grodd": "🌿",
-    "första riktiga blad": "🌿",
+    "förökning": "↟",
     "omplanterad": "🪴",
-    "omplantering": "🪴",
     "toppad/beskuren": "✂️",
-    "beskärning": "✂️",
     "knopp": "●",
-    "stickling rotad": "⌁",
-    "ohyra behandlad": "!",
     "ohyra upptäckt/behandlad": "!",
-    "återhämtad": "✓",
     "flyttad ut/in": "↔",
-    "flytt": "↔",
-    "näring": "+",
-    "problem": "!",
-    "behandling": "•",
     "blomning": "✿",
-    "skörd": "◉",
-    "avslutad/död": "×",
-    "observation": "◌"
+    "avslutad/död": "×"
   };
   return icons[key] || "•";
 }
@@ -126,34 +115,34 @@ function milestoneIcon(type) {
 const plantMilestoneTypes = [
   "Sådd",
   "Grodd",
-  "Första riktiga blad",
+  "Förökning",
   "Omplanterad",
   "Toppad/beskuren",
   "Knopp",
   "Blomning",
-  "Stickling rotad",
-  "Ohyra behandlad",
-  "Återhämtad",
+  "Ohyra upptäckt/behandlad",
   "Flyttad ut/in",
   "Avslutad/död"
 ];
 
-const plantLogStorageKey = "mina-vaxter-plant-log-additions-v1";
+const plantMilestoneStorageKey = "mina-vaxter-milestone-additions-v1";
+const plantMilestoneLegacyStorageKey = "mina-vaxter-plant-log-additions-v1";
 
-function getPlantLogAdditions() {
+function getPlantMilestoneAdditions() {
   try {
-    const parsed = JSON.parse(localStorage.getItem(plantLogStorageKey) || "[]");
+    const stored = localStorage.getItem(plantMilestoneStorageKey) || localStorage.getItem(plantMilestoneLegacyStorageKey) || "[]";
+    const parsed = JSON.parse(stored);
     return Array.isArray(parsed) ? parsed : [];
   } catch (e) {
     return [];
   }
 }
 
-function savePlantLogAdditions(rows) {
-  try { localStorage.setItem(plantLogStorageKey, JSON.stringify(rows || [])); } catch (e) {}
+function savePlantMilestoneAdditions(rows) {
+  try { localStorage.setItem(plantMilestoneStorageKey, JSON.stringify(rows || [])); } catch (e) {}
 }
 
-function addPlantLogEntry(entry) {
+function addPlantMilestoneEntry(entry) {
   const id = clean(entry && entry.id);
   const date = clean(entry && entry.date);
   const type = clean(entry && entry.type);
@@ -166,22 +155,22 @@ function addPlantLogEntry(entry) {
     local: "true",
     createdAt: new Date().toISOString()
   };
-  const rows = getPlantLogAdditions();
+  const rows = getPlantMilestoneAdditions();
   rows.push(row);
-  savePlantLogAdditions(rows);
+  savePlantMilestoneAdditions(rows);
   return row;
 }
 
-function combinedPlantLogs(baseLogs, plantId) {
+function combinedPlantMilestones(baseMilestones, plantId) {
   const id = clean(plantId);
-  const localRows = getPlantLogAdditions().filter(row => clean(row.id) === id);
-  return [...(baseLogs || []), ...localRows]
+  const localRows = getPlantMilestoneAdditions().filter(row => clean(row.id) === id);
+  return [...(baseMilestones || []), ...localRows]
     .sort((a, b) => sortNatural(b.date, a.date) || sortNatural(b.createdAt || "", a.createdAt || "") || sortNatural(b.type, a.type));
 }
 
-function combinedLogsByPlant(rows) {
-  const map = logsByPlant(rows || []);
-  getPlantLogAdditions().forEach(row => {
+function combinedMilestonesByPlant(rows) {
+  const map = milestonesByPlant(rows || []);
+  getPlantMilestoneAdditions().forEach(row => {
     const id = clean(row.id);
     if (!id) return;
     if (!map.has(id)) map.set(id, []);
@@ -191,7 +180,7 @@ function combinedLogsByPlant(rows) {
   return map;
 }
 
-function logsByPlant(rows) {
+function milestonesByPlant(rows) {
   const map = new Map();
   rows.forEach(row => {
     const id = clean(row.id);
@@ -203,8 +192,16 @@ function logsByPlant(rows) {
   return map;
 }
 
+function latestPlantMilestone(milestones) {
+  return (milestones || []).slice().sort((a, b) => sortNatural(b.date, a.date) || sortNatural(b.type, a.type))[0] || null;
+}
+
+function combinedLogsByPlant(rows) {
+  return combinedMilestonesByPlant(rows);
+}
+
 function latestPlantLog(logs) {
-  return (logs || []).slice().sort((a, b) => sortNatural(b.date, a.date) || sortNatural(b.type, a.type))[0] || null;
+  return latestPlantMilestone(logs);
 }
 
 function milestoneSummary(log) {
@@ -631,9 +628,9 @@ function openPlantPhotoGallery(mainPhoto) {
   dialog.showModal();
 }
 
-function ensurePlantLogs() {
-  if (document.body.dataset.plantLogsReady === "true") return;
-  document.body.dataset.plantLogsReady = "true";
+function ensurePlantMilestones() {
+  if (document.body.dataset.plantMilestonesReady === "true") return;
+  document.body.dataset.plantMilestonesReady = "true";
 
   const style = document.createElement("style");
   style.id = "plantLogStyles";
@@ -731,29 +728,29 @@ function ensurePlantLogs() {
     if (!button) return;
     const card = button.closest(".plant-card");
     if (!card) return;
-    openPlantLog(card);
+    openPlantMilestones(card);
   });
 }
 
-function openPlantLog(card) {
+function openPlantMilestones(card) {
   const dialog = document.querySelector("#plantLogDialog");
   if (!dialog) return;
-  let logs = [];
-  try { logs = JSON.parse(card.dataset.log || "[]"); } catch (e) { logs = []; }
+  let milestones = [];
+  try { milestones = JSON.parse(card.dataset.milestones || card.dataset.log || "[]"); } catch (e) { milestones = []; }
   const title = card.dataset.plantName || card.dataset.plantId || "Växt";
   const id = card.dataset.plantId || "";
-  logs = combinedPlantLogs(logs, id);
+  milestones = combinedPlantMilestones(milestones, id);
   const options = plantMilestoneTypes
     .map(type => `<option value="${htmlEscape(type)}">${htmlEscape(type)}</option>`)
     .join("");
-  const rows = logs.map(log => `
+  const rows = milestones.map(milestone => `
     <article class="plant-log-item">
       <div class="plant-log-meta">
-        <span>${htmlEscape(milestoneIcon(log.type))}</span>
-        <span class="plant-log-date">${htmlEscape(log.date)}</span>
-        <span class="plant-log-type">${htmlEscape(log.type)}</span>
+        <span>${htmlEscape(milestoneIcon(milestone.type))}</span>
+        <span class="plant-log-date">${htmlEscape(milestone.date)}</span>
+        <span class="plant-log-type">${htmlEscape(milestone.type)}</span>
       </div>
-      ${clean(log.note) ? `<div class="plant-log-note">${htmlEscape(log.note)}</div>` : ""}
+      ${clean(milestone.note) ? `<div class="plant-log-note">${htmlEscape(milestone.note)}</div>` : ""}
     </article>
   `).join("");
   dialog.innerHTML = `
@@ -774,25 +771,29 @@ function openPlantLog(card) {
         <textarea name="note" maxlength="160" placeholder="Kort anteckning, frivilligt"></textarea>
         <button class="plant-log-submit" type="submit">Spara milstolpe</button>
       </form>
-      <div class="plant-log-list">${rows || '<div class="plant-log-empty">Ingen odlingslogg ännu.</div>'}</div>
+      <div class="plant-log-list">${rows || '<div class="plant-log-empty">Inga milstolpar ännu.</div>'}</div>
     </div>
   `;
   dialog.querySelector(".plant-log-close").addEventListener("click", () => dialog.close(), {once: true});
   dialog.querySelector(".plant-log-form").addEventListener("submit", event => {
     event.preventDefault();
     const form = event.currentTarget;
-    const entry = addPlantLogEntry({
+    const entry = addPlantMilestoneEntry({
       id,
       date: form.elements.date.value,
       type: form.elements.type.value,
       note: form.elements.note.value
     });
     if (entry) {
-      window.dispatchEvent(new CustomEvent("plant-log-added", {detail: entry}));
+      window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: entry}));
       dialog.close();
     }
   });
   dialog.showModal();
+}
+
+function ensurePlantLogs() {
+  ensurePlantMilestones();
 }
 
 const plantImageImportDB = "mina-vaxter-image-import";
