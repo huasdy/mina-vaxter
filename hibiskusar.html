@@ -32,7 +32,7 @@
       background: rgba(245,241,234,.84); border-top: 1px solid rgba(222,210,194,.75);
       border-bottom: 1px solid rgba(222,210,194,.95); padding: 14px 18px;
     }
-    .toolbar-inner { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto auto auto auto auto; gap: 10px; align-items: center; }
+    .toolbar-inner { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: minmax(220px, 1fr) repeat(8, auto); gap: 10px; align-items: center; }
     input, select, button, label.filebutton {
       border: 1px solid var(--line); background: var(--paper); border-radius: 999px; color: var(--ink);
       padding: 11px 14px; font-size: .95rem; font: inherit;
@@ -61,6 +61,37 @@
     .batch-log-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; color: var(--ink); font-weight: 800; }
     .batch-log-id { color: var(--accent); }
     .batch-log-note { margin-top: 3px; }
+    .bulk-milestone-dialog {
+      width: min(94vw, 720px); max-height: 88vh; overflow: auto; border: 0; border-radius: 22px;
+      padding: 0; background: var(--paper); color: var(--ink); box-shadow: 0 24px 80px rgba(0,0,0,.26);
+    }
+    .bulk-milestone-dialog::backdrop { background: rgba(22,18,15,.50); }
+    .bulk-panel { padding: 20px; display: grid; gap: 14px; }
+    .bulk-panel header { padding: 0; text-align: left; display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+    .bulk-panel h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 2rem; line-height: 1.02; }
+    .bulk-panel p { margin: 5px 0 0; color: var(--muted); font-weight: 700; }
+    .bulk-close {
+      border: 1px solid var(--line); background: transparent; color: var(--ink); border-radius: 999px;
+      width: 42px; min-width: 42px; height: 42px; flex: 0 0 42px; padding: 0; display: grid; place-items: center; font-size: 1.4rem; line-height: 1; cursor: pointer;
+    }
+    .bulk-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 8px; }
+    .bulk-scope { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; }
+    .bulk-scope label {
+      color: var(--accent); text-transform: uppercase; letter-spacing: .12em;
+      font-size: .72rem; font-weight: 900;
+    }
+    .bulk-fields input, .bulk-fields select, .bulk-scope select, .bulk-panel textarea {
+      width: 100%; border: 1px solid var(--line); border-radius: 13px; padding: 10px 11px;
+      background: var(--paper); color: var(--ink); font: inherit; font-weight: 750;
+    }
+    .bulk-panel textarea { min-height: 70px; resize: vertical; }
+    .bulk-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .bulk-actions button { padding: 9px 12px; }
+    .bulk-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 8px; max-height: 260px; overflow: auto; }
+    .bulk-item { border: 1px solid var(--line); border-radius: 14px; padding: 9px 10px; color: var(--ink); font-weight: 800; background: rgba(255,255,255,.48); }
+    .bulk-item input { width: auto; margin-right: 6px; }
+    .bulk-submit { border: 0; border-radius: 999px; padding: 11px 15px; background: var(--accent); color: white; font: inherit; font-weight: 900; cursor: pointer; }
+    .bulk-count { color: var(--muted); font-weight: 800; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(285px, 1fr)); gap: 18px; }
     .empty { grid-column: 1 / -1; background: rgba(255,253,248,.78); border: 1px solid var(--line); border-radius: 18px; padding: 24px; color: var(--muted); text-align: center; font-weight: 650; }
     .plant-card { background: var(--paper); border: 1px solid rgba(222,210,194,.95); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column; min-height: 100%; }
@@ -90,6 +121,7 @@
     footer { text-align: center; color: var(--muted); padding: 26px 18px 44px; font-size: .92rem; }
     @media (max-width: 700px) {
       .image-wrap { aspect-ratio: auto; height: min(280px, 65vw); }
+      .bulk-fields { grid-template-columns: 1fr; }
     }
     @media (max-width: 900px) { .toolbar-inner { grid-template-columns: 1fr; } select, button, label.filebutton { width: 100%; text-align: center; } }
 </style>
@@ -114,6 +146,7 @@
     <div class="toolbar-inner">
       <input id="search" type="search" placeholder="Sök ID, status, anteckning, blomfärg, bilddatum…">
       <select id="batchFilter"><option value="">Alla partier</option></select>
+      <select id="subBatchFilter"><option value="">Alla delpartier</option></select>
       <select id="statusFilter"><option value="">Alla statusar</option></select>
       <select id="sortSelect">
         <option value="id">ID A-Ö</option>
@@ -123,6 +156,7 @@
         <option value="status">Status</option>
       </select>
       <button class="secondary" id="clearBtn" type="button">Rensa</button>
+      <button class="secondary" id="bulkMilestoneBtn" type="button">Milstolpe flera</button>
       <button class="secondary" id="batchArchiveBtn" type="button" aria-expanded="false">Fröbatcher</button>
       <button id="printBtn" type="button">Skriv ut</button>
     </div>
@@ -138,6 +172,8 @@
     <img class="modal-img" id="modalImg" alt="">
     <div class="modal-caption" id="modalCaption"></div>
   </dialog>
+
+  <dialog class="bulk-milestone-dialog" id="bulkMilestoneDialog"></dialog>
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
@@ -211,9 +247,12 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
     const grid = document.querySelector("#grid");
     const search = document.querySelector("#search");
     const batchFilter = document.querySelector("#batchFilter");
+    const subBatchFilter = document.querySelector("#subBatchFilter");
     const statusFilter = document.querySelector("#statusFilter");
     const sortSelect = document.querySelector("#sortSelect");
     const clearBtn = document.querySelector("#clearBtn");
+    const bulkMilestoneBtn = document.querySelector("#bulkMilestoneBtn");
+    const bulkMilestoneDialog = document.querySelector("#bulkMilestoneDialog");
     const stats = document.querySelector("#stats");
     const batchLog = document.querySelector("#batchLog");
     const batchArchiveBtn = document.querySelector("#batchArchiveBtn");
@@ -264,6 +303,51 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
         .replaceAll(">", "&gt;");
     }
 
+    function subBatchForPlant(p) {
+      const match = clean(p && p.id).match(/^(PL-H\d+-[A-Z])-\d+$/);
+      return match ? match[1] : "";
+    }
+
+    function subBatchLabels() {
+      const labels = new Map();
+      Object.values(hibiscusBatches).forEach(batch => {
+        (batch.facts || []).forEach(fact => {
+          const parts = clean(fact).split(" · ");
+          if (/^PL-H\d+-[A-Z]$/.test(parts[0])) {
+            labels.set(parts[0], parts[2] ? `${parts[0]} · ${parts[2]}` : parts[0]);
+          }
+        });
+      });
+      plants.forEach(p => {
+        const subBatch = subBatchForPlant(p);
+        if (subBatch && !labels.has(subBatch)) labels.set(subBatch, subBatch);
+      });
+      return labels;
+    }
+
+    function knownSubBatches(batch = "") {
+      const labels = subBatchLabels();
+      return [...labels.keys()]
+        .filter(subBatch => !batch || subBatch.startsWith(`${batch}-`))
+        .sort((a, b) => sortNatural(a, b));
+    }
+
+    function subBatchOptionHtml(batch = "", selected = "") {
+      const labels = subBatchLabels();
+      const options = knownSubBatches(batch);
+      return [
+        `<option value="">Alla delpartier</option>`,
+        ...options.map(subBatch => `<option value="${escapeAttr(subBatch)}" ${subBatch === selected ? "selected" : ""}>${escapeText(labels.get(subBatch) || subBatch)}</option>`)
+      ].join("");
+    }
+
+    function populateSubBatchFilter() {
+      const selected = subBatchFilter.value;
+      const options = knownSubBatches(batchFilter.value);
+      subBatchFilter.innerHTML = subBatchOptionHtml(batchFilter.value, options.includes(selected) ? selected : "");
+      subBatchFilter.disabled = !options.length;
+    }
+
     function rebuild() {
       const rows = parseCSV(plantCSVText);
       const photos = parseCSV(photoCSVText);
@@ -288,6 +372,7 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
           option.textContent = batch;
           batchFilter.appendChild(option);
         });
+      populateSubBatchFilter();
 
       statusFilter.innerHTML = '<option value="">Alla statusar</option>';
       [...new Set(plants.map(p => clean(p.status)).filter(Boolean))]
@@ -429,11 +514,12 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
       });
     }
 
-    function render() {
+    function visiblePlants() {
       const query = search.value.trim().toLowerCase();
       const selectedBatch = batchFilter.value;
+      const selectedSubBatch = subBatchFilter.value;
       const selectedStatus = statusFilter.value;
-      const filtered = plants.filter(p => {
+      return plants.filter(p => {
         const combined = [
           p.id, p.batch, p.group, p.sown, p.status, p.decision, p.firstBloom, p.flowerColor, p.form, p.fertility, p.score, p.notes,
           ...(p.photos || []).map(x => `${x.date} ${x.type} ${x.file}`),
@@ -441,8 +527,17 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
         ].join(" ").toLowerCase();
         return (!query || combined.includes(query))
           && (!selectedBatch || p.batch === selectedBatch)
+          && (!selectedSubBatch || subBatchForPlant(p) === selectedSubBatch)
           && (!selectedStatus || p.status === selectedStatus);
       });
+    }
+
+    function render() {
+      const query = search.value.trim().toLowerCase();
+      const selectedBatch = batchFilter.value;
+      const selectedSubBatch = subBatchFilter.value;
+      const selectedStatus = statusFilter.value;
+      const filtered = visiblePlants();
       const visible = sortedPlants(filtered);
       grid.innerHTML = visible.length ? visible.map(cardTemplate).join("") : '<div class="empty">Inga hibiskusar matchar sökningen just nu.</div>';
       updatePlantImageImportUI();
@@ -451,6 +546,7 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
       const activeParts = [
         query ? `Sökning: “${search.value.trim()}”` : "",
         selectedBatch ? `Parti: ${selectedBatch}` : "",
+        selectedSubBatch ? `Delparti: ${selectedSubBatch}` : "",
         selectedStatus ? `Status: ${selectedStatus}` : "",
         `Sortering: ${sortSelect.options[sortSelect.selectedIndex].textContent}`
       ].filter(Boolean);
@@ -461,6 +557,108 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
         <span class="stat">${activeParts.join(" · ")}</span>
       `;
       renderBatchLog();
+    }
+
+    function updateBulkCount() {
+      const count = bulkMilestoneDialog.querySelectorAll("[data-bulk-plant]:checked").length;
+      const target = bulkMilestoneDialog.querySelector("[data-bulk-count]");
+      if (target) target.textContent = `${count} valda`;
+    }
+
+    function openBulkMilestoneDialog() {
+      const defaultBatch = batchFilter.value;
+      const defaultSubBatch = subBatchFilter.value;
+      const batches = [...new Set(plants.map(p => clean(p.batch)).filter(Boolean))].sort((a, b) => sortNatural(a, b));
+      const sourcePlants = sortedPlants(plants);
+      const options = plantMilestoneTypes
+        .map(type => `<option value="${escapeText(type)}" ${type === "Omplanterad" ? "selected" : ""}>${escapeText(type)}</option>`)
+        .join("");
+      const batchOptions = [
+        `<option value="">Alla partier</option>`,
+        ...batches.map(batch => `<option value="${escapeAttr(batch)}" ${batch === defaultBatch ? "selected" : ""}>${escapeText(batch)}</option>`)
+      ].join("");
+      const plantItems = (selectedBatch, selectedSubBatch) => {
+        const list = sourcePlants.filter(p => (!selectedBatch || clean(p.batch) === selectedBatch) && (!selectedSubBatch || subBatchForPlant(p) === selectedSubBatch));
+        return list.map(p => `
+          <label class="bulk-item">
+            <input type="checkbox" data-bulk-plant value="${escapeAttr(p.id)}" checked>
+            ${escapeText(p.id)}
+          </label>
+        `).join("") || '<div class="empty">Inga plantor i valt urval.</div>';
+      };
+      const selectedCount = (selectedBatch, selectedSubBatch) => sourcePlants.filter(p => (!selectedBatch || clean(p.batch) === selectedBatch) && (!selectedSubBatch || subBatchForPlant(p) === selectedSubBatch)).length;
+      bulkMilestoneDialog.innerHTML = `
+        <form class="bulk-panel" method="dialog">
+          <header>
+            <div>
+              <h2>Milstolpe flera</h2>
+              <p>Gäller plantorna som visas just nu. Bocka ur de som inte ska få milstolpen.</p>
+            </div>
+            <button class="bulk-close" type="button" aria-label="Stäng">×</button>
+          </header>
+          <div class="bulk-fields">
+            <input name="date" type="date" value="${escapeAttr(localDateString())}" aria-label="Datum" required>
+            <select name="type" aria-label="Typ av milstolpe" required>${options}</select>
+          </div>
+          <div class="bulk-scope">
+            <label for="bulkBatchSelect">Parti</label>
+            <select id="bulkBatchSelect" name="batch" aria-label="Välj parti">${batchOptions}</select>
+          </div>
+          <div class="bulk-scope">
+            <label for="bulkSubBatchSelect">Delparti</label>
+            <select id="bulkSubBatchSelect" name="subBatch" aria-label="Välj delparti">${subBatchOptionHtml(defaultBatch, defaultSubBatch)}</select>
+          </div>
+          <textarea name="note" maxlength="160" placeholder="Kort anteckning, frivilligt"></textarea>
+          <div class="bulk-actions">
+            <button class="secondary" type="button" data-bulk-select-all>Markera alla</button>
+            <button class="secondary" type="button" data-bulk-select-none>Avmarkera alla</button>
+            <span class="bulk-count" data-bulk-count>${selectedCount(defaultBatch, defaultSubBatch)} valda</span>
+          </div>
+          <div class="bulk-list">
+            ${plantItems(defaultBatch, defaultSubBatch)}
+          </div>
+          <button class="bulk-submit" type="submit">Spara på valda plantor</button>
+        </form>
+      `;
+      bulkMilestoneDialog.querySelector(".bulk-close").addEventListener("click", () => bulkMilestoneDialog.close(), {once: true});
+      const bulkBatchSelect = bulkMilestoneDialog.querySelector("#bulkBatchSelect");
+      const bulkSubBatchSelect = bulkMilestoneDialog.querySelector("#bulkSubBatchSelect");
+      const refreshBulkList = () => {
+        bulkMilestoneDialog.querySelector(".bulk-list").innerHTML = plantItems(bulkBatchSelect.value, bulkSubBatchSelect.value);
+        updateBulkCount();
+      };
+      bulkSubBatchSelect.disabled = !knownSubBatches(defaultBatch).length;
+      bulkBatchSelect.addEventListener("change", () => {
+        bulkSubBatchSelect.innerHTML = subBatchOptionHtml(bulkBatchSelect.value, "");
+        bulkSubBatchSelect.disabled = !knownSubBatches(bulkBatchSelect.value).length;
+        refreshBulkList();
+      });
+      bulkSubBatchSelect.addEventListener("change", refreshBulkList);
+      bulkMilestoneDialog.querySelector("[data-bulk-select-all]").addEventListener("click", () => {
+        bulkMilestoneDialog.querySelectorAll("[data-bulk-plant]").forEach(input => input.checked = true);
+        updateBulkCount();
+      });
+      bulkMilestoneDialog.querySelector("[data-bulk-select-none]").addEventListener("click", () => {
+        bulkMilestoneDialog.querySelectorAll("[data-bulk-plant]").forEach(input => input.checked = false);
+        updateBulkCount();
+      });
+      bulkMilestoneDialog.querySelector(".bulk-list").addEventListener("change", updateBulkCount);
+      bulkMilestoneDialog.querySelector("form").addEventListener("submit", event => {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const ids = [...bulkMilestoneDialog.querySelectorAll("[data-bulk-plant]:checked")].map(input => input.value);
+        const added = addPlantMilestoneEntries(ids.map(id => ({
+          id,
+          date: form.elements.date.value,
+          type: form.elements.type.value,
+          note: form.elements.note.value
+        })));
+        bulkMilestoneDialog.close();
+        if (added.length) {
+          window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: {count: added.length}}));
+        }
+      });
+      bulkMilestoneDialog.showModal();
     }
 
     grid.addEventListener("click", event => {
@@ -489,6 +687,7 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
       batchArchiveOpen = !batchArchiveOpen;
       renderBatchLog();
     });
+    bulkMilestoneBtn.addEventListener("click", openBulkMilestoneDialog);
     ensurePlantPhotoGallery();
     ensurePlantMilestones();
     ensurePlantImageImport();
@@ -497,12 +696,17 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
     clearBtn.addEventListener("click", () => {
       search.value = "";
       batchFilter.value = "";
+      populateSubBatchFilter();
       statusFilter.value = "";
       sortSelect.value = "id";
       render();
     });
     search.addEventListener("input", render);
-    batchFilter.addEventListener("change", render);
+    batchFilter.addEventListener("change", () => {
+      populateSubBatchFilter();
+      render();
+    });
+    subBatchFilter.addEventListener("change", render);
     statusFilter.addEventListener("change", render);
     sortSelect.addEventListener("change", render);
     window.addEventListener("plant-milestone-added", rebuild);
