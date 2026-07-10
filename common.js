@@ -161,6 +161,34 @@ function addPlantMilestoneEntry(entry) {
   return row;
 }
 
+function addPlantMilestoneEntries(entries) {
+  const incoming = Array.isArray(entries) ? entries : [];
+  const rows = getPlantMilestoneAdditions();
+  const existing = new Set(rows.map(row => [
+    clean(row.id),
+    clean(row.date),
+    clean(row.type),
+    clean(row.note)
+  ].join("|")));
+  const createdAt = new Date().toISOString();
+  const added = [];
+  incoming.forEach(entry => {
+    const id = clean(entry && entry.id);
+    const date = clean(entry && entry.date);
+    const type = clean(entry && entry.type);
+    const note = clean(entry && entry.note);
+    if (!id || !date || !type) return;
+    const key = [id, date, type, note].join("|");
+    if (existing.has(key)) return;
+    existing.add(key);
+    const row = {id, date, type, note, local: "true", createdAt};
+    rows.push(row);
+    added.push(row);
+  });
+  if (added.length) savePlantMilestoneAdditions(rows);
+  return added;
+}
+
 function combinedPlantMilestones(baseMilestones, plantId) {
   const id = clean(plantId);
   const localRows = getPlantMilestoneAdditions().filter(row => clean(row.id) === id);
@@ -281,7 +309,7 @@ function ensurePlantPhotoGallery() {
       .gallery-tools { display: flex; align-items: center; gap: 6px; padding: 4px; border-radius: 999px; background: rgba(255,255,255,.08); }
       .gallery-tool, .gallery-close, .gallery-nav {
         border: 0; background: rgba(255,255,255,.14); color: white; border-radius: 999px;
-        width: 44px; height: 44px; display: grid; place-items: center; font: 800 1.25rem/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        width: 44px; min-width: 44px; height: 44px; flex: 0 0 44px; padding: 0; display: grid; place-items: center; font: 800 1.25rem/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       }
       .gallery-tool { width: 38px; height: 36px; font-size: 1rem; }
       .gallery-reset { width: auto; min-width: 56px; padding: 0 12px; font-size: .82rem; }
@@ -675,7 +703,8 @@ function ensurePlantMilestones() {
     .plant-log-panel p { margin: 5px 0 0; color: var(--muted, #6f655b); font-weight: 700; }
     .plant-log-close {
       border: 1px solid var(--line, #ded2c2); background: transparent; color: var(--ink, #2b251f);
-      border-radius: 999px; width: 42px; height: 42px; font-size: 1.4rem; line-height: 1; cursor: pointer;
+      border-radius: 999px; width: 42px; min-width: 42px; height: 42px; flex: 0 0 42px; padding: 0; display: grid; place-items: center;
+      font-size: 1.4rem; line-height: 1; cursor: pointer;
     }
     .plant-log-list { display: grid; gap: 10px; }
     .plant-log-form {
@@ -1057,7 +1086,8 @@ function ensurePlantImageImport() {
     .import-panel p { margin: 4px 0 0; color: var(--muted, #6f655b); }
     .import-close {
       border: 1px solid var(--line, #ded2c2); background: transparent; color: var(--ink, #2b251f);
-      border-radius: 999px; width: 40px; height: 40px; font-size: 1.35rem; line-height: 1; cursor: pointer;
+      border-radius: 999px; width: 40px; min-width: 40px; height: 40px; flex: 0 0 40px; padding: 0; display: grid; place-items: center;
+      font-size: 1.35rem; line-height: 1; cursor: pointer;
     }
     .import-form { display: grid; gap: 12px; }
     .import-preview { width: 100%; max-height: 320px; object-fit: contain; border-radius: 16px; background: #eadfce; }
