@@ -141,6 +141,7 @@ function getPlantMilestoneAdditions() {
 function savePlantMilestoneAdditions(rows) {
   try { localStorage.setItem(plantMilestoneStorageKey, JSON.stringify(rows || [])); } catch (e) {}
   updatePlantMilestoneQueueUI();
+  updatePlantImageImportUI();
 }
 
 function addPlantMilestoneEntry(entry) {
@@ -228,6 +229,20 @@ function exportPlantMilestoneAdditions() {
 function importPlantMilestoneAdditions(payload) {
   const items = Array.isArray(payload && payload.items) ? payload.items : [];
   return addPlantMilestoneEntries(items);
+}
+
+function buildSyncManifest(imageItems, milestoneItems) {
+  return {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    source: "Mina Växter synkpaket",
+    targetFolder: "IMPORTERA_HAR/SYNK",
+    contains: {
+      images: imageItems.length,
+      milestones: milestoneItems.length
+    },
+    note: "Hundöron och fokusnotiser är lokal arbetslista och ingår inte i synkpaketet."
+  };
 }
 
 function combinedPlantMilestones(baseMilestones, plantId) {
@@ -1218,6 +1233,10 @@ function ensurePlantImageImport() {
   const style = document.createElement("style");
   style.id = "plantImageImportStyles";
   style.textContent = `
+    .sync-hint {
+      border: 1px solid var(--line, #ded2c2); border-radius: 16px; padding: 12px 13px;
+      background: rgba(96,119,97,.08); color: var(--muted, #6f655b); line-height: 1.35; font-weight: 700;
+    }
     .plant-card .card-body { position: relative; }
     .plant-card .card-body h2 { padding-right: 0; overflow-wrap: normal; word-break: normal; hyphens: none; }
     .import-actions {
@@ -1494,11 +1513,12 @@ async function openImageImportForm(file) {
 async function updatePlantImageImportUI() {
   let items = [];
   try { items = await getImageImportItems(); } catch (error) { items = []; }
+  const syncCount = items.length + getPlantMilestoneAdditions().length;
   const button = document.querySelector(".import-queue-button");
   if (button) {
-    button.classList.toggle("has-items", items.length > 0);
-    button.textContent = items.length ? `Bildkö (${items.length})` : "Kö";
-    button.setAttribute("aria-label", items.length ? `Bildkö med ${items.length} bilder` : "Bildkö");
+    button.classList.toggle("has-items", syncCount > 0);
+    button.textContent = syncCount ? `Synka (${syncCount})` : "Synka";
+    button.setAttribute("aria-label", syncCount ? `Synka ${syncCount} ändringar` : "Synka");
   }
   const counts = items.reduce((map, item) => {
     map[item.plantId] = (map[item.plantId] || 0) + 1;
@@ -1517,6 +1537,8 @@ async function openImageImportQueue() {
   const dialog = document.querySelector("#plantImageImportDialog");
   let items = [];
   try { items = await getImageImportItems(); } catch (error) { items = []; }
+  const milestoneItems = buildPlantMilestoneExport().items || [];
+  const syncCount = items.length + milestoneItems.length;
   const urls = [];
   const rows = items.map(item => {
     const url = URL.createObjectURL(imageImportBlob(item));
@@ -1538,14 +1560,15 @@ async function openImageImportQueue() {
     <div class="import-panel">
       <header>
         <div>
-          <h2>Nya bilder att importera</h2>
-          <p>${items.length ? "Sparade lokalt i den här webbläsaren." : "Kön är tom just nu."}</p>
+          <h2>Synka till Mac</h2>
+          <p>${syncCount ? `${items.length} bilder · ${milestoneItems.length} milstolpar` : "Kön är tom just nu."}</p>
         </div>
         <button class="import-close" type="button" aria-label="Stäng">×</button>
       </header>
+      <div class="sync-hint">Synka skapar ett paket för iCloud-mappen IMPORTERA_HAR/SYNK. Paketet innehåller permanenta ändringar: bilder och milstolpar. Hundöron följer inte med.</div>
       <div class="import-list">${rows || '<div class="import-empty">Inga nya bilder i kön.</div>'}</div>
       <div class="import-buttons">
-        <button class="primary" type="button" data-export-package ${items.length ? "" : "disabled"}>Exportera bildpaket</button>
+        <button class="primary" type="button" data-export-package ${items.length || milestoneItems.length ? "" : "disabled"}>Synka</button>
         <button class="secondary" type="button" data-clear-import ${items.length ? "" : "disabled"}>Rensa kö</button>
       </div>
     </div>
@@ -1572,12 +1595,12 @@ async function openImageImportQueue() {
     packageButton.disabled = true;
     packageButton.textContent = "Skapar paket...";
     try {
-      const zip = await createImageImportPackage(items);
-      downloadBlob(`mina-vaxter-bildpaket-${localDateString()}.zip`, zip);
-      packageButton.textContent = "Exportera bildpaket";
+      const zip = await createSyncPackage(items, getPlantMilestoneAdditions());
+      downloadBlob(`mina-vaxter-synkpaket-${localDateString()}.zip`, zip);
+      packageButton.textContent = "Synka";
     } catch (error) {
       packageButton.textContent = "Kunde inte exportera";
-      alert("Kunde inte skapa bildpaketet. Prova igen.");
+      alert("Kunde inte skapa synkpaketet. Prova igen.");
     } finally {
       packageButton.disabled = false;
     }
@@ -1626,6 +1649,32 @@ async function createImageImportPackage(items) {
     entries.push({
       name: manifestItem.packagePath,
       blob: imageImportBlob(items[index])
+    });
+  });
+  return createZipBlob(entries);
+}
+
+async function createSyncPackage(imageItems = [], milestoneRows = []) {
+  const imageManifest = buildImageImportManifest(imageItems);
+  const milestoneExport = buildPlantMilestoneExport(milestoneRows);
+  const syncManifest = buildSyncManifest(imageManifest.items, milestoneExport.items);
+  syncManifest.images = imageManifest.items;
+  syncManifest.milestonesFile = "milstolpar.json";
+
+  const entries = [
+    {
+      name: "manifest.json",
+      blob: new Blob([JSON.stringify(syncManifest, null, 2)], {type: "application/json;charset=utf-8"})
+    },
+    {
+      name: "milstolpar.json",
+      blob: new Blob([JSON.stringify(milestoneExport, null, 2)], {type: "application/json;charset=utf-8"})
+    }
+  ];
+  imageManifest.items.forEach((manifestItem, index) => {
+    entries.push({
+      name: manifestItem.packagePath,
+      blob: imageImportBlob(imageItems[index])
     });
   });
   return createZipBlob(entries);
