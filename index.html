@@ -46,6 +46,9 @@
       border: 1px solid rgba(125,79,59,.32); border-radius: 999px; background: var(--paper); color: var(--accent);
       padding: 6px 10px; font: inherit; font-size: .78rem; font-weight: 900; cursor: pointer;
     }
+    @media (max-width: 700px) {
+      a.card[href="etiketter.html"] { display: none; }
+    }
   </style>
   <link rel="manifest" href="manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -81,7 +84,7 @@
         <span class="meta"><span>6 poster</span><span>6 bilder</span></span>
       </a>
       <a class="card" href="favoriter.html">
-        <h2>Favoriter</h2>
+        <h2>Hundöron</h2>
         <p>Växter med hundöra, sådant du arbetar med eller vill ha nära just nu.</p>
         <span class="meta"><span>Arbetsvy</span></span>
       </a>
@@ -95,7 +98,7 @@
     <div class="version-status" id="versionStatus">Kontrollerar version...</div>
   </main>
   <script>
-    const APP_VERSION = "2026-07-19-icons1";
+    const APP_VERSION = "2026-07-19-mobil-synk1";
     const versionStatus = document.querySelector("#versionStatus");
 
     function setVersionStatus(className, html) {
