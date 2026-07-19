@@ -798,11 +798,16 @@ function ensurePlantMilestones() {
     }
     .milestone-queue-button {
       position: fixed; right: 16px; bottom: max(76px, calc(env(safe-area-inset-bottom) + 76px)); z-index: 19;
-      border: 0; border-radius: 999px; min-width: 52px; height: 48px; padding: 0 13px;
+      border: 0; border-radius: 999px; width: 52px; height: 52px; padding: 0;
       background: rgba(96,119,97,.68); color: white; box-shadow: 0 12px 34px rgba(43,37,31,.14);
-      font: inherit; font-size: .82rem; font-weight: 900; cursor: pointer;
+      font: inherit; font-size: 1.72rem; font-weight: 900; cursor: pointer; line-height: 1;
     }
     .milestone-queue-button.has-items { background: rgba(96,119,97,.92); box-shadow: 0 12px 34px rgba(43,37,31,.18); }
+    .milestone-queue-button .floating-count {
+      position: absolute; top: -5px; right: -5px; min-width: 20px; height: 20px; display: grid; place-items: center;
+      border-radius: 999px; padding: 0 5px; background: var(--paper, #fffdf8); color: var(--accent, #7d4f3b);
+      border: 1px solid rgba(125,79,59,.28); font-size: .68rem; font-weight: 950; box-shadow: 0 4px 12px rgba(43,37,31,.16);
+    }
     .milestone-queue-button[hidden] { display: none; }
     dialog.milestone-queue-dialog {
       width: min(94vw, 720px); max-height: 88vh; overflow: auto; border: 0; border-radius: 22px;
@@ -901,7 +906,8 @@ function updatePlantMilestoneQueueUI() {
   if (!button) return;
   const count = getPlantMilestoneAdditions().length;
   button.classList.toggle("has-items", count > 0);
-  button.textContent = count ? `Milstolpar (${count})` : "Milstolpar";
+  button.innerHTML = `＋${count ? `<span class="floating-count">${count}</span>` : ""}`;
+  button.setAttribute("aria-label", count ? `Lägg till milstolpe, ${count} i kö` : "Lägg till milstolpe");
 }
 
 function openPlantMilestoneQueue() {
@@ -1273,11 +1279,16 @@ function ensurePlantImageImport() {
     }
     .import-queue-button {
       position: fixed; right: 16px; bottom: max(16px, env(safe-area-inset-bottom)); z-index: 20;
-      border: 0; border-radius: 999px; width: 48px; height: 48px; padding: 0; background: rgba(125,79,59,.86); color: white;
-      box-shadow: 0 12px 34px rgba(43,37,31,.20); font: inherit; font-size: .88rem; font-weight: 900; cursor: pointer;
+      border: 0; border-radius: 999px; width: 52px; height: 52px; padding: 0; background: rgba(125,79,59,.86); color: white;
+      box-shadow: 0 12px 34px rgba(43,37,31,.20); font: inherit; font-size: 1.55rem; font-weight: 900; cursor: pointer; line-height: 1;
     }
     .import-queue-button.has-items {
-      left: 16px; right: 16px; width: auto; height: 52px; padding: 12px 15px;
+      background: rgba(125,79,59,.94);
+    }
+    .import-queue-button .floating-count {
+      position: absolute; top: -5px; right: -5px; min-width: 20px; height: 20px; display: grid; place-items: center;
+      border-radius: 999px; padding: 0 5px; background: var(--paper, #fffdf8); color: var(--accent, #7d4f3b);
+      border: 1px solid rgba(125,79,59,.28); font-size: .68rem; font-weight: 950; box-shadow: 0 4px 12px rgba(43,37,31,.16);
     }
     dialog.import-dialog {
       width: min(94vw, 760px); max-height: 88vh; overflow: auto; border: 0; border-radius: 22px;
@@ -1517,7 +1528,7 @@ async function updatePlantImageImportUI() {
   const button = document.querySelector(".import-queue-button");
   if (button) {
     button.classList.toggle("has-items", syncCount > 0);
-    button.textContent = syncCount ? `Synka (${syncCount})` : "Synka";
+    button.innerHTML = `⟳${syncCount ? `<span class="floating-count">${syncCount}</span>` : ""}`;
     button.setAttribute("aria-label", syncCount ? `Synka ${syncCount} ändringar` : "Synka");
   }
   const counts = items.reduce((map, item) => {
