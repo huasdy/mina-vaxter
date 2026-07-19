@@ -35,6 +35,17 @@
     .meta { display: flex; flex-wrap: nowrap; gap: 6px; margin-top: auto; padding-top: 18px; color: var(--muted); font-weight: 700; font-size: .8rem; }
     .meta span { display: inline-flex; align-items: center; justify-content: center; min-height: 29px; padding: 5px 8px; border-radius: 999px; background: #efe6da; white-space: nowrap; }
     .note { margin-top: 20px; color: var(--muted); text-align: center; font-size: .92rem; }
+    .version-status {
+      margin: 18px auto 0; width: fit-content; max-width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;
+      color: var(--muted); background: rgba(255,253,248,.72); border: 1px solid var(--line); border-radius: 999px;
+      padding: 8px 12px; font-size: .82rem; font-weight: 800; text-align: center;
+    }
+    .version-status.fresh { color: #50694d; }
+    .version-status.stale { color: var(--accent); border-color: rgba(125,79,59,.38); background: rgba(125,79,59,.08); }
+    .version-status button {
+      border: 1px solid rgba(125,79,59,.32); border-radius: 999px; background: var(--paper); color: var(--accent);
+      padding: 6px 10px; font: inherit; font-size: .78rem; font-weight: 900; cursor: pointer;
+    }
   </style>
   <link rel="manifest" href="manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -81,6 +92,38 @@
       </a>
     </section>
     <p class="note">Denna version kräver ingen Python och ingen Terminal. Öppna HTML-filen som vanligt. Vid behov läser du in CSV-filerna med knapparna på respektive sida.</p>
+    <div class="version-status" id="versionStatus">Kontrollerar version...</div>
   </main>
+  <script>
+    const APP_VERSION = "2026-07-19-versionstatus1";
+    const versionStatus = document.querySelector("#versionStatus");
+
+    function setVersionStatus(className, html) {
+      versionStatus.className = `version-status ${className || ""}`.trim();
+      versionStatus.innerHTML = html;
+    }
+
+    async function checkVersion() {
+      try {
+        const response = await fetch(`version.json?check=${Date.now()}`, {cache: "no-store"});
+        if (!response.ok) throw new Error("version unavailable");
+        const remote = await response.json();
+        if (remote.version && remote.version !== APP_VERSION) {
+          setVersionStatus("stale", `Ny version finns · ${remote.label || remote.version} <button type="button" id="reloadVersion">Uppdatera</button>`);
+          document.querySelector("#reloadVersion").addEventListener("click", () => {
+            const url = new URL(window.location.href);
+            url.searchParams.set("v", remote.version);
+            window.location.href = url.toString();
+          });
+          return;
+        }
+        setVersionStatus("fresh", `Senaste versionen · ${remote.label || APP_VERSION}`);
+      } catch (error) {
+        setVersionStatus("", `Version ${APP_VERSION} · kunde inte kontrollera senaste`);
+      }
+    }
+
+    checkVersion();
+  </script>
 </body>
 </html>
