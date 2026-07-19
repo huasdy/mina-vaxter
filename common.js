@@ -759,8 +759,9 @@ function ensurePlantMilestones() {
     .plant-log-panel p { margin: 5px 0 0; color: var(--muted, #6f655b); font-weight: 700; }
     .plant-log-close {
       border: 1px solid var(--line, #ded2c2); background: transparent; color: var(--ink, #2b251f);
-      border-radius: 999px; width: 42px; min-width: 42px; height: 42px; flex: 0 0 42px; padding: 0; display: grid; place-items: center;
-      font-size: 1.4rem; line-height: 1; cursor: pointer;
+      border-radius: 999px; width: 42px; min-width: 42px; height: 42px; flex: 0 0 42px; padding: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 1.4rem; font-weight: 900; line-height: 1; cursor: pointer;
     }
     .plant-log-list { display: grid; gap: 10px; }
     .plant-log-form {
@@ -820,8 +821,9 @@ function ensurePlantMilestones() {
     .milestone-queue-panel p { margin: 4px 0 0; color: var(--muted, #6f655b); }
     .milestone-queue-close {
       border: 1px solid var(--line, #ded2c2); background: transparent; color: var(--ink, #2b251f);
-      border-radius: 999px; width: 40px; min-width: 40px; height: 40px; flex: 0 0 40px; padding: 0; display: grid; place-items: center;
-      font-size: 1.35rem; line-height: 1; cursor: pointer;
+      border-radius: 999px; width: 40px; min-width: 40px; height: 40px; flex: 0 0 40px; padding: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 1.35rem; font-weight: 900; line-height: 1; cursor: pointer;
     }
     .milestone-queue-list { display: grid; gap: 10px; }
     .milestone-queue-item {
@@ -838,6 +840,14 @@ function ensurePlantMilestones() {
     }
     .milestone-queue-buttons .primary { background: var(--accent, #7d4f3b); color: white; border-color: var(--accent, #7d4f3b); }
     .milestone-queue-buttons .secondary { background: white; color: var(--accent, #7d4f3b); border-color: rgba(125,79,59,.35); }
+    @media (max-width: 700px) {
+      nav a[href="etiketter.html"],
+      #printBtn,
+      #bulkMilestoneBtn,
+      #batchArchiveBtn {
+        display: none !important;
+      }
+    }
     @media (max-width: 560px) {
       .plant-log-fields { grid-template-columns: 1fr; }
       .plant-log-panel { padding: 16px; }
@@ -1301,8 +1311,9 @@ function ensurePlantImageImport() {
     .import-panel p { margin: 4px 0 0; color: var(--muted, #6f655b); }
     .import-close {
       border: 1px solid var(--line, #ded2c2); background: transparent; color: var(--ink, #2b251f);
-      border-radius: 999px; width: 40px; min-width: 40px; height: 40px; flex: 0 0 40px; padding: 0; display: grid; place-items: center;
-      font-size: 1.35rem; line-height: 1; cursor: pointer;
+      border-radius: 999px; width: 40px; min-width: 40px; height: 40px; flex: 0 0 40px; padding: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 1.35rem; font-weight: 900; line-height: 1; cursor: pointer;
     }
     .import-form { display: grid; gap: 12px; }
     .import-preview { width: 100%; max-height: 320px; object-fit: contain; border-radius: 16px; background: #eadfce; }
@@ -1325,6 +1336,10 @@ function ensurePlantImageImport() {
       border: 1px solid var(--line, #ded2c2); border-radius: 16px; padding: 9px; background: rgba(255,255,255,.54);
     }
     .import-item img { width: 76px; height: 76px; object-fit: cover; border-radius: 12px; background: #eadfce; }
+    .import-item-icon {
+      width: 76px; height: 76px; border-radius: 12px; display: grid; place-items: center;
+      background: rgba(96,119,97,.12); color: var(--accent, #7d4f3b); font-size: 2rem; font-weight: 900;
+    }
     .import-item strong { display: block; }
     .import-item small { color: var(--muted, #6f655b); display: block; margin-top: 2px; }
     .import-delete { border: 0; background: transparent; color: var(--accent, #7d4f3b); font: inherit; font-weight: 850; cursor: pointer; padding: 8px; }
@@ -1332,7 +1347,7 @@ function ensurePlantImageImport() {
     @media (max-width: 680px) {
       .import-fields { grid-template-columns: 1fr; }
       .import-item { grid-template-columns: 64px 1fr; }
-      .import-item img { width: 64px; height: 64px; }
+      .import-item img, .import-item-icon { width: 64px; height: 64px; }
       .import-delete { grid-column: 2; justify-self: start; padding-left: 0; }
     }
   `;
@@ -1348,7 +1363,7 @@ function ensurePlantImageImport() {
   const queueButton = document.createElement("button");
   queueButton.className = "import-queue-button";
   queueButton.type = "button";
-  queueButton.textContent = "Kö";
+  queueButton.textContent = "⟳";
   queueButton.setAttribute("aria-label", "Bildkö");
   queueButton.title = "Bildkö";
   document.body.appendChild(queueButton);
@@ -1567,6 +1582,19 @@ async function openImageImportQueue() {
       </article>
     `;
   }).join("");
+  const milestoneRows = milestoneItems.map(item => {
+    const meta = [item.date, item.type].filter(Boolean).join(" · ");
+    return `
+      <article class="import-item">
+        <div class="import-item-icon" aria-hidden="true">＋</div>
+        <div>
+          <strong>${htmlEscape(item.id)}</strong>
+          <small>${htmlEscape(meta)}</small>
+          ${clean(item.note) ? `<small>${htmlEscape(item.note)}</small>` : ""}
+        </div>
+      </article>
+    `;
+  }).join("");
   dialog.innerHTML = `
     <div class="import-panel">
       <header>
@@ -1576,11 +1604,11 @@ async function openImageImportQueue() {
         </div>
         <button class="import-close" type="button" aria-label="Stäng">×</button>
       </header>
-      <div class="sync-hint">Synka skapar ett paket för iCloud-mappen IMPORTERA_HAR/SYNK. Paketet innehåller permanenta ändringar: bilder och milstolpar. Hundöron följer inte med.</div>
-      <div class="import-list">${rows || '<div class="import-empty">Inga nya bilder i kön.</div>'}</div>
+      <div class="sync-hint">Spara synkpaketet i iCloud-mappen IMPORTERA_HAR/SYNK. Paketet innehåller permanenta ändringar: bilder och milstolpar. Hundöron följer inte med.</div>
+      <div class="import-list">${rows + milestoneRows || '<div class="import-empty">Inga ändringar i kön.</div>'}</div>
       <div class="import-buttons">
-        <button class="primary" type="button" data-export-package ${items.length || milestoneItems.length ? "" : "disabled"}>Synka</button>
-        <button class="secondary" type="button" data-clear-import ${items.length ? "" : "disabled"}>Rensa kö</button>
+        <button class="primary" type="button" data-export-package ${syncCount ? "" : "disabled"}>Synka</button>
+        <button class="secondary" type="button" data-clear-import ${syncCount ? "" : "disabled"}>Rensa synkkö</button>
       </div>
     </div>
   `;
@@ -1596,8 +1624,10 @@ async function openImageImportQueue() {
   });
   const clearButton = dialog.querySelector("[data-clear-import]");
   clearButton.addEventListener("click", async () => {
-    if (!confirm("Ta bort alla bilder i importkön?")) return;
+    if (!confirm("Ta bort alla bilder och milstolpar i synkkön? Gör detta först när paketet är sparat eller importerat på Mac.")) return;
     await clearImageImportItems();
+    clearPlantMilestoneAdditions();
+    window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: {cleared: true}}));
     updatePlantImageImportUI();
     openImageImportQueue();
   });
@@ -1609,6 +1639,13 @@ async function openImageImportQueue() {
       const zip = await createSyncPackage(items, getPlantMilestoneAdditions());
       downloadBlob(`mina-vaxter-synkpaket-${localDateString()}.zip`, zip);
       packageButton.textContent = "Synka";
+      if (confirm("Synkpaketet är skapat. Rensa synkkön i den här webbläsaren?")) {
+        await clearImageImportItems();
+        clearPlantMilestoneAdditions();
+        window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: {cleared: true}}));
+        updatePlantImageImportUI();
+        dialog.close();
+      }
     } catch (error) {
       packageButton.textContent = "Kunde inte exportera";
       alert("Kunde inte skapa synkpaketet. Prova igen.");

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Favoriter</title>
+  <title>Hundöron</title>
   <style>
     :root {
       --bg: #f5f1ea; --paper: #fffdf8; --ink: #2b251f; --muted: #6f655b;
@@ -67,11 +67,11 @@
       <a href="pelargoner.html">Pelargon</a>
       <a href="citrus.html">Citrus</a>
       <a href="udda.html">Udda</a>
-      <a class="current" href="favoriter.html">Favoriter</a>
+      <a class="current" href="favoriter.html">Hundöron</a>
       <a href="etiketter.html">Etiketter</a>
     </nav>
     <div class="eyebrow">Arbetsvy</div>
-    <h1>Favoriter</h1>
+    <h1>Hundöron</h1>
     <p class="subtitle">Växter med hundöra, sådant du arbetar med eller vill ha nära just nu.</p>
   </header>
 
@@ -85,9 +85,9 @@
     <section class="grid" id="favoriteGrid"></section>
   </main>
 
-  <footer>Favoriter och Fokus kan exporteras och importeras mellan desktop och iPhone.</footer>
+  <footer>Hundöron och Fokus kan exporteras och importeras mellan desktop och iPhone.</footer>
 
-  <script src="common.js?v=20260719-icons1"></script>
+  <script src="common.js?v=20260719-mobil-synk1"></script>
   <script type="text/plain" id="defaultMilestonesCSV">id,date,type,note
 SP-003,2026-06-25,Sådd,Frön blötlagda 24 h med rökpapper före sådd.
 SP-003,2026-07-04,Grodd,Första synliga grodd.
@@ -143,10 +143,10 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
       const favorites = Object.values(getPlantFavorites()).sort((a, b) =>
         sortNatural(`${a.category} ${a.plantName}`, `${b.category} ${b.plantName}`)
       );
-      stats.innerHTML = `<span class="stat">${favorites.length} favoriter</span>`;
+      stats.innerHTML = `<span class="stat">${favorites.length} hundöron</span>`;
       grid.innerHTML = favorites.length
         ? favorites.map(favoriteCard).join("")
-        : '<div class="favorite-empty">Inga favoriter ännu. Markera en växt med hundörat på ett kort.</div>';
+        : '<div class="favorite-empty">Inga hundöron ännu. Markera en växt med hundörat på ett kort.</div>';
       updatePlantFavoriteUI();
     }
 
@@ -191,7 +191,7 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
         if (!incoming || typeof incoming !== "object" || Array.isArray(incoming)) throw new Error("Fel format");
         const exportedAt = parsed && parsed.exportedAt ? new Date(parsed.exportedAt).toLocaleString("sv-SE") : "okänd tid";
         const count = Object.keys(incoming).length;
-        const ok = confirm(`Importera bevakning?\n\nFilen innehåller ${count} favoriter.\nExporterad: ${exportedAt}\n\nNuvarande bevakning i den här webbläsaren ersätts.`);
+        const ok = confirm(`Importera bevakning?\n\nFilen innehåller ${count} hundöron.\nExporterad: ${exportedAt}\n\nNuvarande bevakning i den här webbläsaren ersätts.`);
         if (!ok) return;
         savePlantFavorites(incoming);
         renderFavoritesPage();
