@@ -1718,6 +1718,48 @@ function favoriteFromCard(card) {
   };
 }
 
+function favoriteFocusDialog(item, existingNote = "") {
+  return new Promise(resolve => {
+    const dialog = document.createElement("dialog");
+    dialog.className = "favorite-focus-dialog";
+    dialog.innerHTML = `
+      <form method="dialog" class="favorite-focus-panel">
+        <header>
+          <div>
+            <h2>Hundöra</h2>
+            <p>${htmlEscape(item.plantName)} · ${htmlEscape(item.plantId)}</p>
+          </div>
+          <button class="favorite-focus-close" value="cancel" type="submit" aria-label="Stäng">×</button>
+        </header>
+        <label>
+          Kort notis
+          <textarea name="focusNote" maxlength="120" rows="3" placeholder="T.ex. toppa, kolla ohyra, ta ny bild">${htmlEscape(existingNote || "")}</textarea>
+        </label>
+        <div class="favorite-focus-buttons">
+          <button class="secondary" value="skip" type="submit">Utan notis</button>
+          <button class="primary" value="save" type="submit">Spara</button>
+        </div>
+      </form>
+    `;
+    document.body.appendChild(dialog);
+    const textarea = dialog.querySelector("textarea");
+    dialog.addEventListener("close", () => {
+      const value = dialog.returnValue;
+      const note = textarea ? textarea.value.trim() : "";
+      dialog.remove();
+      if (value === "cancel") resolve(null);
+      else resolve(value === "skip" ? "" : note);
+    }, {once: true});
+    dialog.showModal();
+    setTimeout(() => textarea && textarea.focus(), 40);
+  });
+}
+
+function confirmRemoveFavorite(item) {
+  const name = item && item.plantName ? item.plantName : "växten";
+  return confirm(`Ta bort hundöra?\n\n${name} tas bort från Hundöron och notisen försvinner.`);
+}
+
 function ensurePlantFavorites() {
   if (document.body.dataset.favoritesReady === "true") return;
   document.body.dataset.favoritesReady = "true";
@@ -1747,10 +1789,38 @@ function ensurePlantFavorites() {
         padding: 24px; color: var(--muted, #6f655b); text-align: center; font-weight: 700;
       }
       .favorite-card-link { color: inherit; text-decoration: none; display: contents; }
+      dialog.favorite-focus-dialog {
+        width: min(92vw, 440px); border: 0; border-radius: 22px; padding: 0;
+        background: var(--paper, #fffdf8); color: var(--ink, #2b251f);
+        box-shadow: 0 24px 80px rgba(0,0,0,.24);
+      }
+      dialog.favorite-focus-dialog::backdrop { background: rgba(22,18,15,.48); }
+      .favorite-focus-panel { padding: 18px; display: grid; gap: 14px; }
+      .favorite-focus-panel header { padding: 0; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; text-align: left; }
+      .favorite-focus-panel h2 { margin: 0; font-size: 1.55rem; line-height: 1.05; }
+      .favorite-focus-panel p { margin: 4px 0 0; color: var(--muted, #6f655b); font-weight: 750; }
+      .favorite-focus-close {
+        border: 1px solid var(--line, #ded2c2); background: transparent; color: var(--ink, #2b251f);
+        border-radius: 999px; width: 40px; min-width: 40px; height: 40px; flex: 0 0 40px; padding: 0;
+        display: grid; place-items: center; font-size: 1.35rem; line-height: 1; cursor: pointer;
+      }
+      .favorite-focus-panel label { display: grid; gap: 7px; color: var(--accent, #7d4f3b); font-weight: 900; }
+      .favorite-focus-panel textarea {
+        width: 100%; border: 1px solid var(--line, #ded2c2); border-radius: 16px; padding: 12px 13px;
+        background: white; color: var(--ink, #2b251f); font: inherit; resize: vertical;
+      }
+      .favorite-focus-panel textarea::placeholder { color: rgba(111,101,91,.68); }
+      .favorite-focus-buttons { display: flex; justify-content: flex-end; gap: 9px; flex-wrap: wrap; }
+      .favorite-focus-buttons button {
+        border: 1px solid var(--line, #ded2c2); border-radius: 999px; padding: 10px 13px;
+        font: inherit; font-weight: 900; cursor: pointer;
+      }
+      .favorite-focus-buttons .primary { background: var(--accent, #7d4f3b); color: white; border-color: var(--accent, #7d4f3b); }
+      .favorite-focus-buttons .secondary { background: white; color: var(--accent, #7d4f3b); border-color: rgba(125,79,59,.35); }
     `;
     document.head.appendChild(style);
   }
-  document.addEventListener("click", event => {
+  document.addEventListener("click", async event => {
     const button = event.target.closest(".favorite-corner");
     if (!button) return;
     event.preventDefault();
@@ -1759,8 +1829,15 @@ function ensurePlantFavorites() {
     if (!card) return;
     const favorites = getPlantFavorites();
     const item = favoriteFromCard(card);
-    if (favorites[item.key]) delete favorites[item.key];
-    else favorites[item.key] = item;
+    if (favorites[item.key]) {
+      if (!confirmRemoveFavorite(favorites[item.key])) return;
+      delete favorites[item.key];
+    } else {
+      const note = await favoriteFocusDialog(item);
+      if (note === null) return;
+      item.focusNote = note;
+      favorites[item.key] = item;
+    }
     savePlantFavorites(favorites);
     updatePlantFavoriteUI();
     if (typeof renderFavoritesPage === "function" && document.querySelector("#favoriteGrid")) renderFavoritesPage();
@@ -1775,8 +1852,8 @@ function updatePlantFavoriteUI() {
       const button = document.createElement("button");
       button.className = "favorite-corner";
       button.type = "button";
-      button.setAttribute("aria-label", "Markera som favorit");
-      button.title = "Favorit";
+      button.setAttribute("aria-label", "Lägg till hundöra");
+      button.title = "Hundöra";
       card.appendChild(button);
     }
     const key = favoriteKey(card.dataset.category, card.dataset.plantId);
@@ -1784,7 +1861,7 @@ function updatePlantFavoriteUI() {
     const active = !!favorites[key];
     button.classList.toggle("active", active);
     button.setAttribute("aria-pressed", active ? "true" : "false");
-    button.setAttribute("aria-label", active ? "Ta bort favorit" : "Markera som favorit");
+    button.setAttribute("aria-label", active ? "Ta bort hundöra" : "Lägg till hundöra");
 	    if (active) {
 	      const existing = favorites[key] || {};
 	      favorites[key] = {...existing, ...favoriteFromCard(card), focusNote: existing.focusNote || ""};
