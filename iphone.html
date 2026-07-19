@@ -11,30 +11,30 @@
     }
     * { box-sizing: border-box; }
     body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-    header { position: sticky; top: 0; z-index: 20; background: rgba(245,241,234,.94); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); padding: 18px 14px 12px; }
-    h1 { font-family: Georgia, "Times New Roman", serif; font-size: 2.5rem; line-height: .95; margin: 0 0 14px; font-weight: 500; text-align: center; }
+    header { position: sticky; top: 0; z-index: 20; background: rgba(245,241,234,.94); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); padding: 12px 10px 10px; }
+    h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(2rem, 11vw, 2.45rem); line-height: .95; margin: 0 0 10px; font-weight: 500; text-align: center; }
     .tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
     .tabs::-webkit-scrollbar { display: none; }
-    .tab { border: 1px solid var(--line); background: var(--paper); color: var(--accent); border-radius: 999px; padding: 10px 6px; font-weight: 800; font-size: .86rem; }
-    .tab { flex: 0 0 auto; min-width: 88px; }
+    .tab { border: 1px solid var(--line); background: var(--paper); color: var(--accent); border-radius: 999px; padding: 9px 12px; font-weight: 800; font-size: .86rem; }
+    .tab { flex: 0 0 auto; min-width: 76px; }
     .tab.active { background: var(--accent); color: white; border-color: var(--accent); }
-    main { padding: 14px; }
-    .search { width: 100%; border: 1px solid var(--line); background: var(--paper); border-radius: 999px; padding: 12px 14px; font: inherit; margin-bottom: 14px; }
-    .stats { color: var(--muted); font-weight: 750; margin: 4px 0 14px; }
+    main { padding: 12px 10px 72px; }
+    .search { width: 100%; border: 1px solid var(--line); background: var(--paper); border-radius: 999px; padding: 11px 14px; font: inherit; margin-bottom: 10px; }
+    .stats { color: var(--muted); font-weight: 750; margin: 2px 0 10px; }
     .grid { display: grid; gap: 12px; }
     .card { background: var(--paper); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
-    .image { height: min(260px, 62vw); background: linear-gradient(135deg, rgba(125,79,59,.15), rgba(96,119,97,.15)); overflow: hidden; }
-    .image img { width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in; }
-    .photo-strip { display: flex; gap: 8px; overflow-x: auto; padding: 10px 12px 0; scrollbar-width: none; }
+    .image { height: min(218px, 54vw); background: linear-gradient(135deg, rgba(125,79,59,.15), rgba(96,119,97,.15)); overflow: hidden; }
+    .image img { width: 100%; height: 100%; object-fit: cover; object-position: center 42%; display: block; cursor: zoom-in; }
+    .photo-strip { display: flex; gap: 7px; overflow-x: auto; padding: 8px 10px 0; scrollbar-width: none; }
     .photo-strip::-webkit-scrollbar { display: none; }
-    .photo-button { flex: 0 0 auto; width: 62px; height: 62px; border: 2px solid transparent; border-radius: 12px; overflow: hidden; padding: 0; background: var(--chip); }
+    .photo-button { flex: 0 0 auto; width: 50px; height: 50px; border: 2px solid transparent; border-radius: 11px; overflow: hidden; padding: 0; background: var(--chip); }
     .photo-button.active { border-color: var(--accent); }
     .photo-button img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .body { padding: 14px; }
-    h2 { font-family: Georgia, "Times New Roman", serif; font-size: 1.5rem; line-height: 1.08; margin: 0; padding-right: 0; overflow-wrap: normal; word-break: normal; hyphens: none; }
-    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .body { padding: 12px; }
+    h2 { font-family: Georgia, "Times New Roman", serif; font-size: 1.42rem; line-height: 1.05; margin: 0; padding-right: 0; overflow-wrap: normal; word-break: normal; hyphens: none; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 2px; }
     .chip { background: var(--chip); color: var(--muted); border-radius: 999px; padding: 5px 8px; font-size: .8rem; font-weight: 750; }
-    .notes { color: var(--muted); border-top: 1px solid var(--line); padding-top: 10px; margin-top: 10px; }
+    .notes { color: var(--muted); border-top: 1px solid var(--line); padding-top: 10px; margin-top: 8px; font-weight: 760; }
     .empty { background: var(--paper); border: 1px solid var(--line); border-radius: 18px; padding: 22px; color: var(--muted); text-align: center; font-weight: 750; }
   </style>
 </head>
@@ -79,8 +79,19 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
         Udda: "udda.html"
       }[category] || "index.html";
     }
+    function mobileChips(categoryName, row) {
+      const useful = new Set(["Projekt", "Egen frösådd", "Doft", "Unik", "Inne"]);
+      const labels = collectionChips(categoryName, row)
+        .filter(label => useful.has(label))
+        .slice(0, 2);
+      return labels.map((label, index) => `<span class="chip ${index === 0 ? "green" : ""}">${escapeHtml(label)}</span>`).join("");
+    }
+    function shouldShowMilestone(categoryName, row, logs) {
+      if (!logs.length) return false;
+      return collectionChips(categoryName, row).includes("Projekt");
+    }
     function renderTabs() {
-      const names = [...Object.keys(data), "Favoriter"];
+      const names = [...Object.keys(data), "Hundöron"];
       tabs.innerHTML = names.map(name => `<button class="tab ${name === active ? 'active' : ''}" type="button" data-name="${escapeHtml(name)}">${escapeHtml(name)}</button>`).join('');
     }
     function card(section, row, categoryName) {
@@ -93,13 +104,13 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
       });
       const activeLabel = activePhoto ? (activePhoto.label || activePhoto.date || title) : "";
       const logs = logMap.get(row.id) || [];
+      const latestMilestone = latestPlantMilestone(logs);
       const image = activePhoto ? `<div class="image"><img class="main-photo" src="${escapeHtml(activePhoto.file)}" alt="${escapeHtml(title)}" data-caption="${escapeHtml(title + " · " + activeLabel)}" loading="lazy"></div>` : `<div class="image"></div>`;
       const thumbs = photos.length > 1 ? `<div class="photo-strip">${photos.map(photo => `
         <button class="photo-button ${photo.file === activePhoto.file ? 'active' : ''}" type="button" data-file="${escapeHtml(photo.file)}" data-label="${escapeHtml(photo.label || photo.date || title)}" aria-label="${escapeHtml(photo.label || photo.date || title)}">
           <img src="${escapeHtml(photo.file)}" alt="" loading="lazy">
         </button>`).join('')}</div>` : '';
-      const chips = collectionChipHtml(categoryName, row, escapeHtml);
-      const notes = clean(row[section.notes]);
+      const chips = mobileChips(categoryName, row);
       return `<article class="card plant-card" data-category="${escapeHtml(categoryName)}" data-plant-id="${escapeHtml(row.id)}" data-plant-name="${escapeHtml(title)}" data-page="${escapeHtml(pageForCategory(categoryName))}" data-gallery="${escapeHtml(JSON.stringify(gallery))}" data-milestones="${escapeHtml(JSON.stringify(logs))}">
         ${image}
         ${thumbs}
@@ -113,7 +124,7 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
             </div>
           </div>
           <div class="chips">${chips}</div>
-          ${notes ? `<div class="notes">${escapeHtml(notes)}</div>` : ''}
+          ${shouldShowMilestone(categoryName, row, logs) ? milestoneSummary(latestMilestone) : ""}
         </div>
       </article>`;
     }
@@ -140,12 +151,12 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
     }
     function render() {
       renderTabs();
-      if (active === "Favoriter") {
+      if (active === "Hundöron") {
         const favorites = Object.values(getPlantFavorites()).sort((a, b) => sortNatural(`${a.category} ${a.plantName}`, `${b.category} ${b.plantName}`));
         const q = search.value.trim().toLowerCase();
         const rows = favorites.filter(item => !q || JSON.stringify(item).toLowerCase().includes(q));
-        stats.textContent = `${rows.length} favoriter`;
-        grid.innerHTML = rows.length ? rows.map(favoriteCard).join('') : '<div class="empty">Inga favoriter ännu. Markera en växt med hundörat på ett kort.</div>';
+        stats.textContent = `${rows.length} hundöron`;
+        grid.innerHTML = rows.length ? rows.map(favoriteCard).join('') : '<div class="empty">Inga hundöron ännu. Markera en växt med hundörat på ett kort.</div>';
         updatePlantFavoriteUI();
         return;
       }
@@ -182,7 +193,7 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
     ensurePlantImageImport();
     ensurePlantFavorites();
     document.addEventListener('click', event => {
-      if (active === "Favoriter" && event.target.closest('.favorite-corner')) {
+      if (active === "Hundöron" && event.target.closest('.favorite-corner')) {
         setTimeout(render, 0);
       }
     });
