@@ -12,7 +12,7 @@
     * { box-sizing: border-box; }
     body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
     header { position: sticky; top: 0; z-index: 20; background: rgba(245,241,234,.94); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); padding: 12px 10px 10px; }
-    h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(2rem, 11vw, 2.45rem); line-height: .95; margin: 0 0 10px; font-weight: 500; text-align: center; }
+    h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(2rem, 11vw, 2.45rem); line-height: .95; margin: 0 0 10px; font-weight: 500; text-align: center; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
     .tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
     .tabs::-webkit-scrollbar { display: none; }
     .tab { border: 1px solid var(--line); background: var(--paper); color: var(--accent); border-radius: 999px; padding: 9px 12px; font-weight: 800; font-size: .86rem; }
@@ -66,7 +66,12 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.</scr
     const grid = document.querySelector('#grid');
     const stats = document.querySelector('#stats');
     const search = document.querySelector('#search');
+    const swipeZone = document.querySelector('h1');
     let active = 'Hibiskus';
+    let lastCatalogCategory = active;
+    let swipeStart = null;
+    const swipeMinimumDistance = 64;
+    const swipeDirectionRatio = 1.6;
 
     function clean(value) { return String(value || '').trim(); }
     function escapeHtml(value) { return String(value || '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;'); }
@@ -92,6 +97,28 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.</scr
     function renderTabs() {
       const names = [...Object.keys(data), "Hundöron"];
       tabs.innerHTML = names.map(name => `<button class="tab ${name === active ? 'active' : ''}" type="button" data-name="${escapeHtml(name)}">${escapeHtml(name)}</button>`).join('');
+    }
+    function showMobileView(name) {
+      if (name !== "Hundöron" && data[name]) lastCatalogCategory = name;
+      if (name === active) return;
+      active = name;
+      search.value = '';
+      render();
+    }
+    function handleHeaderSwipe(start, end) {
+      const deltaX = end.x - start.x;
+      const deltaY = end.y - start.y;
+      const horizontalDistance = Math.abs(deltaX);
+      if (horizontalDistance < swipeMinimumDistance || horizontalDistance < Math.abs(deltaY) * swipeDirectionRatio) return false;
+      if (deltaX < 0 && active !== "Hundöron") {
+        showMobileView("Hundöron");
+        return true;
+      }
+      if (deltaX > 0 && active === "Hundöron") {
+        showMobileView(lastCatalogCategory);
+        return true;
+      }
+      return false;
     }
     function card(section, row, categoryName) {
       const photos = row.photos || [];
@@ -169,10 +196,26 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.</scr
     tabs.addEventListener('click', event => {
       const button = event.target.closest('.tab');
       if (!button) return;
-      active = button.dataset.name;
-      search.value = '';
-      render();
+      showMobileView(button.dataset.name);
     });
+    swipeZone.addEventListener('touchstart', event => {
+      if (event.touches.length !== 1) {
+        swipeStart = null;
+        return;
+      }
+      const touch = event.touches[0];
+      swipeStart = {x: touch.clientX, y: touch.clientY};
+    }, {passive: true});
+    swipeZone.addEventListener('touchend', event => {
+      if (!swipeStart || event.changedTouches.length !== 1) {
+        swipeStart = null;
+        return;
+      }
+      const touch = event.changedTouches[0];
+      handleHeaderSwipe(swipeStart, {x: touch.clientX, y: touch.clientY});
+      swipeStart = null;
+    }, {passive: true});
+    swipeZone.addEventListener('touchcancel', () => { swipeStart = null; }, {passive: true});
     grid.addEventListener('click', event => {
       const button = event.target.closest('.photo-button');
       const main = event.target.closest('.main-photo');

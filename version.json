@@ -1,5 +1,5 @@
 {
-  "version": "2026-07-21-finslipning-1",
+  "version": "2026-07-21-mobilsvep-1",
   "label": "2026-07-21",
-  "note": "Stabilare milstolpar, datakontroll och städad projektstruktur."
+  "note": "Rubriksvep mellan mobilens katalog och Hundöron."
 }
