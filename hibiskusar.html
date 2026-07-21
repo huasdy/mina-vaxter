@@ -32,7 +32,7 @@
       background: rgba(245,241,234,.84); border-top: 1px solid rgba(222,210,194,.75);
       border-bottom: 1px solid rgba(222,210,194,.95); padding: 14px 18px;
     }
-    .toolbar-inner { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: minmax(220px, 1fr) repeat(8, auto); gap: 10px; align-items: center; }
+    .toolbar-inner { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: minmax(220px, 1fr) repeat(5, auto); gap: 10px; align-items: center; }
     input, select, button, label.filebutton {
       border: 1px solid var(--line); background: var(--paper); border-radius: 999px; color: var(--ink);
       padding: 11px 14px; font-size: .95rem; font: inherit;
@@ -92,6 +92,7 @@
     .bulk-item input { width: auto; margin-right: 6px; }
     .bulk-submit { border: 0; border-radius: 999px; padding: 11px 15px; background: var(--accent); color: white; font: inherit; font-weight: 900; cursor: pointer; }
     .bulk-count { color: var(--muted); font-weight: 800; }
+    body.tool-view .toolbar, body.tool-view .stats, body.tool-view .grid { display: none; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(285px, 1fr)); gap: 18px; }
     .empty { grid-column: 1 / -1; background: rgba(255,253,248,.78); border: 1px solid var(--line); border-radius: 18px; padding: 24px; color: var(--muted); text-align: center; font-weight: 650; }
     .plant-card { background: var(--paper); border: 1px solid rgba(222,210,194,.95); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column; min-height: 100%; }
@@ -135,7 +136,7 @@
       <a href="citrus.html">Citrus</a>
       <a href="udda.html">Udda</a>
       <a href="favoriter.html">Hundöron</a>
-      <a href="etiketter.html">Etiketter</a>
+      <a href="verktyg.html">Verktyg</a>
     </nav>
     <div class="eyebrow">Privat samling</div>
     <h1>Hibiskus</h1>
@@ -156,9 +157,6 @@
         <option value="status">Status</option>
       </select>
       <button class="secondary" id="clearBtn" type="button">Rensa</button>
-      <button class="secondary" id="bulkMilestoneBtn" type="button">Milstolpe flera</button>
-      <button class="secondary" id="batchArchiveBtn" type="button" aria-expanded="false">Fröbatcher</button>
-      <button id="printBtn" type="button">Skriv ut</button>
     </div>
   </section>
 
@@ -237,7 +235,7 @@ PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.
 PL-H02-B-01,2026-07-06,Grodd,Första individuella plantan från delparti B.
 PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
 </script>
-  <script src="common.js?v=20260719-mobil-synk1"></script>
+  <script src="common.js?v=20260721-verktyg1"></script>
   <script>
     let plants = [];
     let plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;
@@ -251,12 +249,22 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
     const statusFilter = document.querySelector("#statusFilter");
     const sortSelect = document.querySelector("#sortSelect");
     const clearBtn = document.querySelector("#clearBtn");
-    const bulkMilestoneBtn = document.querySelector("#bulkMilestoneBtn");
+    const requestedTool = new URLSearchParams(window.location.search).get("tool");
+    if (requestedTool) {
+      document.body.classList.add("tool-view");
+      const title = requestedTool === "frobatcher" ? "Fröbatcher" : "Milstolpar flera";
+      document.title = title;
+      document.querySelector("h1").textContent = title;
+      document.querySelector(".subtitle").textContent = requestedTool === "frobatcher"
+        ? "Översikt och historik för hibiskussådder."
+        : "Spara samma permanenta händelse på flera hibiskusar.";
+      document.querySelector('nav a[href="hibiskusar.html"]').classList.remove("current");
+      document.querySelector('nav a[href="verktyg.html"]').classList.add("current");
+    }
     const bulkMilestoneDialog = document.querySelector("#bulkMilestoneDialog");
     const stats = document.querySelector("#stats");
     const batchLog = document.querySelector("#batchLog");
-    const batchArchiveBtn = document.querySelector("#batchArchiveBtn");
-    let batchArchiveOpen = false;
+    let batchArchiveOpen = requestedTool === "frobatcher";
     let batchLogOpen = false;
     const hibiscusBatches = {
       "PL-H01": {
@@ -291,7 +299,6 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
         lesson: "Jord med undervärme och kapillärmatta gav en tydligare och mer lättskött metod än rockwool-försöket."
       }
     };
-    const printBtn = document.querySelector("#printBtn");
     const dialog = document.querySelector("#photoDialog");
     const modalImg = document.querySelector("#modalImg");
     const modalCaption = document.querySelector("#modalCaption");
@@ -458,8 +465,6 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
     function renderBatchLog() {
       const batches = Object.entries(hibiscusBatches);
       batchLog.hidden = !batchArchiveOpen || !batches.length;
-      batchArchiveBtn.setAttribute("aria-expanded", batchArchiveOpen ? "true" : "false");
-      batchArchiveBtn.textContent = batchArchiveOpen ? "Dölj fröbatcher" : "Fröbatcher";
       if (!batchArchiveOpen || !batches.length) return;
       batchLog.innerHTML = `
         <div class="batch-log-head">
@@ -591,8 +596,8 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
         <form class="bulk-panel" method="dialog">
           <header>
             <div>
-              <h2>Milstolpe flera</h2>
-              <p>Gäller plantorna som visas just nu. Bocka ur de som inte ska få milstolpen.</p>
+              <h2>Milstolpar flera</h2>
+              <p>Välj parti eller delparti och bocka ur plantor som inte ska få milstolpen.</p>
             </div>
             <button class="bulk-close" type="button" aria-label="Stäng">×</button>
           </header>
@@ -683,16 +688,10 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
       batchLogOpen = !batchLogOpen;
       renderBatchLog();
     });
-    batchArchiveBtn.addEventListener("click", () => {
-      batchArchiveOpen = !batchArchiveOpen;
-      renderBatchLog();
-    });
-    bulkMilestoneBtn.addEventListener("click", openBulkMilestoneDialog);
     ensurePlantPhotoGallery();
     ensurePlantMilestones();
     ensurePlantImageImport();
     ensurePlantFavorites();
-    printBtn.addEventListener("click", () => window.print());
     clearBtn.addEventListener("click", () => {
       search.value = "";
       batchFilter.value = "";
@@ -711,6 +710,7 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
     sortSelect.addEventListener("change", render);
     window.addEventListener("plant-milestone-added", rebuild);
     rebuild();
+    if (requestedTool === "milstolpar") openBulkMilestoneDialog();
   </script>
 </body>
 </html>

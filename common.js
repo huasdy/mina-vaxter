@@ -833,7 +833,7 @@ function ensurePlantMilestones() {
     .milestone-queue-buttons .primary { background: var(--accent, #7d4f3b); color: white; border-color: var(--accent, #7d4f3b); }
     .milestone-queue-buttons .secondary { background: white; color: var(--accent, #7d4f3b); border-color: rgba(125,79,59,.35); }
     @media (max-width: 700px) {
-      nav a[href="etiketter.html"],
+      nav a[href="verktyg.html"],
       #printBtn,
       #bulkMilestoneBtn,
       #batchArchiveBtn {

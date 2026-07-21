@@ -32,7 +32,7 @@
       background: rgba(245,241,234,.84); border-top: 1px solid rgba(222,210,194,.75);
       border-bottom: 1px solid rgba(222,210,194,.95); padding: 14px 18px;
     }
-    .toolbar-inner { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto auto auto auto auto auto; gap: 10px; align-items: center; }
+    .toolbar-inner { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto auto auto auto; gap: 10px; align-items: center; }
     input, select, button, textarea {
       border: 1px solid var(--line); background: var(--paper); border-radius: 999px; color: var(--ink);
       padding: 11px 14px; font-size: .95rem; font: inherit;
@@ -88,7 +88,7 @@
       <a class="current" href="citrus.html">Citrus</a>
       <a href="udda.html">Udda</a>
       <a href="favoriter.html">Hundöron</a>
-      <a href="etiketter.html">Etiketter</a>
+      <a href="verktyg.html">Verktyg</a>
     </nav>
     <div class="eyebrow">Privat samling</div>
     <h1>Citrus</h1>
@@ -108,7 +108,6 @@
       </select>
       <button class="secondary" id="clearBtn" type="button">Rensa</button>
       <button class="secondary" id="editBtn" type="button">Redigera</button>
-      <button id="printBtn" type="button">Skriv ut</button>
     </div>
   </section>
 
@@ -153,7 +152,7 @@ PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.
 PL-H02-B-01,2026-07-06,Grodd,Första individuella plantan från delparti B.
 PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
 </script>
-  <script src="common.js?v=20260719-mobil-synk1"></script>
+  <script src="common.js?v=20260721-verktyg1"></script>
   <script>
     let plants = [];
     let editMode = false;
@@ -168,7 +167,6 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
     const clearBtn = document.querySelector("#clearBtn");
     const editBtn = document.querySelector("#editBtn");
     const stats = document.querySelector("#stats");
-    const printBtn = document.querySelector("#printBtn");
     const dialog = document.querySelector("#photoDialog");
     const modalImg = document.querySelector("#modalImg");
     const modalCaption = document.querySelector("#modalCaption");
@@ -358,7 +356,6 @@ PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
     ensurePlantMilestones();
     ensurePlantImageImport();
     ensurePlantFavorites();
-    printBtn.addEventListener("click", () => window.print());
     editBtn.addEventListener("click", () => {
       editMode = !editMode;
       editBtn.textContent = editMode ? "Klar" : "Redigera";
