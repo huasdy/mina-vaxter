@@ -231,6 +231,15 @@ function importPlantMilestoneAdditions(payload) {
   return addPlantMilestoneEntries(items);
 }
 
+function plantMilestoneKey(row) {
+  return [
+    clean(row && row.id),
+    clean(row && row.date),
+    clean(row && row.type),
+    clean(row && row.note)
+  ].join("|");
+}
+
 function buildSyncManifest(imageItems, milestoneItems) {
   return {
     version: 1,
@@ -248,20 +257,32 @@ function buildSyncManifest(imageItems, milestoneItems) {
 function combinedPlantMilestones(baseMilestones, plantId) {
   const id = clean(plantId);
   const localRows = getPlantMilestoneAdditions().filter(row => clean(row.id) === id);
+  const seen = new Set();
   return [...(baseMilestones || []), ...localRows]
+    .filter(row => {
+      const key = plantMilestoneKey(row);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
     .sort((a, b) => sortNatural(b.date, a.date) || sortNatural(b.createdAt || "", a.createdAt || "") || sortNatural(b.type, a.type));
 }
 
 function combinedMilestonesByPlant(rows) {
-  const map = milestonesByPlant(rows || []);
-  getPlantMilestoneAdditions().forEach(row => {
-    const id = clean(row.id);
-    if (!id) return;
-    if (!map.has(id)) map.set(id, []);
-    map.get(id).push(row);
+  const baseRows = rows || [];
+  const baseKeys = new Set(baseRows.map(plantMilestoneKey));
+  const localRows = getPlantMilestoneAdditions();
+  const pendingRows = localRows.filter(row => !baseKeys.has(plantMilestoneKey(row)));
+  if (pendingRows.length !== localRows.length) savePlantMilestoneAdditions(pendingRows);
+
+  const seen = new Set();
+  const combinedRows = [...baseRows, ...pendingRows].filter(row => {
+    const key = plantMilestoneKey(row);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
   });
-  map.forEach(list => list.sort((a, b) => sortNatural(b.date, a.date) || sortNatural(b.createdAt || "", a.createdAt || "") || sortNatural(b.type, a.type)));
-  return map;
+  return milestonesByPlant(combinedRows);
 }
 
 function milestonesByPlant(rows) {
@@ -294,30 +315,13 @@ function sortNatural(a, b) {
   return String(a).localeCompare(String(b), "sv", {numeric: true, sensitivity: "base"});
 }
 
-function readFileAsText(file) {
+function readFileText(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(String(reader.result || ""));
     reader.onerror = () => reject(reader.error);
     reader.readAsText(file);
   });
-}
-
-function rememberCSV(key, text) {
-  try { localStorage.setItem(key, text); } catch (e) {}
-}
-
-function getRememberedCSV(key) {
-  try { return localStorage.getItem(key); } catch (e) { return null; }
-}
-
-function clearRememberedCSV(keys) {
-  try { keys.forEach(k => localStorage.removeItem(k)); } catch (e) {}
-}
-
-function downloadText(filename, text) {
-  const blob = new Blob([text], {type: "text/csv;charset=utf-8"});
-  downloadBlob(filename, blob);
 }
 
 function downloadBlob(filename, blob) {
@@ -1483,6 +1487,8 @@ async function openImageImportForm(file) {
             <option value="detalj">detalj</option>
             <option value="knopp">knopp</option>
             <option value="stickling">stickling</option>
+            <option value="grodd">grodd</option>
+            <option value="beskuren">beskuren</option>
             <option value="etikett">etikett</option>
           </select>
         </label>
