@@ -1,24 +1,9 @@
-CSV-filerna i data-mappen är katalogens datakälla. HTML-sidorna är visning/output och byggs om från CSV-filerna.
+GENERERAD KATALOG
 
-Visningen är förenklad: inga CSV-knappar på sidan, och pelargonkorten har färre chips.
+CSV-filerna i data är katalogens datakälla. HTML-sidorna innehåller en inbyggd
+kopia av samma data så att katalogen fungerar direkt i Safari och på GitHub Pages.
 
-Alla CSV-inläsningsknappar är borttagna ur HTML-visningen.
+Ändra data i CSV och bygg sedan om katalogen med VERKTYG/uppdatera_katalog.py.
+Redigera inte den inbyggda CSV-datan manuellt i HTML-filerna.
 
-Etikettdata är inlagd som dokumentation och typstöd.
-
-Pelargonkorten har nu tags för extra egenskaper: Vildart, Brokbladig, Zonal, Primärhybrid.
-
-Redundant Vildart-tagg visas inte längre för huvudtypen Vildpelargon.
-
-Redundanta tags som upprepar huvudtypen visas inte längre.
-
-Denna katalog är genererad från CSV-filerna i data-mappen.
-
-Nielsens Fragrans visas utan exemplar-1; bildfilnamnen är uppdaterade och länkarna är justerade.
-
-Pelargonsidans småbilder visas nu under typ-/taggchipsen.
-
-Etikettbilderna har ersatts med roterade, mer läsbara versioner.
-
-Uppdatering: Korta visningschips i pelargonkatalogen: Vild/Doft/Zonal. Tags uppdaterade med Ampel och Bonsai.
-Senast uppdaterad: 2026-06-28
+Senast kontrollerad: 2026-07-21
