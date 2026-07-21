@@ -1,4 +1,4 @@
-HTML-katalogen är visning/output. Redigera inte denna som master. Använd Register/Mina_Vaxter_Register.xlsx och låt katalogen genereras om.
+CSV-filerna i data-mappen är katalogens datakälla. HTML-sidorna är visning/output och byggs om från CSV-filerna.
 
 Visningen är förenklad: inga CSV-knappar på sidan, och pelargonkorten har färre chips.
 
@@ -12,7 +12,7 @@ Redundant Vildart-tagg visas inte längre för huvudtypen Vildpelargon.
 
 Redundanta tags som upprepar huvudtypen visas inte längre.
 
-Denna katalog är genererad från den senast uppladdade registerfilen.
+Denna katalog är genererad från CSV-filerna i data-mappen.
 
 Nielsens Fragrans visas utan exemplar-1; bildfilnamnen är uppdaterade och länkarna är justerade.
 

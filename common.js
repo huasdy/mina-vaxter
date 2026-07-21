@@ -280,14 +280,6 @@ function latestPlantMilestone(milestones) {
   return (milestones || []).slice().sort((a, b) => sortNatural(b.date, a.date) || sortNatural(b.type, a.type))[0] || null;
 }
 
-function combinedLogsByPlant(rows) {
-  return combinedMilestonesByPlant(rows);
-}
-
-function latestPlantLog(logs) {
-  return latestPlantMilestone(logs);
-}
-
 function milestoneSummary(log) {
   if (!log) return "";
   return `
@@ -1035,10 +1027,6 @@ function openPlantMilestones(card) {
     }
   });
   dialog.showModal();
-}
-
-function ensurePlantLogs() {
-  ensurePlantMilestones();
 }
 
 const plantImageImportDB = "mina-vaxter-image-import";

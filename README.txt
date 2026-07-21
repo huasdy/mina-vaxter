@@ -1,18 +1,11 @@
-MINA VÄXTER v7 – SERVERFRI CSV-VERSION
+MINA VÄXTER – SERVERFRI CSV-KATALOG
 
 Denna version kräver INTE Python, Terminal eller Command Line Tools.
 
 Så använder du katalogen:
-1. Packa upp ZIP-filen.
-2. Dubbelklicka på index.html.
-3. Gå till Pelargoner eller Hibiskusar.
-4. Sidan fungerar direkt med inbyggd data.
-
-Numbers/CSV:
-- Redigera CSV-filerna i data-mappen via Numbers.
-- Exportera tillbaka som CSV.
-- På HTML-sidan: tryck "Läs in ...csv" och välj den exporterade filen.
-- Webbläsaren minns inläst CSV lokalt tills du trycker "Återställ inbyggd data".
+1. Öppna index.html.
+2. Katalogen fungerar direkt med data som är inbyggd i HTML-sidorna.
+3. CSV-filerna i data-mappen är projektets datakälla.
 
 CSV-filer:
 - data/pelargoner.csv
@@ -21,16 +14,15 @@ CSV-filer:
 - data/hibiskus_bilder.csv
 - data/citrus.csv
 - data/citrus_bilder.csv
+- data/udda.csv
+- data/udda_bilder.csv
+- data/milstolpar.csv
 
 Viktigt:
 - Ändra inte id om det redan finns bilder kopplade till plantan.
-- Bildfiler ligger fortfarande i bilder/pelargoner och bilder/hibiskusar.
+- Bildfiler ligger i respektive kategorimapp under bilder.
 - Nya bildfiler måste både läggas i rätt bildmapp och kopplas i motsvarande *_bilder.csv.
 - Spara originalbilder separat. Bilderna här är webbkatalogens kopior.
-
-Aktuellt innehåll:
-- Pelargoner: 28 exemplar, 26 bilder.
-- Hibiskusar: 15 plantor, 30 bilder.
 
 V8: Resterande pelargonbilder importerade. Nu 36 pelargonexemplar och 37 pelargonbilder.
 
