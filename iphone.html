@@ -11,7 +11,7 @@
     }
     * { box-sizing: border-box; }
     body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-    header { position: sticky; top: 0; z-index: 20; background: rgba(245,241,234,.94); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); padding: 12px 10px 10px; }
+    header { position: sticky; top: 0; z-index: 20; background: rgba(245,241,234,.98); backdrop-filter: blur(14px); border-bottom: 1px solid #d2c1ae; box-shadow: 0 4px 14px rgba(43,37,31,.08); padding: 12px 10px 10px; }
     h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(2rem, 11vw, 2.45rem); line-height: .95; margin: 0 0 10px; font-weight: 500; text-align: center; }
     .tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
     .tab { min-width: 0; border: 1px solid var(--line); background: var(--paper); color: var(--accent); border-radius: 999px; padding: 9px 5px; font-weight: 800; font-size: clamp(.75rem, 3.45vw, .86rem); }
@@ -19,8 +19,8 @@
     main { padding: 12px 10px 72px; }
     .search { width: 100%; border: 1px solid var(--line); background: var(--paper); border-radius: 999px; padding: 11px 14px; font: inherit; margin-bottom: 10px; }
     .stats { color: var(--muted); font-weight: 750; margin: 2px 0 10px; }
-    .grid { display: grid; gap: 12px; }
-    .card { background: var(--paper); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+    .grid { display: grid; gap: 16px; }
+    .card { background: var(--paper); border: 1px solid #d5c6b4; border-radius: 18px; overflow: hidden; box-shadow: 0 5px 16px rgba(43,37,31,.08); }
     .image { height: min(218px, 54vw); background: linear-gradient(135deg, rgba(125,79,59,.15), rgba(96,119,97,.15)); overflow: hidden; }
     .image img { width: 100%; height: 100%; object-fit: cover; object-position: center 42%; display: block; cursor: zoom-in; }
     .photo-strip { display: flex; gap: 7px; overflow-x: auto; padding: 8px 10px 0; scrollbar-width: none; }
@@ -78,7 +78,7 @@ PL-H02-D-03,2026-07-23,Grodd,</script>
     const stats = document.querySelector('#stats');
     const search = document.querySelector('#search');
     const mobileViewToggle = document.querySelector('#mobileViewToggle');
-    const MOBILE_APP_VERSION = "2026-07-26-mobilikoner-1";
+    const MOBILE_APP_VERSION = "2026-07-26-kort-1";
     const initialParams = new URLSearchParams(window.location.search);
     const requestedCategory = initialParams.get('kategori');
     const initialCategory = requestedCategory && data[requestedCategory] ? requestedCategory : 'Hibiskus';
