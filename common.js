@@ -26,6 +26,17 @@ function redirectStandaloneMobileCatalog() {
 
 redirectStandaloneMobileCatalog();
 
+function floatingSyncIcon() {
+  return `
+    <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <path d="M25 8v7h-7"/>
+      <path d="M7 24v-7h7"/>
+      <path d="M9.9 10.1A9 9 0 0 1 25 15"/>
+      <path d="M22.1 21.9A9 9 0 0 1 7 17"/>
+    </svg>
+  `;
+}
+
 function parseCSV(text) {
   text = text.replace(/^\uFEFF/, "");
   const rows = [];
@@ -1136,7 +1147,11 @@ function ensurePlantImageImport() {
     .import-queue-button {
       position: fixed; right: 16px; bottom: max(16px, env(safe-area-inset-bottom)); z-index: 20;
       border: 0; border-radius: 999px; width: 52px; height: 52px; padding: 0; background: rgba(125,79,59,.86); color: white;
-      box-shadow: 0 12px 34px rgba(43,37,31,.20); font: inherit; font-size: 1.55rem; font-weight: 900; cursor: pointer; line-height: 1;
+      display: grid; place-items: center; box-shadow: 0 12px 34px rgba(43,37,31,.20); cursor: pointer;
+    }
+    .import-queue-button > svg {
+      width: 27px; height: 27px; display: block; fill: none; stroke: currentColor;
+      stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
     }
     .import-queue-button.has-items {
       background: rgba(125,79,59,.94);
@@ -1209,7 +1224,7 @@ function ensurePlantImageImport() {
   const queueButton = document.createElement("button");
   queueButton.className = "import-queue-button";
   queueButton.type = "button";
-  queueButton.textContent = "⟳";
+  queueButton.innerHTML = floatingSyncIcon();
   queueButton.setAttribute("aria-label", "Synk");
   queueButton.title = "Synk";
   document.body.appendChild(queueButton);
@@ -1391,7 +1406,7 @@ async function updatePlantImageImportUI() {
   const button = document.querySelector(".import-queue-button");
   if (button) {
     button.classList.toggle("has-items", syncCount > 0);
-    button.innerHTML = `⟳${syncCount ? `<span class="floating-count">${syncCount}</span>` : ""}`;
+    button.innerHTML = `${floatingSyncIcon()}${syncCount ? `<span class="floating-count">${syncCount}</span>` : ""}`;
     button.setAttribute("aria-label", syncCount ? `Synka ${syncCount} ändringar` : "Synka");
   }
   const counts = items.reduce((map, item) => {
