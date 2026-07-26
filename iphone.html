@@ -71,7 +71,7 @@ PL-H02-C-01,2026-07-06,Grodd,
 PL-H02-A-01,2026-07-06,Grodd,
 PL-H02-D-02,2026-07-06,Grodd,
 PL-H02-D-03,2026-07-23,Grodd,</script>
-  <script src="common.js?v=20260726mobiluppdatering1"></script>
+  <script src="common.js?v=20260726hemskarm1"></script>
   <script>
     const data = JSON.parse(document.querySelector('#catalogData').textContent);
     let logMap = combinedMilestonesByPlant(parseCSV(document.querySelector('#defaultMilestonesCSV').textContent));
@@ -80,9 +80,12 @@ PL-H02-D-03,2026-07-23,Grodd,</script>
     const stats = document.querySelector('#stats');
     const search = document.querySelector('#search');
     const mobileViewToggle = document.querySelector('#mobileViewToggle');
-    const MOBILE_APP_VERSION = "2026-07-26-mobiluppdatering-1";
-    let active = 'Hibiskus';
-    let lastCatalogCategory = active;
+    const MOBILE_APP_VERSION = "2026-07-26-hemskarm-1";
+    const initialParams = new URLSearchParams(window.location.search);
+    const requestedCategory = initialParams.get('kategori');
+    const initialCategory = requestedCategory && data[requestedCategory] ? requestedCategory : 'Hibiskus';
+    let active = initialParams.get('vy') === 'hundoron' ? 'Hundöron' : initialCategory;
+    let lastCatalogCategory = initialCategory;
 
     function clean(value) { return String(value || '').trim(); }
     function escapeHtml(value) { return String(value || '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;'); }

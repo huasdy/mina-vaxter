@@ -1,5 +1,5 @@
 {
-  "version": "2026-07-26-mobiluppdatering-1",
+  "version": "2026-07-26-hemskarm-1",
   "label": "2026-07-26",
-  "note": "Mobilvyn hämtar automatiskt nya katalogversioner."
+  "note": "Hemskärmsikonen öppnar automatiskt den förenklade mobilvyn."
 }

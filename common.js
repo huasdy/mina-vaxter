@@ -1,4 +1,31 @@
 
+function redirectStandaloneMobileCatalog() {
+  const displayStandalone = typeof window.matchMedia === "function"
+    && window.matchMedia("(display-mode: standalone)").matches;
+  const standalone = window.navigator.standalone === true || displayStandalone;
+  const pageName = window.location.pathname.split("/").pop();
+  const categoryByPage = {
+    "hibiskusar.html": "Hibiskus",
+    "pelargoner.html": "Pelargon",
+    "citrus.html": "Citrus",
+    "udda.html": "Udda",
+    "favoriter.html": "Hundöron"
+  };
+  const targetView = categoryByPage[pageName];
+  if (!standalone || window.innerWidth > 700 || !targetView) return false;
+
+  const scriptUrl = new URL(document.currentScript?.src || "", window.location.href);
+  const mobileUrl = new URL("iphone.html", window.location.href);
+  const cacheVersion = scriptUrl.searchParams.get("v");
+  if (cacheVersion) mobileUrl.searchParams.set("v", cacheVersion);
+  if (targetView === "Hundöron") mobileUrl.searchParams.set("vy", "hundoron");
+  else mobileUrl.searchParams.set("kategori", targetView);
+  window.location.replace(mobileUrl.toString());
+  return true;
+}
+
+redirectStandaloneMobileCatalog();
+
 function parseCSV(text) {
   text = text.replace(/^\uFEFF/, "");
   const rows = [];
