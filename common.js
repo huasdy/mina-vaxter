@@ -140,7 +140,6 @@ function getPlantMilestoneAdditions() {
 
 function savePlantMilestoneAdditions(rows) {
   try { localStorage.setItem(plantMilestoneStorageKey, JSON.stringify(rows || [])); } catch (e) {}
-  updatePlantMilestoneQueueUI();
   updatePlantImageImportUI();
 }
 
@@ -217,18 +216,6 @@ function buildPlantMilestoneExport(rows = getPlantMilestoneAdditions()) {
       createdAt: clean(row.createdAt)
     })).filter(row => row.id && row.date && row.type)
   };
-}
-
-function exportPlantMilestoneAdditions() {
-  const payload = buildPlantMilestoneExport();
-  const blob = new Blob([JSON.stringify(payload, null, 2)], {type: "application/json;charset=utf-8"});
-  downloadBlob("mina-vaxter-milstolpar.json", blob);
-  return payload;
-}
-
-function importPlantMilestoneAdditions(payload) {
-  const items = Array.isArray(payload && payload.items) ? payload.items : [];
-  return addPlantMilestoneEntries(items);
 }
 
 function plantMilestoneKey(row) {
@@ -313,15 +300,6 @@ function milestoneSummary(log) {
 
 function sortNatural(a, b) {
   return String(a).localeCompare(String(b), "sv", {numeric: true, sensitivity: "base"});
-}
-
-function readFileText(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result || ""));
-    reader.onerror = () => reject(reader.error);
-    reader.readAsText(file);
-  });
 }
 
 function downloadBlob(filename, blob) {
@@ -793,49 +771,6 @@ function ensurePlantMilestones() {
       color: var(--muted, #6f655b); border: 1px dashed var(--line, #ded2c2);
       border-radius: 16px; padding: 18px; text-align: center; font-weight: 800;
     }
-    .milestone-queue-button {
-      position: fixed; right: 16px; bottom: max(76px, calc(env(safe-area-inset-bottom) + 76px)); z-index: 19;
-      border: 0; border-radius: 999px; width: 52px; height: 52px; padding: 0;
-      background: rgba(96,119,97,.68); color: white; box-shadow: 0 12px 34px rgba(43,37,31,.14);
-      font: inherit; font-size: 1.72rem; font-weight: 900; cursor: pointer; line-height: 1;
-    }
-    .milestone-queue-button.has-items { background: rgba(96,119,97,.92); box-shadow: 0 12px 34px rgba(43,37,31,.18); }
-    .milestone-queue-button .floating-count {
-      position: absolute; top: -5px; right: -5px; min-width: 20px; height: 20px; display: grid; place-items: center;
-      border-radius: 999px; padding: 0 5px; background: var(--paper, #fffdf8); color: var(--accent, #7d4f3b);
-      border: 1px solid rgba(125,79,59,.28); font-size: .68rem; font-weight: 950; box-shadow: 0 4px 12px rgba(43,37,31,.16);
-    }
-    .milestone-queue-button[hidden] { display: none; }
-    dialog.milestone-queue-dialog {
-      width: min(94vw, 720px); max-height: 88vh; overflow: auto; border: 0; border-radius: 22px;
-      padding: 0; background: var(--paper, #fffdf8); color: var(--ink, #2b251f); box-shadow: 0 24px 80px rgba(0,0,0,.24);
-    }
-    dialog.milestone-queue-dialog::backdrop { background: rgba(22,18,15,.48); }
-    .milestone-queue-panel { padding: 18px; display: grid; gap: 14px; }
-    .milestone-queue-panel header { padding: 0; text-align: left; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-    .milestone-queue-panel h2 { margin: 0; font-size: 1.5rem; line-height: 1.1; }
-    .milestone-queue-panel p { margin: 4px 0 0; color: var(--muted, #6f655b); }
-    .milestone-queue-close {
-      border: 1px solid var(--line, #ded2c2); background: transparent; color: var(--ink, #2b251f);
-      border-radius: 999px; width: 40px; min-width: 40px; height: 40px; flex: 0 0 40px; padding: 0;
-      display: inline-flex; align-items: center; justify-content: center;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 1.35rem; font-weight: 900; line-height: 1; cursor: pointer;
-    }
-    .milestone-queue-list { display: grid; gap: 10px; }
-    .milestone-queue-item {
-      display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center;
-      border: 1px solid var(--line, #ded2c2); border-radius: 16px; padding: 10px 11px; background: rgba(255,255,255,.54);
-    }
-    .milestone-queue-item strong { display: block; }
-    .milestone-queue-item small { color: var(--muted, #6f655b); display: block; margin-top: 2px; }
-    .milestone-queue-delete { border: 0; background: transparent; color: var(--accent, #7d4f3b); font: inherit; font-weight: 850; cursor: pointer; padding: 8px; }
-    .milestone-queue-empty { color: var(--muted, #6f655b); border: 1px dashed var(--line, #ded2c2); border-radius: 16px; padding: 18px; text-align: center; font-weight: 700; }
-    .milestone-queue-buttons { display: flex; justify-content: flex-end; gap: 9px; flex-wrap: wrap; }
-    .milestone-queue-buttons button {
-      border: 1px solid var(--line, #ded2c2); border-radius: 999px; padding: 10px 13px; font: inherit; font-weight: 850; cursor: pointer;
-    }
-    .milestone-queue-buttons .primary { background: var(--accent, #7d4f3b); color: white; border-color: var(--accent, #7d4f3b); }
-    .milestone-queue-buttons .secondary { background: white; color: var(--accent, #7d4f3b); border-color: rgba(125,79,59,.35); }
     @media (max-width: 700px) {
       nav a[href="verktyg.html"],
       #printBtn,
@@ -856,120 +791,12 @@ function ensurePlantMilestones() {
   dialog.className = "plant-log-dialog";
   document.body.appendChild(dialog);
 
-  const queueButton = document.createElement("button");
-  queueButton.id = "plantMilestoneQueueButton";
-  queueButton.className = "milestone-queue-button";
-  queueButton.type = "button";
-  queueButton.title = "Milstolpskö";
-  queueButton.setAttribute("aria-label", "Milstolpskö");
-  document.body.appendChild(queueButton);
-
-  const queueDialog = document.createElement("dialog");
-  queueDialog.id = "plantMilestoneQueueDialog";
-  queueDialog.className = "milestone-queue-dialog";
-  document.body.appendChild(queueDialog);
-
-  const importInput = document.createElement("input");
-  importInput.id = "plantMilestoneImportInput";
-  importInput.type = "file";
-  importInput.accept = "application/json,.json";
-  importInput.hidden = true;
-  document.body.appendChild(importInput);
-
   document.addEventListener("click", event => {
     const button = event.target.closest(".plant-log-btn");
     if (!button) return;
     const card = button.closest(".plant-card");
     if (!card) return;
     openPlantMilestones(card);
-  });
-
-  queueButton.addEventListener("click", openPlantMilestoneQueue);
-  importInput.addEventListener("change", async () => {
-    const file = importInput.files && importInput.files[0];
-    if (!file) return;
-    try {
-      const parsed = JSON.parse(await readFileText(file));
-      const count = Array.isArray(parsed.items) ? parsed.items.length : 0;
-      const exportedAt = parsed.exportedAt ? new Date(parsed.exportedAt).toLocaleString("sv-SE") : "okänd tid";
-      if (!confirm(`Importera milstolpar?\n\nFilen innehåller ${count} milstolpar.\nExporterad: ${exportedAt}\n\nNya milstolpar läggs till i kön.`)) return;
-      const added = importPlantMilestoneAdditions(parsed);
-      alert(`${added.length} nya milstolpar importerades.`);
-      window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: {count: added.length}}));
-      openPlantMilestoneQueue();
-    } catch (error) {
-      alert("Kunde inte läsa milstolpsfilen.");
-    } finally {
-      importInput.value = "";
-    }
-  });
-
-  updatePlantMilestoneQueueUI();
-}
-
-function updatePlantMilestoneQueueUI() {
-  const button = document.querySelector("#plantMilestoneQueueButton");
-  if (!button) return;
-  const count = getPlantMilestoneAdditions().length;
-  button.classList.toggle("has-items", count > 0);
-  button.innerHTML = `＋${count ? `<span class="floating-count">${count}</span>` : ""}`;
-  button.setAttribute("aria-label", count ? `Lägg till milstolpe, ${count} i kö` : "Lägg till milstolpe");
-}
-
-function openPlantMilestoneQueue() {
-  const dialog = document.querySelector("#plantMilestoneQueueDialog");
-  if (!dialog) return;
-  const items = getPlantMilestoneAdditions();
-  const rows = items.map((item, index) => {
-    const meta = [item.date, item.type].filter(Boolean).join(" · ");
-    return `
-      <article class="milestone-queue-item">
-        <div>
-          <strong>${htmlEscape(item.id)}</strong>
-          <small>${htmlEscape(meta)}</small>
-          ${clean(item.note) ? `<small>${htmlEscape(item.note)}</small>` : ""}
-        </div>
-        <button class="milestone-queue-delete" type="button" data-delete-milestone="${index}">Ta bort</button>
-      </article>
-    `;
-  }).join("");
-  dialog.innerHTML = `
-    <div class="milestone-queue-panel">
-      <header>
-        <div>
-          <h2>Milstolpskö</h2>
-          <p>${items.length ? "Sparade lokalt i den här webbläsaren." : "Kön är tom just nu."}</p>
-        </div>
-        <button class="milestone-queue-close" type="button" aria-label="Stäng">×</button>
-      </header>
-      <div class="milestone-queue-list">${rows || '<div class="milestone-queue-empty">Inga nya milstolpar i kön.</div>'}</div>
-      <div class="milestone-queue-buttons">
-        <button class="primary" type="button" data-export-milestones ${items.length ? "" : "disabled"}>Exportera milstolpar</button>
-        <button class="secondary" type="button" data-import-milestones>Importera fil</button>
-        <button class="secondary" type="button" data-clear-milestones ${items.length ? "" : "disabled"}>Rensa kö</button>
-      </div>
-    </div>
-  `;
-  if (!dialog.open) dialog.showModal();
-  dialog.querySelector(".milestone-queue-close").addEventListener("click", () => dialog.close());
-  dialog.querySelectorAll("[data-delete-milestone]").forEach(button => {
-    button.addEventListener("click", () => {
-      deletePlantMilestoneAddition(button.dataset.deleteMilestone);
-      window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: {deleted: true}}));
-      openPlantMilestoneQueue();
-    });
-  });
-  dialog.querySelector("[data-export-milestones]").addEventListener("click", () => {
-    exportPlantMilestoneAdditions();
-  });
-  dialog.querySelector("[data-import-milestones]").addEventListener("click", () => {
-    document.querySelector("#plantMilestoneImportInput")?.click();
-  });
-  dialog.querySelector("[data-clear-milestones]").addEventListener("click", () => {
-    if (!confirm("Ta bort alla milstolpar i kön? Gör detta först när de är sparade permanent i katalogen.")) return;
-    clearPlantMilestoneAdditions();
-    window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: {cleared: true}}));
-    openPlantMilestoneQueue();
   });
 }
 
@@ -1356,8 +1183,8 @@ function ensurePlantImageImport() {
   queueButton.className = "import-queue-button";
   queueButton.type = "button";
   queueButton.textContent = "⟳";
-  queueButton.setAttribute("aria-label", "Bildkö");
-  queueButton.title = "Bildkö";
+  queueButton.setAttribute("aria-label", "Synk");
+  queueButton.title = "Synk";
   document.body.appendChild(queueButton);
 
   const dialog = document.createElement("dialog");
@@ -1576,7 +1403,7 @@ async function openImageImportQueue() {
       </article>
     `;
   }).join("");
-  const milestoneRows = milestoneItems.map(item => {
+  const milestoneRows = milestoneItems.map((item, index) => {
     const meta = [item.date, item.type].filter(Boolean).join(" · ");
     return `
       <article class="import-item">
@@ -1586,6 +1413,7 @@ async function openImageImportQueue() {
           <small>${htmlEscape(meta)}</small>
           ${clean(item.note) ? `<small>${htmlEscape(item.note)}</small>` : ""}
         </div>
+        <button class="import-delete" type="button" data-delete-milestone="${index}">Ta bort</button>
       </article>
     `;
   }).join("");
@@ -1612,6 +1440,14 @@ async function openImageImportQueue() {
   dialog.querySelectorAll("[data-delete-import]").forEach(button => {
     button.addEventListener("click", async () => {
       await deleteImageImportItem(button.dataset.deleteImport);
+      updatePlantImageImportUI();
+      openImageImportQueue();
+    });
+  });
+  dialog.querySelectorAll("[data-delete-milestone]").forEach(button => {
+    button.addEventListener("click", () => {
+      deletePlantMilestoneAddition(button.dataset.deleteMilestone);
+      window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: {deleted: true}}));
       updatePlantImageImportUI();
       openImageImportQueue();
     });
