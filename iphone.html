@@ -71,7 +71,7 @@ PL-H02-C-01,2026-07-06,Grodd,
 PL-H02-A-01,2026-07-06,Grodd,
 PL-H02-D-02,2026-07-06,Grodd,
 PL-H02-D-03,2026-07-23,Grodd,</script>
-  <script src="common.js?v=20260726synk1542"></script>
+  <script src="common.js?v=20260726mobiluppdatering1"></script>
   <script>
     const data = JSON.parse(document.querySelector('#catalogData').textContent);
     let logMap = combinedMilestonesByPlant(parseCSV(document.querySelector('#defaultMilestonesCSV').textContent));
@@ -80,11 +80,29 @@ PL-H02-D-03,2026-07-23,Grodd,</script>
     const stats = document.querySelector('#stats');
     const search = document.querySelector('#search');
     const mobileViewToggle = document.querySelector('#mobileViewToggle');
+    const MOBILE_APP_VERSION = "2026-07-26-mobiluppdatering-1";
     let active = 'Hibiskus';
     let lastCatalogCategory = active;
 
     function clean(value) { return String(value || '').trim(); }
     function escapeHtml(value) { return String(value || '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;'); }
+    async function checkMobileVersion() {
+      try {
+        const response = await fetch(`version.json?check=${Date.now()}`, {cache: 'no-store'});
+        if (!response.ok) return;
+        const remote = await response.json();
+        if (!remote.version || remote.version === MOBILE_APP_VERSION || document.querySelector('dialog[open]')) return;
+        const reloadKey = `mina-vaxter-mobile-reload-${remote.version}`;
+        try {
+          if (sessionStorage.getItem(reloadKey)) return;
+          sessionStorage.setItem(reloadKey, 'true');
+        } catch (error) {}
+        const url = new URL(window.location.href);
+        url.searchParams.set('v', remote.version);
+        url.searchParams.set('uppdaterad', Date.now().toString());
+        window.location.replace(url.toString());
+      } catch (error) {}
+    }
     function pageForCategory(category) {
       return {
         Hibiskus: "hibiskusar.html",
@@ -237,7 +255,11 @@ PL-H02-D-03,2026-07-23,Grodd,</script>
       logMap = combinedMilestonesByPlant(parseCSV(document.querySelector('#defaultMilestonesCSV').textContent));
       render();
     });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') checkMobileVersion();
+    });
     render();
+    checkMobileVersion();
   </script>
 </body>
 </html>
