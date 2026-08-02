@@ -1,6 +1,7 @@
 id,date,type,note
 SP-003,2026-06-25,Sådd,Frön blötlagda 24 h med rökpapper före sådd.
 SP-003,2026-07-04,Grodd,Första synliga grodd.
+SP-007,2026-07-26,Plantering,Mottagen och planterad samma dag.
 p-creamery,2026-07-04,Blomning,Ny blommbild importerad och gammal knoppbild ersatt.
 p-prince-of-orange,2026-07-01,Blomning,Ny blommbild dokumenterad.
 PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.
@@ -10,3 +11,5 @@ PL-H02-C-01,2026-07-06,Grodd,
 PL-H02-A-01,2026-07-06,Grodd,
 PL-H02-D-02,2026-07-06,Grodd,
 PL-H02-D-03,2026-07-23,Grodd,
+PL-H02-C-02,2026-07-27,Grodd,Individuell planta från delparti C dokumenterad.
+PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.
