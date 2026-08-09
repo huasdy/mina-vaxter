@@ -57,6 +57,13 @@
     .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .card-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
     h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 1.55rem; line-height: 1.08; font-weight: 650; }
+    .plant-title-block { min-width: 0; }
+    .plant-nickname { margin-top: -7px; color: var(--muted); font-style: italic; font-weight: 700; }
+    .plant-card .plant-card-head { min-height: 82px; margin-bottom: 0; }
+    .plant-card .plant-card-head .import-actions {
+      align-self: start; flex-direction: column; justify-content: flex-start; margin-top: 0;
+    }
+    .plant-card .plant-card-head .import-badge { top: auto; right: -4px; bottom: -4px; }
     .plant-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
     .score { min-width: 42px; text-align: center; border-radius: 999px; background: var(--chip); color: var(--muted); padding: 5px 9px; font-weight: 800; font-size: .85rem; }
     .chips { display: flex; flex-wrap: wrap; gap: 7px; }
@@ -122,39 +129,39 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script type="text/plain" id="defaultPlantsCSV">id,name,type,tags,status,scent,source,notes
-p-acetosum,P. acetosum,Vildpelargon,Bonsai,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
-p-australe-1,P. australe 1,Vildpelargon,Ampel,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
-p-australe-2,P. australe 2,Vildpelargon,Ampel,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
-p-cotyledonis-1,P. cotyledonis 1,Vildpelargon,Bonsai,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
-p-cotyledonis-2,P. cotyledonis 2,Vildpelargon,Bonsai,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
-p-gibbosum-1,P. gibbosum 1,Vildpelargon,Bonsai,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
-p-gibbosum-2,P. gibbosum 2,Vildpelargon,Bonsai,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
-p-gibbosum-3,P. gibbosum 3,Vildpelargon,Bonsai,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
-p-gibbosum-4,P. gibbosum 4,Vildpelargon,Bonsai,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,Har både maj- och junibild i katalogen.
-p-gibbosum-maroon-1,P. gibbosum ‘Maroon’ 1,Vildpelargon,Bonsai,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
-p-gibbosum-maroon-2,P. gibbosum ‘Maroon’ 2,Vildpelargon,Bonsai,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
-p-laxum-1,P. laxum 1,Vildpelargon,Bonsai,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
-p-laxum-2,P. laxum 2,Vildpelargon,Bonsai,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
-p-magenteum,P. magenteum,Vildpelargon,Bonsai,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
-p-odoratissimum-1,P. odoratissimum,Doftpelargon,Vildart;Ampel,Bekräftad,Äpple / frisk doft,Sune Trygg,Doftpelargon med äppellik/frisk doft. Doftpelargon och doftande vildart.
-p-sidoides,P. sidoides,Vildpelargon,,Bekräftad,Svag / örtig,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
-p-triffidum,P. triffidum,Vildpelargon,Ampel,Bekräftad,,Sune Trygg,Vild art. Etiketten anger P. triffidum.
-p-caffrum-diana,P. × caffrum ‘Diana’,Primärhybrid,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
-p-bontrosai-1,P. ‘Bontrosai’ 1,Doftpelargon,Bonsai,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
-p-bontrosai-2,P. ‘Bontrosai’ 2,Doftpelargon,Bonsai,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
-p-bothams-surprise-1,P. ‘Botham Surprise’ 1,Brokbladig pelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
-p-bothams-surprise-2,P. ‘Botham Surprise’ 2,Brokbladig pelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
-p-creamery,P. ‘Creamery’,Zonalpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
-p-cys-sunburst-1,P. ‘Cy’s Sunburst’ 1,Doftpelargon,Brokbladig,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid. Doftpelargon med brokbladigt bladverk."
-p-cys-sunburst-2,P. ‘Cy’s Sunburst’ 2,Doftpelargon,Brokbladig,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid. Doftpelargon med brokbladigt bladverk."
-p-cys-sunburst-3,P. ‘Cy’s Sunburst’ 3,Doftpelargon,Brokbladig,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid. Doftpelargon med brokbladigt bladverk."
-p-dr-westerlund-1,P. ‘Dr Westerlund’ 1,Doftpelargon,,Bekräftad,Klassisk doftpelargon / frisk citrus-ros,Sune Trygg,Doftpelargon. Eget exemplar i samlingen.
-p-dr-westerlund-2,P. ‘Dr Westerlund’ 2,Doftpelargon,,Bekräftad,Klassisk doftpelargon / frisk citrus-ros,Sune Trygg,Doftpelargon. Eget exemplar i samlingen.
-p-lemon-queen,P. ‘Lemon Queen’,Doftpelargon,,Bekräftad,Citron,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
-p-nielsens-fragrans-1,P. ‘Nielsens Fragrans’,Doftpelargon,,Bekräftad,Doftpelargon,Sune Trygg,Har både helbild och blomma från samma datum.
-p-prince-of-orange,P. ‘Prince of Orange’,Doftpelargon,,Bekräftad,Apelsin / citrus,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."
-p-torento,P. ‘Torento’,Doftpelargon,,Bekräftad,Cola / kryddig citrus,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid."</script>
+  <script type="text/plain" id="defaultPlantsCSV">id,name,type,tags,status,scent,source,notes,nickname
+p-acetosum,P. acetosum,Vildpelargon,Bonsai,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+p-australe-1,P. australe 1,Vildpelargon,Ampel,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+p-australe-2,P. australe 2,Vildpelargon,Ampel,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+p-cotyledonis-1,P. cotyledonis 1,Vildpelargon,Bonsai,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+p-cotyledonis-2,P. cotyledonis 2,Vildpelargon,Bonsai,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+p-gibbosum-1,P. gibbosum 1,Vildpelargon,Bonsai,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+p-gibbosum-2,P. gibbosum 2,Vildpelargon,Bonsai,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+p-gibbosum-3,P. gibbosum 3,Vildpelargon,Bonsai,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+p-gibbosum-4,P. gibbosum 4,Vildpelargon,Bonsai,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,Har både maj- och junibild i katalogen.,Grotesco
+p-gibbosum-maroon-1,P. gibbosum ‘Maroon’ 1,Vildpelargon,Bonsai,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+p-gibbosum-maroon-2,P. gibbosum ‘Maroon’ 2,Vildpelargon,Bonsai,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+p-laxum-1,P. laxum 1,Vildpelargon,Bonsai,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+p-laxum-2,P. laxum 2,Vildpelargon,Bonsai,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+p-magenteum,P. magenteum,Vildpelargon,Bonsai,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+p-odoratissimum-1,P. odoratissimum,Doftpelargon,Vildart;Ampel,Bekräftad,Äpple / frisk doft,Sune Trygg,Doftpelargon med äppellik/frisk doft. Doftpelargon och doftande vildart.,
+p-sidoides,P. sidoides,Vildpelargon,,Bekräftad,Svag / örtig,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+p-triffidum,P. triffidum,Vildpelargon,Ampel,Bekräftad,,Sune Trygg,Vild art. Etiketten anger P. triffidum.,
+p-caffrum-diana,P. × caffrum ‘Diana’,Primärhybrid,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+p-bontrosai-1,P. ‘Bontrosai’ 1,Doftpelargon,Bonsai,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+p-bontrosai-2,P. ‘Bontrosai’ 2,Doftpelargon,Bonsai,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+p-bothams-surprise-1,P. ‘Botham Surprise’ 1,Brokbladig pelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+p-bothams-surprise-2,P. ‘Botham Surprise’ 2,Brokbladig pelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+p-creamery,P. ‘Creamery’,Zonalpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+p-cys-sunburst-1,P. ‘Cy’s Sunburst’ 1,Doftpelargon,Brokbladig,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid. Doftpelargon med brokbladigt bladverk.",
+p-cys-sunburst-2,P. ‘Cy’s Sunburst’ 2,Doftpelargon,Brokbladig,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid. Doftpelargon med brokbladigt bladverk.",
+p-cys-sunburst-3,P. ‘Cy’s Sunburst’ 3,Doftpelargon,Brokbladig,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid. Doftpelargon med brokbladigt bladverk.",
+p-dr-westerlund-1,P. ‘Dr Westerlund’ 1,Doftpelargon,,Bekräftad,Klassisk doftpelargon / frisk citrus-ros,Sune Trygg,Doftpelargon. Eget exemplar i samlingen.,
+p-dr-westerlund-2,P. ‘Dr Westerlund’ 2,Doftpelargon,,Bekräftad,Klassisk doftpelargon / frisk citrus-ros,Sune Trygg,Doftpelargon. Eget exemplar i samlingen.,
+p-lemon-queen,P. ‘Lemon Queen’,Doftpelargon,,Bekräftad,Citron,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+p-nielsens-fragrans-1,P. ‘Nielsens Fragrans’,Doftpelargon,,Bekräftad,Doftpelargon,Sune Trygg,Har både helbild och blomma från samma datum.,
+p-prince-of-orange,P. ‘Prince of Orange’,Doftpelargon,,Bekräftad,Apelsin / citrus,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+p-torento,P. ‘Torento’,Doftpelargon,,Bekräftad,Cola / kryddig citrus,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",</script>
   <script type="text/plain" id="defaultPhotosCSV">plant_id,date,type,file,label
 p-acetosum,2026-06-21,hel,bilder/pelargoner/p-acetosum_2026-06-21_hel.jpg,2026-06-21 · hel
 p-acetosum,2026-07-17,blomma,bilder/pelargoner/p-acetosum_synk-fa0da0f811_2026-07-17_blomma.jpg,2026-07-17 · blomma
@@ -166,6 +173,7 @@ p-bontrosai-2,2026-06-21,hel,bilder/pelargoner/p-bontrosai-2_2026-06-21_hel.jpg,
 p-bothams-surprise-1,2026-06-21,hel,bilder/pelargoner/p-bothams-surprise-1_2026-06-21_hel.jpg,2026-06-21 · hel
 p-bothams-surprise-2,2026-06-21,hel,bilder/pelargoner/p-bothams-surprise-2_2026-06-21_hel.jpg,2026-06-21 · hel
 p-caffrum-diana,2026-06-21,hel,bilder/pelargoner/p-caffrum-diana_2026-06-21_hel.jpg,2026-06-21 · hel
+p-caffrum-diana,2026-08-01,blomma,bilder/pelargoner/p-caffrum-diana_synk-b1d8c54af2_2026-08-01_blomma.jpg,2026-08-01 · blomma
 p-cotyledonis-1,2026-06-21,hel,bilder/pelargoner/p-cotyledonis-1_2026-06-21_hel.jpg,2026-06-21 · hel
 p-cotyledonis-1,2026-06-23,stam,bilder/pelargoner/p-cotyledonis-1_2026-06-23_stam.jpg,2026-06-23 · stam
 p-cotyledonis-2,2026-06-21,hel,bilder/pelargoner/p-cotyledonis-2_2026-06-21_hel.jpg,2026-06-21 · hel
@@ -196,6 +204,7 @@ p-lemon-queen,2026-06-21,hel,bilder/pelargoner/p-lemon-queen_2026-06-21_hel.jpg,
 p-magenteum,2026-05-24,start,bilder/pelargoner/p-magenteum_2026-05-24_start.jpg,2026-05-24 · start
 p-magenteum,2026-06-21,hel,bilder/pelargoner/p-magenteum_2026-06-21_hel.jpg,2026-06-21 · hel
 p-magenteum,2026-06-27,hel,bilder/pelargoner/p-magenteum_2026-06-27_hel.jpg,2026-06-27 · hel
+p-magenteum,2026-08-01,blomma,bilder/pelargoner/p-magenteum_synk-f66141400c_2026-08-01_blomma.jpg,2026-08-01 · blomma
 p-nielsens-fragrans-1,2026-06-21,blomma,bilder/pelargoner/p-nielsens-fragrans_2026-06-21_blomma.jpg,2026-06-21 · blomma
 p-nielsens-fragrans-1,2026-06-21,hel,bilder/pelargoner/p-nielsens-fragrans_2026-06-21_hel.jpg,2026-06-21 · hel
 p-odoratissimum-1,2026-06-21,blomma,bilder/pelargoner/p-odoratissimum-1_2026-06-21_blomma.jpg,2026-06-21 · blomma
@@ -223,8 +232,37 @@ PL-H02-A-01,2026-07-06,Grodd,
 PL-H02-D-02,2026-07-06,Grodd,
 PL-H02-D-03,2026-07-23,Grodd,
 PL-H02-C-02,2026-07-27,Grodd,Individuell planta från delparti C dokumenterad.
-PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.</script>
-  <script src="common.js?v=20260809fix0841"></script>
+PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.
+SP-002,2026-08-06,Toppad/beskuren,"Alla plantor friserade
+Formade efter individ
+Stora inåtvända blad borttagna
+Basen städad
+Bredd anpassad till nuvarande krukstorlek
+Bad och avrinning efter beskä"
+PL-H01-B,2025-11-16,Sådd,
+PL-H01-C,2025-11-16,Sådd,
+PL-H01-D,2025-11-16,Sådd,
+PL-H01-G,2025-11-16,Sådd,
+PL-H01-H,2025-11-16,Sådd,
+PL-H01-I,2025-11-16,Sådd,
+PL-H01-J,2025-11-16,Sådd,
+PL-H01-K,2025-11-16,Sådd,
+PL-H01-L,2025-11-16,Sådd,
+PL-H01-M,2025-11-16,Sådd,
+PL-H01-N,2025-11-16,Sådd,
+PL-H01-O,2025-11-16,Sådd,
+PL-H01-Q,2025-11-16,Sådd,
+PL-H01-R,2025-11-16,Sådd,
+PL-H02-A-01,2026-06-25,Sådd,
+PL-H02-B-01,2026-06-25,Sådd,
+PL-H02-C-01,2026-06-25,Sådd,
+PL-H02-C-02,2026-06-25,Sådd,
+PL-H02-C-03,2026-06-25,Sådd,
+PL-H02-D-01,2026-06-25,Sådd,
+PL-H02-D-02,2026-06-25,Sådd,
+PL-H02-D-03,2026-06-25,Sådd,
+p-torento,2026-08-08,Avslutad/död,</script>
+  <script src="common.js?v=20260809synk1330"></script>
   <script>
     let plants = [];
     let plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;
@@ -281,10 +319,11 @@ PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.</
 
     function photoButtons(p, activeFile) {
       if ((p.photos || []).length <= 1) return "";
+      const displayLabel = plantDisplayLabel(p);
       return p.photos.map(photo => `
         <button class="thumb ${photo.file === activeFile ? "active" : ""}" type="button"
-          data-plant="${escapeAttr(p.name)}" data-file="${photo.file}" data-label="${escapeAttr(photo.label || (photo.date + " · " + photo.type))}">
-          <img src="${photo.file}" alt="${escapeAttr(p.name + " " + photo.date)}" loading="lazy">
+          data-plant="${escapeAttr(displayLabel)}" data-file="${photo.file}" data-label="${escapeAttr(photo.label || (photo.date + " · " + photo.type))}">
+          <img src="${photo.file}" alt="${escapeAttr(displayLabel + " " + photo.date)}" loading="lazy">
         </button>`).join("");
     }
     function displayChipLabel(label) {
@@ -328,6 +367,9 @@ PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.</
     }
 
     function cardTemplate(p) {
+      const displayName = plantDisplayName(p);
+      const identity = plantIdentityName(p);
+      const displayLabel = plantDisplayLabel(p);
       const photos = p.photos || [];
       const matchingPhotos = photosMatchingSelectedType(p);
       const active = matchingPhotos[matchingPhotos.length - 1] || photos[photos.length - 1] || {};
@@ -336,26 +378,28 @@ PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.</
       const latestMilestone = latestPlantMilestone(p.logs);
       const gallery = photos.map(photo => {
         const label = photo.label || (photo.date + " · " + photo.type);
-        return {file: photo.file, title: p.name, caption: `${p.name} · ${label}`, alt: p.name};
+        return {file: photo.file, title: displayName, caption: `${displayLabel} · ${label}`, alt: displayLabel};
       });
       const searchable = [
-        p.id, p.name, p.type, p.tags, p.status, p.scent, p.source, p.notes,
+        p.id, p.name, p.nickname, p.type, p.tags, p.status, p.scent, p.source, p.notes,
         ...photos.map(x => `${x.date} ${x.type} ${x.file}`),
         ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
       ].join(" ").toLowerCase();
 
       return `
-        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-category="Pelargon" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(p.name)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(p.logs || []))}">
+        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-category="Pelargon" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(displayName)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(p.nickname)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(p.logs || []))}">
           <div class="image-wrap">
-            ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(p.name)}" data-caption="${escapeAttr(p.name + " · " + activeLabel)}">` : ""}
+            ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(displayLabel)}" data-caption="${escapeAttr(displayLabel + " · " + activeLabel)}">` : ""}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}</div>` : ""}
           </div>
           <div class="card-body">
-            <h2>${p.name}</h2>
-            <div class="import-actions">
-              <button class="plant-log-btn" type="button" aria-label="Milstolpar" title="Milstolpar">${logBookIcon()}</button>
-              <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
-              <span class="import-badge" data-import-badge hidden></span>
+            <div class="plant-card-head">
+              <div class="plant-title-block">${plantHeadingHtml(p)}</div>
+              <div class="import-actions">
+                <button class="plant-log-btn" type="button" aria-label="Milstolpar" title="Milstolpar">${logBookIcon()}</button>
+                <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
+                <span class="import-badge" data-import-badge hidden></span>
+              </div>
             </div>
             <div class="chips">
               ${cardChips(p)}
@@ -397,7 +441,7 @@ PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.</
       const selectedPhotoType = normalizedPhotoType(photoTypeFilter.value);
       const filtered = plants.filter(p => {
         const combined = [
-          p.id, p.name, p.type, p.tags, p.status, p.scent, p.source, p.notes,
+          p.id, p.name, p.nickname, p.type, p.tags, p.status, p.scent, p.source, p.notes,
           ...(p.photos || []).map(x => `${x.date} ${x.type} ${x.file}`),
           ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
         ].join(" ").toLowerCase();

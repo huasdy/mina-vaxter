@@ -7,6 +7,7 @@ Datakälla:
 - CSV-filerna i data är sanningen.
 - HTML-sidorna är genererad visning.
 - data/milstolpar.csv innehåller permanenta händelser.
+- Individbaserade register kan ha ett frivilligt nickname; ID, art och sort är alltid oförändrade.
 - data/liljor_bilder.csv innehåller de permanent importerade bilderna i Galleri > Liljor.
 - På desktop kan bilder släppas direkt på korten Liljor, Rosor och Dahlior i Galleri.
 - I den lokala filversionen sparas originalet först i Macens privata originalarkiv.

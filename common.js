@@ -74,6 +74,27 @@ function clean(value) {
   return (value || "").toString().trim();
 }
 
+function plantIdentityName(row, fallback = "") {
+  return clean(row && row.name) || clean(row && row.id) || clean(fallback);
+}
+
+function plantDisplayName(row, fallback = "") {
+  return plantIdentityName(row, fallback) || clean(row && row.nickname);
+}
+
+function plantDisplayLabel(row, fallback = "") {
+  const nickname = clean(row && row.nickname);
+  const identity = plantIdentityName(row, fallback);
+  return nickname && identity ? `${identity} · ${nickname}` : identity || nickname;
+}
+
+function plantHeadingHtml(row, fallback = "") {
+  const nickname = clean(row && row.nickname);
+  const identity = plantIdentityName(row, fallback);
+  const title = identity || nickname;
+  return `<h2>${htmlEscape(title)}</h2>${nickname && identity ? `<div class="plant-nickname">${htmlEscape(nickname)}</div>` : ""}`;
+}
+
 function collectionChips(category, row) {
   const haystack = [
     category,
@@ -1632,6 +1653,8 @@ function favoriteKey(category, plantId) {
 
 function favoriteFromCard(card) {
   const title = clean(card.dataset.plantName || card.querySelector("h2")?.textContent || card.dataset.plantId);
+  const plantIdentity = clean(card.dataset.plantIdentity || "");
+  const plantNickname = clean(card.dataset.plantNickname || card.querySelector(".plant-nickname")?.textContent || "");
   const image = card.querySelector(".main-photo")?.getAttribute("src") || "";
   const dateLabel = card.querySelector(".date-ribbon")?.textContent || "";
   const latin = card.querySelector(".latin")?.textContent || "";
@@ -1642,6 +1665,8 @@ function favoriteFromCard(card) {
     category: card.dataset.category || "",
     plantId: card.dataset.plantId || "",
     plantName: title,
+    plantIdentity,
+    plantNickname,
     latin,
     image,
     dateLabel,

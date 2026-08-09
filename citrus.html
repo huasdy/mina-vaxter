@@ -55,6 +55,7 @@
     .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .card-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
     h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 1.55rem; line-height: 1.08; font-weight: 650; }
+    .plant-nickname { margin-top: -7px; color: var(--muted); font-style: italic; font-weight: 700; }
     .chips { display: flex; flex-wrap: wrap; gap: 7px; }
     .chip { background: var(--chip); color: var(--muted); border-radius: 999px; padding: 5px 9px; font-size: .8rem; font-weight: 700; }
     .chip.green { background: rgba(70,128,70,.17); color: #3e673d; }
@@ -124,16 +125,16 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script type="text/plain" id="defaultPlantsCSV">id,name,type,status,source,acquired,location,notes
-c-calamondin,Calamondin,Calamondin,Aktiv,[privat],,,
-c-limon-1,Citrus limon 1,Citron,Aktiv,Bauhaus,,,
-c-limon-2,Citrus limon 2,Citron,Aktiv,Bauhaus,,,
-c-okand-citrusstickling,Citrusstickling,Okänd citrus,Aktiv,[privat],,,
-c-kaffirlime,Kaffirlime – Citrus hystrix,Kaffirlime,Aktiv,Vivai Miano,,,
-c-kumquat-1,Kumquat 1,Kumquat,Aktiv,Vivai Miano,,,
-c-kumquat-2,Kumquat 2,Kumquat,Aktiv,Vivai Miano,,,
-c-limequat,Limequat,Limequat,Aktiv,Vivai Miano,,,
-c-rod-fingerlime,Röd fingerlime – Citrus australasica,Fingerlime,Aktiv,Vivai Miano,,,</script>
+  <script type="text/plain" id="defaultPlantsCSV">id,name,type,status,source,acquired,location,notes,nickname
+c-calamondin,Calamondin,Calamondin,Aktiv,[privat],,,,
+c-limon-1,Citrus limon 1,Citron,Aktiv,Bauhaus,,,,
+c-limon-2,Citrus limon 2,Citron,Aktiv,Bauhaus,,,,
+c-okand-citrusstickling,Citrusstickling,Okänd citrus,Aktiv,[privat],,,,
+c-kaffirlime,Kaffirlime – Citrus hystrix,Kaffirlime,Aktiv,Vivai Miano,,,,
+c-kumquat-1,Kumquat 1,Kumquat,Aktiv,Vivai Miano,,,,
+c-kumquat-2,Kumquat 2,Kumquat,Aktiv,Vivai Miano,,,,
+c-limequat,Limequat,Limequat,Aktiv,Vivai Miano,,,,
+c-rod-fingerlime,Röd fingerlime – Citrus australasica,Fingerlime,Aktiv,Vivai Miano,,,,</script>
   <script type="text/plain" id="defaultPhotosCSV">plant_id,date,type,file,label
 c-calamondin,2026-06-24,hel,bilder/citrus/c-calamondin_2026-06-24_hel.jpg,2026-06-24 · hel
 c-kaffirlime,2026-06-24,hel,bilder/citrus/c-kaffirlime_2026-06-24_hel.jpg,2026-06-24 · hel
@@ -158,8 +159,37 @@ PL-H02-A-01,2026-07-06,Grodd,
 PL-H02-D-02,2026-07-06,Grodd,
 PL-H02-D-03,2026-07-23,Grodd,
 PL-H02-C-02,2026-07-27,Grodd,Individuell planta från delparti C dokumenterad.
-PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.</script>
-  <script src="common.js?v=20260809fix0841"></script>
+PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.
+SP-002,2026-08-06,Toppad/beskuren,"Alla plantor friserade
+Formade efter individ
+Stora inåtvända blad borttagna
+Basen städad
+Bredd anpassad till nuvarande krukstorlek
+Bad och avrinning efter beskä"
+PL-H01-B,2025-11-16,Sådd,
+PL-H01-C,2025-11-16,Sådd,
+PL-H01-D,2025-11-16,Sådd,
+PL-H01-G,2025-11-16,Sådd,
+PL-H01-H,2025-11-16,Sådd,
+PL-H01-I,2025-11-16,Sådd,
+PL-H01-J,2025-11-16,Sådd,
+PL-H01-K,2025-11-16,Sådd,
+PL-H01-L,2025-11-16,Sådd,
+PL-H01-M,2025-11-16,Sådd,
+PL-H01-N,2025-11-16,Sådd,
+PL-H01-O,2025-11-16,Sådd,
+PL-H01-Q,2025-11-16,Sådd,
+PL-H01-R,2025-11-16,Sådd,
+PL-H02-A-01,2026-06-25,Sådd,
+PL-H02-B-01,2026-06-25,Sådd,
+PL-H02-C-01,2026-06-25,Sådd,
+PL-H02-C-02,2026-06-25,Sådd,
+PL-H02-C-03,2026-06-25,Sådd,
+PL-H02-D-01,2026-06-25,Sådd,
+PL-H02-D-02,2026-06-25,Sådd,
+PL-H02-D-03,2026-06-25,Sådd,
+p-torento,2026-08-08,Avslutad/död,</script>
+  <script src="common.js?v=20260809synk1330"></script>
   <script>
     let plants = [];
     let editMode = false;
@@ -218,14 +248,18 @@ PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.</
 
     function photoButtons(p, activeFile) {
       if ((p.photos || []).length <= 1) return "";
+      const displayLabel = plantDisplayLabel(p);
       return p.photos.map(photo => `
         <button class="thumb ${photo.file === activeFile ? "active" : ""}" type="button"
-          data-plant="${escapeAttr(p.name)}" data-file="${photo.file}" data-label="${escapeAttr(photo.label || (photo.date + " · " + photo.type))}">
-          <img src="${photo.file}" alt="${escapeAttr(p.name + " " + photo.date)}" loading="lazy">
+          data-plant="${escapeAttr(displayLabel)}" data-file="${photo.file}" data-label="${escapeAttr(photo.label || (photo.date + " · " + photo.type))}">
+          <img src="${photo.file}" alt="${escapeAttr(displayLabel + " " + photo.date)}" loading="lazy">
         </button>`).join("");
     }
 
     function cardTemplate(p) {
+      const displayName = plantDisplayName(p);
+      const identity = plantIdentityName(p);
+      const displayLabel = plantDisplayLabel(p);
       const photos = p.photos || [];
       const active = photos[photos.length - 1] || {};
       const activeFile = active.file || "";
@@ -233,10 +267,10 @@ PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.</
       const latestMilestone = latestPlantMilestone(p.logs);
       const gallery = photos.map(photo => {
         const label = photo.label || (photo.date + " · " + photo.type);
-        return {file: photo.file, title: p.name, caption: `${p.name} · ${label}`, alt: p.name};
+        return {file: photo.file, title: displayName, caption: `${displayLabel} · ${label}`, alt: displayLabel};
       });
       const searchable = [
-        p.id, p.name, p.type, p.status, p.source, p.acquired, p.location, p.notes,
+        p.id, p.name, p.nickname, p.type, p.status, p.source, p.acquired, p.location, p.notes,
         ...photos.map(x => `${x.date} ${x.type} ${x.file}`),
         ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
       ].join(" ").toLowerCase();
@@ -244,6 +278,7 @@ PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.</
       const details = editMode ? `
         <div class="edit-form" data-id="${escapeAttr(p.id)}">
           <div class="edit-row"><label>Namn</label><input data-field="name" value="${escapeAttr(p.name)}"></div>
+          <div class="edit-row"><label>Smeknamn</label><input data-field="nickname" value="${escapeAttr(p.nickname)}"></div>
           <div class="edit-row"><label>Typ</label><input data-field="type" value="${escapeAttr(p.type)}"></div>
           <div class="edit-row"><label>Status</label><input data-field="status" value="${escapeAttr(p.status)}"></div>
           <div class="edit-row"><label>Källa</label><input data-field="source" value="${escapeAttr(p.source)}"></div>
@@ -262,13 +297,13 @@ PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.</
       `;
 
       return `
-        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-category="Citrus" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(p.name)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(p.logs || []))}">
+        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-category="Citrus" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(displayName)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(p.nickname)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(p.logs || []))}">
           <div class="image-wrap">
-            ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(p.name)}" data-caption="${escapeAttr(p.name + " · " + activeLabel)}">` : ""}
+            ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(displayLabel)}" data-caption="${escapeAttr(displayLabel + " · " + activeLabel)}">` : ""}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}</div>` : ""}
           </div>
           <div class="card-body">
-            <h2>${clean(p.name) || p.id}</h2>
+            ${plantHeadingHtml(p)}
             <div class="import-actions">
               <button class="plant-log-btn" type="button" aria-label="Milstolpar" title="Milstolpar">${logBookIcon()}</button>
               <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
@@ -309,7 +344,7 @@ PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.</
       const selectedType = typeFilter.value;
       const filtered = plants.filter(p => {
         const combined = [
-          p.id, p.name, p.type, p.status, p.source, p.acquired, p.location, p.notes,
+          p.id, p.name, p.nickname, p.type, p.status, p.source, p.acquired, p.location, p.notes,
           ...(p.photos || []).map(x => `${x.date} ${x.type} ${x.file}`),
           ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
         ].join(" ").toLowerCase();
