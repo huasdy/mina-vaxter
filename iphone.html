@@ -12,7 +12,14 @@
     * { box-sizing: border-box; }
     body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
     header { position: sticky; top: 0; z-index: 20; background: rgba(245,241,234,.98); backdrop-filter: blur(14px); border-bottom: 1px solid #d2c1ae; box-shadow: 0 4px 14px rgba(43,37,31,.08); padding: 12px 10px 10px; }
-    h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(2rem, 11vw, 2.45rem); line-height: .95; margin: 0 0 10px; font-weight: 500; text-align: center; }
+    h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(2rem, 11vw, 2.45rem); line-height: .95; margin: 0 0 10px; padding: 0 44px; font-weight: 500; text-align: center; }
+    .mobile-refresh {
+      position: absolute; top: 9px; right: 10px; width: 40px; height: 40px; padding: 0;
+      display: grid; place-items: center; border: 1px solid var(--line); border-radius: 999px;
+      background: var(--paper); color: var(--accent); box-shadow: 0 5px 16px rgba(43,37,31,.10); cursor: pointer;
+    }
+    .mobile-refresh svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+    .mobile-refresh:active { transform: scale(.96); }
     .tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; overflow-x: auto; scrollbar-width: none; }
     .tabs::-webkit-scrollbar { display: none; }
     .tab { min-width: 0; border: 1px solid var(--line); background: var(--paper); color: var(--accent); border-radius: 999px; padding: 9px 5px; font-weight: 800; font-size: clamp(.75rem, 3.45vw, .86rem); }
@@ -50,6 +57,9 @@
 <body>
   <header>
     <h1>Mina Växter</h1>
+    <button class="mobile-refresh" id="mobileRefresh" type="button" aria-label="Uppdatera Mina Växter" title="Uppdatera">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6v5h-5"/><path d="M18.2 15.5A7.5 7.5 0 1 1 19.6 8L20 11"/></svg>
+    </button>
     <div class="tabs" id="tabs"></div>
   </header>
   <main>
@@ -113,7 +123,8 @@ p-torento,2026-08-08,Avslutad/död,</script>
     const stats = document.querySelector('#stats');
     const search = document.querySelector('#search');
     const mobileViewToggle = document.querySelector('#mobileViewToggle');
-    const MOBILE_APP_VERSION = "2026-08-09-layout-1853";
+    const mobileRefresh = document.querySelector('#mobileRefresh');
+    const MOBILE_APP_VERSION = "2026-08-09-layout-1858";
     const initialParams = new URLSearchParams(window.location.search);
     const requestedCategory = initialParams.get('kategori');
     const initialCategory = requestedCategory && data[requestedCategory] ? requestedCategory : 'Hibiskus';
@@ -138,6 +149,12 @@ p-torento,2026-08-08,Avslutad/död,</script>
         url.searchParams.set('uppdaterad', Date.now().toString());
         window.location.replace(url.toString());
       } catch (error) {}
+    }
+    function forceMobileRefresh() {
+      const url = new URL(window.location.href);
+      url.searchParams.set('v', MOBILE_APP_VERSION);
+      url.searchParams.set('uppdaterad', Date.now().toString());
+      window.location.replace(url.toString());
     }
     function pageForCategory(category) {
       return {
@@ -274,7 +291,7 @@ p-torento,2026-08-08,Avslutad/död,</script>
     tabs.addEventListener('click', event => {
       const button = event.target.closest('.tab');
       if (button && button.dataset.name === "Galleri") {
-        window.location.href = "galleri.html?v=2026-08-09-layout-1853";
+        window.location.href = "galleri.html?v=2026-08-09-layout-1858";
         return;
       }
       if (!button) return;
@@ -283,6 +300,11 @@ p-torento,2026-08-08,Avslutad/död,</script>
     mobileViewToggle.addEventListener('click', () => {
       showMobileView(active === "Hundöron" ? lastCatalogCategory : "Hundöron");
     });
+    mobileRefresh.addEventListener('click', forceMobileRefresh);
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) checkMobileVersion();
+    });
+    window.addEventListener('pageshow', checkMobileVersion);
     grid.addEventListener('click', event => {
       const button = event.target.closest('.photo-button');
       const main = event.target.closest('.main-photo');
@@ -310,9 +332,6 @@ p-torento,2026-08-08,Avslutad/död,</script>
     window.addEventListener('plant-milestone-added', () => {
       logMap = combinedMilestonesByPlant(parseCSV(document.querySelector('#defaultMilestonesCSV').textContent));
       render();
-    });
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') checkMobileVersion();
     });
     render();
     checkMobileVersion();
