@@ -119,14 +119,14 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script type="text/plain" id="defaultPlantsCSV">id,name,latin,type,tags,status,source,notes
-SP-006,Fredskalla,Spathiphyllum wallisii,Krukväxt,Tropisk;Skugga;Blommande,Aktiv,,Dokumenteras som udda växt i samlingen.
-SP-005,Hjärtbräken,Hemionitis arifolia,Ormbunke,Tropisk;Skugga,Aktiv,[privat],Dokumenteras som udda växt i samlingen.
-SP-002,Patchouli,Pogostemon cablin,Doftväxt,Tropisk;Frö;Presentväxt,Aktiv,Frö,Flera plantor finns men dokumenteras som växttyp snarare än individer.
-SP-004,Plumeria,Plumeria spp.,Tropisk växt,Tropisk;Blomning okänd,Aktiv,Frö,Dokumenteras som udda växt i samlingen.
-SP-003,Salvia apiana,Salvia apiana,Salvia,Frö;Torrt/soligt;Pågående,Under uppdragning,Frö,Dokumenteras om sådden tar sig.
-SP-001,Stapelia mix,Stapelia spp.,Suckulent,Frö;Samplantering;Blomning okänd,Aktiv,Frö,Samplantering med flera individer i samma kruka. Dokumenteras som grupp tills blomning visar skillnader.
-SP-007,Ödesträd,Clerodendrum thomsoniae,Tropisk klätterväxt,Tropisk;Klätterväxt;Blommande,Aktiv,Tradera,"Tradera-annons 23. Fokus framåt är etablering, tillväxt och framtida blomning. Trivs ljust utan stark direkt sol och vill ha jämn fuktighet under tillväxtperioden."</script>
+  <script type="text/plain" id="defaultPlantsCSV">id,name,latin,type,tags,status,source,notes,card_note,card_note_updated_at
+SP-006,Fredskalla,Spathiphyllum wallisii,Krukväxt,Tropisk;Skugga;Blommande,Aktiv,,Dokumenteras som udda växt i samlingen.,,
+SP-005,Hjärtbräken,Hemionitis arifolia,Ormbunke,Tropisk;Skugga,Aktiv,[privat],Dokumenteras som udda växt i samlingen.,,
+SP-002,Patchouli,Pogostemon cablin,Doftväxt,Tropisk;Frö;Presentväxt,Aktiv,Frö,Flera plantor finns men dokumenteras som växttyp snarare än individer.,,
+SP-004,Plumeria,Plumeria spp.,Tropisk växt,Tropisk;Blomning okänd,Aktiv,Frö,Dokumenteras som udda växt i samlingen.,,
+SP-003,Salvia apiana,Salvia apiana,Salvia,Frö;Torrt/soligt;Pågående,Under uppdragning,Frö,Dokumenteras om sådden tar sig.,,
+SP-001,Stapelia mix,Stapelia spp.,Suckulent,Frö;Samplantering;Blomning okänd,Aktiv,Frö,Samplantering med flera individer i samma kruka. Dokumenteras som grupp tills blomning visar skillnader.,,
+SP-007,Ödesträd,Clerodendrum thomsoniae,Tropisk klätterväxt,Tropisk;Klätterväxt;Blommande,Aktiv,Tradera,"Tradera-annons 23. Fokus framåt är etablering, tillväxt och framtida blomning. Trivs ljust utan stark direkt sol och vill ha jämn fuktighet under tillväxtperioden.",,</script>
   <script type="text/plain" id="defaultPhotosCSV">plant_id,date,type,file,label
 SP-001,2026-06-26,hel,bilder/udda/SP-001_stapelia_2026-06-26_hel.jpg,2026-06-26 · hel
 SP-001,2026-07-17,hel,bilder/udda/SP-001_synk-e1900dea6f_2026-07-17_hel.jpg,2026-07-17 · hel
@@ -180,7 +180,7 @@ PL-H02-D-01,2026-06-25,Sådd,
 PL-H02-D-02,2026-06-25,Sådd,
 PL-H02-D-03,2026-06-25,Sådd,
 p-torento,2026-08-08,Avslutad/död,</script>
-  <script src="common.js?v=20260809synk1330"></script>
+  <script src="common.js?v=20260809layout1826"></script>
   <script>
     let plants = [];
     let plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;
@@ -253,7 +253,7 @@ p-torento,2026-08-08,Avslutad/död,</script>
       });
       const chips = collectionChipHtml("Udda", p, escapeText);
       const searchable = [
-        p.id, p.name, p.latin, p.type, p.tags, p.status, p.source, p.notes,
+        p.id, p.name, p.latin, p.type, p.tags, p.status, p.source, p.notes, getPlantCardNote(p.id, p.card_note, p.card_note_updated_at),
         ...photos.map(x => `${x.date} ${x.type} ${x.file}`),
         ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
       ].join(" ").toLowerCase();
@@ -263,23 +263,21 @@ p-torento,2026-08-08,Avslutad/död,</script>
           <div class="image-wrap">
             ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(p.name)}" data-caption="${escapeAttr(p.name + " · " + activeLabel)}">` : `<div class="image-empty">Bild saknas</div>`}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}</div>` : ""}
+            <div class="plant-card-gallery-slot ${photos.length > 1 ? "has-gallery" : ""}">${photos.length > 1 ? `<div class="thumbs">${photoButtons(p, activeFile)}</div>` : ""}</div>
           </div>
           <div class="card-body">
-            <h2>${escapeText(clean(p.name) || p.id)}</h2>
-            <div class="import-actions">
-              <button class="plant-log-btn" type="button" aria-label="Milstolpar" title="Milstolpar">${logBookIcon()}</button>
-              <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
-              <span class="import-badge" data-import-badge hidden></span>
+            <div class="plant-card-head">
+              <div class="plant-title-block"><h2>${escapeText(clean(p.name) || p.id)}</h2><div class="latin">${escapeText(clean(p.latin))}</div></div>
+              <div class="import-actions">
+                <button class="plant-log-btn" type="button" aria-label="Milstolpar" title="Milstolpar">${logBookIcon()}</button>
+                <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
+                <span class="import-badge" data-import-badge hidden></span>
+              </div>
             </div>
-            <div class="latin">${escapeText(clean(p.latin))}</div>
-            <div class="chips">${chips}</div>
-            ${photos.length > 1 ? `<div class="thumbs">${photoButtons(p, activeFile)}</div>` : ""}
-            <dl>
-              <dt>ID</dt><dd>${escapeText(p.id)}</dd>
-              <dt>Ursprung</dt><dd>${escapeText(clean(p.source) || "Ej ifyllt")}</dd>
-            </dl>
-            ${milestoneSummary(latestMilestone)}
-            ${clean(p.notes) ? `<div class="notes">${escapeText(clean(p.notes))}</div>` : ""}
+            <div class="plant-card-chip-slot"><div class="chips">${chips}</div></div>
+            <div class="plant-card-info"></div>
+            <div class="plant-card-milestone-slot">${milestoneSummary(latestMilestone)}</div>
+            <div class="plant-card-notes-slot">${plantCardNoteField(p.id, p.card_note, p.card_note_updated_at, "Udda")}</div>
           </div>
         </article>
       `;
@@ -309,10 +307,10 @@ p-torento,2026-08-08,Avslutad/död,</script>
 
     function render() {
       const query = search.value.trim().toLowerCase();
-      const selectedType = typeFilter.value;
+      const selectedType = typeFilter.value === "__concluded_only__" ? "" : typeFilter.value;
       const filtered = plants.filter(p => {
         const combined = [
-          p.id, p.name, p.latin, p.type, p.tags, p.status, p.source, p.notes,
+          p.id, p.name, p.latin, p.type, p.tags, p.status, p.source, p.notes, getPlantCardNote(p.id, p.card_note, p.card_note_updated_at),
           ...(p.photos || []).map(x => `${x.date} ${x.type} ${x.file}`),
           ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
         ].join(" ").toLowerCase();

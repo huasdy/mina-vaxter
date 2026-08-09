@@ -143,6 +143,116 @@ function bildText(n) {
   return Number(n) === 1 ? "1 bild" : `${n} bilder`;
 }
 
+const plantCardNotesStorageKey = "mina-vaxter-card-notes-v1";
+const plantCardNoteChangesStorageKey = "mina-vaxter-card-note-changes-v1";
+
+function getPlantCardNotes() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(plantCardNotesStorageKey) || "{}");
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function getPlantCardNoteChanges() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(plantCardNoteChangesStorageKey) || "{}");
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function savePlantCardNoteChanges(changes) {
+  try { localStorage.setItem(plantCardNoteChangesStorageKey, JSON.stringify(changes)); } catch (e) {}
+}
+
+function noteValue(entry) {
+  return clean(entry && typeof entry === "object" ? entry.note : entry);
+}
+
+function noteUpdatedAt(entry) {
+  return clean(entry && typeof entry === "object" ? entry.updatedAt : "");
+}
+
+function getPlantCardNote(plantId, publishedNote = "", publishedUpdatedAt = "") {
+  const id = clean(plantId);
+  const notes = getPlantCardNotes();
+  if (!Object.prototype.hasOwnProperty.call(notes, id)) return clean(publishedNote);
+  const local = notes[id];
+  const localUpdatedAt = noteUpdatedAt(local);
+  if (publishedUpdatedAt && localUpdatedAt && publishedUpdatedAt >= localUpdatedAt) return clean(publishedNote);
+  return noteValue(local);
+}
+
+function plantCardNoteField(plantId, publishedNote = "", publishedUpdatedAt = "", category = "Pelargon") {
+  const id = clean(plantId);
+  return `
+    <label class="card-note">
+      <span class="card-note-label">Anteckning</span>
+      <textarea class="card-note-input" data-card-note-id="${escapeAttr(id)}" data-card-note-category="${escapeAttr(category)}" maxlength="180" rows="2" placeholder="Skriv en enkel anteckning…">${htmlEscape(getPlantCardNote(id, publishedNote, publishedUpdatedAt))}</textarea>
+    </label>
+  `;
+}
+
+function buildPlantCardNoteExport(rows = Object.values(getPlantCardNoteChanges())) {
+  return {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    source: "Mina Växter lokala kortanteckningar",
+    items: (rows || []).map(row => ({
+      id: clean(row.id),
+      category: clean(row.category) || "Pelargon",
+      note: noteValue(row),
+      updatedAt: noteUpdatedAt(row)
+    })).filter(row => row.id && row.updatedAt)
+  };
+}
+
+function deletePlantCardNoteChange(plantId) {
+  const changes = getPlantCardNoteChanges();
+  delete changes[clean(plantId)];
+  savePlantCardNoteChanges(changes);
+}
+
+function clearPlantCardNoteChanges() {
+  savePlantCardNoteChanges({});
+}
+
+function ensurePlantCardNotes() {
+  if (document.body.dataset.plantCardNotesReady === "true") return;
+  document.body.dataset.plantCardNotesReady = "true";
+  const savedNotes = getPlantCardNotes();
+  const savedChanges = getPlantCardNoteChanges();
+  let migrated = false;
+  Object.entries(savedNotes).forEach(([id, value]) => {
+    if (value && typeof value === "object") return;
+    const entry = {id: clean(id), category: "Pelargon", note: clean(value), updatedAt: new Date().toISOString()};
+    savedNotes[id] = entry;
+    savedChanges[id] = entry;
+    migrated = true;
+  });
+  if (migrated) {
+    try { localStorage.setItem(plantCardNotesStorageKey, JSON.stringify(savedNotes)); } catch (e) {}
+    savePlantCardNoteChanges(savedChanges);
+  }
+  document.addEventListener("input", event => {
+    const input = event.target.closest(".card-note-input[data-card-note-id]");
+    if (!input) return;
+    const id = clean(input.dataset.cardNoteId);
+    if (!id) return;
+    const notes = getPlantCardNotes();
+    const entry = {id, category: clean(input.dataset.cardNoteCategory) || "Pelargon", note: input.value.trim(), updatedAt: new Date().toISOString()};
+    notes[id] = entry;
+    try { localStorage.setItem(plantCardNotesStorageKey, JSON.stringify(notes)); } catch (e) {}
+    const changes = getPlantCardNoteChanges();
+    changes[id] = entry;
+    savePlantCardNoteChanges(changes);
+    updatePlantImageImportUI();
+  });
+}
+
 function logBookIcon() {
   return `
     <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
@@ -305,7 +415,7 @@ function plantMilestoneKey(row) {
   ].join("|");
 }
 
-function buildSyncManifest(imageItems, milestoneItems) {
+function buildSyncManifest(imageItems, milestoneItems, cardNoteItems) {
   return {
     version: 1,
     exportedAt: new Date().toISOString(),
@@ -313,7 +423,8 @@ function buildSyncManifest(imageItems, milestoneItems) {
     targetFolder: "iCloud Drive/Downloads",
     contains: {
       images: imageItems.length,
-      milestones: milestoneItems.length
+      milestones: milestoneItems.length,
+      cardNotes: cardNoteItems.length
     },
     note: "Hundöron och fokusnotiser är lokal arbetslista och ingår inte i synkpaketet."
   };
@@ -374,6 +485,58 @@ function milestoneSummary(log) {
       <div class="milestone-value"><span>${htmlEscape(milestoneIcon(log.type))}</span><strong>${htmlEscape(log.type)}</strong><span>${htmlEscape(log.date)}</span></div>
     </div>
   `;
+}
+
+function isConcludedPlantMilestone(log) {
+  const type = clean(log && log.type).toLocaleLowerCase("sv");
+  return type.startsWith("avslutad") || type === "död" || type === "avliden";
+}
+
+function plantCardIsConcluded(card) {
+  let milestones = [];
+  try { milestones = JSON.parse(card.dataset.milestones || "[]"); } catch (e) { milestones = []; }
+  return isConcludedPlantMilestone(latestPlantMilestone(milestones));
+}
+
+function ensureConcludedPlantFilter() {
+  if (document.body.dataset.concludedPlantFilterReady === "true") return;
+  const grid = document.querySelector("#grid, .grid");
+  if (!grid) return;
+  document.body.dataset.concludedPlantFilterReady = "true";
+  const concludedValue = "__concluded_only__";
+  let select = document.querySelector("#typeFilter, #statusFilter");
+  if (select) {
+    if (!select.querySelector(`option[value="${concludedValue}"]`)) {
+      const option = document.createElement("option");
+      option.value = concludedValue;
+      option.textContent = "Avslutade";
+      select.appendChild(option);
+    }
+  } else {
+    select = document.createElement("select");
+    select.className = "concluded-filter-select";
+    select.setAttribute("aria-label", "Filtrera aktiva eller avslutade växter");
+    select.innerHTML = `<option value="">Aktiva växter</option><option value="${concludedValue}">Avslutade</option>`;
+    const stats = document.querySelector("#stats, .stats");
+    if (stats) stats.before(select);
+  }
+
+  const applyFilter = () => {
+    const cards = [...grid.querySelectorAll(".plant-card[data-milestones]")];
+    const concludedOnly = select.value === concludedValue;
+    let concludedCount = 0;
+    cards.forEach(card => {
+      const concluded = plantCardIsConcluded(card);
+      if (concluded) concludedCount += 1;
+      card.dataset.concludedHidden = concludedOnly ? (!concluded ? "true" : "false") : (concluded ? "true" : "false");
+    });
+    const option = select.querySelector(`option[value="${concludedValue}"]`);
+    if (option) option.textContent = `Avslutade (${concludedCount})`;
+  };
+
+  select.addEventListener("change", applyFilter);
+  new MutationObserver(applyFilter).observe(grid, {childList: true});
+  applyFilter();
 }
 
 function sortNatural(a, b) {
@@ -771,6 +934,102 @@ function ensurePlantMilestones() {
   const style = document.createElement("style");
   style.id = "plantLogStyles";
   style.textContent = `
+    .plant-card {
+      --plant-image-height: 356px;
+      --plant-heading-height: 82px;
+      --plant-chip-height: 36px;
+      --plant-gallery-height: 50px;
+    }
+    .plant-card > .image-wrap {
+      height: var(--plant-image-height) !important; min-height: var(--plant-image-height);
+      aspect-ratio: auto !important; flex: 0 0 var(--plant-image-height);
+    }
+    .plant-card .card-body {
+      position: relative; display: grid !important; grid-template-rows: auto; align-content: start;
+      gap: 12px; flex: 1;
+    }
+    .plant-card .plant-card-head {
+      height: var(--plant-heading-height); min-height: var(--plant-heading-height);
+      display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start;
+      gap: 10px; margin: 0; overflow: hidden;
+    }
+    .plant-card .plant-title-block { min-width: 0; }
+    .plant-card .plant-title-block .plant-nickname,
+    .plant-card .plant-title-block .latin { margin-top: 4px; }
+    .plant-card .plant-title-block h2 {
+      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3;
+      overflow: hidden;
+    }
+    .plant-card .plant-card-head .import-actions,
+    .plant-card .plant-card-head .favorite-log-action {
+      position: static; display: flex; align-items: center; justify-content: flex-end;
+      flex-direction: column; gap: 6px; margin: 0;
+    }
+    .plant-card .plant-card-chip-slot {
+      height: var(--plant-chip-height); min-height: var(--plant-chip-height);
+      overflow: hidden; display: flex; align-items: flex-start;
+    }
+    .plant-card .plant-card-chip-slot .chips { display: flex; flex-wrap: wrap; gap: 7px; align-content: flex-start; }
+    .plant-card .plant-card-chip-slot .chip {
+      background: var(--chip, #efe6da); color: var(--muted, #6f655b); border-radius: 999px;
+      padding: 5px 9px; font-size: .8rem; font-weight: 700;
+    }
+    .plant-card .plant-card-chip-slot .chip.green { background: rgba(96,119,97,.17); color: #435943; }
+    .plant-card .plant-card-gallery-slot {
+      position: absolute; top: 0; left: 0; right: 0; z-index: 4;
+      height: var(--plant-gallery-height); overflow: hidden;
+      padding: 5px 58px 5px 12px; display: flex; align-items: center;
+      border: 0; border-bottom: 1px solid rgba(255,255,255,.18); border-radius: 0;
+      background: rgba(255,253,248,.46);
+      box-shadow: none;
+    }
+    .plant-card .plant-card-gallery-slot:not(.has-gallery) { display: none; }
+    .plant-card .plant-card-gallery-slot .thumbs {
+      width: 100%; height: 40px; margin: 0; padding: 0;
+      display: flex; flex-wrap: nowrap; gap: 8px; overflow-x: auto; overflow-y: hidden;
+    }
+    .plant-card .plant-card-gallery-slot .thumb,
+    .plant-card .plant-card-gallery-slot .photo-button {
+      width: 40px; height: 40px; border-radius: 9px; background: rgba(255,253,248,.82);
+    }
+    .plant-card .plant-card-gallery-slot .photo-strip { height: 40px; padding: 0; }
+    .plant-card .date-ribbon { display: none !important; }
+    .plant-card .plant-card-info { min-width: 0; height: 58px; overflow: hidden; }
+    .plant-card[data-category="Hibiskus"] .plant-card-info { height: 174px; }
+    .plant-card[data-category="Citrus"] .plant-card-info { height: 84px; }
+    .plant-card .plant-card-info:empty { height: 0; }
+    .plant-card .plant-card-info:has(.edit-form) { height: auto; overflow: visible; }
+    .plant-card .plant-card-milestone-slot { height: 64px; min-height: 64px; overflow: hidden; }
+    .plant-card .plant-card-milestone-slot:empty { display: none; }
+    .plant-card .plant-card-notes-slot { height: 78px; min-height: 78px; overflow: hidden; }
+    .plant-card .plant-card-notes-slot:empty { display: none; }
+    .plant-card .plant-card-notes-slot .notes { margin-top: 0; }
+    .plant-card .plant-card-notes-slot.favorite-focus { height: 98px; margin-top: 0; }
+    .plant-card .plant-card-notes-slot:has(.card-note) { height: 108px; overflow: visible; }
+    .plant-card:has(.card-note) .card-body {
+      grid-template-rows: var(--plant-heading-height) var(--plant-chip-height) auto minmax(64px, 1fr) 108px;
+    }
+    .plant-card:has(.card-note) .plant-card-milestone-slot:empty { display: block; }
+    .card-note { display: grid; gap: 6px; }
+    .card-note-label {
+      color: var(--accent, #7d4f3b); font-size: .72rem; font-weight: 900;
+      letter-spacing: .12em; text-transform: uppercase;
+    }
+    .card-note-input {
+      width: 100%; height: 72px; min-height: 72px; border: 1px solid var(--line, #ded2c2); border-radius: 14px;
+      padding: 10px 11px; resize: none; overflow-y: auto; background: rgba(255,255,255,.46);
+      color: var(--ink, #2b251f); font: inherit; font-size: .92rem; line-height: 1.35;
+    }
+    .card-note-input::placeholder { color: rgba(111,101,91,.68); }
+    .plant-card[data-concluded-hidden="true"] { display: none !important; }
+    .concluded-filter-select {
+      width: auto; max-width: 100%; margin: 0 0 10px; border: 1px solid var(--line, #ded2c2);
+      border-radius: 999px; padding: 9px 34px 9px 12px; background: var(--paper, #fffdf8);
+      color: var(--ink, #2b251f); font: inherit; font-weight: 800;
+    }
+    @media (max-width: 700px) {
+      .plant-card { --plant-image-height: min(280px, 65vw); }
+    }
     .plant-card .card-body { position: relative; }
     .plant-card .card-body h2 { padding-right: 0; overflow-wrap: normal; word-break: normal; hyphens: none; }
     .plant-log-btn {
@@ -863,6 +1122,8 @@ function ensurePlantMilestones() {
     }
   `;
   document.head.appendChild(style);
+  ensureConcludedPlantFilter();
+  ensurePlantCardNotes();
 
   const dialog = document.createElement("dialog");
   dialog.id = "plantLogDialog";
@@ -1438,7 +1699,7 @@ async function openImageImportForm(file) {
 async function updatePlantImageImportUI() {
   let items = [];
   try { items = await getImageImportItems(); } catch (error) { items = []; }
-  const syncCount = items.length + getPlantMilestoneAdditions().length;
+  const syncCount = items.length + getPlantMilestoneAdditions().length + buildPlantCardNoteExport().items.length;
   const button = document.querySelector(".import-queue-button");
   if (button) {
     button.classList.toggle("has-items", syncCount > 0);
@@ -1463,7 +1724,8 @@ async function openImageImportQueue() {
   let items = [];
   try { items = await getImageImportItems(); } catch (error) { items = []; }
   const milestoneItems = buildPlantMilestoneExport().items || [];
-  const syncCount = items.length + milestoneItems.length;
+  const cardNoteItems = buildPlantCardNoteExport().items || [];
+  const syncCount = items.length + milestoneItems.length + cardNoteItems.length;
   const urls = [];
   const rows = items.map(item => {
     const url = URL.createObjectURL(imageImportBlob(item));
@@ -1495,16 +1757,27 @@ async function openImageImportQueue() {
       </article>
     `;
   }).join("");
+  const cardNoteRows = cardNoteItems.map(item => `
+    <article class="import-item">
+      <div class="import-item-icon" aria-hidden="true">✎</div>
+      <div>
+        <strong>${htmlEscape(item.id)}</strong>
+        <small>${htmlEscape(item.category)} · kortanteckning</small>
+        <small>${htmlEscape(item.note || "Tom anteckning")}</small>
+      </div>
+      <button class="import-delete" type="button" data-delete-card-note="${escapeAttr(item.id)}">Ta bort</button>
+    </article>
+  `).join("");
   dialog.innerHTML = `
     <div class="import-panel">
       <header>
         <div>
           <h2>Synka till Mac</h2>
-          <p>${syncCount ? `${items.length} bilder · ${milestoneItems.length} milstolpar` : "Kön är tom just nu."}</p>
+          <p>${syncCount ? `${items.length} bilder · ${milestoneItems.length} milstolpar · ${cardNoteItems.length} anteckningar` : "Kön är tom just nu."}</p>
         </div>
         <button class="import-close" type="button" aria-label="Stäng">×</button>
       </header>
-      <div class="import-list">${rows + milestoneRows || '<div class="import-empty">Inga ändringar i kön.</div>'}</div>
+      <div class="import-list">${rows + milestoneRows + cardNoteRows || '<div class="import-empty">Inga ändringar i kön.</div>'}</div>
       <div class="import-buttons">
         <button class="primary" type="button" data-export-package ${syncCount ? "" : "disabled"}>Synka</button>
         <button class="secondary" type="button" data-clear-import ${syncCount ? "" : "disabled"}>Rensa synkkö</button>
@@ -1529,11 +1802,19 @@ async function openImageImportQueue() {
       openImageImportQueue();
     });
   });
+  dialog.querySelectorAll("[data-delete-card-note]").forEach(button => {
+    button.addEventListener("click", () => {
+      deletePlantCardNoteChange(button.dataset.deleteCardNote);
+      updatePlantImageImportUI();
+      openImageImportQueue();
+    });
+  });
   const clearButton = dialog.querySelector("[data-clear-import]");
   clearButton.addEventListener("click", async () => {
-    if (!confirm("Ta bort alla bilder och milstolpar i synkkön? Gör detta först när paketet är sparat eller importerat på Mac.")) return;
+    if (!confirm("Ta bort alla bilder, milstolpar och anteckningar i synkkön? Gör detta först när paketet är sparat eller importerat på Mac.")) return;
     await clearImageImportItems();
     clearPlantMilestoneAdditions();
+    clearPlantCardNoteChanges();
     window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: {cleared: true}}));
     updatePlantImageImportUI();
     openImageImportQueue();
@@ -1543,12 +1824,13 @@ async function openImageImportQueue() {
     packageButton.disabled = true;
     packageButton.textContent = "Skapar paket...";
     try {
-      const zip = await createSyncPackage(items, getPlantMilestoneAdditions());
+      const zip = await createSyncPackage(items, getPlantMilestoneAdditions(), cardNoteItems);
       downloadBlob(`mina-vaxter-synkpaket-${localDateString()}.zip`, zip);
       packageButton.textContent = "Synka";
       if (confirm("Synkpaketet är skapat. Rensa synkkön i den här webbläsaren?")) {
         await clearImageImportItems();
         clearPlantMilestoneAdditions();
+        clearPlantCardNoteChanges();
         window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: {cleared: true}}));
         updatePlantImageImportUI();
         dialog.close();
@@ -1609,12 +1891,14 @@ async function createImageImportPackage(items) {
   return createZipBlob(entries);
 }
 
-async function createSyncPackage(imageItems = [], milestoneRows = []) {
+async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRows = []) {
   const imageManifest = buildImageImportManifest(imageItems);
   const milestoneExport = buildPlantMilestoneExport(milestoneRows);
-  const syncManifest = buildSyncManifest(imageManifest.items, milestoneExport.items);
+  const cardNoteExport = buildPlantCardNoteExport(cardNoteRows);
+  const syncManifest = buildSyncManifest(imageManifest.items, milestoneExport.items, cardNoteExport.items);
   syncManifest.images = imageManifest.items;
   syncManifest.milestonesFile = "milstolpar.json";
+  syncManifest.cardNotesFile = "kortanteckningar.json";
 
   const entries = [
     {
@@ -1624,6 +1908,10 @@ async function createSyncPackage(imageItems = [], milestoneRows = []) {
     {
       name: "milstolpar.json",
       blob: new Blob([JSON.stringify(milestoneExport, null, 2)], {type: "application/json;charset=utf-8"})
+    },
+    {
+      name: "kortanteckningar.json",
+      blob: new Blob([JSON.stringify(cardNoteExport, null, 2)], {type: "application/json;charset=utf-8"})
     }
   ];
   imageManifest.items.forEach((manifestItem, index) => {
@@ -1728,8 +2016,9 @@ function ensurePlantFavorites() {
     style.textContent = `
       .plant-card { position: relative; }
       .favorite-corner {
-        position: absolute; top: 0; right: 0; z-index: 2; width: 46px; height: 46px; border: 0; padding: 0;
+        position: absolute; top: 0; right: 0; z-index: 12; width: 50px; height: 50px; border: 0; padding: 0;
         background: transparent; cursor: pointer; color: rgba(125,79,59,.34);
+        pointer-events: auto; touch-action: manipulation;
       }
       .favorite-corner::before {
         content: ""; position: absolute; top: 0; right: 0; width: 0; height: 0;

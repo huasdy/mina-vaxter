@@ -89,7 +89,7 @@
 
   <footer>Hundöron och Fokus kan exporteras och importeras mellan desktop och iPhone.</footer>
 
-  <script src="common.js?v=20260809synk1330"></script>
+  <script src="common.js?v=20260809layout1826"></script>
   <script type="text/plain" id="defaultMilestonesCSV">id,date,type,note
 SP-003,2026-06-25,Sådd,Frön blötlagda 24 h med rökpapper före sådd.
 SP-003,2026-07-04,Grodd,Första synliga grodd.
@@ -154,23 +154,24 @@ p-torento,2026-08-08,Avslutad/död,</script>
           <div class="image-wrap">
             ${item.image ? `<img class="main-photo" src="${escapeAttr(item.image)}" alt="${escapeAttr(displayLabel)}" data-caption="${escapeAttr(displayLabel + (item.dateLabel ? " · " + item.dateLabel : ""))}">` : `<div class="image-empty">Bild saknas</div>`}
             ${item.dateLabel ? `<div class="date-ribbon">${escapeAttr(item.dateLabel)}</div>` : ""}
+            <div class="plant-card-gallery-slot"></div>
           </div>
           <div class="card-body">
             <div class="plant-card-head">
-              <div><h2>${htmlEscape(identity)}</h2>${nickname ? `<div class="plant-nickname">${htmlEscape(nickname)}</div>` : ""}</div>
+              <div class="plant-title-block"><h2>${htmlEscape(identity)}</h2>${nickname ? `<div class="plant-nickname">${htmlEscape(nickname)}</div>` : ""}${item.latin ? `<div class="latin">${htmlEscape(item.latin)}</div>` : ""}</div>
               <div class="favorite-log-action">
                 <button class="plant-log-btn" type="button" aria-label="Milstolpar" title="Milstolpar">${logBookIcon()}</button>
                 <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
                 <span class="import-badge" data-import-badge hidden></span>
               </div>
             </div>
-            ${item.latin ? `<div class="latin">${htmlEscape(item.latin)}</div>` : ""}
-            <dl>
+            <div class="plant-card-chip-slot"><div class="chips"><span class="chip green">${htmlEscape(item.category)}</span></div></div>
+            <div class="plant-card-info"><dl>
               <dt>ID</dt><dd>${htmlEscape(item.plantId)}</dd>
               <dt>Kategori</dt><dd>${htmlEscape(item.category)}</dd>
-            </dl>
-            ${milestoneSummary(latestMilestone)}
-            <div class="favorite-focus">
+            </dl></div>
+            <div class="plant-card-milestone-slot">${milestoneSummary(latestMilestone)}</div>
+            <div class="plant-card-notes-slot favorite-focus">
               <label for="focus-${escapeAttr(item.key)}">Fokus</label>
               <textarea id="focus-${escapeAttr(item.key)}" data-focus-key="${escapeAttr(item.key)}" maxlength="120" rows="2" placeholder="Att göra...">${htmlEscape(item.focusNote || "")}</textarea>
             </div>

@@ -22,6 +22,7 @@
     header { max-width: 1180px; margin: 0 auto; padding: 36px 24px 38px; }
     nav { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
     nav a { color: var(--accent); text-decoration: none; font-weight: 800; }
+    .mobile-back { display: none; }
     .desktop-mark { color: var(--green); text-transform: uppercase; letter-spacing: .17em; font-size: .72rem; font-weight: 900; }
     .hero { max-width: 1180px; margin: 0 auto; padding: 58px 24px 58px; }
     .eyebrow { color: var(--accent); text-transform: uppercase; letter-spacing: .2em; font-size: .77rem; font-weight: 900; }
@@ -38,10 +39,12 @@
     .colony-card {
       position: relative; min-height: 390px; display: grid; grid-template-rows: 1fr auto; overflow: hidden;
       border: 1px solid var(--line); border-radius: var(--radius); color: inherit;
-      background: var(--paper); box-shadow: var(--shadow); transition: transform .18s ease, border-color .18s ease;
+      background: var(--paper); box-shadow: var(--shadow);
     }
-    .colony-card:hover, .colony-card.dragging { transform: translateY(-3px); border-color: rgba(125,79,59,.58); }
-    .colony-card.dragging { box-shadow: 0 22px 64px rgba(62,43,28,.2); }
+    .colony-card.dragging {
+      border-color: rgba(125,79,59,.58);
+      box-shadow: 0 22px 64px rgba(62,43,28,.2);
+    }
     .art {
       position: relative; min-height: 250px; overflow: hidden; display: grid; place-items: center;
       color: rgba(255,253,248,.88); text-decoration: none; background:
@@ -83,20 +86,29 @@
     .future strong { display: block; margin-bottom: 7px; color: var(--ink); font-family: Georgia, "Times New Roman", serif; font-size: 1.55rem; font-weight: 500; }
     .desktop-message { display: none; }
     @media (max-width: 960px), (hover: none) and (pointer: coarse) {
-      header, .hero, main { display: none; }
-      .desktop-message { min-height: 100vh; padding: 28px; display: grid; place-items: center; text-align: center; }
-      .desktop-message div { max-width: 390px; }
-      .desktop-message h1 { margin: 0 0 14px; font-size: 3rem; line-height: .95; }
-      .desktop-message p { color: var(--muted); }
-      .desktop-message a { color: var(--accent); font-weight: 850; }
+      header { padding: 18px 16px 12px; }
+      .desktop-back { display: none; }
+      .mobile-back { display: inline; }
+      .desktop-mark { font-size: 0; }
+      .desktop-mark::after { content: "Visningsläge"; font-size: .68rem; }
+      .hero { padding: 34px 16px 34px; }
+      h1 { font-size: clamp(4.2rem, 22vw, 6.4rem); }
+      main { padding: 0 16px 54px; }
+      .section-head { align-items: flex-end; }
+      .colonies { grid-template-columns: 1fr; gap: 16px; }
+      .colony-card { min-height: 330px; }
+      .art { min-height: 220px; }
+      .card-copy { padding: 20px 22px 22px; }
+      .gallery-file-input, .drop-overlay, .import-toast { display: none !important; }
+      .desktop-message { display: none; }
     }
-    @media (prefers-reduced-motion: reduce) { .colony-card { transition: none; } }
   </style>
 </head>
 <body>
   <header>
     <nav>
-      <a href="index.html">← Mina Växter</a>
+      <a class="desktop-back" href="index.html">← Mina Växter</a>
+      <a class="mobile-back" href="iphone.html">← Mina Växter</a>
       <span class="desktop-mark">Trädgårdsalbum · desktop</span>
     </nav>
   </header>
@@ -145,7 +157,19 @@
     </div>
   </section>
   <div class="import-toast" id="importToast" role="status" aria-live="polite"></div>
-  <script type="text/plain" id="defaultPhotosCSV">date,file</script>
+  <script type="text/plain" id="defaultLiljorPhotosCSV">date,file
+2026-06-29,bilder/galleri/liljor/1e4e1dc7d7e86a6044ea8341.jpg
+2026-06-29,bilder/galleri/liljor/2056f9c27ec85d2f43293025.jpg
+2026-06-29,bilder/galleri/liljor/734608834bffc9010e051ff0.jpg
+2026-06-29,bilder/galleri/liljor/a5c4dee7a89ba98ce3a4b5b1.jpg
+2026-08-03,bilder/galleri/liljor/368b3bf09f4d9b863fe31594.jpg</script>
+  <script type="text/plain" id="defaultRosorPhotosCSV">date,file
+2026-06-24,bilder/galleri/rosor/f47bf7d3379b7d693484b2f7.jpg
+2026-07-05,bilder/galleri/rosor/6d7dd7131bc142427894c4f5.jpg
+2026-07-05,bilder/galleri/rosor/b747e18cd8842d4a38e34eff.jpg</script>
+  <script type="text/plain" id="defaultDahliorPhotosCSV">date,file
+2026-08-04,bilder/galleri/dahlior/a1fb8fa0f6905762f15e43cc.jpg
+2026-08-04,bilder/galleri/dahlior/dce2500195d3b1e1a6312d90.jpg</script>
   <script src="originalarkiv-local.js"></script>
   <script>
     const galleryDbName = "mina-vaxter-kolonier";
@@ -241,8 +265,14 @@
     }
 
     function galleryPublishedPhotos(album) {
-      if (album !== "liljor") return [];
-      const lines = document.querySelector("#defaultPhotosCSV").textContent.trim().split(/\r?\n/).slice(1);
+      const sourceIds = {
+        liljor: "defaultLiljorPhotosCSV",
+        rosor: "defaultRosorPhotosCSV",
+        dahlior: "defaultDahliorPhotosCSV"
+      };
+      const source = document.querySelector(`#${sourceIds[album] || ""}`);
+      if (!source) return [];
+      const lines = source.textContent.trim().split(/\r?\n/).slice(1);
       return lines.map(line => {
         const comma = line.indexOf(",");
         return comma < 0 ? null : {date: line.slice(0, comma).trim(), file: line.slice(comma + 1).trim(), published: true};
@@ -359,7 +389,7 @@
       const server = await galleryServerPhotos(album);
       const serverNames = new Set(server.map(photo => photo.name));
       const local = (await galleryStoredPhotos(album)).filter(photo => !serverNames.has(photo.name));
-      const photos = [...galleryPublishedPhotos(album), ...server, ...local].sort((a, b) => b.date.localeCompare(a.date));
+      const photos = [...(server.length ? server : galleryPublishedPhotos(album)), ...local].sort((a, b) => b.date.localeCompare(a.date));
       summary.textContent = photos.length === 1 ? "1 bild" : photos.length ? `${photos.length} bilder` : "Inga bilder ännu";
       const previousUrl = galleryCoverUrls.get(album);
       if (previousUrl) URL.revokeObjectURL(previousUrl);

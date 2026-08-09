@@ -99,7 +99,7 @@
 
   <section class="toolbar">
     <div class="toolbar-inner">
-      <input id="search" type="search" placeholder="Sök namn, typ, status, plats, källa eller anteckning…">
+      <input id="search" type="search" placeholder="Sök namn, typ, status, källa eller anteckning…">
       <select id="typeFilter"><option value="">Alla typer</option></select>
       <select id="sortSelect">
         <option value="name">Namn A-Ö</option>
@@ -125,7 +125,7 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script type="text/plain" id="defaultPlantsCSV">id,name,type,status,source,acquired,location,notes,nickname
+  <script type="text/plain" id="defaultPlantsCSV">id,name,type,status,source,notes,nickname,card_note,card_note_updated_at
 c-calamondin,Calamondin,Calamondin,Aktiv,[privat],,,,
 c-limon-1,Citrus limon 1,Citron,Aktiv,Bauhaus,,,,
 c-limon-2,Citrus limon 2,Citron,Aktiv,Bauhaus,,,,
@@ -189,7 +189,7 @@ PL-H02-D-01,2026-06-25,Sådd,
 PL-H02-D-02,2026-06-25,Sådd,
 PL-H02-D-03,2026-06-25,Sådd,
 p-torento,2026-08-08,Avslutad/död,</script>
-  <script src="common.js?v=20260809synk1330"></script>
+  <script src="common.js?v=20260809layout1826"></script>
   <script>
     let plants = [];
     let editMode = false;
@@ -270,7 +270,7 @@ p-torento,2026-08-08,Avslutad/död,</script>
         return {file: photo.file, title: displayName, caption: `${displayLabel} · ${label}`, alt: displayLabel};
       });
       const searchable = [
-        p.id, p.name, p.nickname, p.type, p.status, p.source, p.acquired, p.location, p.notes,
+        p.id, p.name, p.nickname, p.type, p.status, p.source, p.notes, getPlantCardNote(p.id, p.card_note, p.card_note_updated_at),
         ...photos.map(x => `${x.date} ${x.type} ${x.file}`),
         ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
       ].join(" ").toLowerCase();
@@ -282,36 +282,30 @@ p-torento,2026-08-08,Avslutad/död,</script>
           <div class="edit-row"><label>Typ</label><input data-field="type" value="${escapeAttr(p.type)}"></div>
           <div class="edit-row"><label>Status</label><input data-field="status" value="${escapeAttr(p.status)}"></div>
           <div class="edit-row"><label>Källa</label><input data-field="source" value="${escapeAttr(p.source)}"></div>
-          <div class="edit-row"><label>Inköpt</label><input data-field="acquired" value="${escapeAttr(p.acquired)}"></div>
-          <div class="edit-row"><label>Plats</label><input data-field="location" value="${escapeAttr(p.location)}"></div>
           <div class="edit-row"><label>Anteckn.</label><textarea data-field="notes">${escapeText(p.notes)}</textarea></div>
         </div>
-      ` : `
-        <dl>
-          <dt>Källa</dt><dd>${clean(p.source) || "Ej ifyllt"}</dd>
-          <dt>Inköpt</dt><dd>${clean(p.acquired) || "Ej ifyllt"}</dd>
-          <dt>Plats</dt><dd>${clean(p.location) || "Ej ifyllt"}</dd>
-        </dl>
-        ${milestoneSummary(latestMilestone)}
-        ${clean(p.notes) ? `<div class="notes">${clean(p.notes)}</div>` : ""}
-      `;
+      ` : "";
 
       return `
         <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-category="Citrus" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(displayName)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(p.nickname)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(p.logs || []))}">
           <div class="image-wrap">
             ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(displayLabel)}" data-caption="${escapeAttr(displayLabel + " · " + activeLabel)}">` : ""}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}</div>` : ""}
+            <div class="plant-card-gallery-slot ${photos.length > 1 ? "has-gallery" : ""}">${photos.length > 1 ? `<div class="thumbs">${photoButtons(p, activeFile)}</div>` : ""}</div>
           </div>
           <div class="card-body">
-            ${plantHeadingHtml(p)}
-            <div class="import-actions">
-              <button class="plant-log-btn" type="button" aria-label="Milstolpar" title="Milstolpar">${logBookIcon()}</button>
-              <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
-              <span class="import-badge" data-import-badge hidden></span>
+            <div class="plant-card-head">
+              <div class="plant-title-block">${plantHeadingHtml(p)}</div>
+              <div class="import-actions">
+                <button class="plant-log-btn" type="button" aria-label="Milstolpar" title="Milstolpar">${logBookIcon()}</button>
+                <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
+                <span class="import-badge" data-import-badge hidden></span>
+              </div>
             </div>
-            <div class="chips">${collectionChipHtml("Citrus", p, escapeText)}</div>
-            ${photos.length > 1 ? `<div class="thumbs">${photoButtons(p, activeFile)}</div>` : ""}
-            ${details}
+            <div class="plant-card-chip-slot"><div class="chips">${collectionChipHtml("Citrus", p, escapeText)}</div></div>
+            <div class="plant-card-info">${details}</div>
+            <div class="plant-card-milestone-slot">${editMode ? "" : milestoneSummary(latestMilestone)}</div>
+            <div class="plant-card-notes-slot">${!editMode ? plantCardNoteField(p.id, p.card_note, p.card_note_updated_at, "Citrus") : ""}</div>
           </div>
         </article>
       `;
@@ -341,10 +335,10 @@ p-torento,2026-08-08,Avslutad/död,</script>
 
     function render() {
       const query = search.value.trim().toLowerCase();
-      const selectedType = typeFilter.value;
+      const selectedType = typeFilter.value === "__concluded_only__" ? "" : typeFilter.value;
       const filtered = plants.filter(p => {
         const combined = [
-          p.id, p.name, p.nickname, p.type, p.status, p.source, p.acquired, p.location, p.notes,
+          p.id, p.name, p.nickname, p.type, p.status, p.source, p.notes, getPlantCardNote(p.id, p.card_note, p.card_note_updated_at),
           ...(p.photos || []).map(x => `${x.date} ${x.type} ${x.file}`),
           ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
         ].join(" ").toLowerCase();

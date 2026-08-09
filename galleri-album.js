@@ -30,6 +30,18 @@ async function loadPhotos() {
   }
 }
 
+function publishedPhotos() {
+  const source = document.querySelector("#defaultPhotosCSV");
+  if (!source) return [];
+  return source.textContent.trim().split(/\r?\n/).slice(1).map(line => {
+    const comma = line.indexOf(",");
+    if (comma < 0) return null;
+    const date = line.slice(0, comma).trim();
+    const url = line.slice(comma + 1).trim();
+    return date && url ? {date, url, name: url.split("/").pop(), published: true} : null;
+  }).filter(Boolean);
+}
+
 function render() {
   photos.sort((a, b) => b.date.localeCompare(a.date) || String(a.name).localeCompare(String(b.name), "sv"));
   const years = [...new Set(photos.map(photo => photo.date.slice(0, 4)))];
@@ -79,6 +91,7 @@ document.addEventListener("keydown", event => {
 });
 
 (async () => {
-  photos = await loadPhotos();
+  const localPhotos = await loadPhotos();
+  photos = localPhotos.length ? localPhotos : publishedPhotos();
   render();
 })();

@@ -1,4 +1,4 @@
-﻿id,name,type,status,source,acquired,location,notes,nickname
+﻿id,name,type,status,source,notes,nickname,card_note,card_note_updated_at
 c-calamondin,Calamondin,Calamondin,Aktiv,[privat],,,,
 c-limon-1,Citrus limon 1,Citron,Aktiv,Bauhaus,,,,
 c-limon-2,Citrus limon 2,Citron,Aktiv,Bauhaus,,,,

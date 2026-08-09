@@ -286,7 +286,7 @@ PL-H02-D-01,2026-06-25,Sådd,
 PL-H02-D-02,2026-06-25,Sådd,
 PL-H02-D-03,2026-06-25,Sådd,
 p-torento,2026-08-08,Avslutad/död,</script>
-  <script src="common.js?v=20260809synk1330"></script>
+  <script src="common.js?v=20260809layout1826"></script>
   <script>
     let plants = [];
     let plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;
@@ -482,17 +482,19 @@ p-torento,2026-08-08,Avslutad/död,</script>
           <div class="image-wrap">
             ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(displayLabel)}" data-caption="${escapeAttr(displayLabel + " · " + activeLabel + dayText)}">` : ""}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}${dayText}</div>` : ""}
+            <div class="plant-card-gallery-slot ${photos.length > 1 ? "has-gallery" : ""}">${photos.length > 1 ? `<div class="thumbs">${photoButtons(p, activeFile)}</div>` : ""}</div>
           </div>
-          ${photos.length > 1 ? `<div class="thumbs">${photoButtons(p, activeFile)}</div>` : ""}
           <div class="card-body">
-            <div class="plant-head"><div>${plantHeadingHtml(p)}</div>${clean(p.score) ? `<div class="score">${escapeText(clean(p.score))}</div>` : ""}</div>
-            <div class="import-actions">
-              <button class="plant-log-btn" type="button" aria-label="Milstolpar" title="Milstolpar">${logBookIcon()}</button>
-              <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
-              <span class="import-badge" data-import-badge hidden></span>
+            <div class="plant-card-head">
+              <div class="plant-title-block">${plantHeadingHtml(p)}${clean(p.score) ? `<div class="score">${escapeText(clean(p.score))}</div>` : ""}</div>
+              <div class="import-actions">
+                <button class="plant-log-btn" type="button" aria-label="Milstolpar" title="Milstolpar">${logBookIcon()}</button>
+                <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
+                <span class="import-badge" data-import-badge hidden></span>
+              </div>
             </div>
-            <div class="chips">${collectionChipHtml("Hibiskus", p, escapeText)}</div>
-            <dl>
+            <div class="plant-card-chip-slot"><div class="chips">${collectionChipHtml("Hibiskus", p, escapeText)}</div></div>
+            <div class="plant-card-info"><dl>
               <dt>Parti</dt><dd>${clean(p.batch) || "Ej ifyllt"}</dd>
               <dt>Korsning/fröparti</dt><dd>${clean(p.group) || "Ej ifyllt"}</dd>
               <dt>Sådd</dt><dd>${clean(p.sown) || "Ej ifyllt"}</dd>
@@ -500,9 +502,9 @@ p-torento,2026-08-08,Avslutad/död,</script>
               <dt>Blomfärg</dt><dd>${clean(p.flowerColor) || "Ej ännu"}</dd>
               <dt>Form</dt><dd>${clean(p.form) || "Ej ännu"}</dd>
               <dt>Fertilitet</dt><dd>${clean(p.fertility) || "Ej ännu"}</dd>
-            </dl>
-            ${milestoneSummary(latestMilestone)}
-            ${clean(p.notes) ? `<div class="notes">${escapeText(clean(p.notes))}</div>` : ""}
+            </dl></div>
+            <div class="plant-card-milestone-slot">${milestoneSummary(latestMilestone)}</div>
+            <div class="plant-card-notes-slot">${clean(p.notes) ? `<div class="notes">${escapeText(clean(p.notes))}</div>` : ""}</div>
           </div>
         </article>
       `;
@@ -578,7 +580,7 @@ p-torento,2026-08-08,Avslutad/död,</script>
       const query = search.value.trim().toLowerCase();
       const selectedBatch = batchFilter.value;
       const selectedSubBatch = subBatchFilter.value;
-      const selectedStatus = statusFilter.value;
+      const selectedStatus = statusFilter.value === "__concluded_only__" ? "" : statusFilter.value;
       return plants.filter(p => {
         const combined = [
           p.id, p.nickname, p.batch, p.group, p.sown, p.status, p.decision, p.firstBloom, p.flowerColor, p.form, p.fertility, p.score, p.notes,
@@ -596,7 +598,7 @@ p-torento,2026-08-08,Avslutad/död,</script>
       const query = search.value.trim().toLowerCase();
       const selectedBatch = batchFilter.value;
       const selectedSubBatch = subBatchFilter.value;
-      const selectedStatus = statusFilter.value;
+      const selectedStatus = statusFilter.value === "__concluded_only__" ? "" : statusFilter.value;
       const filtered = visiblePlants();
       const visible = sortedPlants(filtered);
       grid.innerHTML = visible.length ? visible.map(cardTemplate).join("") : '<div class="empty">Inga hibiskusar matchar sökningen just nu.</div>';
