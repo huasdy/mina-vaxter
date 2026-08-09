@@ -68,8 +68,9 @@ dialog::backdrop { background: rgba(22,18,15,.94); }
   h1 { font-size: clamp(4.4rem, 24vw, 7rem); }
   .season-note { max-width: none; text-align: left; }
   main { padding: 0 16px 56px; }
-  .gallery { columns: 2 145px; column-gap: 10px; }
-  figure { margin-bottom: 10px; border-radius: 13px; }
+  .gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; columns: auto; }
+  figure { margin: 0; border-radius: 13px; }
+  figure img { width: 100%; height: auto; min-height: 0; aspect-ratio: 3 / 4; object-fit: cover; }
   figcaption { opacity: 1; padding: 8px 10px 9px; }
   .lightbox { grid-template-columns: 46px 1fr 46px; }
   .lightbox img { max-height: calc(100vh - 116px); }
