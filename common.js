@@ -165,12 +165,31 @@ const plantMilestoneTypes = [
 
 const plantMilestoneStorageKey = "mina-vaxter-milestone-additions-v1";
 const plantMilestoneLegacyStorageKey = "mina-vaxter-plant-log-additions-v1";
+const plantMilestoneCleanupH02Sown20251116Key = "mina-vaxter-cleanup-h02-sown-2025-11-16-v1";
+
+function cleanUpIncorrectH02SownMilestones(rows) {
+  try {
+    if (localStorage.getItem(plantMilestoneCleanupH02Sown20251116Key) === "true") return rows;
+    const cleanedRows = rows.filter(row => !(
+      /^PL-H02(?:-|$)/i.test(clean(row && row.id)) &&
+      clean(row && row.date) === "2025-11-16" &&
+      clean(row && row.type).toLocaleLowerCase("sv") === "sådd"
+    ));
+    if (cleanedRows.length !== rows.length) {
+      localStorage.setItem(plantMilestoneStorageKey, JSON.stringify(cleanedRows));
+    }
+    localStorage.setItem(plantMilestoneCleanupH02Sown20251116Key, "true");
+    return cleanedRows;
+  } catch (e) {
+    return rows;
+  }
+}
 
 function getPlantMilestoneAdditions() {
   try {
     const stored = localStorage.getItem(plantMilestoneStorageKey) || localStorage.getItem(plantMilestoneLegacyStorageKey) || "[]";
     const parsed = JSON.parse(stored);
-    return Array.isArray(parsed) ? parsed : [];
+    return Array.isArray(parsed) ? cleanUpIncorrectH02SownMilestones(parsed) : [];
   } catch (e) {
     return [];
   }
@@ -270,7 +289,7 @@ function buildSyncManifest(imageItems, milestoneItems) {
     version: 1,
     exportedAt: new Date().toISOString(),
     source: "Mina Växter synkpaket",
-    targetFolder: "IMPORTERA_HAR/SYNK",
+    targetFolder: "iCloud Drive/Downloads",
     contains: {
       images: imageItems.length,
       milestones: milestoneItems.length
@@ -1106,10 +1125,6 @@ function ensurePlantImageImport() {
   const style = document.createElement("style");
   style.id = "plantImageImportStyles";
   style.textContent = `
-    .sync-hint {
-      border: 1px solid var(--line, #ded2c2); border-radius: 16px; padding: 12px 13px;
-      background: rgba(96,119,97,.08); color: var(--muted, #6f655b); line-height: 1.35; font-weight: 700;
-    }
     .plant-card .card-body { position: relative; }
     .plant-card .card-body h2 { padding-right: 0; overflow-wrap: normal; word-break: normal; hyphens: none; }
     .import-actions {
@@ -1468,7 +1483,6 @@ async function openImageImportQueue() {
         </div>
         <button class="import-close" type="button" aria-label="Stäng">×</button>
       </header>
-      <div class="sync-hint">Spara synkpaketet i iCloud-mappen IMPORTERA_HAR/SYNK. Paketet innehåller permanenta ändringar: bilder och milstolpar. Hundöron följer inte med.</div>
       <div class="import-list">${rows + milestoneRows || '<div class="import-empty">Inga ändringar i kön.</div>'}</div>
       <div class="import-buttons">
         <button class="primary" type="button" data-export-package ${syncCount ? "" : "disabled"}>Synka</button>

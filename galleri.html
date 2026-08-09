@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Galleri · Mina Växter</title>
+  <style>
+    :root {
+      --bg: #f5f1ea; --paper: #fffdf8; --ink: #2b251f; --muted: #6f655b;
+      --line: #ded2c2; --accent: #7d4f3b; --green: #607761;
+      --shadow: 0 18px 52px rgba(62,43,28,.14); --radius: 28px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background:
+        radial-gradient(circle at 10% 0, rgba(125,79,59,.14), transparent 38rem),
+        radial-gradient(circle at 90% 4%, rgba(96,119,97,.16), transparent 34rem),
+        var(--bg);
+    }
+    header { max-width: 1180px; margin: 0 auto; padding: 36px 24px 38px; }
+    nav { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    nav a { color: var(--accent); text-decoration: none; font-weight: 800; }
+    .desktop-mark { color: var(--green); text-transform: uppercase; letter-spacing: .17em; font-size: .72rem; font-weight: 900; }
+    .hero { max-width: 1180px; margin: 0 auto; padding: 58px 24px 58px; }
+    .eyebrow { color: var(--accent); text-transform: uppercase; letter-spacing: .2em; font-size: .77rem; font-weight: 900; }
+    h1 {
+      max-width: 950px; margin: 10px 0 24px; font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(4rem, 10vw, 8.5rem); font-weight: 500; line-height: .82; letter-spacing: -.055em;
+    }
+    .intro { max-width: 700px; margin: 0; color: var(--muted); font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.18rem, 2vw, 1.48rem); line-height: 1.45; }
+    main { max-width: 1180px; margin: 0 auto; padding: 0 24px 90px; }
+    .section-head { display: flex; justify-content: space-between; align-items: baseline; gap: 22px; margin-bottom: 18px; }
+    .section-head h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 2rem; font-weight: 500; }
+    .section-head span { color: var(--muted); font-size: .82rem; font-weight: 850; text-transform: uppercase; letter-spacing: .12em; }
+    .colonies { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+    .colony-card {
+      position: relative; min-height: 390px; display: grid; grid-template-rows: 1fr auto; overflow: hidden;
+      border: 1px solid var(--line); border-radius: var(--radius); color: inherit;
+      background: var(--paper); box-shadow: var(--shadow); transition: transform .18s ease, border-color .18s ease;
+    }
+    .colony-card:hover, .colony-card.dragging { transform: translateY(-3px); border-color: rgba(125,79,59,.58); }
+    .colony-card.dragging { box-shadow: 0 22px 64px rgba(62,43,28,.2); }
+    .art {
+      position: relative; min-height: 250px; overflow: hidden; display: grid; place-items: center;
+      color: rgba(255,253,248,.88); text-decoration: none; background:
+        radial-gradient(circle at 30% 35%, rgba(237,202,193,.44), transparent 22%),
+        radial-gradient(circle at 72% 62%, rgba(240,225,182,.28), transparent 26%),
+        linear-gradient(135deg, #7d4f3b, #a56e65 47%, #586c58);
+    }
+    .art::before, .art::after { content: ""; position: absolute; width: 190px; height: 330px; border: 2px solid rgba(255,253,248,.28); border-radius: 50%; transform: rotate(32deg); }
+    .art::before { left: 16%; top: 2%; }
+    .art::after { right: 13%; bottom: -38%; transform: rotate(-38deg); }
+    .art.has-photo::before, .art.has-photo::after { display: none; }
+    .cover-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; }
+    .art.has-photo .cover-image { display: block; }
+    .art.has-photo .flower-mark { display: none; }
+    .flower-mark { position: relative; z-index: 1; font-family: Georgia, serif; font-size: 6rem; line-height: 1; text-shadow: 0 8px 30px rgba(43,37,31,.22); }
+    .card-copy { padding: 25px 28px 27px; }
+    .card-copy h3 { margin: 0 0 6px; font-family: Georgia, "Times New Roman", serif; font-size: 2.35rem; line-height: 1; font-weight: 500; }
+    .card-copy h3 a { color: inherit; text-decoration: none; }
+    .card-copy p { margin: 0; max-width: 500px; color: var(--muted); }
+    .photo-summary { display: block; margin-top: 8px; color: var(--green); font-size: .78rem; font-weight: 850; }
+    .gallery-file-input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+    .drop-overlay {
+      position: absolute; z-index: 4; inset: 14px; border: 2px dashed rgba(255,255,255,.8); border-radius: 20px;
+      display: grid; place-items: center; padding: 24px; color: white; background: rgba(67,45,36,.76);
+      text-align: center; font-family: Georgia, "Times New Roman", serif; font-size: 1.55rem; font-weight: 500;
+      backdrop-filter: blur(9px); opacity: 0; pointer-events: none; transition: opacity .16s ease;
+    }
+    .colony-card.dragging .drop-overlay { opacity: 1; }
+    .import-toast {
+      position: fixed; z-index: 10; left: 50%; bottom: 24px; transform: translate(-50%, 18px);
+      max-width: min(90vw, 540px); padding: 11px 16px; border-radius: 999px; background: rgba(43,37,31,.92);
+      color: white; font-weight: 800; text-align: center; opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease;
+    }
+    .import-toast.visible { opacity: 1; transform: translate(-50%, 0); }
+    .future {
+      min-height: 390px; display: grid; place-items: center; padding: 38px; text-align: center;
+      border: 1px dashed rgba(125,79,59,.32); border-radius: var(--radius); background: rgba(255,253,248,.38); color: var(--muted);
+    }
+    .future strong { display: block; margin-bottom: 7px; color: var(--ink); font-family: Georgia, "Times New Roman", serif; font-size: 1.55rem; font-weight: 500; }
+    .desktop-message { display: none; }
+    @media (max-width: 960px), (hover: none) and (pointer: coarse) {
+      header, .hero, main { display: none; }
+      .desktop-message { min-height: 100vh; padding: 28px; display: grid; place-items: center; text-align: center; }
+      .desktop-message div { max-width: 390px; }
+      .desktop-message h1 { margin: 0 0 14px; font-size: 3rem; line-height: .95; }
+      .desktop-message p { color: var(--muted); }
+      .desktop-message a { color: var(--accent); font-weight: 850; }
+    }
+    @media (prefers-reduced-motion: reduce) { .colony-card { transition: none; } }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html">← Mina Växter</a>
+      <span class="desktop-mark">Trädgårdsalbum · desktop</span>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">Platser och planteringar över tid</div>
+    <h1>Galleri</h1>
+    <p class="intro">Här bor trädgårdens helheter. Inte som register över enskilda plantor, utan som bildminnen av färg, blomning och uttryck genom årstiderna.</p>
+  </section>
+
+  <main>
+    <div class="section-head"><h2>Album</h2><span>3 album</span></div>
+    <section class="colonies">
+      <article class="colony-card" data-album="liljor" data-label="Liljor">
+        <a class="art" data-role="art" href="liljor.html" aria-label="Öppna albumet Liljor"><img class="cover-image" data-role="cover" alt=""><span class="flower-mark" aria-hidden="true">✢</span></a>
+        <div class="card-copy">
+          <div><h3><a href="liljor.html">Liljor</a></h3><p>Färger, former och blomning samlade år efter år.</p><span class="photo-summary" data-role="summary">Inga bilder ännu</span></div>
+        </div>
+        <input class="gallery-file-input" id="liljorFileInput" data-role="input" type="file" accept="image/*,.heic,.heif" multiple>
+        <div class="drop-overlay">Släpp bilderna i Liljor</div>
+      </article>
+      <article class="colony-card" data-album="rosor" data-label="Rosor">
+        <a class="art" data-role="art" href="rosor.html" aria-label="Öppna albumet Rosor"><img class="cover-image" data-role="cover" alt=""><span class="flower-mark" aria-hidden="true">✿</span></a>
+        <div class="card-copy">
+          <div><h3><a href="rosor.html">Rosor</a></h3><p>Blomning, färg och trädgårdens rosögonblick genom åren.</p><span class="photo-summary" data-role="summary">Inga bilder ännu</span></div>
+        </div>
+        <input class="gallery-file-input" id="rosorFileInput" data-role="input" type="file" accept="image/*,.heic,.heif" multiple>
+        <div class="drop-overlay">Släpp bilderna i Rosor</div>
+      </article>
+      <article class="colony-card" data-album="dahlior" data-label="Dahlior">
+        <a class="art" data-role="art" href="dahlior.html" aria-label="Öppna albumet Dahlior"><img class="cover-image" data-role="cover" alt=""><span class="flower-mark" aria-hidden="true">✺</span></a>
+        <div class="card-copy">
+          <div><h3><a href="dahlior.html">Dahlior</a></h3><p>Former, färgskiftningar och sensommarens blomning samlade över tid.</p><span class="photo-summary" data-role="summary">Inga bilder ännu</span></div>
+        </div>
+        <input class="gallery-file-input" id="dahliorFileInput" data-role="input" type="file" accept="image/*,.heic,.heif" multiple>
+        <div class="drop-overlay">Släpp bilderna i Dahlior</div>
+      </article>
+    </section>
+  </main>
+
+  <section class="desktop-message">
+    <div>
+      <h1>Galleri</h1>
+      <p>Trädgårdsalbumen är skapade för den större skärmen och visas därför bara på desktop.</p>
+      <a href="index.html">Tillbaka till Mina Växter</a>
+    </div>
+  </section>
+  <div class="import-toast" id="importToast" role="status" aria-live="polite"></div>
+  <script type="text/plain" id="defaultPhotosCSV">date,file</script>
+  <script src="originalarkiv-local.js"></script>
+  <script>
+    const galleryDbName = "mina-vaxter-kolonier";
+    const galleryStoreNames = ["liljor", "rosor", "dahlior"];
+    const albumCards = [...document.querySelectorAll(".colony-card[data-album]")];
+    const importToast = document.querySelector("#importToast");
+    const galleryArchiveEndpoint = "http://127.0.0.1:47831/archive";
+    const galleryArchiveToken = window.MINA_VAXTER_ARCHIVE_TOKEN || "";
+    const galleryCoverUrls = new Map();
+    const galleryDragDepths = new Map();
+    let toastTimer = 0;
+
+    function galleryDatabase() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(galleryDbName, 2);
+        request.onupgradeneeded = () => {
+          galleryStoreNames.forEach(storeName => {
+            if (!request.result.objectStoreNames.contains(storeName)) {
+              request.result.createObjectStore(storeName, {keyPath: "id", autoIncrement: true});
+            }
+          });
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function galleryStoredPhotos(album) {
+      const db = await galleryDatabase();
+      return new Promise((resolve, reject) => {
+        const request = db.transaction(album, "readonly").objectStore(album).getAll();
+        request.onsuccess = () => resolve(request.result || []);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function gallerySavePhoto(album, photo) {
+      const db = await galleryDatabase();
+      return new Promise((resolve, reject) => {
+        const request = db.transaction(album, "readwrite").objectStore(album).add(photo);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function galleryUpdatePhoto(album, photo) {
+      const db = await galleryDatabase();
+      return new Promise((resolve, reject) => {
+        const request = db.transaction(album, "readwrite").objectStore(album).put(photo);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    function decodeGalleryImage(blob) {
+      return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(blob);
+        const image = new Image();
+        image.onload = () => { URL.revokeObjectURL(url); resolve(image); };
+        image.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Bilden kan inte läsas av webbläsaren.")); };
+        image.src = url;
+      });
+    }
+
+    async function compactGalleryBlob(blob) {
+      const image = await decodeGalleryImage(blob);
+      const maximumSide = 2400;
+      const scale = Math.min(1, maximumSide / Math.max(image.naturalWidth, image.naturalHeight));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+      canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+      const context = canvas.getContext("2d");
+      context.fillStyle = "#fff";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+      const optimized = await new Promise(resolve => canvas.toBlob(resolve, "image/jpeg", .84));
+      if (!optimized) throw new Error("Bilden kunde inte förberedas.");
+      return optimized.size < blob.size || scale < 1 ? optimized : blob;
+    }
+
+    async function compactStoredGalleryPhotos(album) {
+      const photos = await galleryStoredPhotos(album);
+      for (const photo of photos) {
+        if (photo.compact || !photo.blob) continue;
+        try {
+          const originalBytes = photo.blob.size;
+          photo.blob = await compactGalleryBlob(photo.blob);
+          photo.compact = true;
+          photo.originalBytes = originalBytes;
+          await galleryUpdatePhoto(album, photo);
+        } catch (error) {}
+      }
+    }
+
+    function galleryPublishedPhotos(album) {
+      if (album !== "liljor") return [];
+      const lines = document.querySelector("#defaultPhotosCSV").textContent.trim().split(/\r?\n/).slice(1);
+      return lines.map(line => {
+        const comma = line.indexOf(",");
+        return comma < 0 ? null : {date: line.slice(0, comma).trim(), file: line.slice(comma + 1).trim(), published: true};
+      }).filter(row => row && row.date && row.file);
+    }
+
+    async function galleryServerPhotos(album) {
+      if (window.location.protocol !== "file:" || !galleryArchiveToken) return [];
+      try {
+        const response = await fetch(`http://127.0.0.1:47831/gallery?album=${encodeURIComponent(album)}`, {
+          cache: "no-store", headers: {"X-Mina-Vaxter-Token": galleryArchiveToken}
+        });
+        const payload = await response.json();
+        return response.ok && payload.ok && Array.isArray(payload.photos) ? payload.photos : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function galleryDateFromFilename(name) {
+      const match = name.match(/(?:^|_)(\d{4})-(\d{2})-(\d{2})(?:_|\.|$)/);
+      return match ? `${match[1]}-${match[2]}-${match[3]}` : "";
+    }
+
+    function galleryExifDate(buffer) {
+      const view = new DataView(buffer);
+      if (view.byteLength < 4 || view.getUint16(0) !== 0xffd8) return "";
+      let offset = 2;
+      while (offset + 4 < view.byteLength) {
+        if (view.getUint8(offset) !== 0xff) break;
+        const marker = view.getUint8(offset + 1);
+        const length = view.getUint16(offset + 2);
+        if (marker === 0xe1 && length > 10 && offset + length + 2 <= view.byteLength) {
+          const exif = offset + 4;
+          if (view.getUint32(exif) !== 0x45786966) return "";
+          const tiff = exif + 6;
+          const little = view.getUint16(tiff) === 0x4949;
+          const get16 = position => view.getUint16(position, little);
+          const get32 = position => view.getUint32(position, little);
+          const readIfd = ifdOffset => {
+            const start = tiff + ifdOffset;
+            if (start < 0 || start + 2 > view.byteLength) return {date: "", exifOffset: 0};
+            const entries = get16(start);
+            let foundDate = "", foundExifOffset = 0;
+            for (let index = 0; index < entries; index++) {
+              const entry = start + 2 + index * 12;
+              if (entry + 12 > view.byteLength) break;
+              const tag = get16(entry);
+              if (tag === 0x8769) foundExifOffset = get32(entry + 8);
+              if (tag === 0x9003 || tag === 0x9004 || tag === 0x0132) {
+                const valueLength = get32(entry + 4);
+                const valuePosition = valueLength <= 4 ? entry + 8 : tiff + get32(entry + 8);
+                if (valuePosition >= 0 && valuePosition + Math.min(valueLength, 19) <= view.byteLength) {
+                  let value = "";
+                  for (let character = 0; character < Math.min(valueLength, 19); character++) value += String.fromCharCode(view.getUint8(valuePosition + character));
+                  const match = value.match(/(\d{4}):(\d{2}):(\d{2})/);
+                  if (match) foundDate = `${match[1]}-${match[2]}-${match[3]}`;
+                }
+              }
+            }
+            return {date: foundDate, exifOffset: foundExifOffset};
+          };
+          const first = readIfd(get32(tiff + 4));
+          if (first.date) return first.date;
+          return first.exifOffset ? readIfd(first.exifOffset).date : "";
+        }
+        offset += length + 2;
+      }
+      return "";
+    }
+
+    async function galleryPhotoDate(file) {
+      const filenameDate = galleryDateFromFilename(file.name);
+      if (filenameDate) return filenameDate;
+      if (file.type === "image/jpeg") {
+        try {
+          const buffer = await file.slice(0, Math.min(file.size, 512 * 1024)).arrayBuffer();
+          const found = galleryExifDate(buffer);
+          if (found) return found;
+        } catch (error) {}
+      }
+      const fallback = new Date(file.lastModified || Date.now());
+      return `${fallback.getFullYear()}-${String(fallback.getMonth() + 1).padStart(2, "0")}-${String(fallback.getDate()).padStart(2, "0")}`;
+    }
+
+    async function archiveGalleryOriginal(file, date, album) {
+      if (window.location.protocol !== "file:") return {ok: true, created: false, skipped: true};
+      if (!galleryArchiveToken) throw new Error("Den lokala nyckeln till originalarkivet saknas.");
+      const query = new URLSearchParams({filename: file.name, date, album});
+      const response = await fetch(`${galleryArchiveEndpoint}?${query}`, {
+        method: "POST",
+        headers: {"Content-Type": "text/plain;charset=UTF-8", "X-Mina-Vaxter-Token": galleryArchiveToken},
+        body: file,
+        cache: "no-store"
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || !payload.ok) throw new Error(payload.error || "Originalarkivet kunde inte spara bilden.");
+      return payload;
+    }
+
+    function showImportToast(message) {
+      importToast.textContent = message;
+      importToast.classList.add("visible");
+      window.clearTimeout(toastTimer);
+      toastTimer = window.setTimeout(() => importToast.classList.remove("visible"), 3200);
+    }
+
+    async function renderAlbumCard(card) {
+      const album = card.dataset.album;
+      const label = card.dataset.label;
+      const art = card.querySelector('[data-role="art"]');
+      const cover = card.querySelector('[data-role="cover"]');
+      const summary = card.querySelector('[data-role="summary"]');
+      const server = await galleryServerPhotos(album);
+      const serverNames = new Set(server.map(photo => photo.name));
+      const local = (await galleryStoredPhotos(album)).filter(photo => !serverNames.has(photo.name));
+      const photos = [...galleryPublishedPhotos(album), ...server, ...local].sort((a, b) => b.date.localeCompare(a.date));
+      summary.textContent = photos.length === 1 ? "1 bild" : photos.length ? `${photos.length} bilder` : "Inga bilder ännu";
+      const previousUrl = galleryCoverUrls.get(album);
+      if (previousUrl) URL.revokeObjectURL(previousUrl);
+      galleryCoverUrls.delete(album);
+      if (!photos.length) {
+        art.classList.remove("has-photo");
+        cover.removeAttribute("src");
+        return;
+      }
+      const latest = photos[0];
+      const localUrl = latest.published || latest.url ? "" : URL.createObjectURL(latest.blob);
+      if (localUrl) galleryCoverUrls.set(album, localUrl);
+      cover.src = latest.published ? latest.file : latest.url || localUrl;
+      cover.alt = `Senaste bilden i ${label}, ${latest.date}`;
+      cover.onload = () => art.classList.add("has-photo");
+      cover.onerror = () => art.classList.remove("has-photo");
+    }
+
+    async function addGalleryFiles(card, fileList) {
+      const album = card.dataset.album;
+      const label = card.dataset.label;
+      const input = card.querySelector('[data-role="input"]');
+      const files = [...fileList].filter(file => file.type.startsWith("image/") || /\.(heic|heif)$/i.test(file.name));
+      if (!files.length) {
+        showImportToast("Här kan du bara släppa bildfiler.");
+        return;
+      }
+      const stored = await galleryStoredPhotos(album);
+      let added = 0;
+      let failed = 0;
+      let archived = 0;
+      let archiveUnavailable = false;
+      let duplicates = 0;
+      for (const file of files) {
+        let archiveCompleted = window.location.protocol !== "file:";
+        try {
+          const date = await galleryPhotoDate(file);
+          const archiveResult = await archiveGalleryOriginal(file, date, album);
+          archiveCompleted = true;
+          if (archiveResult.created) archived++;
+          const duplicate = stored.some(photo => photo.name === file.name && photo.size === file.size && photo.lastModified === file.lastModified);
+          if (duplicate) {
+            duplicates++;
+            continue;
+          }
+          if (window.location.protocol === "file:" && archiveResult.photo) {
+            added++;
+            continue;
+          }
+          const compactBlob = await compactGalleryBlob(file);
+          const photo = {
+            date, name: file.name, type: "image/jpeg", size: file.size, lastModified: file.lastModified,
+            originalBytes: file.size, compact: true, archived: !archiveResult.skipped, blob: compactBlob
+          };
+          photo.id = await gallerySavePhoto(album, photo);
+          stored.push(photo);
+          added++;
+        } catch (error) {
+          failed++;
+          if (!archiveCompleted) archiveUnavailable = true;
+        }
+      }
+      input.value = "";
+      await renderAlbumCard(card);
+      if (archiveUnavailable) showImportToast("Originalarkivet kunde inte nås. Bilderna importerades inte; försök igen.");
+      else if (failed) showImportToast(`${archived} original sparades. ${failed} bilder kunde inte visas.`);
+      else if (added === 1) showImportToast(archived ? `Bilden lades till i ${label} och originalet sparades.` : `Bilden lades till i ${label}.`);
+      else if (added) showImportToast(`${added} bilder lades till${archived ? ` och ${archived} original sparades` : ""}.`);
+      else if (duplicates && archived) showImportToast(`${archived} original sparades. Bilderna fanns redan i ${label}.`);
+      else showImportToast(`Bilderna finns redan i ${label} och originalarkivet.`);
+    }
+
+    albumCards.forEach(card => {
+      const album = card.dataset.album;
+      const input = card.querySelector('[data-role="input"]');
+      galleryDragDepths.set(album, 0);
+      card.addEventListener("dragenter", event => {
+        event.preventDefault();
+        galleryDragDepths.set(album, galleryDragDepths.get(album) + 1);
+        card.classList.add("dragging");
+      });
+      card.addEventListener("dragover", event => event.preventDefault());
+      card.addEventListener("dragleave", event => {
+        event.preventDefault();
+        galleryDragDepths.set(album, Math.max(0, galleryDragDepths.get(album) - 1));
+        if (!galleryDragDepths.get(album)) card.classList.remove("dragging");
+      });
+      card.addEventListener("drop", event => {
+        event.preventDefault();
+        galleryDragDepths.set(album, 0);
+        card.classList.remove("dragging");
+        addGalleryFiles(card, event.dataTransfer.files);
+      });
+      input.addEventListener("change", () => addGalleryFiles(card, input.files));
+    });
+
+    (async () => {
+      for (const card of albumCards) {
+        const summary = card.querySelector('[data-role="summary"]');
+        try {
+          summary.textContent = "Förbereder bilder…";
+          await compactStoredGalleryPhotos(card.dataset.album);
+          await renderAlbumCard(card);
+        } catch (error) {
+          summary.textContent = "Lokalt bildminne kunde inte öppnas";
+        }
+      }
+    })();
+  </script>
+</body>
+</html>

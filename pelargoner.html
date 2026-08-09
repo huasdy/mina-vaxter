@@ -32,7 +32,7 @@
       background: rgba(245,241,234,.84); border-top: 1px solid rgba(222,210,194,.75);
       border-bottom: 1px solid rgba(222,210,194,.95); padding: 14px 18px;
     }
-    .toolbar-inner { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto auto auto; gap: 10px; align-items: center; }
+    .toolbar-inner { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto auto auto auto; gap: 10px; align-items: center; }
     input, select, button, label.filebutton {
       border: 1px solid var(--line); background: var(--paper); border-radius: 999px; color: var(--ink);
       padding: 11px 14px; font-size: .95rem; font: inherit;
@@ -87,6 +87,7 @@
       <a href="citrus.html">Citrus</a>
       <a href="udda.html">Udda</a>
       <a href="favoriter.html">Hundöron</a>
+      <a href="galleri.html">Galleri</a>
       <a href="verktyg.html">Verktyg</a>
     </nav>
     <div class="eyebrow">Privat samling</div>
@@ -97,8 +98,9 @@
   <section class="toolbar">
     <div class="toolbar-inner">
       <input id="search" type="search" placeholder="Sök namn, exemplar, doft, datum eller anteckning…">
-      <select id="typeFilter"><option value="">Alla typer</option></select>
-      <select id="sortSelect">
+      <select id="typeFilter" aria-label="Filtrera efter växttyp"><option value="">Alla pelargontyper</option></select>
+      <select id="photoTypeFilter" aria-label="Filtrera efter vad bilden visar"><option value="">Alla bildtyper</option></select>
+      <select id="sortSelect" aria-label="Sortering">
         <option value="name">Namn A-Ö</option>
         <option value="type">Typ</option>
         <option value="latest">Senaste bild</option>
@@ -157,6 +159,7 @@ p-torento,P. ‘Torento’,Doftpelargon,,Bekräftad,Cola / kryddig citrus,Sune T
 p-acetosum,2026-06-21,hel,bilder/pelargoner/p-acetosum_2026-06-21_hel.jpg,2026-06-21 · hel
 p-acetosum,2026-07-17,blomma,bilder/pelargoner/p-acetosum_synk-fa0da0f811_2026-07-17_blomma.jpg,2026-07-17 · blomma
 p-australe-1,2026-06-21,hel,bilder/pelargoner/p-australe-1_2026-06-21_hel.jpg,2026-06-21 · hel
+p-australe-1,2026-08-05,blomma,bilder/pelargoner/p-australe-1_synk-7f4155e4dc_2026-08-05_blomma.jpg,2026-08-05 · blomma
 p-australe-2,2026-06-21,hel,bilder/pelargoner/p-australe-2_2026-06-21_hel.jpg,2026-06-21 · hel
 p-bontrosai-1,2026-06-21,hel,bilder/pelargoner/p-bontrosai-1_2026-06-21_hel.jpg,2026-06-21 · hel
 p-bontrosai-2,2026-06-21,hel,bilder/pelargoner/p-bontrosai-2_2026-06-21_hel.jpg,2026-06-21 · hel
@@ -181,10 +184,14 @@ p-gibbosum-2,2026-06-21,hel,bilder/pelargoner/p-gibbosum-2_2026-06-21_hel.jpg,20
 p-gibbosum-3,2026-06-21,hel,bilder/pelargoner/p-gibbosum-3_2026-06-21_hel.jpg,2026-06-21 · hel
 p-gibbosum-4,2026-05-24,hel,bilder/pelargoner/p-gibbosum-4_2026-05-24_hel.jpg,2026-05-24 · hel
 p-gibbosum-4,2026-06-21,hel,bilder/pelargoner/p-gibbosum-4_2026-06-21_hel.jpg,2026-06-21 · hel
+p-gibbosum-4,2026-08-08,blomma,bilder/pelargoner/p-gibbosum-4_synk-b61ffb5f3d_2026-08-08_blomma.jpg,2026-08-08 · blomma
+p-gibbosum-4,2026-08-08,hel,bilder/pelargoner/p-gibbosum-4_synk-fc60acc601_2026-08-08_hel.jpg,2026-08-08 · hel
 p-gibbosum-maroon-1,2026-06-21,hel,bilder/pelargoner/p-gibbosum-maroon-1_2026-06-21_hel.jpg,2026-06-21 · hel
 p-gibbosum-maroon-2,2026-06-21,hel,bilder/pelargoner/p-gibbosum-maroon-2_2026-06-21_hel.jpg,2026-06-21 · hel
 p-laxum-1,2026-06-21,hel,bilder/pelargoner/p-laxum-1_2026-06-21_hel.jpg,2026-06-21 · hel
 p-laxum-2,2026-06-21,hel,bilder/pelargoner/p-laxum-2_2026-06-21_hel.jpg,2026-06-21 · hel
+p-laxum-2,2026-08-05,blomma,bilder/pelargoner/p-laxum-2_synk-2d7c2565d5_2026-08-05_blomma.jpg,2026-08-05 · blomma
+p-laxum-2,2026-08-05,knopp,bilder/pelargoner/p-laxum-2_synk-bb3e081cc5_2026-08-05_knopp.jpg,2026-08-05 · knopp
 p-lemon-queen,2026-06-21,hel,bilder/pelargoner/p-lemon-queen_2026-06-21_hel.jpg,2026-06-21 · hel
 p-magenteum,2026-05-24,start,bilder/pelargoner/p-magenteum_2026-05-24_start.jpg,2026-05-24 · start
 p-magenteum,2026-06-21,hel,bilder/pelargoner/p-magenteum_2026-06-21_hel.jpg,2026-06-21 · hel
@@ -197,9 +204,11 @@ p-prince-of-orange,2026-06-21,hel,bilder/pelargoner/p-prince-of-orange_2026-06-2
 p-prince-of-orange,2026-06-25,blomma,bilder/pelargoner/p-prince-of-orange_2026-06-25_blomma.jpg,2026-06-25 · blomma
 p-prince-of-orange,2026-07-01,blomma,bilder/pelargoner/p-prince-of-orange_2026-07-01_blomma.jpg,2026-07-01 · blomma
 p-sidoides,2026-06-21,hel,bilder/pelargoner/p-sidoides_2026-06-21_hel.jpg,2026-06-21 · hel
+p-sidoides,2026-08-05,blomma,bilder/pelargoner/p-sidoides_synk-0e0577ba2f_2026-08-05_blomma.jpg,2026-08-05 · blomma
 p-torento,2026-06-21,hel,bilder/pelargoner/p-torento_2026-06-21_hel.jpg,2026-06-21 · hel
 p-triffidum,2026-06-21,blomma,bilder/pelargoner/p-triffidum_2026-06-21_blomma.jpg,2026-06-21 · blomma
-p-triffidum,2026-06-21,hel,bilder/pelargoner/p-triffidum_2026-06-21_hel.jpg,2026-06-21 · hel</script>
+p-triffidum,2026-06-21,hel,bilder/pelargoner/p-triffidum_2026-06-21_hel.jpg,2026-06-21 · hel
+p-triffidum,2026-08-05,blomma,bilder/pelargoner/p-triffidum_synk-8eaffe31fa_2026-08-05_blomma.jpg,2026-08-05 · blomma</script>
   <script type="text/plain" id="defaultMilestonesCSV">id,date,type,note
 SP-003,2026-06-25,Sådd,Frön blötlagda 24 h med rökpapper före sådd.
 SP-003,2026-07-04,Grodd,Första synliga grodd.
@@ -215,7 +224,7 @@ PL-H02-D-02,2026-07-06,Grodd,
 PL-H02-D-03,2026-07-23,Grodd,
 PL-H02-C-02,2026-07-27,Grodd,Individuell planta från delparti C dokumenterad.
 PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.</script>
-  <script src="common.js?v=20260802synk1710"></script>
+  <script src="common.js?v=20260809fix0841"></script>
   <script>
     let plants = [];
     let plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;
@@ -225,6 +234,7 @@ PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.</
     const grid = document.querySelector("#grid");
     const search = document.querySelector("#search");
     const typeFilter = document.querySelector("#typeFilter");
+    const photoTypeFilter = document.querySelector("#photoTypeFilter");
     const sortSelect = document.querySelector("#sortSelect");
     const clearBtn = document.querySelector("#clearBtn");
     const stats = document.querySelector("#stats");
@@ -247,7 +257,7 @@ PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.</
         logs: logMap.get(p.id) || []
       })).sort((a,b) => sortNatural(a.name, b.name));
 
-      typeFilter.innerHTML = '<option value="">Alla typer</option>';
+      typeFilter.innerHTML = '<option value="">Alla pelargontyper</option>';
       [...new Set(plants.map(p => clean(p.type)).filter(Boolean))]
         .sort((a,b) => a.localeCompare(b, "sv"))
         .forEach(type => {
@@ -255,6 +265,16 @@ PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.</
           option.value = type;
           option.textContent = displayChipLabel(type);
           typeFilter.appendChild(option);
+        });
+
+      photoTypeFilter.innerHTML = '<option value="">Alla bildtyper</option>';
+      [...new Set(plants.flatMap(p => p.photos || []).map(photo => normalizedPhotoType(photo.type)).filter(Boolean))]
+        .sort((a,b) => a.localeCompare(b, "sv"))
+        .forEach(type => {
+          const option = document.createElement("option");
+          option.value = type;
+          option.textContent = displayPhotoTypeLabel(type);
+          photoTypeFilter.appendChild(option);
         });
       render();
     }
@@ -279,6 +299,24 @@ PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.</
       return map[raw] || raw;
     }
 
+    function displayPhotoTypeLabel(type) {
+      const raw = normalizedPhotoType(type);
+      if (raw === "hel") return "Hel växt";
+      return raw ? raw.charAt(0).toLocaleUpperCase("sv") + raw.slice(1) : "";
+    }
+
+    function normalizedPhotoType(type) {
+      return clean(type).toLocaleLowerCase("sv");
+    }
+
+    function photosMatchingSelectedType(p) {
+      const photos = p.photos || [];
+      const selectedPhotoType = normalizedPhotoType(photoTypeFilter.value);
+      return selectedPhotoType
+        ? photos.filter(photo => normalizedPhotoType(photo.type) === selectedPhotoType)
+        : photos;
+    }
+
     function splitTags(tags) {
       return clean(tags).split(";")
         .map(t => t.trim())
@@ -291,7 +329,8 @@ PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.</
 
     function cardTemplate(p) {
       const photos = p.photos || [];
-      const active = photos[photos.length - 1] || {};
+      const matchingPhotos = photosMatchingSelectedType(p);
+      const active = matchingPhotos[matchingPhotos.length - 1] || photos[photos.length - 1] || {};
       const activeFile = active.file || "";
       const activeLabel = active.label || (active.date ? `${active.date} · ${active.type}` : "");
       const latestMilestone = latestPlantMilestone(p.logs);
@@ -334,7 +373,7 @@ PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.</
     }
 
     function latestDate(p) {
-      return (p.photos || []).map(photo => photo.date).filter(Boolean).sort().at(-1) || "";
+      return photosMatchingSelectedType(p).map(photo => photo.date).filter(Boolean).sort().at(-1) || "";
     }
 
     function sortedPlants(list) {
@@ -346,7 +385,7 @@ PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.</
           return sortNatural(latestDate(b), latestDate(a)) || sortNatural(a.name, b.name);
         }
         if (sortSelect.value === "photos") {
-          return ((b.photos || []).length - (a.photos || []).length) || sortNatural(a.name, b.name);
+          return (photosMatchingSelectedType(b).length - photosMatchingSelectedType(a).length) || sortNatural(a.name, b.name);
         }
         return sortNatural(a.name, b.name);
       });
@@ -355,13 +394,16 @@ PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.</
     function render() {
       const query = search.value.trim().toLowerCase();
       const selectedType = typeFilter.value;
+      const selectedPhotoType = normalizedPhotoType(photoTypeFilter.value);
       const filtered = plants.filter(p => {
         const combined = [
           p.id, p.name, p.type, p.tags, p.status, p.scent, p.source, p.notes,
           ...(p.photos || []).map(x => `${x.date} ${x.type} ${x.file}`),
           ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
         ].join(" ").toLowerCase();
-        return (!query || combined.includes(query)) && (!selectedType || p.type === selectedType);
+        return (!query || combined.includes(query))
+          && (!selectedType || p.type === selectedType)
+          && (!selectedPhotoType || photosMatchingSelectedType(p).length > 0);
       });
       const visible = sortedPlants(filtered);
       grid.innerHTML = visible.length ? visible.map(cardTemplate).join("") : '<div class="empty">Inga pelargoner matchar sökningen just nu.</div>';
@@ -372,6 +414,7 @@ PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.</
       const activeParts = [
         query ? `Sökning: “${search.value.trim()}”` : "",
         selectedType ? `Typ: ${displayChipLabel(selectedType)}` : "",
+        selectedPhotoType ? `Bildtyp: ${displayPhotoTypeLabel(selectedPhotoType)}` : "",
         `Sortering: ${sortSelect.options[sortSelect.selectedIndex].textContent}`
       ].filter(Boolean);
       stats.innerHTML = `
@@ -407,11 +450,13 @@ PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.</
     clearBtn.addEventListener("click", () => {
       search.value = "";
       typeFilter.value = "";
+      photoTypeFilter.value = "";
       sortSelect.value = "name";
       render();
     });
     search.addEventListener("input", render);
     typeFilter.addEventListener("change", render);
+    photoTypeFilter.addEventListener("change", render);
     sortSelect.addEventListener("change", render);
     window.addEventListener("plant-milestone-added", rebuild);
     rebuild();

@@ -1,0 +1,72 @@
+:root {
+  --bg: #e7e1d8; --paper: #fbf8f2; --ink: #2b251f; --muted: #6f655b;
+  --line: #d4c7b7; --accent: #7d4f3b; --green: #607761;
+  --shadow: 0 18px 52px rgba(62,43,28,.14);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; min-height: 100vh; color: var(--ink); line-height: 1.5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background:
+    radial-gradient(circle at 10% 2%, rgba(125,79,59,.09), transparent 35rem),
+    radial-gradient(circle at 88% 8%, rgba(96,119,97,.11), transparent 34rem),
+    linear-gradient(180deg, #ece6dd 0%, var(--bg) 58%, #e2dbd1 100%);
+}
+button { font: inherit; }
+header { max-width: 1320px; margin: 0 auto; padding: 34px 24px 18px; }
+nav { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+nav a { color: var(--accent); text-decoration: none; font-weight: 800; }
+.collection-mark { color: var(--green); text-transform: uppercase; letter-spacing: .17em; font-size: .72rem; font-weight: 900; }
+.hero {
+  max-width: 1320px; margin: 0 auto; padding: 70px 24px 44px;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 42px; align-items: end;
+}
+.eyebrow { color: var(--accent); text-transform: uppercase; letter-spacing: .2em; font-size: .77rem; font-weight: 900; }
+h1 {
+  margin: 9px 0 20px; font-family: Georgia, "Times New Roman", serif;
+  font-weight: 500; font-size: clamp(5rem, 13vw, 10rem); line-height: .76; letter-spacing: -.055em;
+}
+.intro { max-width: 700px; margin: 0; color: var(--muted); font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.2rem, 2vw, 1.55rem); }
+.season-note { color: var(--muted); text-align: right; font-size: .88rem; font-weight: 750; max-width: 220px; }
+.season-note strong { display: block; color: var(--ink); font-family: Georgia, "Times New Roman", serif; font-size: 1.35rem; font-weight: 500; }
+main { max-width: 1320px; margin: 0 auto; padding: 0 24px 90px; }
+.year-section + .year-section { margin-top: 72px; }
+.year-heading { display: flex; align-items: baseline; gap: 18px; margin-bottom: 24px; border-bottom: 1px solid var(--line); padding-bottom: 13px; }
+.year-heading h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.8rem, 6vw, 4.7rem); line-height: .9; font-weight: 500; letter-spacing: -.04em; }
+.year-heading span { color: var(--muted); font-size: .82rem; font-weight: 850; text-transform: uppercase; letter-spacing: .12em; }
+.gallery { columns: 3 300px; column-gap: 18px; }
+figure {
+  position: relative; margin: 0 0 18px; break-inside: avoid; overflow: hidden; border-radius: 18px;
+  background: #e1d7ca; box-shadow: var(--shadow); cursor: zoom-in;
+}
+figure img { display: block; width: 100%; height: auto; min-height: 180px; object-fit: cover; }
+figcaption {
+  position: absolute; inset: auto 0 0; padding: 36px 14px 13px; color: white; font-size: .82rem; font-weight: 850;
+  background: linear-gradient(transparent, rgba(25,20,17,.74)); opacity: 0; transition: opacity .2s ease;
+}
+figure:hover figcaption, figure:focus-within figcaption { opacity: 1; }
+.empty-state { padding: 76px 22px 54px; text-align: center; }
+.empty-flower { display: block; color: rgba(125,79,59,.56); font-family: Georgia, serif; font-size: 4.4rem; line-height: 1; }
+.empty-state h2 { margin: 12px 0 8px; font-family: Georgia, "Times New Roman", serif; font-size: 2.2rem; font-weight: 500; }
+.empty-state p { max-width: 520px; margin: 0 auto; color: var(--muted); }
+dialog { width: 100vw; max-width: none; height: 100vh; max-height: none; margin: 0; padding: 0; border: 0; background: rgba(22,18,15,.94); color: white; }
+dialog::backdrop { background: rgba(22,18,15,.94); }
+.lightbox { width: 100%; height: 100%; display: grid; grid-template-columns: 70px 1fr 70px; grid-template-rows: 1fr auto; align-items: center; }
+.lightbox img { grid-column: 2; justify-self: center; max-width: min(100%, 1500px); max-height: calc(100vh - 100px); object-fit: contain; border-radius: 5px; box-shadow: 0 22px 80px rgba(0,0,0,.45); }
+.lightbox-caption { grid-column: 2; padding: 14px 0 18px; text-align: center; color: rgba(255,255,255,.78); font-weight: 750; }
+.lightbox button { border: 0; background: transparent; color: white; cursor: pointer; }
+.close-lightbox { position: fixed; z-index: 2; top: 18px; right: 22px; width: 48px; height: 48px; border-radius: 999px !important; background: rgba(255,255,255,.1) !important; font-size: 1.8rem; }
+.prev, .next { width: 54px; height: 70px; font-size: 2.2rem; opacity: .82; }
+.prev { grid-column: 1; grid-row: 1; justify-self: center; }
+.next { grid-column: 3; grid-row: 1; justify-self: center; }
+.desktop-message { display: none; }
+@media (max-width: 960px), (hover: none) and (pointer: coarse) {
+  header, .hero, main { display: none; }
+  .desktop-message { min-height: 100vh; padding: 28px; display: grid; place-items: center; text-align: center; }
+  .desktop-message div { max-width: 390px; }
+  .desktop-message h1 { margin: 0 0 14px; font-size: 3.3rem; line-height: .95; letter-spacing: -.03em; }
+  .desktop-message p { color: var(--muted); }
+  .desktop-message a { color: var(--accent); font-weight: 850; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }

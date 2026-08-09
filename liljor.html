@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Liljor · Galleri</title>
+  <style>
+    :root {
+      --bg: #e7e1d8; --paper: #fbf8f2; --ink: #2b251f; --muted: #6f655b;
+      --line: #ded2c2; --accent: #7d4f3b; --green: #607761;
+      --shadow: 0 18px 52px rgba(62,43,28,.14); --radius: 24px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--ink); line-height: 1.5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background:
+        radial-gradient(circle at 10% 2%, rgba(125,79,59,.09), transparent 35rem),
+        radial-gradient(circle at 88% 8%, rgba(96,119,97,.11), transparent 34rem),
+        linear-gradient(180deg, #ece6dd 0%, var(--bg) 58%, #e2dbd1 100%);
+    }
+    button { font: inherit; }
+    header { max-width: 1320px; margin: 0 auto; padding: 34px 24px 18px; }
+    nav { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    nav a { color: var(--accent); text-decoration: none; font-weight: 800; }
+    .collection-mark {
+      color: var(--green); text-transform: uppercase; letter-spacing: .17em;
+      font-size: .72rem; font-weight: 900;
+    }
+    .hero {
+      max-width: 1320px; margin: 0 auto; padding: 70px 24px 44px;
+      display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 42px; align-items: end;
+    }
+    .eyebrow { color: var(--accent); text-transform: uppercase; letter-spacing: .2em; font-size: .77rem; font-weight: 900; }
+    h1 {
+      margin: 9px 0 20px; font-family: Georgia, "Times New Roman", serif;
+      font-weight: 500; font-size: clamp(5rem, 13vw, 10rem); line-height: .76; letter-spacing: -.055em;
+    }
+    .intro { max-width: 670px; margin: 0; color: var(--muted); font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.2rem, 2vw, 1.55rem); }
+    .season-note { color: var(--muted); text-align: right; font-size: .88rem; font-weight: 750; max-width: 220px; }
+    .season-note strong { display: block; color: var(--ink); font-family: Georgia, "Times New Roman", serif; font-size: 1.35rem; font-weight: 500; }
+    main { max-width: 1320px; margin: 0 auto; padding: 0 24px 90px; }
+    .album { margin-top: 0; }
+    .year-section + .year-section { margin-top: 72px; }
+    .year-heading { display: flex; align-items: baseline; gap: 18px; margin-bottom: 24px; border-bottom: 1px solid var(--line); padding-bottom: 13px; }
+    .year-heading h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.8rem, 6vw, 4.7rem); line-height: .9; font-weight: 500; letter-spacing: -.04em; }
+    .year-heading span { color: var(--muted); font-size: .82rem; font-weight: 850; text-transform: uppercase; letter-spacing: .12em; }
+    .gallery { columns: 3 300px; column-gap: 18px; }
+    figure {
+      position: relative; margin: 0 0 18px; break-inside: avoid; overflow: hidden; border-radius: 18px;
+      background: #e8dfd3; box-shadow: var(--shadow); cursor: zoom-in;
+    }
+    figure img { display: block; width: 100%; height: auto; min-height: 180px; object-fit: cover; }
+    figcaption {
+      position: absolute; inset: auto 0 0; display: flex; justify-content: space-between; align-items: end; gap: 10px;
+      padding: 36px 14px 13px; color: white; font-size: .82rem; font-weight: 850;
+      background: linear-gradient(transparent, rgba(25,20,17,.74)); opacity: 0; transition: opacity .2s ease;
+    }
+    figure:hover figcaption, figure:focus-within figcaption { opacity: 1; }
+    .remove-photo {
+      border: 1px solid rgba(255,255,255,.62); border-radius: 999px; background: rgba(24,20,17,.38); color: white;
+      padding: 5px 9px; cursor: pointer; font-size: .75rem; font-weight: 850; backdrop-filter: blur(8px);
+    }
+    .empty-state { padding: 76px 22px 54px; text-align: center; }
+    .empty-flower { display: block; color: rgba(125,79,59,.56); font-family: Georgia, serif; font-size: 4.4rem; line-height: 1; }
+    .empty-state h2 { margin: 12px 0 8px; font-family: Georgia, "Times New Roman", serif; font-size: 2.2rem; font-weight: 500; }
+    .empty-state p { max-width: 520px; margin: 0 auto; color: var(--muted); }
+    dialog { width: 100vw; max-width: none; height: 100vh; max-height: none; margin: 0; padding: 0; border: 0; background: rgba(22,18,15,.94); color: white; }
+    dialog::backdrop { background: rgba(22,18,15,.94); }
+    .lightbox { width: 100%; height: 100%; display: grid; grid-template-columns: 70px 1fr 70px; grid-template-rows: 1fr auto; align-items: center; }
+    .lightbox img { grid-column: 2; justify-self: center; max-width: min(100%, 1500px); max-height: calc(100vh - 100px); object-fit: contain; border-radius: 5px; box-shadow: 0 22px 80px rgba(0,0,0,.45); }
+    .lightbox-caption { grid-column: 2; padding: 14px 0 18px; text-align: center; color: rgba(255,255,255,.78); font-weight: 750; }
+    .lightbox button { border: 0; background: transparent; color: white; cursor: pointer; }
+    .close-lightbox { position: fixed; z-index: 2; top: 18px; right: 22px; width: 48px; height: 48px; border-radius: 999px !important; background: rgba(255,255,255,.1) !important; font-size: 1.8rem; }
+    .prev, .next { width: 54px; height: 70px; font-size: 2.2rem; opacity: .82; }
+    .prev { grid-column: 1; grid-row: 1; justify-self: center; }
+    .next { grid-column: 3; grid-row: 1; justify-self: center; }
+    .desktop-message { display: none; }
+    @media (max-width: 960px), (hover: none) and (pointer: coarse) {
+      header, .hero, main { display: none; }
+      .desktop-message { min-height: 100vh; padding: 28px; display: grid; place-items: center; text-align: center; }
+      .desktop-message div { max-width: 390px; }
+      .desktop-message h1 { margin: 0 0 14px; font-size: 3.3rem; line-height: .95; letter-spacing: -.03em; }
+      .desktop-message p { color: var(--muted); }
+      .desktop-message a { color: var(--accent); font-weight: 850; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="galleri.html">← Galleri</a>
+      <span class="collection-mark">Bildalbum · desktop</span>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Ett levande trädgårdsminne</div>
+      <h1>Liljor</h1>
+      <p class="intro">Färger, former och ögonblick ur liljornas blomning – samlade som de faktiskt såg ut, år efter år.</p>
+    </div>
+    <div class="season-note"><strong id="photoCount">Inga bilder ännu</strong><span id="yearSpan">Det första året väntar</span></div>
+  </section>
+
+  <main>
+    <section class="album" id="album" aria-live="polite"></section>
+  </main>
+
+  <section class="desktop-message">
+    <div>
+      <h1>Liljor</h1>
+      <p>Galleriet är ett lugnt arbets- och bildflöde för den större skärmen och visas därför bara på desktop.</p>
+      <a href="index.html">Tillbaka till Mina Växter</a>
+    </div>
+  </section>
+
+  <dialog id="lightbox">
+    <div class="lightbox">
+      <button class="close-lightbox" type="button" aria-label="Stäng">×</button>
+      <button class="prev" type="button" aria-label="Föregående bild">‹</button>
+      <img id="lightboxImage" alt="">
+      <button class="next" type="button" aria-label="Nästa bild">›</button>
+      <div class="lightbox-caption" id="lightboxCaption"></div>
+    </div>
+  </dialog>
+
+  <script type="text/plain" id="defaultPhotosCSV">date,file</script>
+  <script src="originalarkiv-local.js"></script>
+  <script>
+    const monthNames = ["januari", "februari", "mars", "april", "maj", "juni", "juli", "augusti", "september", "oktober", "november", "december"];
+    const dbName = "mina-vaxter-kolonier";
+    const storeName = "liljor";
+    const archiveToken = window.MINA_VAXTER_ARCHIVE_TOKEN || "";
+    const galleryStoreNames = ["liljor", "rosor", "dahlior"];
+    const album = document.querySelector("#album");
+    const photoCount = document.querySelector("#photoCount");
+    const yearSpan = document.querySelector("#yearSpan");
+    const lightbox = document.querySelector("#lightbox");
+    const lightboxImage = document.querySelector("#lightboxImage");
+    const lightboxCaption = document.querySelector("#lightboxCaption");
+    let photos = [];
+    let objectUrls = [];
+    let lightboxIndex = 0;
+
+    function openDatabase() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(dbName, 2);
+        request.onupgradeneeded = () => {
+          galleryStoreNames.forEach(name => {
+            if (!request.result.objectStoreNames.contains(name)) {
+              request.result.createObjectStore(name, {keyPath: "id", autoIncrement: true});
+            }
+          });
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function storedPhotos() {
+      const db = await openDatabase();
+      return new Promise((resolve, reject) => {
+        const request = db.transaction(storeName, "readonly").objectStore(storeName).getAll();
+        request.onsuccess = () => resolve(request.result || []);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function serverPhotos() {
+      if (window.location.protocol !== "file:" || !archiveToken) return [];
+      try {
+        const response = await fetch("http://127.0.0.1:47831/gallery", {
+          cache: "no-store", headers: {"X-Mina-Vaxter-Token": archiveToken}
+        });
+        const payload = await response.json();
+        return response.ok && payload.ok && Array.isArray(payload.photos) ? payload.photos : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    async function savePhoto(photo) {
+      const db = await openDatabase();
+      return new Promise((resolve, reject) => {
+        const request = db.transaction(storeName, "readwrite").objectStore(storeName).add(photo);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function deletePhoto(id) {
+      const db = await openDatabase();
+      return new Promise((resolve, reject) => {
+        const request = db.transaction(storeName, "readwrite").objectStore(storeName).delete(id);
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    function parseCSV(text) {
+      const lines = text.trim().split(/\r?\n/).slice(1);
+      return lines.map(line => {
+        const comma = line.indexOf(",");
+        return comma < 0 ? null : {date: line.slice(0, comma).trim(), file: line.slice(comma + 1).trim(), published: true};
+      }).filter(row => row && row.date && row.file);
+    }
+
+    function dateFromFilename(name) {
+      const match = name.match(/(?:^|_)(\d{4})-(\d{2})-(\d{2})(?:_|\.|$)/);
+      return match ? `${match[1]}-${match[2]}-${match[3]}` : "";
+    }
+
+    function exifDate(buffer) {
+      const view = new DataView(buffer);
+      if (view.byteLength < 4 || view.getUint16(0) !== 0xffd8) return "";
+      let offset = 2;
+      while (offset + 4 < view.byteLength) {
+        if (view.getUint8(offset) !== 0xff) break;
+        const marker = view.getUint8(offset + 1);
+        const length = view.getUint16(offset + 2);
+        if (marker === 0xe1 && length > 10 && offset + length + 2 <= view.byteLength) {
+          const exif = offset + 4;
+          if (view.getUint32(exif) !== 0x45786966) return "";
+          const tiff = exif + 6;
+          const little = view.getUint16(tiff) === 0x4949;
+          const get16 = pos => view.getUint16(pos, little);
+          const get32 = pos => view.getUint32(pos, little);
+          const readIfd = ifdOffset => {
+            const start = tiff + ifdOffset;
+            if (start < 0 || start + 2 > view.byteLength) return {date: "", exifOffset: 0};
+            const entries = get16(start);
+            let foundDate = "", foundExifOffset = 0;
+            for (let i = 0; i < entries; i++) {
+              const entry = start + 2 + i * 12;
+              if (entry + 12 > view.byteLength) break;
+              const tag = get16(entry);
+              if (tag === 0x8769) foundExifOffset = get32(entry + 8);
+              if (tag === 0x9003 || tag === 0x9004 || tag === 0x0132) {
+                const length = get32(entry + 4);
+                const valuePos = length <= 4 ? entry + 8 : tiff + get32(entry + 8);
+                if (valuePos >= 0 && valuePos + Math.min(length, 19) <= view.byteLength) {
+                  let value = "";
+                  for (let j = 0; j < Math.min(length, 19); j++) value += String.fromCharCode(view.getUint8(valuePos + j));
+                  const match = value.match(/(\d{4}):(\d{2}):(\d{2})/);
+                  if (match) foundDate = `${match[1]}-${match[2]}-${match[3]}`;
+                }
+              }
+            }
+            return {date: foundDate, exifOffset: foundExifOffset};
+          };
+          const first = readIfd(get32(tiff + 4));
+          if (first.date) return first.date;
+          if (first.exifOffset) return readIfd(first.exifOffset).date;
+          return "";
+        }
+        offset += length + 2;
+      }
+      return "";
+    }
+
+    async function photoDate(file) {
+      const filenameDate = dateFromFilename(file.name);
+      if (filenameDate) return filenameDate;
+      if (file.type === "image/jpeg") {
+        try {
+          const buffer = await file.slice(0, Math.min(file.size, 512 * 1024)).arrayBuffer();
+          const found = exifDate(buffer);
+          if (found) return found;
+        } catch (error) {}
+      }
+      const fallback = new Date(file.lastModified || Date.now());
+      return `${fallback.getFullYear()}-${String(fallback.getMonth() + 1).padStart(2, "0")}-${String(fallback.getDate()).padStart(2, "0")}`;
+    }
+
+    function friendlyDate(value) {
+      const parts = value.split("-").map(Number);
+      if (parts.length !== 3) return value;
+      return `${parts[2]} ${monthNames[parts[1] - 1]} ${parts[0]}`;
+    }
+
+    function photoSource(photo) {
+      if (photo.published) return photo.file;
+      if (photo.url) return photo.url;
+      const url = URL.createObjectURL(photo.blob);
+      objectUrls.push(url);
+      return url;
+    }
+
+    function clearObjectUrls() {
+      objectUrls.forEach(url => URL.revokeObjectURL(url));
+      objectUrls = [];
+    }
+
+    function render() {
+      clearObjectUrls();
+      photos.sort((a, b) => b.date.localeCompare(a.date) || String(a.name || a.file).localeCompare(String(b.name || b.file), "sv"));
+      const years = [...new Set(photos.map(photo => photo.date.slice(0, 4)))];
+      photoCount.textContent = photos.length === 1 ? "1 bild" : photos.length ? `${photos.length} bilder` : "Inga bilder ännu";
+      yearSpan.textContent = years.length > 1 ? `${years.at(-1)}–${years[0]}` : years[0] || "Det första året väntar";
+      if (!photos.length) {
+        album.innerHTML = `<div class="empty-state"><span class="empty-flower">✢</span><h2>Här börjar liljornas historia</h2><p>När bilder läggs till från Galleri får varje år sin egen plats och rytm här.</p></div>`;
+        return;
+      }
+      album.innerHTML = years.map(year => {
+        const yearPhotos = photos.filter(photo => photo.date.startsWith(year));
+        const figures = yearPhotos.map(photo => {
+          const index = photos.indexOf(photo);
+          const src = photoSource(photo);
+          const remove = photo.published || photo.localServer ? "" : `<button class="remove-photo" type="button" data-remove="${photo.id}">Ta bort</button>`;
+          return `<figure tabindex="0" data-index="${index}"><img src="${src}" alt="Liljor, ${friendlyDate(photo.date)}" loading="lazy"><figcaption><span>${friendlyDate(photo.date)}</span>${remove}</figcaption></figure>`;
+        }).join("");
+        return `<section class="year-section"><div class="year-heading"><h2>${year}</h2><span>${yearPhotos.length === 1 ? "1 ögonblick" : `${yearPhotos.length} ögonblick`}</span></div><div class="gallery">${figures}</div></section>`;
+      }).join("");
+    }
+
+    function showLightbox(index) {
+      lightboxIndex = (index + photos.length) % photos.length;
+      const photo = photos[lightboxIndex];
+      lightboxImage.src = photo.published ? photo.file : photo.url || URL.createObjectURL(photo.blob);
+      lightboxImage.alt = `Liljor, ${friendlyDate(photo.date)}`;
+      lightboxCaption.textContent = friendlyDate(photo.date);
+      if (!lightbox.open) lightbox.showModal();
+    }
+
+    album.addEventListener("click", async event => {
+      const remove = event.target.closest("[data-remove]");
+      if (remove) {
+        event.stopPropagation();
+        const id = Number(remove.dataset.remove);
+        await deletePhoto(id);
+        photos = photos.filter(photo => photo.id !== id);
+        render();
+        return;
+      }
+      const figure = event.target.closest("figure[data-index]");
+      if (figure) showLightbox(Number(figure.dataset.index));
+    });
+    album.addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        const figure = event.target.closest("figure[data-index]");
+        if (figure) showLightbox(Number(figure.dataset.index));
+      }
+    });
+    lightbox.querySelector(".close-lightbox").addEventListener("click", () => lightbox.close());
+    lightbox.querySelector(".prev").addEventListener("click", () => showLightbox(lightboxIndex - 1));
+    lightbox.querySelector(".next").addEventListener("click", () => showLightbox(lightboxIndex + 1));
+    lightbox.addEventListener("click", event => { if (event.target === lightbox || event.target.classList.contains("lightbox")) lightbox.close(); });
+    document.addEventListener("keydown", event => {
+      if (!lightbox.open) return;
+      if (event.key === "ArrowLeft") showLightbox(lightboxIndex - 1);
+      if (event.key === "ArrowRight") showLightbox(lightboxIndex + 1);
+    });
+
+    (async () => {
+      const published = parseCSV(document.querySelector("#defaultPhotosCSV").textContent);
+      try {
+        const server = await serverPhotos();
+        const serverNames = new Set(server.map(photo => photo.name));
+        const local = (await storedPhotos()).filter(photo => !serverNames.has(photo.name));
+        photos = [...published, ...server, ...local];
+      }
+      catch (error) { photos = published; }
+      render();
+    })();
+  </script>
+</body>
+</html>
