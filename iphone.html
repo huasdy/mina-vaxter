@@ -113,7 +113,7 @@ p-torento,2026-08-08,Avslutad/död,</script>
     const stats = document.querySelector('#stats');
     const search = document.querySelector('#search');
     const mobileViewToggle = document.querySelector('#mobileViewToggle');
-    const MOBILE_APP_VERSION = "2026-08-09-layout-1848";
+    const MOBILE_APP_VERSION = "2026-08-09-layout-1853";
     const initialParams = new URLSearchParams(window.location.search);
     const requestedCategory = initialParams.get('kategori');
     const initialCategory = requestedCategory && data[requestedCategory] ? requestedCategory : 'Hibiskus';
@@ -274,7 +274,7 @@ p-torento,2026-08-08,Avslutad/död,</script>
     tabs.addEventListener('click', event => {
       const button = event.target.closest('.tab');
       if (button && button.dataset.name === "Galleri") {
-        window.location.href = "galleri.html";
+        window.location.href = "galleri.html?v=2026-08-09-layout-1853";
         return;
       }
       if (!button) return;
