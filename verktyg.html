@@ -200,14 +200,14 @@
   </header>
   <section class="tool-menu" aria-label="Verktyg">
     <div class="tool-grid">
-      <a class="tool-card" href="#ankomstsamtal"><strong>🌱 Ankomstsamtal</strong><span>Välkomna en ny växt och spara det du vet om dess bakgrund.</span></a>
-      <a class="tool-card" href="#etiketter"><strong>Etiketter</strong><span>Växtetiketter, fri text och batchutskrift för DYMO.</span></a>
+      <a class="tool-card" data-tool-card="ankomstsamtal" href="#ankomstsamtal" aria-expanded="false"><strong>🌱 Ankomstsamtal</strong><span>Välkomna en ny växt och spara det du vet om dess bakgrund.</span></a>
+      <a class="tool-card" data-tool-card="etiketter" href="#etiketter" aria-expanded="false"><strong>Etiketter</strong><span>Växtetiketter, fri text och batchutskrift för DYMO.</span></a>
       <a class="tool-card" href="hibiskusar.html?tool=milstolpar"><strong>Milstolpar flera</strong><span>Spara samma milstolpe på flera hibiskusar.</span></a>
       <a class="tool-card" href="hibiskusar.html?tool=frobatcher"><strong>Fröbatcher</strong><span>Översikt och historik för hibiskussådder.</span></a>
       <a class="tool-card" id="originalArchiveLink" href="#" hidden><strong>Öppna originalarkiv</strong><span>Fullstora originalbilder sparade lokalt på denna Mac.</span></a>
     </div>
   </section>
-  <section class="arrival-shell" id="ankomstsamtal" aria-labelledby="arrivalTitle">
+  <section class="arrival-shell" id="ankomstsamtal" aria-labelledby="arrivalTitle" hidden>
     <div class="arrival-card">
       <div class="arrival-head">
         <div class="eyebrow">Ett första möte</div>
@@ -273,7 +273,7 @@
       </form>
     </div>
   </section>
-  <section class="toolbar">
+  <section class="toolbar" id="etiketterToolbar" hidden>
     <div class="toolbar-inner">
       <select id="labelMode" aria-label="Etikettyp">
         <option value="catalog">Växtlista</option>
@@ -291,7 +291,7 @@
       <button id="printBtn" type="button">Skriv ut</button>
     </div>
   </section>
-  <main id="etiketter">
+  <main id="etiketter" hidden>
     <h2 class="section-title">Etiketter</h2>
     <div class="sheet-frame">
       <section class="label-sheet" aria-label="Etikettförhandsvisning">
@@ -362,6 +362,21 @@
     const arrivalType = document.querySelector("#arrivalType");
     const arrivalSave = document.querySelector("#arrivalSave");
     const arrivalStatus = document.querySelector("#arrivalStatus");
+
+    function showSelectedTool(scrollToTool = false) {
+      const selected = window.location.hash.slice(1);
+      const showArrival = selected === "ankomstsamtal";
+      const showLabels = selected === "etiketter";
+      document.querySelector("#ankomstsamtal").hidden = !showArrival;
+      document.querySelector("#etiketterToolbar").hidden = !showLabels;
+      document.querySelector("#etiketter").hidden = !showLabels;
+      document.querySelectorAll("[data-tool-card]").forEach(card => {
+        card.setAttribute("aria-expanded", card.dataset.toolCard === selected ? "true" : "false");
+      });
+      if (scrollToTool && (showArrival || showLabels)) {
+        document.querySelector(showArrival ? "#ankomstsamtal" : "#etiketterToolbar").scrollIntoView({behavior: "smooth", block: "start"});
+      }
+    }
 
     function localDateValue() {
       const now = new Date();
@@ -699,6 +714,8 @@
       render();
     }
 
+    showSelectedTool();
+    window.addEventListener("hashchange", () => showSelectedTool(true));
     fillCategoryFilter();
     enableLocalOriginalArchive();
     refillSelects();
