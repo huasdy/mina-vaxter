@@ -1221,6 +1221,101 @@ function localDateString(date = new Date()) {
   return new Date(date.getTime() - offset).toISOString().slice(0, 10);
 }
 
+function normalizedPhotoDate(value) {
+  const match = String(value || "").match(/^(\d{4})[:\-](\d{2})[:\-](\d{2})/);
+  if (!match) return "";
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) return "";
+  return `${match[1]}-${match[2]}-${match[3]}`;
+}
+
+function readExifCaptureDate(imageData) {
+  const view = new DataView(imageData);
+  if (view.byteLength < 4 || view.getUint16(0) !== 0xffd8) return "";
+
+  const readTiffDate = tiffStart => {
+    if (tiffStart + 8 > view.byteLength) return "";
+    const byteOrder = view.getUint16(tiffStart);
+    if (byteOrder !== 0x4949 && byteOrder !== 0x4d4d) return "";
+    const littleEndian = byteOrder === 0x4949;
+    const uint16 = offset => offset + 2 <= view.byteLength ? view.getUint16(offset, littleEndian) : null;
+    const uint32 = offset => offset + 4 <= view.byteLength ? view.getUint32(offset, littleEndian) : null;
+    if (uint16(tiffStart + 2) !== 42) return "";
+
+    const readAscii = entryOffset => {
+      const type = uint16(entryOffset + 2);
+      const count = uint32(entryOffset + 4);
+      if (type !== 2 || !count || count > 128) return "";
+      const valueOffset = count <= 4 ? entryOffset + 8 : tiffStart + uint32(entryOffset + 8);
+      if (!Number.isFinite(valueOffset) || valueOffset < 0 || valueOffset + count > view.byteLength) return "";
+      let value = "";
+      for (let index = 0; index < count; index += 1) {
+        const character = view.getUint8(valueOffset + index);
+        if (!character) break;
+        value += String.fromCharCode(character);
+      }
+      return normalizedPhotoDate(value);
+    };
+
+    const readIfd = relativeOffset => {
+      const ifdStart = tiffStart + relativeOffset;
+      const entryCount = uint16(ifdStart);
+      if (entryCount === null || entryCount > 512 || ifdStart + 2 + entryCount * 12 > view.byteLength) return {dates: {}, exifOffset: null};
+      const dates = {};
+      let exifOffset = null;
+      for (let index = 0; index < entryCount; index += 1) {
+        const entryOffset = ifdStart + 2 + index * 12;
+        const tag = uint16(entryOffset);
+        if (tag === 0x0132 || tag === 0x9003 || tag === 0x9004) dates[tag] = readAscii(entryOffset);
+        if (tag === 0x8769) exifOffset = uint32(entryOffset + 8);
+      }
+      return {dates, exifOffset};
+    };
+
+    const firstIfdOffset = uint32(tiffStart + 4);
+    if (!firstIfdOffset) return "";
+    const firstIfd = readIfd(firstIfdOffset);
+    const exifIfd = firstIfd.exifOffset ? readIfd(firstIfd.exifOffset) : {dates: {}};
+    return exifIfd.dates[0x9003] || exifIfd.dates[0x9004] || firstIfd.dates[0x0132] || "";
+  };
+
+  let offset = 2;
+  while (offset + 4 <= view.byteLength) {
+    if (view.getUint8(offset) !== 0xff) {
+      offset += 1;
+      continue;
+    }
+    const marker = view.getUint8(offset + 1);
+    if (marker === 0xda || marker === 0xd9) break;
+    if (marker === 0x00 || marker === 0xff || (marker >= 0xd0 && marker <= 0xd7)) {
+      offset += 2;
+      continue;
+    }
+    const segmentLength = view.getUint16(offset + 2);
+    if (segmentLength < 2 || offset + 2 + segmentLength > view.byteLength) break;
+    const segmentStart = offset + 4;
+    if (marker === 0xe1 && segmentLength >= 8 &&
+        view.getUint32(segmentStart) === 0x45786966 && view.getUint16(segmentStart + 4) === 0) {
+      const date = readTiffDate(segmentStart + 6);
+      if (date) return date;
+    }
+    offset += 2 + segmentLength;
+  }
+  return "";
+}
+
+function suggestedPhotoDate(file, imageData) {
+  const metadataDate = readExifCaptureDate(imageData);
+  if (metadataDate) return {date: metadataDate, source: "Datum hämtat från bildens fotograferingsinfo."};
+  if (file.lastModified > 0) {
+    return {date: localDateString(new Date(file.lastModified)), source: "Fotograferingsdatum saknas – filens datum används."};
+  }
+  return {date: localDateString(), source: "Fotograferingsdatum saknas – dagens datum används."};
+}
+
 function safeFilePart(value, fallback = "bild") {
   return String(value || fallback)
     .normalize("NFD")
@@ -1484,6 +1579,7 @@ function ensurePlantImageImport() {
       width: 100%; border: 1px solid var(--line, #ded2c2); border-radius: 14px; padding: 10px 11px;
       background: white; color: var(--ink, #2b251f); font: inherit;
     }
+    .import-date-help { min-height: 1.15em; color: var(--muted, #6f655b); font-size: .72rem; font-weight: 650; line-height: 1.25; }
     .import-fields textarea { grid-column: 1 / -1; min-height: 74px; resize: vertical; }
     .import-buttons { display: flex; justify-content: flex-end; gap: 9px; flex-wrap: wrap; }
     .import-buttons button {
@@ -1635,7 +1731,8 @@ function cameraLineIcon() {
 async function openImageImportForm(file) {
   const dialog = document.querySelector("#plantImageImportDialog");
   const previewUrl = URL.createObjectURL(file);
-  const today = localDateString();
+  const imageData = await file.arrayBuffer();
+  const suggestedDate = suggestedPhotoDate(file, imageData);
   dialog.innerHTML = `
     <form method="dialog" class="import-panel import-form" id="plantImageImportForm">
       <header>
@@ -1647,7 +1744,10 @@ async function openImageImportForm(file) {
       </header>
       <img class="import-preview" src="${previewUrl}" alt="">
       <div class="import-fields">
-        <label>Datum<input name="date" type="date" value="${today}"></label>
+        <label>Datum
+          <input name="date" type="date" value="${suggestedDate.date}">
+          <small class="import-date-help">${suggestedDate.source}</small>
+        </label>
         <label>Bildtyp
           <select name="type">
             <option value="hel">hel</option>
@@ -1678,14 +1778,13 @@ async function openImageImportForm(file) {
     const form = event.currentTarget;
     const data = new FormData(form);
     const createdAt = new Date().toISOString();
-    const imageData = await file.arrayBuffer();
     await addImageImportItem({
       id: `${createdAt}-${Math.random().toString(16).slice(2)}`,
       createdAt,
       category: plantImageImportPending.category,
       plantId: plantImageImportPending.plantId,
       plantName: plantImageImportPending.plantName,
-      date: data.get("date") || today,
+      date: data.get("date") || suggestedDate.date,
       type: data.get("type") || "hel",
       note: String(data.get("note") || "").trim(),
       originalFileName: file.name || "iphone-bild.jpg",
