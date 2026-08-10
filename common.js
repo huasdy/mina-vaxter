@@ -289,7 +289,7 @@ const plantMilestoneTypes = [
   "Sådd",
   "Grodd",
   "Förökning",
-  "Omplantering",
+  "Omplanterad",
   "Toppad/beskuren",
   "Knopp",
   "Blomning",
@@ -1581,11 +1581,7 @@ function ensurePlantImageImport() {
       background: white; color: var(--ink, #2b251f); font: inherit;
     }
     .import-date-help { min-height: 1.15em; color: var(--muted, #6f655b); font-size: .72rem; font-weight: 650; line-height: 1.25; }
-    .import-milestone-field {
-      grid-column: 1 / -1; padding: 11px; border-radius: 14px;
-      background: rgba(125,79,59,.07); border: 1px solid rgba(125,79,59,.16);
-    }
-    .import-milestone-field small { color: var(--muted, #6f655b); font-size: .72rem; font-weight: 650; line-height: 1.25; }
+    .import-type-help { color: var(--accent, #7d4f3b); font-size: .72rem; font-weight: 750; line-height: 1.25; }
     .import-fields textarea { grid-column: 1 / -1; min-height: 74px; resize: vertical; }
     .import-buttons { display: flex; justify-content: flex-end; gap: 9px; flex-wrap: wrap; }
     .import-buttons button {
@@ -1739,9 +1735,7 @@ async function openImageImportForm(file) {
   const previewUrl = URL.createObjectURL(file);
   const imageData = await file.arrayBuffer();
   const suggestedDate = suggestedPhotoDate(file, imageData);
-  const milestoneOptions = plantMilestoneTypes
-    .map(type => `<option value="${htmlEscape(type)}">${htmlEscape(type)}</option>`)
-    .join("");
+  const milestoneTypeByImageType = {omplanterad: "Omplanterad"};
   dialog.innerHTML = `
     <form method="dialog" class="import-panel import-form" id="plantImageImportForm">
       <header>
@@ -1768,15 +1762,10 @@ async function openImageImportForm(file) {
             <option value="stickling">stickling</option>
             <option value="grodd">grodd</option>
             <option value="beskuren">beskuren</option>
+            <option value="omplanterad">omplanterad</option>
             <option value="etikett">etikett</option>
           </select>
-        </label>
-        <label class="import-milestone-field">Koppla bilden till milstolpe, frivilligt
-          <select name="milestoneType">
-            <option value="">Ingen milstolpe</option>
-            ${milestoneOptions}
-          </select>
-          <small>Väljer du en milstolpe används bildens datum och samma anteckning.</small>
+          <small class="import-type-help" hidden>Skapar samtidigt milstolpen Omplanterad.</small>
         </label>
         <textarea name="note" placeholder="Kort anteckning, frivilligt"></textarea>
       </div>
@@ -1788,10 +1777,13 @@ async function openImageImportForm(file) {
   `;
   dialog.showModal();
   dialog.addEventListener("close", () => URL.revokeObjectURL(previewUrl), {once: true});
-  const milestoneSelect = dialog.querySelector('[name="milestoneType"]');
+  const imageTypeSelect = dialog.querySelector('[name="type"]');
+  const typeHelp = dialog.querySelector(".import-type-help");
   const saveButton = dialog.querySelector("[data-import-save]");
-  milestoneSelect.addEventListener("change", () => {
-    saveButton.textContent = milestoneSelect.value ? "Spara bild och milstolpe" : "Spara i bildkö";
+  imageTypeSelect.addEventListener("change", () => {
+    const createsMilestone = Boolean(milestoneTypeByImageType[imageTypeSelect.value]);
+    typeHelp.hidden = !createsMilestone;
+    saveButton.textContent = createsMilestone ? "Spara bild och milstolpe" : "Spara i bildkö";
   });
   dialog.querySelector("#plantImageImportForm").addEventListener("submit", async event => {
     if (event.submitter && event.submitter.value !== "save") return;
@@ -1802,6 +1794,7 @@ async function openImageImportForm(file) {
     const importId = `${createdAt}-${Math.random().toString(16).slice(2)}`;
     const date = data.get("date") || suggestedDate.date;
     const note = String(data.get("note") || "").trim();
+    const imageType = clean(data.get("type")) || "hel";
     await addImageImportItem({
       id: importId,
       createdAt,
@@ -1809,14 +1802,14 @@ async function openImageImportForm(file) {
       plantId: plantImageImportPending.plantId,
       plantName: plantImageImportPending.plantName,
       date,
-      type: data.get("type") || "hel",
+      type: imageType,
       note,
       originalFileName: file.name || "iphone-bild.jpg",
       mime: file.type || "image/jpeg",
       size: file.size || 0,
       data: imageData
     });
-    const milestoneType = clean(data.get("milestoneType"));
+    const milestoneType = milestoneTypeByImageType[imageType] || "";
     if (milestoneType) {
       const milestone = addPlantMilestoneEntry({
         id: plantImageImportPending.plantId,
