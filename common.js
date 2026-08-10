@@ -1575,7 +1575,7 @@ function ensurePlantImageImport() {
     .import-form { display: grid; gap: 12px; }
     .import-preview { width: 100%; max-height: 320px; object-fit: contain; border-radius: 16px; background: #eadfce; }
     .import-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .import-fields label { display: grid; gap: 5px; color: var(--muted, #6f655b); font-size: .86rem; font-weight: 800; }
+    .import-fields label { display: grid; align-content: start; gap: 5px; color: var(--muted, #6f655b); font-size: .86rem; font-weight: 800; }
     .import-fields input, .import-fields select, .import-fields textarea {
       width: 100%; border: 1px solid var(--line, #ded2c2); border-radius: 14px; padding: 10px 11px;
       background: white; color: var(--ink, #2b251f); font: inherit;
@@ -1822,7 +1822,6 @@ async function openImageImportForm(file) {
     dialog.close();
     plantImageImportPending = null;
     updatePlantImageImportUI();
-    openImageImportQueue();
   }, {once: true});
 }
 
