@@ -1696,10 +1696,51 @@ async function openImageImportForm(file) {
   }, {once: true});
 }
 
+let localArrivalTokenPromise = null;
+
+function loadLocalArrivalToken() {
+  if (window.MINA_VAXTER_ARCHIVE_TOKEN || window.location.protocol !== "file:") {
+    return Promise.resolve(window.MINA_VAXTER_ARCHIVE_TOKEN || "");
+  }
+  if (localArrivalTokenPromise) return localArrivalTokenPromise;
+  localArrivalTokenPromise = new Promise(resolve => {
+    const existing = document.querySelector('script[data-local-arrival-token]');
+    if (existing) {
+      existing.addEventListener("load", () => resolve(window.MINA_VAXTER_ARCHIVE_TOKEN || ""), {once: true});
+      existing.addEventListener("error", () => resolve(""), {once: true});
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "originalarkiv-local.js";
+    script.dataset.localArrivalToken = "";
+    script.addEventListener("load", () => resolve(window.MINA_VAXTER_ARCHIVE_TOKEN || ""), {once: true});
+    script.addEventListener("error", () => resolve(""), {once: true});
+    document.head.appendChild(script);
+  });
+  return localArrivalTokenPromise;
+}
+
+async function getPendingArrivalItems() {
+  const token = await loadLocalArrivalToken();
+  if (!token) return [];
+  try {
+    const response = await fetch("http://127.0.0.1:47831/arrivals", {
+      headers: {"X-Mina-Vaxter-Token": token},
+      cache: "no-store"
+    });
+    if (!response.ok) return [];
+    const payload = await response.json();
+    return Array.isArray(payload.arrivals) ? payload.arrivals : [];
+  } catch (error) {
+    return [];
+  }
+}
+
 async function updatePlantImageImportUI() {
   let items = [];
   try { items = await getImageImportItems(); } catch (error) { items = []; }
-  const syncCount = items.length + getPlantMilestoneAdditions().length + buildPlantCardNoteExport().items.length;
+  const arrivalItems = await getPendingArrivalItems();
+  const syncCount = items.length + getPlantMilestoneAdditions().length + buildPlantCardNoteExport().items.length + arrivalItems.length;
   const button = document.querySelector(".import-queue-button");
   if (button) {
     button.classList.toggle("has-items", syncCount > 0);
@@ -1725,7 +1766,9 @@ async function openImageImportQueue() {
   try { items = await getImageImportItems(); } catch (error) { items = []; }
   const milestoneItems = buildPlantMilestoneExport().items || [];
   const cardNoteItems = buildPlantCardNoteExport().items || [];
-  const syncCount = items.length + milestoneItems.length + cardNoteItems.length;
+  const arrivalItems = await getPendingArrivalItems();
+  const packageCount = items.length + milestoneItems.length + cardNoteItems.length;
+  const syncCount = packageCount + arrivalItems.length;
   const urls = [];
   const rows = items.map(item => {
     const url = URL.createObjectURL(imageImportBlob(item));
@@ -1768,19 +1811,32 @@ async function openImageImportQueue() {
       <button class="import-delete" type="button" data-delete-card-note="${escapeAttr(item.id)}">Ta bort</button>
     </article>
   `).join("");
+  const arrivalRows = arrivalItems.map(item => {
+    const meta = [item.category, item.arrivalType, item.arrivalDate].filter(Boolean).join(" · ");
+    return `
+      <article class="import-item">
+        <div class="import-item-icon" aria-hidden="true">🌱</div>
+        <div>
+          <strong>${htmlEscape(item.name || "Ny växt")}</strong>
+          <small>${htmlEscape(meta)}</small>
+          <small>Ankomstsamtal · väntar på Macens nästa synkning</small>
+        </div>
+      </article>
+    `;
+  }).join("");
   dialog.innerHTML = `
     <div class="import-panel">
       <header>
         <div>
           <h2>Synka till Mac</h2>
-          <p>${syncCount ? `${items.length} bilder · ${milestoneItems.length} milstolpar · ${cardNoteItems.length} anteckningar` : "Kön är tom just nu."}</p>
+          <p>${syncCount ? `${items.length} bilder · ${milestoneItems.length} milstolpar · ${cardNoteItems.length} anteckningar · ${arrivalItems.length} ankomstsamtal` : "Kön är tom just nu."}</p>
         </div>
         <button class="import-close" type="button" aria-label="Stäng">×</button>
       </header>
-      <div class="import-list">${rows + milestoneRows + cardNoteRows || '<div class="import-empty">Inga ändringar i kön.</div>'}</div>
+      <div class="import-list">${rows + milestoneRows + cardNoteRows + arrivalRows || '<div class="import-empty">Inga ändringar i kön.</div>'}</div>
       <div class="import-buttons">
-        <button class="primary" type="button" data-export-package ${syncCount ? "" : "disabled"}>Synka</button>
-        <button class="secondary" type="button" data-clear-import ${syncCount ? "" : "disabled"}>Rensa synkkö</button>
+        <button class="primary" type="button" data-export-package ${packageCount ? "" : "disabled"}>${packageCount ? "Synka" : "Väntar på Mac-synk"}</button>
+        <button class="secondary" type="button" data-clear-import ${packageCount ? "" : "disabled"}>Rensa synkkö</button>
       </div>
     </div>
   `;
