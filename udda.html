@@ -119,14 +119,15 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script type="text/plain" id="defaultPlantsCSV">id,name,latin,type,tags,status,source,notes,card_note,card_note_updated_at
-SP-006,Fredskalla,Spathiphyllum wallisii,Krukväxt,Tropisk;Skugga;Blommande,Aktiv,,Dokumenteras som udda växt i samlingen.,,
-SP-005,Hjärtbräken,Hemionitis arifolia,Ormbunke,Tropisk;Skugga,Aktiv,[privat],Dokumenteras som udda växt i samlingen.,,
-SP-002,Patchouli,Pogostemon cablin,Doftväxt,Tropisk;Frö;Presentväxt,Aktiv,Frö,Flera plantor finns men dokumenteras som växttyp snarare än individer.,,
-SP-004,Plumeria,Plumeria spp.,Tropisk växt,Tropisk;Blomning okänd,Aktiv,Frö,Dokumenteras som udda växt i samlingen.,,
-SP-003,Salvia apiana,Salvia apiana,Salvia,Frö;Torrt/soligt;Pågående,Under uppdragning,Frö,Dokumenteras om sådden tar sig.,,
-SP-001,Stapelia mix,Stapelia spp.,Suckulent,Frö;Samplantering;Blomning okänd,Aktiv,Frö,Samplantering med flera individer i samma kruka. Dokumenteras som grupp tills blomning visar skillnader.,,
-SP-007,Ödesträd,Clerodendrum thomsoniae,Tropisk klätterväxt,Tropisk;Klätterväxt;Blommande,Aktiv,Tradera,"Tradera-annons 23. Fokus framåt är etablering, tillväxt och framtida blomning. Trivs ljust utan stark direkt sol och vill ha jämn fuktighet under tillväxtperioden.",,</script>
+  <script type="text/plain" id="defaultPlantsCSV">id,name,latin,type,tags,status,source,notes,card_note,card_note_updated_at,arrival_type,start_date
+SP-006,Fredskalla,Spathiphyllum wallisii,Krukväxt,Tropisk;Skugga;Blommande,Aktiv,,Dokumenteras som udda växt i samlingen.,,,,
+SP-005,Hjärtbräken,Hemionitis arifolia,Ormbunke,Tropisk;Skugga,Aktiv,[privat],Dokumenteras som udda växt i samlingen.,,,,
+SP-002,Patchouli,Pogostemon cablin,Doftväxt,Tropisk;Frö;Presentväxt,Aktiv,Frö,Flera plantor finns men dokumenteras som växttyp snarare än individer.,,,,
+SP-004,Plumeria,Plumeria spp.,Tropisk växt,Tropisk;Blomning okänd,Aktiv,Frö,Dokumenteras som udda växt i samlingen.,,,,
+SP-003,Salvia apiana,Salvia apiana,Salvia,Frö;Torrt/soligt;Pågående,Under uppdragning,Frö,Dokumenteras om sådden tar sig.,,,,
+SP-001,Stapelia mix,Stapelia spp.,Suckulent,Frö;Samplantering;Blomning okänd,Aktiv,Frö,Samplantering med flera individer i samma kruka. Dokumenteras som grupp tills blomning visar skillnader.,,,,
+SP-008,Tamarillo,Cyphomandra betacea,,Frö,,Jalapeno.nu,,,,Frö,2026-08-10
+SP-007,Ödesträd,Clerodendrum thomsoniae,Tropisk klätterväxt,Tropisk;Klätterväxt;Blommande,Aktiv,Tradera,"Tradera-annons 23. Fokus framåt är etablering, tillväxt och framtida blomning. Trivs ljust utan stark direkt sol och vill ha jämn fuktighet under tillväxtperioden.",,,,</script>
   <script type="text/plain" id="defaultPhotosCSV">plant_id,date,type,file,label
 SP-001,2026-06-26,hel,bilder/udda/SP-001_stapelia_2026-06-26_hel.jpg,2026-06-26 · hel
 SP-001,2026-07-17,hel,bilder/udda/SP-001_synk-e1900dea6f_2026-07-17_hel.jpg,2026-07-17 · hel
@@ -180,7 +181,7 @@ PL-H02-D-01,2026-06-25,Sådd,
 PL-H02-D-02,2026-06-25,Sådd,
 PL-H02-D-03,2026-06-25,Sådd,
 p-torento,2026-08-08,Avslutad/död,</script>
-  <script src="common.js?v=20260810synk1558"></script>
+  <script src="common.js?v=20260810synk1617"></script>
   <script>
     let plants = [];
     let plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;

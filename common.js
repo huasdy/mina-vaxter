@@ -108,7 +108,8 @@ function collectionChips(category, row) {
     row && row.source,
     row && row.notes,
     row && row.group,
-    row && row.batch
+    row && row.batch,
+    row && row.arrival_type
   ].map(clean).join(" ").toLowerCase();
   const chips = [];
   const add = value => {
@@ -117,11 +118,13 @@ function collectionChips(category, row) {
 
   if (category === "Hibiskus") {
     add("Projekt");
-    add("Egen frösådd");
+    if (!clean(row && row.arrival_type) || ["frö", "egen korsning"].includes(clean(row && row.arrival_type).toLowerCase())) add("Egen frösådd");
   } else if (category === "Pelargon") {
+    if (["frö", "egen korsning"].includes(clean(row && row.arrival_type).toLowerCase())) add("Egen frösådd");
     if (haystack.includes("doft")) add("Doft");
     if (haystack.includes("vild") || haystack.includes("bonsai") || haystack.includes("brokbladig")) add("Unik");
   } else if (category === "Citrus") {
+    if (["frö", "egen korsning"].includes(clean(row && row.arrival_type).toLowerCase())) add("Egen frösådd");
     add("Inne");
   } else if (category === "Udda") {
     if (haystack.includes("doft") || haystack.includes("patchouli") || haystack.includes("salvia")) add("Doft");
@@ -1502,6 +1505,7 @@ function ensurePlantImageImport() {
     .import-item small { color: var(--muted, #6f655b); display: block; margin-top: 2px; }
     .import-delete { border: 0; background: transparent; color: var(--accent, #7d4f3b); font: inherit; font-weight: 850; cursor: pointer; padding: 8px; }
     .import-empty { color: var(--muted, #6f655b); border: 1px dashed var(--line, #ded2c2); border-radius: 16px; padding: 18px; text-align: center; font-weight: 700; }
+    .import-sync-status { color: var(--muted, #6f655b); font-weight: 750; padding: 10px 2px; }
     @media (max-width: 680px) {
       .import-fields { grid-template-columns: 1fr; }
       .import-item { grid-template-columns: 64px 1fr; }
@@ -1819,7 +1823,7 @@ async function openImageImportQueue() {
         <div>
           <strong>${htmlEscape(item.name || "Ny växt")}</strong>
           <small>${htmlEscape(meta)}</small>
-          <small>Ankomstsamtal · väntar på Macens nästa synkning</small>
+          <small>Ankomstsamtal · sparad för Mac-synk</small>
         </div>
       </article>
     `;
@@ -1835,7 +1839,7 @@ async function openImageImportQueue() {
       </header>
       <div class="import-list">${rows + milestoneRows + cardNoteRows + arrivalRows || '<div class="import-empty">Inga ändringar i kön.</div>'}</div>
       <div class="import-buttons">
-        <button class="primary" type="button" data-export-package ${packageCount ? "" : "disabled"}>${packageCount ? "Synka" : "Väntar på Mac-synk"}</button>
+        ${packageCount ? '<button class="primary" type="button" data-export-package>Synka</button>' : (arrivalItems.length ? '<div class="import-sync-status">Sparad – behandlas när Mac-synkningen körs.</div>' : '')}
         <button class="secondary" type="button" data-clear-import ${packageCount ? "" : "disabled"}>Rensa synkkö</button>
       </div>
     </div>
@@ -1876,7 +1880,7 @@ async function openImageImportQueue() {
     openImageImportQueue();
   });
   const packageButton = dialog.querySelector("[data-export-package]");
-  packageButton.addEventListener("click", async () => {
+  if (packageButton) packageButton.addEventListener("click", async () => {
     packageButton.disabled = true;
     packageButton.textContent = "Skapar paket...";
     try {
