@@ -1,5 +1,5 @@
 {
-  "version": "2026-08-10-synk-1652",
+  "version": "2026-08-10-synk-1657",
   "label": "2026-08-10",
-  "note": "Bildimporten hämtar fotograferingsdatum från bildens metadata."
+  "note": "Bilder kan sparas tillsammans med en kopplad milstolpe."
 }
