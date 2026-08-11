@@ -122,7 +122,7 @@ p-torento,2026-08-08,Avslutad/död,
 SP-008,2025-11-16,Sådd,
 SP-008,2026-06-27,Omplanterad,
 SP-003,2026-08-11,Omplanterad,</script>
-  <script src="common.js?v=20260811synk1547"></script>
+  <script src="common.js?v=20260811synk1557"></script>
   <script>
     const data = JSON.parse(document.querySelector('#catalogData').textContent);
     let logMap = combinedMilestonesByPlant(parseCSV(document.querySelector('#defaultMilestonesCSV').textContent));
@@ -132,7 +132,7 @@ SP-003,2026-08-11,Omplanterad,</script>
     const search = document.querySelector('#search');
     const mobileViewToggle = document.querySelector('#mobileViewToggle');
     const mobileRefresh = document.querySelector('#mobileRefresh');
-    const MOBILE_APP_VERSION = "2026-08-11-synk-1547";
+    const MOBILE_APP_VERSION = "2026-08-11-synk-1557";
     const initialParams = new URLSearchParams(window.location.search);
     const requestedCategory = initialParams.get('kategori');
     const initialCategory = requestedCategory && data[requestedCategory] ? requestedCategory : 'Hibiskus';
@@ -178,10 +178,6 @@ SP-003,2026-08-11,Omplanterad,</script>
         .filter(label => useful.has(label))
         .slice(0, 2);
       return labels.map((label, index) => `<span class="chip ${index === 0 ? "green" : ""}">${escapeHtml(label)}</span>`).join("");
-    }
-    function shouldShowMilestone(categoryName, row, logs) {
-      if (!logs.length) return false;
-      return categoryName === "Hibiskus";
     }
     function renderTabs() {
       const names = [...Object.keys(data), "Galleri"];
@@ -244,7 +240,7 @@ SP-003,2026-08-11,Omplanterad,</script>
           </div>
           <div class="plant-card-chip-slot"><div class="chips">${chips}</div></div>
           <div class="plant-card-info"></div>
-          <div class="plant-card-milestone-slot">${shouldShowMilestone(categoryName, row, logs) ? milestoneSummary(latestMilestone) : ""}</div>
+          <div class="plant-card-milestone-slot">${milestoneSummary(latestMilestone)}</div>
           <div class="plant-card-notes-slot">${cardNote}</div>
         </div>
       </article>`;
@@ -299,7 +295,7 @@ SP-003,2026-08-11,Omplanterad,</script>
     tabs.addEventListener('click', event => {
       const button = event.target.closest('.tab');
       if (button && button.dataset.name === "Galleri") {
-        window.location.href = "galleri.html?v=2026-08-11-synk-1547";
+        window.location.href = "galleri.html?v=2026-08-11-synk-1557";
         return;
       }
       if (!button) return;
