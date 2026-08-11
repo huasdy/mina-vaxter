@@ -1777,6 +1777,7 @@ async function openImageImportForm(file) {
         <label>Bildtyp
           <select name="type">
             <option value="hel">hel</option>
+            <option value="omplanterad">omplanterad</option>
             <option value="stam">stam</option>
             <option value="blomma">blomma</option>
             <option value="blad">blad</option>
@@ -1785,7 +1786,6 @@ async function openImageImportForm(file) {
             <option value="stickling">stickling</option>
             <option value="grodd">grodd</option>
             <option value="beskuren">beskuren</option>
-            <option value="omplanterad">omplanterad</option>
             <option value="etikett">etikett</option>
           </select>
           <small class="import-type-help" hidden>Skapar samtidigt milstolpen Omplanterad.</small>
