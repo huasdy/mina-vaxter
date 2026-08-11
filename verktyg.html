@@ -161,12 +161,37 @@
     .arrival-status.success { color: #4f6b51; font-weight: 750; }
     .arrival-status.error { color: #984c37; font-weight: 750; }
     .arrival-form[aria-busy="true"] button { opacity: .65; cursor: wait; }
+    .data-shell { max-width: 980px; margin: 0 auto 28px; padding: 0 18px; scroll-margin-top: 18px; }
+    .data-card {
+      background: rgba(255,253,248,.9); border: 1px solid var(--line); border-radius: 24px;
+      box-shadow: var(--shadow); padding: clamp(20px, 4vw, 34px); display: grid; gap: 22px;
+    }
+    .data-head h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 500; }
+    .data-head p { margin: 10px 0 0; color: var(--muted); line-height: 1.55; max-width: 720px; }
+    .data-picker { display: grid; grid-template-columns: 180px minmax(180px, 1fr) minmax(240px, 1.4fr); gap: 12px; }
+    .data-picker label, .data-field { display: grid; gap: 7px; }
+    .data-picker span, .data-field > span { font-weight: 800; font-size: .92rem; }
+    .data-picker select, .data-picker input, .data-field input, .data-field select {
+      width: 100%; border-radius: 14px; text-align: left; background: var(--paper);
+    }
+    .data-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .data-field.readonly { padding: 12px 14px; border-radius: 14px; background: var(--chip); border: 1px solid var(--line); }
+    .data-readonly-value { color: var(--muted); min-height: 1.3em; overflow-wrap: anywhere; }
+    .data-check { display: flex; align-items: center; gap: 10px; min-height: 46px; }
+    .data-check input { width: 22px; height: 22px; accent-color: var(--accent); }
+    .data-check span { font-weight: 700; }
+    .data-legacy { grid-column: 1 / -1; margin: 2px 0 -4px; color: var(--muted); font-size: .88rem; line-height: 1.45; }
+    .data-actions { grid-column: 1 / -1; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .data-status { color: var(--muted); line-height: 1.4; }
+    .data-status.success { color: #4f6b51; font-weight: 750; }
+    .data-status.error { color: #984c37; font-weight: 750; }
+    .data-empty { color: var(--muted); padding: 16px 0; }
     .section-title { width: min(100%, 980px); margin: 2px 0 -4px; font-family: Georgia, "Times New Roman", serif; font-size: 1.7rem; }
-    @media (max-width: 760px) { .toolbar-inner { display: grid; grid-template-columns: 1fr; } select, input, button { width: 100%; text-align: center; } .batch-head { display: grid; } .tool-grid { grid-template-columns: 1fr; } .arrival-form { grid-template-columns: 1fr; } .arrival-field.full, .arrival-actions { grid-column: auto; } .arrival-category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .arrival-actions button { width: auto; } }
+    @media (max-width: 760px) { .toolbar-inner { display: grid; grid-template-columns: 1fr; } select, input, button { width: 100%; text-align: center; } .batch-head { display: grid; } .tool-grid { grid-template-columns: 1fr; } .arrival-form, .data-form, .data-picker { grid-template-columns: 1fr; } .arrival-field.full, .arrival-actions, .data-actions, .data-legacy { grid-column: auto; } .arrival-category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .arrival-actions button, .data-actions button { width: auto; } }
     @media print {
       @page { size: 57mm 32mm; margin: 0; }
       html, body { width: 57mm; height: auto; min-height: 0; margin: 0; padding: 0; background: #fff; }
-      header, .tool-menu, .arrival-shell, .toolbar, .summary, .section-title, .print-note, .batch-panel, .batch-preview { display: none !important; }
+      header, .tool-menu, .arrival-shell, .data-shell, .toolbar, .summary, .section-title, .print-note, .batch-panel, .batch-preview { display: none !important; }
       main { width: 57mm; height: 32mm; margin: 0; padding: 0; display: block; }
       .sheet-frame { padding: 0; border: 0; border-radius: 0; box-shadow: none; }
       .label-sheet { border: 0; }
@@ -202,6 +227,7 @@
   <section class="tool-menu" aria-label="Verktyg">
     <div class="tool-grid">
       <a class="tool-card" data-tool-card="ankomstsamtal" href="#ankomstsamtal" aria-expanded="false"><strong>🌱 Ankomstsamtal</strong><span>Välkomna en ny växt och spara det du vet om dess bakgrund.</span></a>
+      <a class="tool-card" id="dataViewCard" data-tool-card="datavy" href="#datavy" aria-expanded="false" hidden><strong>Datavy</strong><span>Granska och komplettera bara de strukturerade fält som är aktiva för växttypen.</span></a>
       <a class="tool-card" data-tool-card="etiketter" href="#etiketter" aria-expanded="false"><strong>Etiketter</strong><span>Växtetiketter, fri text och batchutskrift för DYMO.</span></a>
       <a class="tool-card" href="hibiskusar.html?tool=milstolpar"><strong>Milstolpar flera</strong><span>Spara samma milstolpe på flera hibiskusar.</span></a>
       <a class="tool-card" href="hibiskusar.html?tool=frobatcher"><strong>Fröbatcher</strong><span>Översikt och historik för hibiskussådder.</span></a>
@@ -249,9 +275,9 @@
           </select>
         </div>
         <div class="arrival-field">
-          <label class="arrival-label" for="arrivalSource">Källa</label>
+          <label class="arrival-label" id="arrivalSourceLabel" for="arrivalSource">Källa</label>
           <input id="arrivalSource" name="source" type="text" maxlength="240" autocomplete="off">
-          <div class="arrival-help">Vem eller var fick du just den här växten från? Till exempel [privat], Tradera eller Rareplants.eu.</div>
+          <div class="arrival-help" id="arrivalSourceHelp">Varifrån kom växten? Till exempel Tradera eller Rareplants.eu.</div>
         </div>
         <div class="arrival-field">
           <label class="arrival-label" id="arrivalDateLabel" for="arrivalDate">Ankomstdatum</label>
@@ -271,6 +297,23 @@
           <button id="arrivalSave" type="submit">Skapa växtpost</button>
           <div class="arrival-status" id="arrivalStatus" role="status" aria-live="polite"></div>
         </div>
+      </form>
+    </div>
+  </section>
+  <section class="data-shell" id="datavy" aria-labelledby="dataViewTitle" hidden>
+    <div class="data-card">
+      <div class="data-head">
+        <div class="eyebrow">Privat strukturerad data</div>
+        <h2 id="dataViewTitle">Datavy</h2>
+        <p>Välj en växt och redigera bara de datatyper som är aktiva för dess kategori. Kortanteckningar och fria anteckningar visas inte här.</p>
+      </div>
+      <div class="data-picker">
+        <label><span>Kategori</span><select id="dataCategory"><option value="">Alla</option></select></label>
+        <label><span>Sök</span><input id="dataSearch" type="search" placeholder="ID eller namn" autocomplete="off"></label>
+        <label><span>Växt</span><select id="dataPlant"><option value="">Välj en växt</option></select></label>
+      </div>
+      <form class="data-form" id="dataForm">
+        <div class="data-empty" id="dataEmpty">Öppnar den lokala datan…</div>
       </form>
     </div>
   </section>
@@ -334,6 +377,7 @@
   </main>
   <section class="batch-print-area" id="batchPrintArea" aria-label="Batchutskrift"></section>
   <script src="originalarkiv-local.js"></script>
+  <script id="dataViewData" type="application/json">{"schemas": {"Hibiskus": [{"key": "nickname", "label": "Namn", "type": "text"}, {"key": "status", "label": "Status", "type": "select", "options": ["Grodd", "Ej blommat / under utvärdering", "Aktiv", "Avslutad/död"]}, {"key": "arrival_type", "label": "Hur kom växten hit?", "type": "select", "options": ["Annat", "Egen korsning", "Frö", "Gåva", "Köpt planta", "Stickling"]}, {"key": "source", "label": "Källa", "type": "select", "hide_for_arrival": "Gåva", "options": ["Bauhaus", "Frö", "Jalapeno.nu", "Sune Trygg", "Tradera", "Vivai Miano"]}, {"key": "gift_from", "label": "Från vem", "type": "select", "show_for_arrival": "Gåva", "options": ["[privat]", "[privat]", "[privat]"]}, {"key": "breeding_selected", "label": "Utvald för framtida korsning", "type": "checkbox"}, {"key": "batch", "label": "Äldre batchinformation", "type": "readonly"}, {"key": "group", "label": "Äldre grupp/korsning", "type": "readonly"}, {"key": "sown", "label": "Äldre sådatum", "type": "readonly"}], "Pelargon": [{"key": "name", "label": "Namn", "type": "text"}, {"key": "nickname", "label": "Smeknamn", "type": "text"}, {"key": "type", "label": "Typ", "type": "select", "options": ["Brokbladig pelargon", "Doftpelargon", "Primärhybrid", "Vildpelargon", "Zonalpelargon"]}, {"key": "tags", "label": "Taggar", "type": "text"}, {"key": "status", "label": "Status", "type": "select", "options": ["Bekräftad"]}, {"key": "scent", "label": "Doft", "type": "text"}, {"key": "arrival_type", "label": "Hur kom växten hit?", "type": "select", "options": ["Annat", "Egen korsning", "Frö", "Gåva", "Köpt planta", "Stickling"]}, {"key": "source", "label": "Källa", "type": "select", "hide_for_arrival": "Gåva", "options": ["Bauhaus", "Frö", "Jalapeno.nu", "Sune Trygg", "Tradera", "Vivai Miano"]}, {"key": "gift_from", "label": "Från vem", "type": "select", "show_for_arrival": "Gåva", "options": ["[privat]", "[privat]", "[privat]"]}, {"key": "start_date", "label": "Startdatum", "type": "date"}], "Citrus": [{"key": "name", "label": "Namn", "type": "text"}, {"key": "type", "label": "Art/sort", "type": "select", "options": ["Calamondin", "Citron", "Fingerlime", "Kaffirlime", "Kumquat", "Limequat", "Okänd citrus"]}, {"key": "status", "label": "Status", "type": "select", "options": ["Aktiv"]}, {"key": "arrival_type", "label": "Hur kom växten hit?", "type": "select", "options": ["Annat", "Egen korsning", "Frö", "Gåva", "Köpt planta", "Stickling"]}, {"key": "source", "label": "Källa", "type": "select", "hide_for_arrival": "Gåva", "options": ["Bauhaus", "Frö", "Jalapeno.nu", "Sune Trygg", "Tradera", "Vivai Miano"]}, {"key": "gift_from", "label": "Från vem", "type": "select", "show_for_arrival": "Gåva", "options": ["[privat]", "[privat]", "[privat]"]}, {"key": "start_date", "label": "Startdatum", "type": "date"}], "Udda": [{"key": "name", "label": "Namn", "type": "text"}, {"key": "latin", "label": "Art/sort", "type": "text"}, {"key": "type", "label": "Typ", "type": "select", "options": ["Doftväxt", "Krukväxt", "Ormbunke", "Salvia", "Suckulent", "Tropisk klätterväxt", "Tropisk växt"]}, {"key": "tags", "label": "Taggar", "type": "text"}, {"key": "status", "label": "Status", "type": "select", "options": ["Aktiv", "Under uppdragning"]}, {"key": "arrival_type", "label": "Hur kom växten hit?", "type": "select", "options": ["Annat", "Egen korsning", "Frö", "Gåva", "Köpt planta", "Stickling"]}, {"key": "source", "label": "Källa", "type": "select", "hide_for_arrival": "Gåva", "options": ["Bauhaus", "Frö", "Jalapeno.nu", "Sune Trygg", "Tradera", "Vivai Miano"]}, {"key": "gift_from", "label": "Från vem", "type": "select", "show_for_arrival": "Gåva", "options": ["[privat]", "[privat]", "[privat]"]}, {"key": "start_date", "label": "Startdatum", "type": "date"}]}, "plants": [{"category": "Hibiskus", "id": "PL-H01-A", "values": {"nickname": "", "batch": "PL-H01", "status": "Ej blommat / under utvärdering", "sown": "2025-11-16", "gift_from": "", "arrival_type": "", "source": "", "breeding_selected": "nej", "group": "Surprise Pack"}}, {"category": "Hibiskus", "id": "PL-H01-B", "values": {"nickname": "", "batch": "PL-H01", "status": "Ej blommat / under utvärdering", "sown": "2025-11-16", "gift_from": "", "arrival_type": "", "source": "", "breeding_selected": "nej", "group": "Surprise Pack"}}, {"category": "Hibiskus", "id": "PL-H01-C", "values": {"nickname": "", "batch": "PL-H01", "status": "Ej blommat / under utvärdering", "sown": "2025-11-16", "gift_from": "", "arrival_type": "", "source": "", "breeding_selected": "nej", "group": "Surprise Pack"}}, {"category": "Hibiskus", "id": "PL-H01-D", "values": {"nickname": "", "batch": "PL-H01", "status": "Ej blommat / under utvärdering", "sown": "2025-11-16", "gift_from": "", "arrival_type": "", "source": "", "breeding_selected": "nej", "group": "Surprise Pack"}}, {"category": "Hibiskus", "id": "PL-H01-G", "values": {"nickname": "", "batch": "PL-H01", "status": "Ej blommat / under utvärdering", "sown": "2025-11-16", "gift_from": "", "arrival_type": "", "source": "", "breeding_selected": "nej", "group": "Surprise Pack"}}, {"category": "Hibiskus", "id": "PL-H01-H", "values": {"nickname": "", "batch": "PL-H01", "status": "Ej blommat / under utvärdering", "sown": "2025-11-16", "gift_from": "", "arrival_type": "", "source": "", "breeding_selected": "nej", "group": "Surprise Pack"}}, {"category": "Hibiskus", "id": "PL-H01-I", "values": {"nickname": "", "batch": "PL-H01", "status": "Ej blommat / under utvärdering", "sown": "2025-11-16", "gift_from": "", "arrival_type": "", "source": "", "breeding_selected": "nej", "group": "Surprise Pack"}}, {"category": "Hibiskus", "id": "PL-H01-J", "values": {"nickname": "", "batch": "PL-H01", "status": "Ej blommat / under utvärdering", "sown": "2025-11-16", "gift_from": "", "arrival_type": "", "source": "", "breeding_selected": "nej", "group": "Surprise Pack"}}, {"category": "Hibiskus", "id": "PL-H01-K", "values": {"nickname": "", "batch": "PL-H01", "status": "Ej blommat / under utvärdering", "sown": "2025-11-16", "gift_from": "", "arrival_type": "", "source": "", "breeding_selected": "nej", "group": "Surprise Pack"}}, {"category": "Hibiskus", "id": "PL-H01-L", "values": {"nickname": "", "batch": "PL-H01", "status": "Ej blommat / under utvärdering", "sown": "2025-11-16", "gift_from": "", "arrival_type": "", "source": "", "breeding_selected": "nej", "group": "Surprise Pack"}}, {"category": "Hibiskus", "id": "PL-H01-M", "values": {"nickname": "", "batch": "PL-H01", "status": "Ej blommat / under utvärdering", "sown": "2025-11-16", "gift_from": "", "arrival_type": "", "source": "", "breeding_selected": "nej", "group": "Surprise Pack"}}, {"category": "Hibiskus", "id": "PL-H01-N", "values": {"nickname": "", "batch": "PL-H01", "status": "Ej blommat / under utvärdering", "sown": "2025-11-16", "gift_from": "", "arrival_type": "", "source": "", "breeding_selected": "nej", "group": "Surprise Pack"}}, {"category": "Hibiskus", "id": "PL-H01-O", "values": {"nickname": "", "batch": "PL-H01", "status": "Ej blommat / under utvärdering", "sown": "2025-11-16", "gift_from": "", "arrival_type": "", "source": "", "breeding_selected": "nej", "group": "Surprise Pack"}}, {"category": "Hibiskus", "id": "PL-H01-Q", "values": {"nickname": "", "batch": "PL-H01", "status": "Ej blommat / under utvärdering", "sown": "2025-11-16", "gift_from": "", "arrival_type": "", "source": "", "breeding_selected": "nej", "group": "Surprise Pack"}}, {"category": "Hibiskus", "id": "PL-H01-R", "values": {"nickname": "", "batch": "PL-H01", "status": "Ej blommat / under utvärdering", "sown": "2025-11-16", "gift_from": "", "arrival_type": "", "source": "", "breeding_selected": "nej", "group": "Surprise Pack"}}, {"category": "Hibiskus", "id": "PL-H02-A-01", "values": {"nickname": "", "batch": "PL-H02", "status": "Grodd", "sown": "2026-06-25", "gift_from": "", "arrival_type": "", "source": "", "breeding_selected": "nej", "group": "Surprise Pack"}}, {"category": "Hibiskus", "id": "PL-H02-B-01", "values": {"nickname": "", "batch": "PL-H02", "status": "Grodd", "sown": "2026-06-25", "gift_from": "", "arrival_type": "", "source": "", "breeding_selected": "nej", "group": "012 × 030"}}, {"category": "Hibiskus", "id": "PL-H02-C-01", "values": {"nickname": "", "batch": "PL-H02", "status": "Grodd", "sown": "2026-06-25", "gift_from": "", "arrival_type": "", "source": "", "breeding_selected": "nej", "group": "030 × 041"}}, {"category": "Hibiskus", "id": "PL-H02-C-02", "values": {"nickname": "", "batch": "PL-H02", "status": "Grodd", "sown": "2026-06-25", "gift_from": "", "arrival_type": "", "source": "", "breeding_selected": "nej", "group": "030 × 041"}}, {"category": "Hibiskus", "id": "PL-H02-C-03", "values": {"nickname": "", "batch": "PL-H02", "status": "Grodd", "sown": "2026-06-25", "gift_from": "", "arrival_type": "", "source": "", "breeding_selected": "nej", "group": "030 × 041"}}, {"category": "Hibiskus", "id": "PL-H02-D-01", "values": {"nickname": "", "batch": "PL-H02", "status": "Grodd", "sown": "2026-06-25", "gift_from": "", "arrival_type": "", "source": "", "breeding_selected": "nej", "group": "012 × okänd"}}, {"category": "Hibiskus", "id": "PL-H02-D-02", "values": {"nickname": "", "batch": "PL-H02", "status": "Grodd", "sown": "2026-06-25", "gift_from": "", "arrival_type": "", "source": "", "breeding_selected": "nej", "group": "012 × okänd"}}, {"category": "Hibiskus", "id": "PL-H02-D-03", "values": {"nickname": "", "batch": "PL-H02", "status": "Grodd", "sown": "2026-06-25", "gift_from": "", "arrival_type": "", "source": "", "breeding_selected": "nej", "group": "012 × okänd"}}, {"category": "Pelargon", "id": "p-acetosum", "values": {"scent": "", "nickname": "", "status": "Bekräftad", "tags": "Bonsai", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. acetosum", "type": "Vildpelargon"}}, {"category": "Pelargon", "id": "p-australe-1", "values": {"scent": "", "nickname": "", "status": "Bekräftad", "tags": "Ampel", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. australe 1", "type": "Vildpelargon"}}, {"category": "Pelargon", "id": "p-australe-2", "values": {"scent": "", "nickname": "", "status": "Bekräftad", "tags": "Ampel", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. australe 2", "type": "Vildpelargon"}}, {"category": "Pelargon", "id": "p-cotyledonis-1", "values": {"scent": "", "nickname": "", "status": "Bekräftad", "tags": "Bonsai", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. cotyledonis 1", "type": "Vildpelargon"}}, {"category": "Pelargon", "id": "p-cotyledonis-2", "values": {"scent": "", "nickname": "", "status": "Bekräftad", "tags": "Bonsai", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. cotyledonis 2", "type": "Vildpelargon"}}, {"category": "Pelargon", "id": "p-gibbosum-1", "values": {"scent": "Kvällsdoftande / kryddigt-balsamisk", "nickname": "", "status": "Bekräftad", "tags": "Bonsai", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. gibbosum 1", "type": "Vildpelargon"}}, {"category": "Pelargon", "id": "p-gibbosum-2", "values": {"scent": "Kvällsdoftande / kryddigt-balsamisk", "nickname": "", "status": "Bekräftad", "tags": "Bonsai", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. gibbosum 2", "type": "Vildpelargon"}}, {"category": "Pelargon", "id": "p-gibbosum-3", "values": {"scent": "Kvällsdoftande / kryddigt-balsamisk", "nickname": "", "status": "Bekräftad", "tags": "Bonsai", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. gibbosum 3", "type": "Vildpelargon"}}, {"category": "Pelargon", "id": "p-gibbosum-4", "values": {"scent": "Kvällsdoftande / kryddigt-balsamisk", "nickname": "Grotesco", "status": "Bekräftad", "tags": "Bonsai", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. gibbosum 4", "type": "Vildpelargon"}}, {"category": "Pelargon", "id": "p-gibbosum-maroon-1", "values": {"scent": "Kvällsdoftande / kryddigt-balsamisk", "nickname": "", "status": "Bekräftad", "tags": "Bonsai", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. gibbosum ‘Maroon’ 1", "type": "Vildpelargon"}}, {"category": "Pelargon", "id": "p-gibbosum-maroon-2", "values": {"scent": "Kvällsdoftande / kryddigt-balsamisk", "nickname": "", "status": "Bekräftad", "tags": "Bonsai", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. gibbosum ‘Maroon’ 2", "type": "Vildpelargon"}}, {"category": "Pelargon", "id": "p-laxum-1", "values": {"scent": "", "nickname": "", "status": "Bekräftad", "tags": "Bonsai", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. laxum 1", "type": "Vildpelargon"}}, {"category": "Pelargon", "id": "p-laxum-2", "values": {"scent": "", "nickname": "", "status": "Bekräftad", "tags": "Bonsai", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. laxum 2", "type": "Vildpelargon"}}, {"category": "Pelargon", "id": "p-magenteum", "values": {"scent": "", "nickname": "", "status": "Bekräftad", "tags": "Bonsai", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. magenteum", "type": "Vildpelargon"}}, {"category": "Pelargon", "id": "p-odoratissimum-1", "values": {"scent": "Äpple / frisk doft", "nickname": "", "status": "Bekräftad", "tags": "Vildart;Ampel", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. odoratissimum", "type": "Doftpelargon"}}, {"category": "Pelargon", "id": "p-sidoides", "values": {"scent": "Svag / örtig", "nickname": "", "status": "Bekräftad", "tags": "", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. sidoides", "type": "Vildpelargon"}}, {"category": "Pelargon", "id": "p-triffidum", "values": {"scent": "", "nickname": "", "status": "Bekräftad", "tags": "Ampel", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. triffidum", "type": "Vildpelargon"}}, {"category": "Pelargon", "id": "p-caffrum-diana", "values": {"scent": "", "nickname": "", "status": "Bekräftad", "tags": "", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. × caffrum ‘Diana’", "type": "Primärhybrid"}}, {"category": "Pelargon", "id": "p-bontrosai-1", "values": {"scent": "", "nickname": "", "status": "Bekräftad", "tags": "Bonsai", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. ‘Bontrosai’ 1", "type": "Doftpelargon"}}, {"category": "Pelargon", "id": "p-bontrosai-2", "values": {"scent": "", "nickname": "", "status": "Bekräftad", "tags": "Bonsai", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. ‘Bontrosai’ 2", "type": "Doftpelargon"}}, {"category": "Pelargon", "id": "p-bothams-surprise-1", "values": {"scent": "", "nickname": "", "status": "Bekräftad", "tags": "", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. ‘Botham Surprise’ 1", "type": "Brokbladig pelargon"}}, {"category": "Pelargon", "id": "p-bothams-surprise-2", "values": {"scent": "", "nickname": "", "status": "Bekräftad", "tags": "", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. ‘Botham Surprise’ 2", "type": "Brokbladig pelargon"}}, {"category": "Pelargon", "id": "p-creamery", "values": {"scent": "", "nickname": "", "status": "Bekräftad", "tags": "", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. ‘Creamery’", "type": "Zonalpelargon"}}, {"category": "Pelargon", "id": "p-cys-sunburst-1", "values": {"scent": "", "nickname": "", "status": "Bekräftad", "tags": "Brokbladig", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. ‘Cy’s Sunburst’ 1", "type": "Doftpelargon"}}, {"category": "Pelargon", "id": "p-cys-sunburst-2", "values": {"scent": "", "nickname": "", "status": "Bekräftad", "tags": "Brokbladig", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. ‘Cy’s Sunburst’ 2", "type": "Doftpelargon"}}, {"category": "Pelargon", "id": "p-cys-sunburst-3", "values": {"scent": "", "nickname": "", "status": "Bekräftad", "tags": "Brokbladig", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. ‘Cy’s Sunburst’ 3", "type": "Doftpelargon"}}, {"category": "Pelargon", "id": "p-dr-westerlund-1", "values": {"scent": "Klassisk doftpelargon / frisk citrus-ros", "nickname": "", "status": "Bekräftad", "tags": "", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. ‘Dr Westerlund’ 1", "type": "Doftpelargon"}}, {"category": "Pelargon", "id": "p-dr-westerlund-2", "values": {"scent": "Klassisk doftpelargon / frisk citrus-ros", "nickname": "", "status": "Bekräftad", "tags": "", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. ‘Dr Westerlund’ 2", "type": "Doftpelargon"}}, {"category": "Pelargon", "id": "p-lemon-queen", "values": {"scent": "Citron", "nickname": "", "status": "Bekräftad", "tags": "", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. ‘Lemon Queen’", "type": "Doftpelargon"}}, {"category": "Pelargon", "id": "p-nielsens-fragrans-1", "values": {"scent": "Doftpelargon", "nickname": "", "status": "Bekräftad", "tags": "", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. ‘Nielsens Fragrans’", "type": "Doftpelargon"}}, {"category": "Pelargon", "id": "p-prince-of-orange", "values": {"scent": "Apelsin / citrus", "nickname": "", "status": "Bekräftad", "tags": "", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. ‘Prince of Orange’", "type": "Doftpelargon"}}, {"category": "Pelargon", "id": "p-torento", "values": {"scent": "Cola / kryddig citrus", "nickname": "", "status": "Bekräftad", "tags": "", "source": "Sune Trygg", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "P. ‘Torento’", "type": "Doftpelargon"}}, {"category": "Citrus", "id": "c-calamondin", "values": {"status": "Aktiv", "source": "", "arrival_type": "Gåva", "gift_from": "[privat]", "start_date": "", "name": "Calamondin", "type": "Calamondin"}}, {"category": "Citrus", "id": "c-limon-1", "values": {"status": "Aktiv", "source": "Bauhaus", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "Citrus limon 1", "type": "Citron"}}, {"category": "Citrus", "id": "c-limon-2", "values": {"status": "Aktiv", "source": "Bauhaus", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "Citrus limon 2", "type": "Citron"}}, {"category": "Citrus", "id": "c-okand-citrusstickling", "values": {"status": "Aktiv", "source": "", "arrival_type": "Gåva", "gift_from": "[privat]", "start_date": "", "name": "Citrusstickling", "type": "Okänd citrus"}}, {"category": "Citrus", "id": "c-kaffirlime", "values": {"status": "Aktiv", "source": "Vivai Miano", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "Kaffirlime – Citrus hystrix", "type": "Kaffirlime"}}, {"category": "Citrus", "id": "c-kumquat-1", "values": {"status": "Aktiv", "source": "Vivai Miano", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "Kumquat 1", "type": "Kumquat"}}, {"category": "Citrus", "id": "c-kumquat-2", "values": {"status": "Aktiv", "source": "Vivai Miano", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "Kumquat 2", "type": "Kumquat"}}, {"category": "Citrus", "id": "c-limequat", "values": {"status": "Aktiv", "source": "Vivai Miano", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "Limequat", "type": "Limequat"}}, {"category": "Citrus", "id": "c-rod-fingerlime", "values": {"status": "Aktiv", "source": "Vivai Miano", "arrival_type": "Köpt planta", "gift_from": "", "start_date": "", "name": "Röd fingerlime – Citrus australasica", "type": "Fingerlime"}}, {"category": "Udda", "id": "SP-006", "values": {"latin": "Spathiphyllum wallisii", "status": "Aktiv", "tags": "Tropisk;Skugga;Blommande", "source": "", "arrival_type": "", "gift_from": "", "start_date": "", "name": "Fredskalla", "type": "Krukväxt"}}, {"category": "Udda", "id": "SP-005", "values": {"latin": "Hemionitis arifolia", "status": "Aktiv", "tags": "Tropisk;Skugga", "source": "", "arrival_type": "Gåva", "gift_from": "[privat]", "start_date": "", "name": "Hjärtbräken", "type": "Ormbunke"}}, {"category": "Udda", "id": "SP-002", "values": {"latin": "Pogostemon cablin", "status": "Aktiv", "tags": "Tropisk;Frö;Presentväxt", "source": "Frö", "arrival_type": "", "gift_from": "", "start_date": "", "name": "Patchouli", "type": "Doftväxt"}}, {"category": "Udda", "id": "SP-004", "values": {"latin": "Plumeria spp.", "status": "Aktiv", "tags": "Tropisk;Blomning okänd", "source": "Frö", "arrival_type": "", "gift_from": "", "start_date": "", "name": "Plumeria", "type": "Tropisk växt"}}, {"category": "Udda", "id": "SP-003", "values": {"latin": "Salvia apiana", "status": "Under uppdragning", "tags": "Frö;Torrt/soligt;Pågående", "source": "Frö", "arrival_type": "", "gift_from": "", "start_date": "", "name": "Salvia apiana", "type": "Salvia"}}, {"category": "Udda", "id": "SP-001", "values": {"latin": "Stapelia spp.", "status": "Aktiv", "tags": "Frö;Samplantering;Blomning okänd", "source": "Frö", "arrival_type": "", "gift_from": "", "start_date": "", "name": "Stapelia mix", "type": "Suckulent"}}, {"category": "Udda", "id": "SP-008", "values": {"latin": "Cyphomandra betacea", "status": "", "tags": "Frö", "source": "Jalapeno.nu", "arrival_type": "Frö", "gift_from": "", "start_date": "2026-08-10", "name": "Tamarillo", "type": ""}}, {"category": "Udda", "id": "SP-007", "values": {"latin": "Clerodendrum thomsoniae", "status": "Aktiv", "tags": "Tropisk;Klätterväxt;Blommande", "source": "Tradera", "arrival_type": "", "gift_from": "", "start_date": "", "name": "Ödesträd", "type": "Tropisk klätterväxt"}}]}</script>
   <script id="labelData" type="application/json">[{"category": "Hibiskus", "id": "PL-H01-A", "name": "Hibiskus", "batch": "PL-H01", "group": "Surprise Pack", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-B", "name": "Hibiskus", "batch": "PL-H01", "group": "Surprise Pack", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-C", "name": "Hibiskus", "batch": "PL-H01", "group": "Surprise Pack", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-D", "name": "Hibiskus", "batch": "PL-H01", "group": "Surprise Pack", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-G", "name": "Hibiskus", "batch": "PL-H01", "group": "Surprise Pack", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-H", "name": "Hibiskus", "batch": "PL-H01", "group": "Surprise Pack", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-I", "name": "Hibiskus", "batch": "PL-H01", "group": "Surprise Pack", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-J", "name": "Hibiskus", "batch": "PL-H01", "group": "Surprise Pack", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-K", "name": "Hibiskus", "batch": "PL-H01", "group": "Surprise Pack", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-L", "name": "Hibiskus", "batch": "PL-H01", "group": "Surprise Pack", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-M", "name": "Hibiskus", "batch": "PL-H01", "group": "Surprise Pack", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-N", "name": "Hibiskus", "batch": "PL-H01", "group": "Surprise Pack", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-O", "name": "Hibiskus", "batch": "PL-H01", "group": "Surprise Pack", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-Q", "name": "Hibiskus", "batch": "PL-H01", "group": "Surprise Pack", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-R", "name": "Hibiskus", "batch": "PL-H01", "group": "Surprise Pack", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-A-01", "name": "Hibiskus", "batch": "PL-H02", "group": "Surprise Pack", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-B-01", "name": "Hibiskus", "batch": "PL-H02", "group": "012 × 030", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-C-01", "name": "Hibiskus", "batch": "PL-H02", "group": "030 × 041", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-C-02", "name": "Hibiskus", "batch": "PL-H02", "group": "030 × 041", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-C-03", "name": "Hibiskus", "batch": "PL-H02", "group": "030 × 041", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-D-01", "name": "Hibiskus", "batch": "PL-H02", "group": "012 × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-D-02", "name": "Hibiskus", "batch": "PL-H02", "group": "012 × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-D-03", "name": "Hibiskus", "batch": "PL-H02", "group": "012 × okänd", "nickname": ""}, {"category": "Pelargon", "id": "p-acetosum", "name": "P. acetosum", "nickname": ""}, {"category": "Pelargon", "id": "p-australe-1", "name": "P. australe 1", "nickname": ""}, {"category": "Pelargon", "id": "p-australe-2", "name": "P. australe 2", "nickname": ""}, {"category": "Pelargon", "id": "p-cotyledonis-1", "name": "P. cotyledonis 1", "nickname": ""}, {"category": "Pelargon", "id": "p-cotyledonis-2", "name": "P. cotyledonis 2", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-1", "name": "P. gibbosum 1", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-2", "name": "P. gibbosum 2", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-3", "name": "P. gibbosum 3", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-4", "name": "P. gibbosum 4", "nickname": "Grotesco"}, {"category": "Pelargon", "id": "p-gibbosum-maroon-1", "name": "P. gibbosum ‘Maroon’ 1", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-maroon-2", "name": "P. gibbosum ‘Maroon’ 2", "nickname": ""}, {"category": "Pelargon", "id": "p-laxum-1", "name": "P. laxum 1", "nickname": ""}, {"category": "Pelargon", "id": "p-laxum-2", "name": "P. laxum 2", "nickname": ""}, {"category": "Pelargon", "id": "p-magenteum", "name": "P. magenteum", "nickname": ""}, {"category": "Pelargon", "id": "p-odoratissimum-1", "name": "P. odoratissimum", "nickname": ""}, {"category": "Pelargon", "id": "p-sidoides", "name": "P. sidoides", "nickname": ""}, {"category": "Pelargon", "id": "p-triffidum", "name": "P. triffidum", "nickname": ""}, {"category": "Pelargon", "id": "p-caffrum-diana", "name": "P. × caffrum ‘Diana’", "nickname": ""}, {"category": "Pelargon", "id": "p-bontrosai-1", "name": "P. ‘Bontrosai’ 1", "nickname": ""}, {"category": "Pelargon", "id": "p-bontrosai-2", "name": "P. ‘Bontrosai’ 2", "nickname": ""}, {"category": "Pelargon", "id": "p-bothams-surprise-1", "name": "P. ‘Botham Surprise’ 1", "nickname": ""}, {"category": "Pelargon", "id": "p-bothams-surprise-2", "name": "P. ‘Botham Surprise’ 2", "nickname": ""}, {"category": "Pelargon", "id": "p-creamery", "name": "P. ‘Creamery’", "nickname": ""}, {"category": "Pelargon", "id": "p-cys-sunburst-1", "name": "P. ‘Cy’s Sunburst’ 1", "nickname": ""}, {"category": "Pelargon", "id": "p-cys-sunburst-2", "name": "P. ‘Cy’s Sunburst’ 2", "nickname": ""}, {"category": "Pelargon", "id": "p-cys-sunburst-3", "name": "P. ‘Cy’s Sunburst’ 3", "nickname": ""}, {"category": "Pelargon", "id": "p-dr-westerlund-1", "name": "P. ‘Dr Westerlund’ 1", "nickname": ""}, {"category": "Pelargon", "id": "p-dr-westerlund-2", "name": "P. ‘Dr Westerlund’ 2", "nickname": ""}, {"category": "Pelargon", "id": "p-lemon-queen", "name": "P. ‘Lemon Queen’", "nickname": ""}, {"category": "Pelargon", "id": "p-nielsens-fragrans-1", "name": "P. ‘Nielsens Fragrans’", "nickname": ""}, {"category": "Pelargon", "id": "p-prince-of-orange", "name": "P. ‘Prince of Orange’", "nickname": ""}, {"category": "Pelargon", "id": "p-torento", "name": "P. ‘Torento’", "nickname": ""}, {"category": "Citrus", "id": "c-calamondin", "name": "Calamondin", "nickname": ""}, {"category": "Citrus", "id": "c-limon-1", "name": "Citrus limon 1", "nickname": ""}, {"category": "Citrus", "id": "c-limon-2", "name": "Citrus limon 2", "nickname": ""}, {"category": "Citrus", "id": "c-okand-citrusstickling", "name": "Citrusstickling", "nickname": ""}, {"category": "Citrus", "id": "c-kaffirlime", "name": "Kaffirlime – Citrus hystrix", "nickname": ""}, {"category": "Citrus", "id": "c-kumquat-1", "name": "Kumquat 1", "nickname": ""}, {"category": "Citrus", "id": "c-kumquat-2", "name": "Kumquat 2", "nickname": ""}, {"category": "Citrus", "id": "c-limequat", "name": "Limequat", "nickname": ""}, {"category": "Citrus", "id": "c-rod-fingerlime", "name": "Röd fingerlime – Citrus australasica", "nickname": ""}, {"category": "Udda", "id": "SP-006", "name": "Fredskalla"}, {"category": "Udda", "id": "SP-005", "name": "Hjärtbräken"}, {"category": "Udda", "id": "SP-002", "name": "Patchouli"}, {"category": "Udda", "id": "SP-004", "name": "Plumeria"}, {"category": "Udda", "id": "SP-003", "name": "Salvia apiana"}, {"category": "Udda", "id": "SP-001", "name": "Stapelia mix"}, {"category": "Udda", "id": "SP-008", "name": "Tamarillo"}, {"category": "Udda", "id": "SP-007", "name": "Ödesträd"}]</script>
   <script>
     const labels = JSON.parse(document.querySelector("#labelData").textContent);
@@ -361,21 +405,177 @@
     const arrivalDate = document.querySelector("#arrivalDate");
     const arrivalDateLabel = document.querySelector("#arrivalDateLabel");
     const arrivalType = document.querySelector("#arrivalType");
+    const arrivalSourceLabel = document.querySelector("#arrivalSourceLabel");
+    const arrivalSourceHelp = document.querySelector("#arrivalSourceHelp");
     const arrivalSave = document.querySelector("#arrivalSave");
     const arrivalStatus = document.querySelector("#arrivalStatus");
+    const dataCategory = document.querySelector("#dataCategory");
+    const dataSearch = document.querySelector("#dataSearch");
+    const dataPlant = document.querySelector("#dataPlant");
+    const dataForm = document.querySelector("#dataForm");
+    let dataViewLoaded = false;
+    let dataViewSchemas = {};
+    let dataViewPlants = [];
 
     function showSelectedTool(scrollToTool = false) {
       const selected = window.location.hash.slice(1);
       const showArrival = selected === "ankomstsamtal";
+      const showDataView = selected === "datavy" && Boolean(window.MINA_VAXTER_ARCHIVE_TOKEN);
       const showLabels = selected === "etiketter";
       document.querySelector("#ankomstsamtal").hidden = !showArrival;
+      document.querySelector("#datavy").hidden = !showDataView;
       document.querySelector("#etiketterToolbar").hidden = !showLabels;
       document.querySelector("#etiketter").hidden = !showLabels;
       document.querySelectorAll("[data-tool-card]").forEach(card => {
         card.setAttribute("aria-expanded", card.dataset.toolCard === selected ? "true" : "false");
       });
-      if (scrollToTool && (showArrival || showLabels)) {
-        document.querySelector(showArrival ? "#ankomstsamtal" : "#etiketterToolbar").scrollIntoView({behavior: "smooth", block: "start"});
+      if (showDataView && !dataViewLoaded) loadDataView();
+      if (scrollToTool && (showArrival || showDataView || showLabels)) {
+        document.querySelector(showArrival ? "#ankomstsamtal" : showDataView ? "#datavy" : "#etiketterToolbar").scrollIntoView({behavior: "smooth", block: "start"});
+      }
+    }
+
+    function dataPlantKey(plant) {
+      return `${plant.category}::${plant.id}`;
+    }
+
+    function selectedDataPlant() {
+      return dataViewPlants.find(plant => dataPlantKey(plant) === dataPlant.value) || null;
+    }
+
+    function dataPlantLabel(plant) {
+      const values = plant.values || {};
+      const nickname = values.nickname || "";
+      return nickname ? `${plant.id} · ${nickname}` : plant.id;
+    }
+
+    function fillDataCategories() {
+      const current = dataCategory.value;
+      const categories = Object.keys(dataViewSchemas);
+      dataCategory.innerHTML = '<option value="">Alla kategorier</option>' + categories
+        .map(category => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`)
+        .join("");
+      if (categories.includes(current)) dataCategory.value = current;
+    }
+
+    function fillDataPlants() {
+      const current = dataPlant.value;
+      const category = dataCategory.value;
+      const query = dataSearch.value.trim().toLocaleLowerCase("sv");
+      const visible = dataViewPlants.filter(plant => {
+        const haystack = `${plant.id} ${dataPlantLabel(plant)}`.toLocaleLowerCase("sv");
+        return (!category || plant.category === category) && (!query || haystack.includes(query));
+      });
+      dataPlant.innerHTML = '<option value="">Välj en växt</option>' + visible
+        .map(plant => `<option value="${escapeHtml(dataPlantKey(plant))}">${category ? "" : `${escapeHtml(plant.category)} · `}${escapeHtml(dataPlantLabel(plant))}</option>`)
+        .join("");
+      if (visible.some(plant => dataPlantKey(plant) === current)) dataPlant.value = current;
+      else dataPlant.value = "";
+      renderDataForm();
+    }
+
+    function dataFieldHtml(field, value) {
+      const key = escapeHtml(field.key);
+      const label = escapeHtml(field.label);
+      const visibility = `${field.show_for_arrival ? ` data-show-arrival="${escapeHtml(field.show_for_arrival)}"` : ""}${field.hide_for_arrival ? ` data-hide-arrival="${escapeHtml(field.hide_for_arrival)}"` : ""}`;
+      if (field.type === "readonly") {
+        return `<label class="data-field readonly"${visibility}><span>${label}</span><span class="data-readonly-value">${escapeHtml(value || "Saknas")}</span></label>`;
+      }
+      if (field.type === "checkbox") {
+        return `<label class="data-field"${visibility}><span>${label}</span><span class="data-check"><input data-data-field="${key}" type="checkbox" ${value === "ja" ? "checked" : ""}><span>Aktivt markerad</span></span></label>`;
+      }
+      if (field.type === "select") {
+        const options = [...(field.options || [])];
+        if (value && !options.includes(value)) options.unshift(value);
+        const optionHtml = ['<option value="">Inte angivet</option>', ...options.map(option => `<option value="${escapeHtml(option)}" ${option === value ? "selected" : ""}>${escapeHtml(option)}</option>`)].join("");
+        return `<label class="data-field"${visibility}><span>${label}</span><select data-data-field="${key}">${optionHtml}</select></label>`;
+      }
+      const type = field.type === "date" ? "date" : "text";
+      return `<label class="data-field"${visibility}><span>${label}</span><input data-data-field="${key}" type="${type}" value="${escapeHtml(value)}" autocomplete="off"></label>`;
+    }
+
+    function updateConditionalDataFields() {
+      const arrival = dataForm.querySelector('[data-data-field="arrival_type"]')?.value || "";
+      const source = dataForm.querySelector('[data-data-field="source"]');
+      const giftFrom = dataForm.querySelector('[data-data-field="gift_from"]');
+      if (arrival === "Gåva" && giftFrom && !giftFrom.value && source?.value) {
+        if (![...giftFrom.options].some(option => option.value === source.value)) giftFrom.add(new Option(source.value, source.value));
+        giftFrom.value = source.value;
+      }
+      dataForm.querySelectorAll("[data-show-arrival], [data-hide-arrival]").forEach(field => {
+        const showFor = field.dataset.showArrival || "";
+        const hideFor = field.dataset.hideArrival || "";
+        field.hidden = Boolean((showFor && arrival !== showFor) || (hideFor && arrival === hideFor));
+      });
+    }
+
+    function renderDataForm(message = "", statusClass = "") {
+      const plant = selectedDataPlant();
+      if (!plant) {
+        dataForm.innerHTML = `<div class="data-empty">${escapeHtml(message || "Välj en växt för att se dess aktiva datatyper.")}</div>`;
+        return;
+      }
+      const schema = dataViewSchemas[plant.category] || [];
+      const firstReadonly = schema.findIndex(field => field.type === "readonly");
+      dataForm.innerHTML = schema.map((field, index) => {
+        const intro = index === firstReadonly ? '<p class="data-legacy">Bevarad originalinformation. Dessa fält är låsta tills fröpartier och genetiska relationer kan översättas säkert.</p>' : "";
+        return intro + dataFieldHtml(field, (plant.values || {})[field.key] || "");
+      }).join("") + `
+        <div class="data-actions">
+          <button type="submit">Spara i CSV</button>
+          <span class="data-status ${escapeHtml(statusClass)}" role="status" aria-live="polite">${escapeHtml(message)}</span>
+        </div>`;
+      updateConditionalDataFields();
+      dataForm.querySelector('[data-data-field="arrival_type"]')?.addEventListener("change", updateConditionalDataFields);
+    }
+
+    async function loadDataView() {
+      const token = window.MINA_VAXTER_ARCHIVE_TOKEN || "";
+      if (!token) {
+        renderDataForm("Öppna Mina Växter lokalt på Macen för att använda datavyn.", "error");
+        return;
+      }
+      try {
+        const result = JSON.parse(document.querySelector("#dataViewData").textContent);
+        dataViewSchemas = result.schemas || {};
+        dataViewPlants = result.plants || [];
+        dataViewLoaded = true;
+        fillDataCategories();
+        fillDataPlants();
+      } catch (error) {
+        renderDataForm(error.message || "Datan kunde inte läsas.", "error");
+      }
+    }
+
+    async function saveDataView(event) {
+      event.preventDefault();
+      const plant = selectedDataPlant();
+      if (!plant) return;
+      const changes = {};
+      dataForm.querySelectorAll("[data-data-field]").forEach(input => {
+        changes[input.dataset.dataField] = input.type === "checkbox" ? (input.checked ? "ja" : "nej") : input.value;
+      });
+      if (changes.arrival_type === "Gåva") {
+        changes.gift_from = changes.gift_from || changes.source || "";
+        changes.source = "";
+      } else {
+        changes.gift_from = "";
+      }
+      const button = dataForm.querySelector('button[type="submit"]');
+      button.disabled = true;
+      button.textContent = "Sparar…";
+      try {
+        const response = await fetch("http://127.0.0.1:47831/data-view", {
+          method: "POST",
+          headers: {"Content-Type": "application/json", "X-Mina-Vaxter-Token": window.MINA_VAXTER_ARCHIVE_TOKEN || ""},
+          body: JSON.stringify({category: plant.category, id: plant.id, changes})
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || !result.ok) throw new Error(result.error || "Posten kunde inte sparas.");
+        Object.assign(plant.values, changes);
+        renderDataForm("Sparat i den privata ändringskön. CSV uppdateras vid nästa synkning.", "success");
+      } catch (error) {
+        renderDataForm(error.message || "Posten kunde inte sparas.", "error");
       }
     }
 
@@ -395,6 +595,9 @@
         "Annat": "Startdatum"
       };
       arrivalDateLabel.textContent = labels[arrivalType.value] || "Ankomstdatum";
+      const isGift = arrivalType.value === "Gåva";
+      arrivalSourceLabel.textContent = isGift ? "Från vem" : "Källa";
+      arrivalSourceHelp.textContent = isGift ? "Vem gav dig växten?" : "Varifrån kom växten? Till exempel Tradera eller Rareplants.eu.";
     }
 
     function setArrivalError(fieldId, errorId, message) {
@@ -428,6 +631,10 @@
         return;
       }
       const payload = Object.fromEntries(new FormData(arrivalForm).entries());
+      if (payload.arrival_type === "Gåva") {
+        payload.gift_from = payload.source;
+        payload.source = "";
+      }
       arrivalForm.setAttribute("aria-busy", "true");
       arrivalSave.disabled = true;
       arrivalSave.textContent = "Skapar plats…";
@@ -474,6 +681,7 @@
       if (window.location.protocol !== "file:") return;
       originalArchiveLink.href = "minavaxter-originalarkiv://open";
       originalArchiveLink.hidden = false;
+      document.querySelector("#dataViewCard").hidden = false;
     }
 
     function escapeHtml(value) {
@@ -717,6 +925,10 @@
 
     showSelectedTool();
     window.addEventListener("hashchange", () => showSelectedTool(true));
+    dataCategory.addEventListener("change", fillDataPlants);
+    dataSearch.addEventListener("input", fillDataPlants);
+    dataPlant.addEventListener("change", () => renderDataForm());
+    dataForm.addEventListener("submit", saveDataView);
     fillCategoryFilter();
     enableLocalOriginalArchive();
     refillSelects();

@@ -125,16 +125,16 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script type="text/plain" id="defaultPlantsCSV">id,name,type,status,source,notes,nickname,card_note,card_note_updated_at,arrival_type,start_date
-c-calamondin,Calamondin,Calamondin,Aktiv,[privat],,,,,,
-c-limon-1,Citrus limon 1,Citron,Aktiv,Bauhaus,,,,,,
-c-limon-2,Citrus limon 2,Citron,Aktiv,Bauhaus,,,,,,
-c-okand-citrusstickling,Citrusstickling,Okänd citrus,Aktiv,[privat],,,,,,
-c-kaffirlime,Kaffirlime – Citrus hystrix,Kaffirlime,Aktiv,Vivai Miano,,,,,,
-c-kumquat-1,Kumquat 1,Kumquat,Aktiv,Vivai Miano,,,,,,
-c-kumquat-2,Kumquat 2,Kumquat,Aktiv,Vivai Miano,,,,,,
-c-limequat,Limequat,Limequat,Aktiv,Vivai Miano,,,,,,
-c-rod-fingerlime,Röd fingerlime – Citrus australasica,Fingerlime,Aktiv,Vivai Miano,,,,,,</script>
+  <script type="text/plain" id="defaultPlantsCSV">id,name,type,status,source,notes,nickname,card_note,card_note_updated_at,arrival_type,start_date,gift_from
+c-calamondin,Calamondin,Calamondin,Aktiv,,,,,,Gåva,,[privat]
+c-limon-1,Citrus limon 1,Citron,Aktiv,Bauhaus,,,,,Köpt planta,,
+c-limon-2,Citrus limon 2,Citron,Aktiv,Bauhaus,,,,,Köpt planta,,
+c-okand-citrusstickling,Citrusstickling,Okänd citrus,Aktiv,,,,,,Gåva,,[privat]
+c-kaffirlime,Kaffirlime – Citrus hystrix,Kaffirlime,Aktiv,Vivai Miano,,,,,Köpt planta,,
+c-kumquat-1,Kumquat 1,Kumquat,Aktiv,Vivai Miano,,,,,Köpt planta,,
+c-kumquat-2,Kumquat 2,Kumquat,Aktiv,Vivai Miano,,,,,Köpt planta,,
+c-limequat,Limequat,Limequat,Aktiv,Vivai Miano,,,,,Köpt planta,,
+c-rod-fingerlime,Röd fingerlime – Citrus australasica,Fingerlime,Aktiv,Vivai Miano,,,,,Köpt planta,,</script>
   <script type="text/plain" id="defaultPhotosCSV">plant_id,date,type,file,label
 c-calamondin,2026-06-24,hel,bilder/citrus/c-calamondin_2026-06-24_hel.jpg,2026-06-24 · hel
 c-kaffirlime,2026-06-24,hel,bilder/citrus/c-kaffirlime_2026-06-24_hel.jpg,2026-06-24 · hel
@@ -189,8 +189,9 @@ PL-H02-D-01,2026-06-25,Sådd,
 PL-H02-D-02,2026-06-25,Sådd,
 PL-H02-D-03,2026-06-25,Sådd,
 p-torento,2026-08-08,Avslutad/död,
-SP-008,2026-08-10,Sådd,Skapad från Ankomstsamtal.</script>
-  <script src="common.js?v=20260810synk1708"></script>
+SP-008,2026-08-10,Sådd,Skapad från Ankomstsamtal.
+SP-008,2026-06-27,Omplanterad,</script>
+  <script src="common.js?v=20260811synk0923"></script>
   <script>
     let plants = [];
     let editMode = false;
@@ -271,7 +272,7 @@ SP-008,2026-08-10,Sådd,Skapad från Ankomstsamtal.</script>
         return {file: photo.file, title: displayName, caption: `${displayLabel} · ${label}`, alt: displayLabel};
       });
       const searchable = [
-        p.id, p.name, p.nickname, p.type, p.status, p.source, p.notes, getPlantCardNote(p.id, p.card_note, p.card_note_updated_at),
+        p.id, p.name, p.nickname, p.type, p.status, p.source, p.gift_from, p.notes, getPlantCardNote(p.id, p.card_note, p.card_note_updated_at),
         ...photos.map(x => `${x.date} ${x.type} ${x.file}`),
         ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
       ].join(" ").toLowerCase();
@@ -339,7 +340,7 @@ SP-008,2026-08-10,Sådd,Skapad från Ankomstsamtal.</script>
       const selectedType = typeFilter.value === "__concluded_only__" ? "" : typeFilter.value;
       const filtered = plants.filter(p => {
         const combined = [
-          p.id, p.name, p.nickname, p.type, p.status, p.source, p.notes, getPlantCardNote(p.id, p.card_note, p.card_note_updated_at),
+          p.id, p.name, p.nickname, p.type, p.status, p.source, p.gift_from, p.notes, getPlantCardNote(p.id, p.card_note, p.card_note_updated_at),
           ...(p.photos || []).map(x => `${x.date} ${x.type} ${x.file}`),
           ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
         ].join(" ").toLowerCase();

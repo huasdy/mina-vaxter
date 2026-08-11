@@ -106,6 +106,7 @@ function collectionChips(category, row) {
     row && row.status,
     row && row.scent,
     row && row.source,
+    row && row.gift_from,
     row && row.notes,
     row && row.group,
     row && row.batch,
@@ -118,6 +119,7 @@ function collectionChips(category, row) {
 
   if (category === "Hibiskus") {
     add("Projekt");
+    if (clean(row && row.breeding_selected).toLowerCase() === "ja") add("🏷 Utvald");
     if (!clean(row && row.arrival_type) || ["frö", "egen korsning"].includes(clean(row && row.arrival_type).toLowerCase())) add("Egen frösådd");
   } else if (category === "Pelargon") {
     if (["frö", "egen korsning"].includes(clean(row && row.arrival_type).toLowerCase())) add("Egen frösådd");
