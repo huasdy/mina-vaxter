@@ -1,9 +1,9 @@
-﻿id,name,latin,type,tags,status,source,notes,card_note,card_note_updated_at,arrival_type,start_date,gift_from
-SP-006,Fredskalla,Spathiphyllum wallisii,Krukväxt,Tropisk;Skugga;Blommande,Aktiv,,Dokumenteras som udda växt i samlingen.,,,,,
-SP-005,Hjärtbräken,Hemionitis arifolia,Ormbunke,Tropisk;Skugga,Aktiv,,Dokumenteras som udda växt i samlingen.,,,Gåva,,[privat]
-SP-002,Patchouli,Pogostemon cablin,Doftväxt,Tropisk;Frö;Presentväxt,Aktiv,Frö,Flera plantor finns men dokumenteras som växttyp snarare än individer.,,,,,
-SP-004,Plumeria,Plumeria spp.,Tropisk växt,Tropisk;Blomning okänd,Aktiv,Frö,Dokumenteras som udda växt i samlingen.,,,,,
-SP-003,Salvia apiana,Salvia apiana,Salvia,Frö;Torrt/soligt;Pågående,Under uppdragning,Frö,Dokumenteras om sådden tar sig.,,,,,
-SP-001,Stapelia mix,Stapelia spp.,Suckulent,Frö;Samplantering;Blomning okänd,Aktiv,Frö,Samplantering med flera individer i samma kruka. Dokumenteras som grupp tills blomning visar skillnader.,,,,,
-SP-008,Tamarillo,Cyphomandra betacea,,Frö,,Jalapeno.nu,,,,Frö,2026-08-10,
-SP-007,Ödesträd,Clerodendrum thomsoniae,Tropisk klätterväxt,Tropisk;Klätterväxt;Blommande,Aktiv,Tradera,"Tradera-annons 23. Fokus framåt är etablering, tillväxt och framtida blomning. Trivs ljust utan stark direkt sol och vill ha jämn fuktighet under tillväxtperioden.",,,,,
+﻿id,name,latin,type,tags,status,source,notes,card_note,card_note_updated_at,arrival_type,start_date
+SP-006,Fredskalla,Spathiphyllum wallisii,Krukväxt,,Aktiv,,Dokumenteras som udda växt i samlingen.,,,,
+SP-005,Hjärtbräken,Hemionitis arifolia,Krukväxt,,Aktiv,,Dokumenteras som udda växt i samlingen.,,,Gåva,
+SP-002,Patchouli,Pogostemon cablin,Doftväxt,Frö,Aktiv,,Flera plantor finns men dokumenteras som växttyp snarare än individer.,,,Frö,
+SP-004,Plumeria,Plumeria spp.,Krukväxt,,Aktiv,,Dokumenteras som udda växt i samlingen.,,,Frö,
+SP-003,Salvia apiana,Salvia apiana,Doftväxt,Frö,Under uppdragning,,Dokumenteras om sådden tar sig.,,,Frö,
+SP-001,Stapelia mix,Stapelia spp.,Krukväxt,Frö,Aktiv,,Samplantering med flera individer i samma kruka. Dokumenteras som grupp tills blomning visar skillnader.,,,Frö,
+SP-008,Tamarillo,Cyphomandra betacea,Krukväxt,Frö,,Jalapeno.nu,,,,Frö,2025-11-16
+SP-007,Ödesträd,Clerodendrum thomsoniae,Krukväxt,,Aktiv,Tradera,"Tradera-annons 23. Fokus framåt är etablering, tillväxt och framtida blomning. Trivs ljust utan stark direkt sol och vill ha jämn fuktighet under tillväxtperioden.",,,,

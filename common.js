@@ -106,32 +106,26 @@ function collectionChips(category, row) {
     row && row.status,
     row && row.scent,
     row && row.source,
-    row && row.gift_from,
     row && row.notes,
-    row && row.group,
-    row && row.batch,
     row && row.arrival_type
   ].map(clean).join(" ").toLowerCase();
   const chips = [];
   const add = value => {
     if (value && !chips.includes(value)) chips.push(value);
   };
+  const hasSownMilestone = (row && Array.isArray(row.logs) ? row.logs : [])
+    .some(log => clean(log && log.type).toLocaleLowerCase("sv") === "sådd");
+
+  if (hasSownMilestone) add("Frö");
 
   if (category === "Hibiskus") {
-    add("Projekt");
     if (clean(row && row.breeding_selected).toLowerCase() === "ja") add("🏷 Utvald");
-    if (!clean(row && row.arrival_type) || ["frö", "egen korsning"].includes(clean(row && row.arrival_type).toLowerCase())) add("Egen frösådd");
   } else if (category === "Pelargon") {
-    if (["frö", "egen korsning"].includes(clean(row && row.arrival_type).toLowerCase())) add("Egen frösådd");
     if (haystack.includes("doft")) add("Doft");
-    if (haystack.includes("vild") || haystack.includes("bonsai") || haystack.includes("brokbladig")) add("Unik");
   } else if (category === "Citrus") {
-    if (["frö", "egen korsning"].includes(clean(row && row.arrival_type).toLowerCase())) add("Egen frösådd");
     add("Inne");
   } else if (category === "Udda") {
     if (haystack.includes("doft") || haystack.includes("patchouli") || haystack.includes("salvia")) add("Doft");
-    if (haystack.includes("frö") || haystack.includes("sådd")) add("Egen frösådd");
-    if (!haystack.includes("fredskalla")) add("Unik");
     if (haystack.includes("fredskalla") || haystack.includes("hjärtbräken")) add("Inne");
   }
 
@@ -576,7 +570,7 @@ function ensurePlantPhotoGallery() {
         background: #0d0c0b; color: white; border: 0;
       }
       dialog.photo-gallery::backdrop { background: rgba(0,0,0,.82); }
-      .gallery-shell { width: 100%; height: 100%; display: grid; grid-template-rows: auto 1fr auto; }
+      .gallery-shell { width: 100%; height: 100%; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; }
       .gallery-top {
         min-height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
         padding: max(12px, env(safe-area-inset-top)) 14px 10px;
@@ -594,7 +588,8 @@ function ensurePlantPhotoGallery() {
       .gallery-close { font-size: 1.6rem; }
         .gallery-stage { position: relative; min-height: 0; display: grid; place-items: center; overflow: hidden; touch-action: none; overscroll-behavior: contain; }
         .gallery-image {
-          max-width: calc(100% - 16px); max-height: 100%; object-fit: contain; display: block;
+          width: calc(100% - 16px); height: 100%; min-width: 0; min-height: 0;
+          max-width: none; max-height: none; object-fit: contain; display: block;
           transform: translate3d(var(--pan-x, 0px), var(--pan-y, 0px), 0) scale(var(--zoom, 1));
           transform-origin: center center; transition: transform .14s ease; cursor: zoom-in; user-select: none; -webkit-user-drag: none;
         }
@@ -619,7 +614,7 @@ function ensurePlantPhotoGallery() {
         .gallery-nav[hidden] { display: none; }
         .gallery-prev { left: 8px; }
           .gallery-next { right: 8px; }
-          .gallery-image { max-width: calc(100% - 16px); max-height: 100%; }
+          .gallery-image { width: calc(100% - 16px); height: 100%; }
         }
     `;
     document.head.appendChild(style);
@@ -633,7 +628,7 @@ function ensurePlantPhotoGallery() {
         <div class="gallery-actions">
           <div class="gallery-tools" aria-label="Bildzoom">
             <button class="gallery-tool gallery-zoom-out" type="button" aria-label="Zooma ut">−</button>
-            <button class="gallery-tool gallery-reset" type="button" aria-label="Återställ zoom">100%</button>
+            <button class="gallery-tool gallery-reset" type="button" aria-label="Anpassa hela bilden till fönstret">Passa</button>
             <button class="gallery-tool gallery-zoom-in" type="button" aria-label="Zooma in">+</button>
           </div>
           <button class="gallery-close" type="button" aria-label="Stäng">×</button>
@@ -667,7 +662,7 @@ function ensurePlantPhotoGallery() {
     const state = dialog.galleryState;
     zoomOutButton.disabled = state.zoom <= 1.01;
     zoomInButton.disabled = state.zoom >= 3.99;
-    resetButton.textContent = state.zoom <= 1.01 ? "100%" : `${Math.round(state.zoom * 100)}%`;
+    resetButton.textContent = state.zoom <= 1.01 ? "Passa" : `${Math.round(state.zoom * 100)}%`;
   };
   const clampPan = () => {
     const state = dialog.galleryState;
@@ -945,7 +940,11 @@ function ensurePlantMilestones() {
       --plant-heading-height: 82px;
       --plant-chip-height: 36px;
       --plant-gallery-height: 50px;
+      min-height: 0;
+      height: auto;
+      align-self: start;
     }
+    .grid { align-items: start; }
     .plant-card > .image-wrap {
       height: var(--plant-image-height) !important; min-height: var(--plant-image-height);
       aspect-ratio: auto !important; flex: 0 0 var(--plant-image-height);
@@ -1001,8 +1000,6 @@ function ensurePlantMilestones() {
     .plant-card .plant-card-gallery-slot .photo-strip { height: 40px; padding: 0; }
     .plant-card .date-ribbon { display: none !important; }
     .plant-card .plant-card-info { min-width: 0; height: 58px; overflow: hidden; }
-    .plant-card[data-category="Hibiskus"] .plant-card-info { height: 174px; }
-    .plant-card[data-category="Citrus"] .plant-card-info { height: 84px; }
     .plant-card .plant-card-info:empty { height: 0; }
     .plant-card .plant-card-info:has(.edit-form) { height: auto; overflow: visible; }
     .plant-card .plant-card-milestone-slot { height: 64px; min-height: 64px; overflow: hidden; }
@@ -1015,7 +1012,10 @@ function ensurePlantMilestones() {
     .plant-card:has(.card-note) .card-body {
       grid-template-rows: var(--plant-heading-height) var(--plant-chip-height) auto minmax(64px, 1fr) 108px;
     }
-    .plant-card:has(.card-note) .plant-card-milestone-slot:empty { display: block; }
+    .plant-card:has(.card-note):has(.plant-card-milestone-slot:empty) .card-body {
+      grid-template-rows: var(--plant-heading-height) var(--plant-chip-height) auto 108px;
+    }
+    .plant-card:has(.card-note) .plant-card-milestone-slot:empty { display: none; }
     .card-note { display: grid; gap: 6px; }
     .card-note-label {
       color: var(--accent, #7d4f3b); font-size: .72rem; font-weight: 900;
@@ -1080,7 +1080,25 @@ function ensurePlantMilestones() {
       display: inline-flex; align-items: center; justify-content: center;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 1.4rem; font-weight: 900; line-height: 1; cursor: pointer;
     }
+    .plant-log-history-title {
+      list-style: none; cursor: pointer; display: flex; align-items: center; gap: 9px;
+      border: 1px solid var(--line, #ded2c2); border-radius: 14px; padding: 10px 12px;
+      background: rgba(255,255,255,.48);
+      color: var(--accent, #7d4f3b); text-transform: uppercase; letter-spacing: .14em;
+      font-size: .72rem; font-weight: 900;
+    }
+    .plant-log-history-title::-webkit-details-marker { display: none; }
+    .plant-log-history-title::after {
+      content: "⌄"; margin-left: auto; color: var(--muted, #6f655b); font-size: 1.15rem;
+      line-height: 1; transition: transform .16s ease;
+    }
+    .plant-log-history[open] .plant-log-history-title::after { transform: rotate(180deg); }
+    .plant-log-history-count {
+      min-width: 24px; padding: 3px 7px; border-radius: 999px; text-align: center;
+      background: var(--chip, #efe6da); color: var(--muted, #6f655b); letter-spacing: 0;
+    }
     .plant-log-list { display: grid; gap: 10px; }
+    .plant-log-history .plant-log-list { margin-top: 10px; }
     .plant-log-form {
       border: 1px solid var(--line, #ded2c2); border-radius: 18px; padding: 13px;
       background: rgba(255,255,255,.48); display: grid; gap: 10px;
@@ -1175,6 +1193,10 @@ function openPlantMilestones(card) {
         </div>
         <button class="plant-log-close" type="button" aria-label="Stäng">×</button>
       </header>
+      <details class="plant-log-history">
+        <summary class="plant-log-history-title">Tidigare milstolpar <span class="plant-log-history-count">${milestones.length}</span></summary>
+        <div class="plant-log-list">${rows || '<div class="plant-log-empty">Inga milstolpar ännu.</div>'}</div>
+      </details>
       <form class="plant-log-form" method="dialog">
         <div class="plant-log-form-title">Ny milstolpe</div>
         <div class="plant-log-fields">
@@ -1184,7 +1206,6 @@ function openPlantMilestones(card) {
         <textarea name="note" maxlength="160" placeholder="Kort anteckning, frivilligt"></textarea>
         <button class="plant-log-submit" type="submit">Spara milstolpe</button>
       </form>
-      <div class="plant-log-list">${rows || '<div class="plant-log-empty">Inga milstolpar ännu.</div>'}</div>
     </div>
   `;
   dialog.querySelector(".plant-log-close").addEventListener("click", () => dialog.close(), {once: true});

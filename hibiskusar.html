@@ -116,6 +116,29 @@
     dt { color: var(--muted); font-weight: 800; }
     dd { margin: 0; }
     .notes { color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; margin-top: auto; font-size: .94rem; min-height: 2.2em; }
+    .parent-reference-module {
+      border-top: 1px solid var(--line); padding-top: 12px; display: grid; gap: 10px;
+    }
+    .parent-reference-head { display: flex; align-items: baseline; gap: 10px; }
+    .parent-reference-title {
+      color: var(--accent); text-transform: uppercase; letter-spacing: .12em;
+      font-size: .72rem; font-weight: 900;
+    }
+    .parent-reference-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .parent-reference-item { min-width: 0; margin: 0; display: grid; gap: 6px; }
+    .parent-reference-button {
+      width: 100%; aspect-ratio: 1; border: 1px solid var(--line); border-radius: 13px;
+      padding: 0; overflow: hidden; background: white; cursor: zoom-in;
+    }
+    .parent-reference-button img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .parent-reference-caption { display: grid; gap: 2px; min-width: 0; }
+    .parent-reference-caption strong { color: var(--ink); font-size: .86rem; }
+    .parent-reference-caption span {
+      color: var(--muted); font-size: .75rem; font-weight: 750;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .parent-reference-source { color: var(--muted); font-size: .76rem; line-height: 1.35; }
+    .parent-reference-source a { color: var(--accent); font-weight: 850; }
     dialog { border: none; padding: 0; background: transparent; max-width: min(92vw, 1000px); max-height: 92vh; }
     dialog::backdrop { background: rgba(0,0,0,.72); }
     .modal-img { display: block; max-width: 100%; max-height: 88vh; border-radius: 18px; background: white; }
@@ -147,9 +170,9 @@
 
   <section class="toolbar">
     <div class="toolbar-inner">
-      <input id="search" type="search" placeholder="Sök ID, status, delparti eller bilddatum…">
-      <select id="batchFilter"><option value="">Alla partier</option></select>
-      <select id="subBatchFilter"><option value="">Alla delpartier</option></select>
+      <input id="search" type="search" placeholder="Sök ID, status, fröbatch, korsning eller bilddatum…">
+      <select id="batchFilter"><option value="">Alla fröbatcher</option></select>
+      <select id="subBatchFilter"><option value="">Alla korsningar</option></select>
       <select id="statusFilter"><option value="">Alla statusar</option></select>
       <select id="sortSelect">
         <option value="id">ID A-Ö</option>
@@ -176,30 +199,30 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script type="text/plain" id="defaultPlantsCSV">id,batch,group,sown,status,nickname,arrival_type,start_date,breeding_selected
-PL-H01-A,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,,,,nej
-PL-H01-B,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,,,,nej
-PL-H01-C,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,,,,nej
-PL-H01-D,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,,,,nej
-PL-H01-G,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,,,,nej
-PL-H01-H,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,,,,nej
-PL-H01-I,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,,,,nej
-PL-H01-J,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,,,,nej
-PL-H01-K,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,,,,nej
-PL-H01-L,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,,,,nej
-PL-H01-M,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,,,,nej
-PL-H01-N,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,,,,nej
-PL-H01-O,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,,,,nej
-PL-H01-Q,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,,,,nej
-PL-H01-R,PL-H01,Surprise Pack,2025-11-16,Ej blommat / under utvärdering,,,,nej
-PL-H02-A-01,PL-H02,Surprise Pack,2026-06-25,Grodd,,,,nej
-PL-H02-B-01,PL-H02,012 × 030,2026-06-25,Grodd,,,,nej
-PL-H02-C-01,PL-H02,030 × 041,2026-06-25,Grodd,,,,nej
-PL-H02-C-02,PL-H02,030 × 041,2026-06-25,Grodd,,,,nej
-PL-H02-C-03,PL-H02,030 × 041,2026-06-25,Grodd,,,,nej
-PL-H02-D-01,PL-H02,012 × okänd,2026-06-25,Grodd,,,,nej
-PL-H02-D-02,PL-H02,012 × okänd,2026-06-25,Grodd,,,,nej
-PL-H02-D-03,PL-H02,012 × okänd,2026-06-25,Grodd,,,,nej</script>
+  <script type="text/plain" id="defaultPlantsCSV">id,status,nickname,arrival_type,source,start_date,breeding_selected,mother,father
+PL-H01-A,Ej blommat / under utvärdering,,Frö,Rareplants.eu,,nej,okänd,okänd
+PL-H01-B,Ej blommat / under utvärdering,,Frö,Rareplants.eu,,nej,okänd,okänd
+PL-H01-C,Ej blommat / under utvärdering,,Frö,Rareplants.eu,,nej,okänd,okänd
+PL-H01-D,Ej blommat / under utvärdering,,Frö,Rareplants.eu,,nej,okänd,okänd
+PL-H01-G,Ej blommat / under utvärdering,,Frö,Rareplants.eu,,nej,okänd,okänd
+PL-H01-H,Ej blommat / under utvärdering,,Frö,Rareplants.eu,,nej,okänd,okänd
+PL-H01-I,Ej blommat / under utvärdering,,Frö,Rareplants.eu,,nej,okänd,okänd
+PL-H01-J,Ej blommat / under utvärdering,,Frö,Rareplants.eu,,nej,okänd,okänd
+PL-H01-K,Ej blommat / under utvärdering,,Frö,Rareplants.eu,,nej,okänd,okänd
+PL-H01-L,Ej blommat / under utvärdering,,Frö,Rareplants.eu,,nej,okänd,okänd
+PL-H01-M,Ej blommat / under utvärdering,,Frö,Rareplants.eu,,nej,okänd,okänd
+PL-H01-N,Ej blommat / under utvärdering,,Frö,Rareplants.eu,,nej,okänd,okänd
+PL-H01-O,Ej blommat / under utvärdering,,Frö,Rareplants.eu,,nej,okänd,okänd
+PL-H01-Q,Ej blommat / under utvärdering,,Frö,Rareplants.eu,,nej,okänd,okänd
+PL-H01-R,Ej blommat / under utvärdering,,Frö,Rareplants.eu,,nej,okänd,okänd
+PL-H02-A-01,Grodd,,Frö,Rareplants.eu,,nej,okänd,okänd
+PL-H02-B-01,Grodd,,Frö,Rareplants.eu,,nej,012,030
+PL-H02-C-01,Grodd,,Frö,Rareplants.eu,,nej,030,041
+PL-H02-C-02,Grodd,,Frö,Rareplants.eu,,nej,030,041
+PL-H02-C-03,Grodd,,Frö,Rareplants.eu,,nej,030,041
+PL-H02-D-01,Grodd,,Frö,Rareplants.eu,,nej,012,okänd
+PL-H02-D-02,Grodd,,Frö,Rareplants.eu,,nej,012,okänd
+PL-H02-D-03,Grodd,,Frö,Rareplants.eu,,nej,012,okänd</script>
   <script type="text/plain" id="defaultPhotosCSV">plant_id,date,type,file,label,day
 PL-H01-A,2026-05-24,hel,bilder/hibiskusar/PL-H01-A_2026-05-24_hel.jpg,2026-05-24 · hel,189
 PL-H01-A,2026-06-07,hel,bilder/hibiskusar/PL-H01-A_2026-06-07_hel.jpg,2026-06-07 · hel,203
@@ -242,20 +265,25 @@ PL-H02-D-01,2026-07-26,hel,bilder/hibiskusar/PL-H02-D-01_2026-07-26_hel.jpg,2026
 PL-H02-D-02,2026-07-26,hel,bilder/hibiskusar/PL-H02-D-02_2026-07-26_hel.jpg,2026-07-26 · hel,31
 PL-H02-D-03,2026-07-26,hel,bilder/hibiskusar/PL-H02-D-03_2026-07-26_hel.jpg,2026-07-26 · hel,31</script>
   <script type="text/plain" id="defaultMilestonesCSV">id,date,type,note
+SP-001,2025-01-13,Sådd,
+SP-001,2026-06-26,Omplanterad,
+SP-002,2025-11-13,Sådd,Sådd av första batchen.
+SP-002,2026-02-02,Omplanterad,Till 9 × 9 cm.
 SP-003,2026-06-25,Sådd,Frön blötlagda 24 h med rökpapper före sådd.
 SP-003,2026-07-04,Grodd,Första synliga grodd.
+SP-004,2025-11-13,Sådd,
 SP-007,2026-07-26,Plantering,Mottagen och planterad samma dag.
 p-creamery,2026-07-04,Blomning,Ny blommbild importerad och gammal knoppbild ersatt.
 p-prince-of-orange,2026-07-01,Blomning,Ny blommbild dokumenterad.
-PL-H01-A,2025-11-16,Sådd,Surprise Pack såddes som del av PL-H01-partiet.
-PL-H02-B-01,2026-07-06,Grodd,Första individuella plantan från delparti B.
-PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från delparti D.
+PL-H01-A,2025-11-16,Sådd,Frö med okänd moder och fader såddes som del av fröbatch PL-H01.
+PL-H02-B-01,2026-07-06,Grodd,Första individuella plantan från korsning B.
+PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från korsning D.
 PL-H02-C-01,2026-07-06,Grodd,
 PL-H02-A-01,2026-07-06,Grodd,
 PL-H02-D-02,2026-07-06,Grodd,
 PL-H02-D-03,2026-07-23,Grodd,
-PL-H02-C-02,2026-07-27,Grodd,Individuell planta från delparti C dokumenterad.
-PL-H02-C-03,2026-07-31,Grodd,Individuell planta från delparti C dokumenterad.
+PL-H02-C-02,2026-07-27,Grodd,Individuell planta från korsning C dokumenterad.
+PL-H02-C-03,2026-07-31,Grodd,Individuell planta från korsning C dokumenterad.
 SP-002,2026-08-06,Toppad/beskuren,"Alla plantor friserade
 Formade efter individ
 Stora inåtvända blad borttagna
@@ -285,9 +313,9 @@ PL-H02-D-01,2026-06-25,Sådd,
 PL-H02-D-02,2026-06-25,Sådd,
 PL-H02-D-03,2026-06-25,Sådd,
 p-torento,2026-08-08,Avslutad/död,
-SP-008,2026-08-10,Sådd,Skapad från Ankomstsamtal.
+SP-008,2025-11-16,Sådd,
 SP-008,2026-06-27,Omplanterad,</script>
-  <script src="common.js?v=20260811synk0923"></script>
+  <script src="common.js?v=20260811synk1310"></script>
   <script>
     let plants = [];
     let plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;
@@ -332,7 +360,7 @@ SP-008,2026-06-27,Omplanterad,</script>
           "Registrerade plantor: PL-H01-A, PL-H01-B, PL-H01-C, PL-H01-D, PL-H01-G, PL-H01-H, PL-H01-I, PL-H01-J, PL-H01-K, PL-H01-L, PL-H01-M, PL-H01-N, PL-H01-O, PL-H01-Q, PL-H01-R"
         ],
         events: [
-          {date: "2025-11-16", type: "Sådd", note: "Tropical Hibiscus Hybrid – Surprise Pack såddes som första hibiskuspartiet."},
+          {date: "2025-11-16", type: "Sådd", note: "Frö med okänd moder och fader såddes som den första hibiskusfröbatchen."},
           {date: "2026-05-24", type: "Omplantering", note: "15 plantor planterades om och började hanteras som individuella växter i katalogen."}
         ],
         lesson: "Rockwool/kuber kan fungera för hibiskusfrön, men kräver noggrann fuktkontroll. Erfarenheten blev jämförelsepunkt inför PL-H02."
@@ -342,21 +370,40 @@ SP-008,2026-06-27,Omplanterad,</script>
         summary: "PL-H02 · Sådd 2026-06-25 · Jord · undervärme ca 25 °C · första grodd 2026-07-06 · B, D grodda",
         method: "Sådd i jord med undervärme ca 25 °C. Djupare sådd än tidigare rockwool-försök. Fukten hålls främst via kapillärmatta, med mistning ovanifrån, för att undvika övervattning.",
         facts: [
-          "PL-H02-A · 11 frön · Surprise Pack",
+          "PL-H02-A · 11 frön · okänd × okänd",
           "PL-H02-B · 6 frön · 012 × 030",
           "PL-H02-C · 6 frön · 030 × 041",
           "PL-H02-D · 6 frön · 012 × okänd"
         ],
         events: [
-          {date: "2026-06-25", type: "Sådd", note: "PL-H02 såddes i fyra delpartier, totalt 29 frön från Rareplants.eu."},
-          {date: "2026-07-06", type: "Första grodd", note: "Första grodd observerad. Delpartier B och D har grott."}
+          {date: "2026-06-25", type: "Sådd", note: "PL-H02 såddes som fyra korsningar, totalt 29 frön från Rareplants.eu."},
+          {date: "2026-07-06", type: "Första grodd", note: "Första grodd observerad. Korsning B och D har grott."}
         ],
         lesson: "Jord med undervärme och kapillärmatta gav en tydligare och mer lättskött metod än rockwool-försöket."
       }
     };
-    const dialog = document.querySelector("#photoDialog");
-    const modalImg = document.querySelector("#modalImg");
-    const modalCaption = document.querySelector("#modalCaption");
+    const parentReferences = {
+      "012": {
+        name: "Hibiscus 'Gara'",
+        file: "bilder/referenser/rareplants-eu/012_hibiscus-gara_referens.jpg",
+        imageSource: "PixelFlora.eu"
+      },
+      "030": {
+        name: "Hibiscus 'Ubay'",
+        file: "bilder/referenser/rareplants-eu/030_hibiscus-ubay_referens.jpg",
+        imageSource: "PixelFlora.eu"
+      },
+      "041": {
+        name: "Hibiscus 'Mattiacis Mustard Princess'",
+        file: "bilder/referenser/rareplants-eu/041_hibiscus-mattiacis-mustard-princess_referens.jpg",
+        imageSource: "PixelFlora.eu"
+      },
+      "okänd": {
+        name: "Hibiscus 'Okänd'",
+        file: "bilder/referenser/rareplants-eu/rareplants-eu_okand-hibiscus_referens.jpg",
+        imageSource: "Rareplants.eu"
+      }
+    };
 
     function escapeText(value) {
       return String(value || "")
@@ -368,6 +415,18 @@ SP-008,2026-06-27,Omplanterad,</script>
     function subBatchForPlant(p) {
       const match = clean(p && p.id).match(/^(PL-H\d+-[A-Z])-\d+$/);
       return match ? match[1] : "";
+    }
+
+    function batchForPlant(p) {
+      const match = clean(p && p.id).match(/^(PL-H\d{2})(?:-|$)/);
+      return match ? match[1] : "";
+    }
+
+    function sownDateForLogs(logs) {
+      return (logs || [])
+        .filter(row => clean(row.type) === "Sådd" && clean(row.date))
+        .map(row => clean(row.date))
+        .sort((a, b) => sortNatural(a, b))[0] || "";
     }
 
     function subBatchLabels() {
@@ -398,7 +457,7 @@ SP-008,2026-06-27,Omplanterad,</script>
       const labels = subBatchLabels();
       const options = knownSubBatches(batch);
       return [
-        `<option value="">Alla delpartier</option>`,
+        `<option value="">Alla korsningar</option>`,
         ...options.map(subBatch => `<option value="${escapeAttr(subBatch)}" ${subBatch === selected ? "selected" : ""}>${escapeText(labels.get(subBatch) || subBatch)}</option>`)
       ].join("");
     }
@@ -419,13 +478,18 @@ SP-008,2026-06-27,Omplanterad,</script>
         if (!photoMap.has(ph.plant_id)) photoMap.set(ph.plant_id, []);
         photoMap.get(ph.plant_id).push(ph);
       });
-      plants = rows.map(p => ({
-        ...p,
-        photos: (photoMap.get(p.id) || []).sort((a,b) => sortNatural(a.date + a.type, b.date + b.type)),
-        logs: logMap.get(p.id) || []
-      })).sort((a,b) => sortNatural(a.id, b.id));
+      plants = rows.map(p => {
+        const logs = logMap.get(p.id) || [];
+        return {
+          ...p,
+          batch: batchForPlant(p),
+          sown: sownDateForLogs(logs),
+          photos: (photoMap.get(p.id) || []).sort((a,b) => sortNatural(a.date + a.type, b.date + b.type)),
+          logs
+        };
+      }).sort((a,b) => sortNatural(a.id, b.id));
 
-      batchFilter.innerHTML = '<option value="">Alla partier</option>';
+      batchFilter.innerHTML = '<option value="">Alla fröbatcher</option>';
       [...new Set(plants.map(p => clean(p.batch)).filter(Boolean))]
         .sort((a,b) => sortNatural(a, b))
         .forEach(batch => {
@@ -461,6 +525,39 @@ SP-008,2026-06-27,Omplanterad,</script>
       }).join("");
     }
 
+    function parentReferenceModule(p) {
+      const parts = [clean(p && p.mother), clean(p && p.father)];
+      if (parts.length !== 2) return "";
+      const roles = ["Moder", "Fader"];
+      const references = parts.map((value, index) => {
+        const key = clean(value).toLowerCase();
+        const reference = parentReferences[key];
+        if (!reference) return "";
+        const caption = `${roles[index]} ${value} · ${reference.name} · Referensbild, ${reference.imageSource}`;
+        return `
+          <figure class="parent-reference-item">
+            <button class="parent-reference-button" type="button"
+              data-file="${escapeAttr(reference.file)}" data-caption="${escapeAttr(caption)}"
+              aria-label="Visa referensbild för ${escapeAttr(roles[index].toLowerCase() + " " + value)}">
+              <img src="${escapeAttr(reference.file)}" alt="${escapeAttr(roles[index] + " " + value + ", referensbild")}" loading="lazy">
+            </button>
+            <figcaption class="parent-reference-caption">
+              <strong>${roles[index]} · ${escapeText(value)}</strong>
+              <span title="${escapeAttr(reference.name)}">${escapeText(reference.name)}</span>
+            </figcaption>
+          </figure>`;
+      });
+      if (references.some(reference => !reference)) return "";
+      return `
+        <section class="parent-reference-module" aria-label="Föräldrarnas referensbilder">
+          <div class="parent-reference-head">
+            <span class="parent-reference-title">Föräldrareferenser</span>
+          </div>
+          <div class="parent-reference-grid">${references.join("")}</div>
+          <div class="parent-reference-source">Referensbilder · frökälla <a href="https://www.rareplants.es" target="_blank" rel="noopener noreferrer">Rareplants.eu</a> · inte egna foton</div>
+        </section>`;
+    }
+
     function cardTemplate(p) {
       const displayName = plantDisplayName(p);
       const identity = plantIdentityName(p);
@@ -471,12 +568,16 @@ SP-008,2026-06-27,Omplanterad,</script>
       const activeLabel = active.label || (active.date ? `${active.date} · ${active.type}` : "");
       const dayText = active.day ? ` · dag ${active.day}` : "";
       const latestMilestone = latestPlantMilestone(p.logs);
+      const isGift = clean(p.arrival_type) === "Gåva";
+      const batchInfo = clean(p.batch)
+        ? `<dt>Fröbatch</dt><dd>${escapeText(p.batch)}</dd><dt>Sådatum</dt><dd>${escapeText(clean(p.sown) || "Ej ifyllt")}</dd>`
+        : `<dt>Ursprung</dt><dd>${escapeText(clean(p.arrival_type) || "Ej ifyllt")}</dd><dt>${isGift ? "Från" : "Källa"}</dt><dd>${escapeText(isGift ? "Privat" : (clean(p.source) || "Ej ifyllt"))}</dd>`;
       const gallery = photos.map(photo => {
         const label = (photo.label || (photo.date + " · " + photo.type)) + (photo.day ? " · dag " + photo.day : "");
         return {file: photo.file, title: displayName, caption: `${displayLabel} · ${label}`, alt: displayLabel};
       });
       const searchable = [
-        p.id, p.nickname, p.batch, p.group, p.sown, p.status,
+        p.id, p.nickname, p.batch, p.mother, p.father, p.sown, p.status,
         ...photos.map(x => `${x.date} ${x.type} ${x.file}`),
         ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
       ].join(" ").toLowerCase();
@@ -498,13 +599,10 @@ SP-008,2026-06-27,Omplanterad,</script>
               </div>
             </div>
             <div class="plant-card-chip-slot"><div class="chips">${collectionChipHtml("Hibiskus", p, escapeText)}</div></div>
-            <div class="plant-card-info"><dl>
-              <dt>Parti</dt><dd>${clean(p.batch) || "Ej ifyllt"}</dd>
-              <dt>Korsning/fröparti</dt><dd>${clean(p.group) || "Ej ifyllt"}</dd>
-              <dt>Sådd</dt><dd>${clean(p.sown) || "Ej ifyllt"}</dd>
-            </dl></div>
+            <div class="plant-card-info"><dl>${batchInfo}</dl></div>
             <div class="plant-card-milestone-slot">${milestoneSummary(latestMilestone)}</div>
             <div class="plant-card-notes-slot"></div>
+            ${parentReferenceModule(p)}
           </div>
         </article>
       `;
@@ -575,7 +673,7 @@ SP-008,2026-06-27,Omplanterad,</script>
       const selectedStatus = statusFilter.value === "__concluded_only__" ? "" : statusFilter.value;
       return plants.filter(p => {
         const combined = [
-          p.id, p.nickname, p.batch, p.group, p.sown, p.status,
+          p.id, p.nickname, p.batch, p.mother, p.father, p.sown, p.status,
           ...(p.photos || []).map(x => `${x.date} ${x.type} ${x.file}`),
           ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
         ].join(" ").toLowerCase();
@@ -599,8 +697,8 @@ SP-008,2026-06-27,Omplanterad,</script>
       const photoCount = plants.reduce((sum, p) => sum + (p.photos || []).length, 0);
       const activeParts = [
         query ? `Sökning: “${search.value.trim()}”` : "",
-        selectedBatch ? `Parti: ${selectedBatch}` : "",
-        selectedSubBatch ? `Delparti: ${selectedSubBatch}` : "",
+        selectedBatch ? `Fröbatch: ${selectedBatch}` : "",
+        selectedSubBatch ? `Korsning: ${selectedSubBatch}` : "",
         selectedStatus ? `Status: ${selectedStatus}` : "",
         `Sortering: ${sortSelect.options[sortSelect.selectedIndex].textContent}`
       ].filter(Boolean);
@@ -628,7 +726,7 @@ SP-008,2026-06-27,Omplanterad,</script>
         .map(type => `<option value="${escapeText(type)}" ${type === "Omplanterad" ? "selected" : ""}>${escapeText(type)}</option>`)
         .join("");
       const batchOptions = [
-        `<option value="">Alla partier</option>`,
+        `<option value="">Alla fröbatcher</option>`,
         ...batches.map(batch => `<option value="${escapeAttr(batch)}" ${batch === defaultBatch ? "selected" : ""}>${escapeText(batch)}</option>`)
       ].join("");
       const plantItems = (selectedBatch, selectedSubBatch) => {
@@ -646,7 +744,7 @@ SP-008,2026-06-27,Omplanterad,</script>
           <header>
             <div>
               <h2>Milstolpar flera</h2>
-              <p>Välj parti eller delparti och bocka ur plantor som inte ska få milstolpen.</p>
+              <p>Välj fröbatch eller korsning och bocka ur plantor som inte ska få milstolpen.</p>
             </div>
             <button class="bulk-close" type="button" aria-label="Stäng">×</button>
           </header>
@@ -655,12 +753,12 @@ SP-008,2026-06-27,Omplanterad,</script>
             <select name="type" aria-label="Typ av milstolpe" required>${options}</select>
           </div>
           <div class="bulk-scope">
-            <label for="bulkBatchSelect">Parti</label>
-            <select id="bulkBatchSelect" name="batch" aria-label="Välj parti">${batchOptions}</select>
+            <label for="bulkBatchSelect">Fröbatch</label>
+            <select id="bulkBatchSelect" name="batch" aria-label="Välj fröbatch">${batchOptions}</select>
           </div>
           <div class="bulk-scope">
-            <label for="bulkSubBatchSelect">Delparti</label>
-            <select id="bulkSubBatchSelect" name="subBatch" aria-label="Välj delparti">${subBatchOptionHtml(defaultBatch, defaultSubBatch)}</select>
+            <label for="bulkSubBatchSelect">Korsning</label>
+            <select id="bulkSubBatchSelect" name="subBatch" aria-label="Välj korsning">${subBatchOptionHtml(defaultBatch, defaultSubBatch)}</select>
           </div>
           <textarea name="note" maxlength="160" placeholder="Kort anteckning, frivilligt"></textarea>
           <div class="bulk-actions">
@@ -716,8 +814,21 @@ SP-008,2026-06-27,Omplanterad,</script>
     }
 
     grid.addEventListener("click", event => {
+      const reference = event.target.closest(".parent-reference-button");
       const thumb = event.target.closest(".thumb");
       const main = event.target.closest(".main-photo");
+      if (reference) {
+        const referenceDialog = ensurePlantPhotoGallery();
+        referenceDialog.galleryState.items = [{
+          file: reference.dataset.file,
+          title: "Föräldrareferens",
+          caption: reference.dataset.caption,
+          alt: reference.dataset.caption
+        }];
+        referenceDialog.galleryShow(0);
+        referenceDialog.showModal();
+        return;
+      }
       if (thumb) {
         const card = thumb.closest(".plant-card");
         const img = card.querySelector(".main-photo");
