@@ -8,8 +8,8 @@ Datakälla:
 - HTML-sidorna är genererad visning.
 - data/milstolpar.csv innehåller permanenta händelser.
 - Individbaserade register kan ha ett frivilligt nickname; ID, art och sort är alltid oförändrade.
-- Albumens fyra *_bilder.csv-filer innehåller permanent importerade bilder för Liljor, Rosor, Dahlior och Echinacea.
-- På desktop kan bilder släppas direkt på korten Liljor, Rosor, Dahlior och Echinacea i Galleri.
+- Albumens fyra *_bilder.csv-filer innehåller permanent importerade bilder för Lilium, Rosa, Dahlia och Echinacea.
+- På desktop kan bilder släppas direkt på korten Lilium, Rosa, Dahlia och Echinacea i Galleri.
 - I den lokala filversionen sparas originalet först i Macens privata originalarkiv.
 - Lokala galleribilder skalas ned till diskbaserade visningskopior så att större bildserier visas stabilt utan webbläsarens utrymmesgräns.
 - Fullstora original sparas utanför Katalog och publiceras aldrig.

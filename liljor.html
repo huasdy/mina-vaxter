@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Liljor · Galleri</title>
+  <title>Lilium · Galleri</title>
   <style>
     :root {
       --bg: #e7e1d8; --paper: #fbf8f2; --ink: #2b251f; --muted: #6f655b;
@@ -107,7 +107,7 @@
   <section class="hero">
     <div>
       <div class="eyebrow">Ett levande trädgårdsminne</div>
-      <h1>Liljor</h1>
+      <h1>Lilium</h1>
       <p class="intro">Färger, former och ögonblick ur liljornas blomning – samlade som de faktiskt såg ut, år efter år.</p>
     </div>
     <div class="season-note"><strong id="photoCount">Inga bilder ännu</strong><span id="yearSpan">Det första året väntar</span></div>
@@ -119,7 +119,7 @@
 
   <section class="desktop-message">
     <div>
-      <h1>Liljor</h1>
+      <h1>Lilium</h1>
       <p>Galleriet är ett lugnt arbets- och bildflöde för den större skärmen och visas därför bara på desktop.</p>
       <a href="index.html">Tillbaka till Mina Växter</a>
     </div>
@@ -323,7 +323,7 @@
           const index = photos.indexOf(photo);
           const src = photoSource(photo);
           const remove = photo.published || photo.localServer ? "" : `<button class="remove-photo" type="button" data-remove="${photo.id}">Ta bort</button>`;
-          return `<figure tabindex="0" data-index="${index}"><img src="${src}" alt="Liljor, ${friendlyDate(photo.date)}" loading="lazy"><figcaption><span>${friendlyDate(photo.date)}</span>${remove}</figcaption></figure>`;
+          return `<figure tabindex="0" data-index="${index}"><img src="${src}" alt="Lilium, ${friendlyDate(photo.date)}" loading="lazy"><figcaption><span>${friendlyDate(photo.date)}</span>${remove}</figcaption></figure>`;
         }).join("");
         return `<section class="year-section"><div class="year-heading"><h2>${year}</h2><span>${yearPhotos.length === 1 ? "1 ögonblick" : `${yearPhotos.length} ögonblick`}</span></div><div class="gallery">${figures}</div></section>`;
       }).join("");
@@ -333,7 +333,7 @@
       lightboxIndex = (index + photos.length) % photos.length;
       const photo = photos[lightboxIndex];
       lightboxImage.src = photo.published ? photo.file : photo.url || URL.createObjectURL(photo.blob);
-      lightboxImage.alt = `Liljor, ${friendlyDate(photo.date)}`;
+      lightboxImage.alt = `Lilium, ${friendlyDate(photo.date)}`;
       lightboxCaption.textContent = friendlyDate(photo.date);
       if (!lightbox.open) lightbox.showModal();
     }
