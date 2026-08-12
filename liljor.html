@@ -147,7 +147,7 @@
     const dbName = "mina-vaxter-kolonier";
     const storeName = "liljor";
     const archiveToken = window.MINA_VAXTER_ARCHIVE_TOKEN || "";
-    const galleryStoreNames = ["liljor", "rosor", "dahlior"];
+    const galleryStoreNames = ["liljor", "rosor", "dahlior", "echinacea"];
     const album = document.querySelector("#album");
     const photoCount = document.querySelector("#photoCount");
     const yearSpan = document.querySelector("#yearSpan");
@@ -160,7 +160,7 @@
 
     function openDatabase() {
       return new Promise((resolve, reject) => {
-        const request = indexedDB.open(dbName, 2);
+        const request = indexedDB.open(dbName, 3);
         request.onupgradeneeded = () => {
           galleryStoreNames.forEach(name => {
             if (!request.result.objectStoreNames.contains(name)) {
