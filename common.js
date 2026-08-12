@@ -532,6 +532,13 @@ function ensureConcludedPlantFilter() {
     });
     const option = select.querySelector(`option[value="${concludedValue}"]`);
     if (option) option.textContent = `Avslutade (${concludedCount})`;
+    document.dispatchEvent(new CustomEvent("plant-concluded-filter-applied", {
+      detail: {
+        concludedOnly,
+        concludedCount,
+        activeCount: cards.length - concludedCount
+      }
+    }));
   };
 
   select.addEventListener("change", applyFilter);

@@ -65,7 +65,8 @@ dialog::backdrop { background: rgba(22,18,15,.94); }
   .collection-mark { font-size: 0; }
   .collection-mark::after { content: "Visningsläge"; font-size: .68rem; }
   .hero { padding: 38px 16px 32px; grid-template-columns: 1fr; gap: 20px; }
-  h1 { font-size: clamp(4.4rem, 24vw, 7rem); }
+  .hero > * { min-width: 0; }
+  h1 { font-size: clamp(4.4rem, 22vw, 7rem); }
   .season-note { max-width: none; text-align: left; }
   main { padding: 0 16px 56px; }
   .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
