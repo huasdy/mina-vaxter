@@ -35,9 +35,9 @@ main { max-width: 1320px; margin: 0 auto; padding: 0 24px 90px; }
 .year-heading { display: flex; align-items: baseline; gap: 18px; margin-bottom: 24px; border-bottom: 1px solid var(--line); padding-bottom: 13px; }
 .year-heading h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.8rem, 6vw, 4.7rem); line-height: .9; font-weight: 500; letter-spacing: -.04em; }
 .year-heading span { color: var(--muted); font-size: .82rem; font-weight: 850; text-transform: uppercase; letter-spacing: .12em; }
-.gallery { columns: 3 300px; column-gap: 18px; }
+.gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; align-items: start; }
 figure {
-  position: relative; margin: 0 0 18px; break-inside: avoid; overflow: hidden; border-radius: 18px;
+  position: relative; margin: 0; overflow: hidden; border-radius: 18px;
   background: #e1d7ca; box-shadow: var(--shadow); cursor: zoom-in;
 }
 figure img { display: block; width: 100%; height: auto; min-height: 180px; object-fit: cover; }
@@ -68,7 +68,7 @@ dialog::backdrop { background: rgba(22,18,15,.94); }
   h1 { font-size: clamp(4.4rem, 24vw, 7rem); }
   .season-note { max-width: none; text-align: left; }
   main { padding: 0 16px 56px; }
-  .gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; columns: auto; }
+  .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   figure { margin: 0; border-radius: 13px; }
   figure img { width: 100%; height: auto; min-height: 0; aspect-ratio: 3 / 4; object-fit: cover; }
   figcaption { opacity: 1; padding: 8px 10px 9px; }
