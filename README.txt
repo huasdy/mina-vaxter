@@ -7,6 +7,7 @@ Datakälla:
 - CSV-filerna i data är sanningen.
 - HTML-sidorna är genererad visning.
 - data/milstolpar.csv innehåller permanenta händelser.
+- Växtregistrens kolumner cuttings_available och cuttings_updated_at lagrar den aktuella statusen Sticklingar på moderplantan. Statusen skapar ingen milstolpe eller separat post.
 - Individbaserade register kan ha ett frivilligt nickname; ID, art och sort är alltid oförändrade.
 - Albumens fyra *_bilder.csv-filer innehåller permanent importerade bilder för Lilium, Rosa, Dahlia och Echinacea.
 - På desktop kan bilder släppas direkt på korten Lilium, Rosa, Dahlia och Echinacea i Galleri.

@@ -69,6 +69,7 @@
       <a href="citrus.html">Citrus</a>
       <a href="udda.html">Udda</a>
       <a class="current" href="favoriter.html">Hundöron</a>
+      <a href="sticklingar.html">Sticklingar</a>
       <a href="galleri.html">Galleri</a>
       <a href="verktyg.html">Verktyg</a>
     </nav>
@@ -89,7 +90,7 @@
 
   <footer>Hundöron och Fokus kan exporteras och importeras mellan desktop och iPhone.</footer>
 
-  <script src="common.js?v=20260812synk1409"></script>
+  <script src="common.js?v=20260813synk1750"></script>
   <script type="text/plain" id="defaultMilestonesCSV">id,date,type,note
 SP-001,2025-01-13,Sådd,
 SP-001,2026-06-26,Omplanterad,
@@ -141,7 +142,11 @@ PL-H02-D-03,2026-06-25,Sådd,
 p-torento,2026-08-08,Avslutad/död,
 SP-008,2025-11-16,Sådd,
 SP-008,2026-06-27,Omplanterad,
-SP-003,2026-08-11,Omplanterad,</script>
+SP-003,2026-08-11,Omplanterad,
+p-cys-sunburst-2,2026-08-13,Sådd,
+p-creamery,2026-08-13,Sådd,
+p-bothams-surprise-1,2026-08-13,Sådd,
+p-bothams-surprise-2,2026-08-13,Sådd,</script>
   <script>
     const grid = document.querySelector("#favoriteGrid");
     const stats = document.querySelector("#stats");
@@ -157,8 +162,9 @@ SP-003,2026-08-11,Omplanterad,</script>
       const gallery = item.image ? [{file: item.image, title: identity, caption: `${displayLabel} · ${item.dateLabel || ""}`, alt: displayLabel}] : [];
       const logs = favoriteLogs.get(item.plantId) || [];
       const latestMilestone = latestPlantMilestone(logs);
+      const hasCuttings = getPlantCuttingsStatus(item.plantId, item.cuttingsAvailable ? "ja" : "nej", item.cuttingsUpdatedAt || "");
       return `
-        <article class="plant-card" data-category="${escapeAttr(item.category)}" data-plant-id="${escapeAttr(item.plantId)}" data-plant-name="${escapeAttr(identity)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(nickname)}" data-page="${escapeAttr(item.page || "index.html")}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(logs))}">
+        <article class="plant-card" data-category="${escapeAttr(item.category)}" data-plant-id="${escapeAttr(item.plantId)}" data-plant-name="${escapeAttr(identity)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(nickname)}" data-cuttings-available="${hasCuttings ? "ja" : "nej"}" data-cuttings-updated-at="${escapeAttr(item.cuttingsUpdatedAt || "")}" data-page="${escapeAttr(item.page || "index.html")}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(logs))}">
           <div class="image-wrap">
             ${item.image ? `<img class="main-photo" src="${escapeAttr(item.image)}" alt="${escapeAttr(displayLabel)}" data-caption="${escapeAttr(displayLabel + (item.dateLabel ? " · " + item.dateLabel : ""))}">` : `<div class="image-empty">Bild saknas</div>`}
             ${item.dateLabel ? `<div class="date-ribbon">${escapeAttr(item.dateLabel)}</div>` : ""}
@@ -168,12 +174,12 @@ SP-003,2026-08-11,Omplanterad,</script>
             <div class="plant-card-head">
               <div class="plant-title-block"><h2>${htmlEscape(identity)}</h2>${nickname ? `<div class="plant-nickname">${htmlEscape(nickname)}</div>` : ""}${item.latin ? `<div class="latin">${htmlEscape(item.latin)}</div>` : ""}</div>
               <div class="favorite-log-action">
-                <button class="plant-log-btn" type="button" aria-label="Milstolpar" title="Milstolpar">${logBookIcon()}</button>
+                <button class="plant-log-btn" type="button" aria-label="Växtpanel" title="Växtpanel">${logBookIcon()}</button>
                 <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
                 <span class="import-badge" data-import-badge hidden></span>
               </div>
             </div>
-            <div class="plant-card-chip-slot"><div class="chips"><span class="chip green">${htmlEscape(item.category)}</span></div></div>
+            <div class="plant-card-chip-slot"><div class="chips">${hasCuttings ? '<span class="chip green" data-status-chip="cuttings">🌱 Stickling</span>' : `<span class="chip green">${htmlEscape(item.category)}</span>`}</div></div>
             <div class="plant-card-info"><dl>
               <dt>ID</dt><dd>${htmlEscape(item.plantId)}</dd>
               <dt>Kategori</dt><dd>${htmlEscape(item.category)}</dd>

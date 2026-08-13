@@ -9,7 +9,8 @@ function redirectStandaloneMobileCatalog() {
     "pelargoner.html": "Pelargon",
     "citrus.html": "Citrus",
     "udda.html": "Udda",
-    "favoriter.html": "Hundöron"
+    "favoriter.html": "Hundöron",
+    "sticklingar.html": "Sticklingar"
   };
   const targetView = categoryByPage[pageName];
   if (!standalone || window.innerWidth > 700 || !targetView) return false;
@@ -19,6 +20,7 @@ function redirectStandaloneMobileCatalog() {
   const cacheVersion = scriptUrl.searchParams.get("v");
   if (cacheVersion) mobileUrl.searchParams.set("v", cacheVersion);
   if (targetView === "Hundöron") mobileUrl.searchParams.set("vy", "hundoron");
+  else if (targetView === "Sticklingar") mobileUrl.searchParams.set("vy", "sticklingar");
   else mobileUrl.searchParams.set("kategori", targetView);
   window.location.replace(mobileUrl.toString());
   return true;
@@ -116,6 +118,7 @@ function collectionChips(category, row) {
   const hasSownMilestone = (row && Array.isArray(row.logs) ? row.logs : [])
     .some(log => clean(log && log.type).toLocaleLowerCase("sv") === "sådd");
 
+  if (getPlantCuttingsStatus(row && row.id, row && row.cuttings_available, row && row.cuttings_updated_at)) add("🌱 Stickling");
   if (hasSownMilestone) add("Frö");
 
   if (category === "Hibiskus") {
@@ -134,12 +137,116 @@ function collectionChips(category, row) {
 
 function collectionChipHtml(category, row, escapeFn = htmlEscape) {
   return collectionChips(category, row)
-    .map((label, index) => `<span class="chip ${index === 0 ? "green" : ""}">${escapeFn(label)}</span>`)
+    .map((label, index) => `<span class="chip ${index === 0 ? "green" : ""}"${label === "🌱 Stickling" ? ' data-status-chip="cuttings"' : ""}>${escapeFn(label)}</span>`)
     .join("");
 }
 
 function bildText(n) {
   return Number(n) === 1 ? "1 bild" : `${n} bilder`;
+}
+
+const plantStatusesStorageKey = "mina-vaxter-plant-statuses-v1";
+const plantStatusChangesStorageKey = "mina-vaxter-plant-status-changes-v1";
+
+function getPlantStatuses() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(plantStatusesStorageKey) || "{}");
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function getPlantStatusChanges() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(plantStatusChangesStorageKey) || "{}");
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function savePlantStatuses(statuses) {
+  try { localStorage.setItem(plantStatusesStorageKey, JSON.stringify(statuses || {})); } catch (e) {}
+}
+
+function savePlantStatusChanges(changes) {
+  try { localStorage.setItem(plantStatusChangesStorageKey, JSON.stringify(changes || {})); } catch (e) {}
+}
+
+function statusIsOn(value) {
+  return ["ja", "true", "1", "på"].includes(clean(value).toLocaleLowerCase("sv"));
+}
+
+function getPlantCuttingsStatus(plantId, publishedValue = "", publishedUpdatedAt = "") {
+  const id = clean(plantId);
+  const local = getPlantStatuses()[id];
+  if (!local) return statusIsOn(publishedValue);
+  const localUpdatedAt = clean(local.updatedAt);
+  if (publishedUpdatedAt && localUpdatedAt && publishedUpdatedAt >= localUpdatedAt) return statusIsOn(publishedValue);
+  return Boolean(local.cuttingsAvailable);
+}
+
+function setPlantCuttingsStatus(plantId, category, enabled) {
+  const id = clean(plantId);
+  if (!id) return null;
+  const entry = {
+    id,
+    category: clean(category) || "Pelargon",
+    cuttingsAvailable: Boolean(enabled),
+    updatedAt: new Date().toISOString()
+  };
+  const statuses = getPlantStatuses();
+  statuses[id] = entry;
+  savePlantStatuses(statuses);
+  const changes = getPlantStatusChanges();
+  changes[id] = entry;
+  savePlantStatusChanges(changes);
+  updatePlantCuttingsUI(id, entry.category, entry.cuttingsAvailable);
+  updatePlantImageImportUI();
+  window.dispatchEvent(new CustomEvent("plant-status-changed", {detail: entry}));
+  return entry;
+}
+
+function buildPlantStatusExport(rows = Object.values(getPlantStatusChanges())) {
+  return {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    source: "Mina Växter lokala växtstatusar",
+    items: (rows || []).map(row => ({
+      id: clean(row.id),
+      category: clean(row.category) || "Pelargon",
+      cuttingsAvailable: Boolean(row.cuttingsAvailable),
+      updatedAt: clean(row.updatedAt)
+    })).filter(row => row.id && row.updatedAt)
+  };
+}
+
+function deletePlantStatusChange(plantId) {
+  const changes = getPlantStatusChanges();
+  delete changes[clean(plantId)];
+  savePlantStatusChanges(changes);
+}
+
+function clearPlantStatusChanges() {
+  savePlantStatusChanges({});
+}
+
+function updatePlantCuttingsUI(plantId, category, enabled) {
+  document.querySelectorAll('.plant-card[data-plant-id]').forEach(card => {
+    if (card.dataset.plantId !== plantId || clean(card.dataset.category) !== clean(category)) return;
+    card.dataset.cuttingsAvailable = enabled ? "ja" : "nej";
+    const chips = card.querySelector(".plant-card-chip-slot .chips");
+    if (!chips) return;
+    chips.querySelectorAll('[data-status-chip="cuttings"]').forEach(chip => chip.remove());
+    if (enabled) {
+      const chip = document.createElement("span");
+      chip.className = "chip green";
+      chip.dataset.statusChip = "cuttings";
+      chip.textContent = "🌱 Stickling";
+      chips.prepend(chip);
+    }
+  });
 }
 
 const plantCardNotesStorageKey = "mina-vaxter-card-notes-v1";
@@ -255,10 +362,8 @@ function ensurePlantCardNotes() {
 function logBookIcon() {
   return `
     <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-      <path d="M9 5.5 H21.5 C23.4 5.5 25 7.1 25 9 V26.5 H9 C7.3 26.5 6 25.2 6 23.5 V8.5 C6 6.8 7.3 5.5 9 5.5 Z"
-        fill="none" stroke-width="2.4" stroke-linejoin="round"/>
-      <path d="M10.5 5.5 V26.5" fill="none" stroke-width="2.4" stroke-linecap="round"/>
-      <path d="M14.5 12 H21.2 M14.5 17 H20" fill="none" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M13.2 5.2h5.6l.8 3a9 9 0 0 1 2.2 1.3l3-.8 2.8 4.8-2.2 2.2a9 9 0 0 1 0 2.6l2.2 2.2-2.8 4.8-3-.8a9 9 0 0 1-2.2 1.3l-.8 3h-5.6l-.8-3a9 9 0 0 1-2.2-1.3l-3 .8-2.8-4.8 2.2-2.2a9 9 0 0 1 0-2.6l-2.2-2.2 2.8-4.8 3 .8a9 9 0 0 1 2.2-1.3z" fill="none" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="16" cy="17" r="3.4" fill="none" stroke-width="2.2"/>
     </svg>
   `;
 }
@@ -415,7 +520,7 @@ function plantMilestoneKey(row) {
   ].join("|");
 }
 
-function buildSyncManifest(imageItems, milestoneItems, cardNoteItems) {
+function buildSyncManifest(imageItems, milestoneItems, cardNoteItems, plantStatusItems) {
   return {
     version: 1,
     exportedAt: new Date().toISOString(),
@@ -424,7 +529,8 @@ function buildSyncManifest(imageItems, milestoneItems, cardNoteItems) {
     contains: {
       images: imageItems.length,
       milestones: milestoneItems.length,
-      cardNotes: cardNoteItems.length
+      cardNotes: cardNoteItems.length,
+      plantStatuses: plantStatusItems.length
     },
     note: "Hundöron och fokusnotiser är lokal arbetslista och ingår inte i synkpaketet."
   };
@@ -957,7 +1063,9 @@ function ensurePlantMilestones() {
       aspect-ratio: auto !important; flex: 0 0 var(--plant-image-height);
     }
     .plant-card .card-body {
-      position: relative; display: grid !important; grid-template-rows: auto; align-content: start;
+      position: relative; display: grid !important;
+      grid-template-rows: var(--plant-heading-height) var(--plant-chip-height) 58px 64px 108px;
+      align-content: start;
       gap: 12px; flex: 1;
     }
     .plant-card .plant-card-head {
@@ -1002,27 +1110,30 @@ function ensurePlantMilestones() {
     }
     .plant-card .plant-card-gallery-slot .thumb,
     .plant-card .plant-card-gallery-slot .photo-button {
-      width: 40px; height: 40px; border-radius: 9px; background: rgba(255,253,248,.82);
+      width: 40px; height: 40px; flex: 0 0 40px; padding: 0;
+      border: 2px solid transparent; border-radius: 9px; overflow: hidden; cursor: pointer;
+      background: rgba(255,253,248,.82);
+    }
+    .plant-card .plant-card-gallery-slot .thumb.active,
+    .plant-card .plant-card-gallery-slot .photo-button.active {
+      border-color: var(--accent, #7d4f3b);
+    }
+    .plant-card .plant-card-gallery-slot .thumb img,
+    .plant-card .plant-card-gallery-slot .photo-button img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
     }
     .plant-card .plant-card-gallery-slot .photo-strip { height: 40px; padding: 0; }
     .plant-card .date-ribbon { display: none !important; }
     .plant-card .plant-card-info { min-width: 0; height: 58px; overflow: hidden; }
-    .plant-card .plant-card-info:empty { height: 0; }
     .plant-card .plant-card-info:has(.edit-form) { height: auto; overflow: visible; }
     .plant-card .plant-card-milestone-slot { height: 64px; min-height: 64px; overflow: hidden; }
-    .plant-card .plant-card-milestone-slot:empty { display: none; }
-    .plant-card .plant-card-notes-slot { height: 78px; min-height: 78px; overflow: hidden; }
-    .plant-card .plant-card-notes-slot:empty { display: none; }
+    .plant-card .plant-card-notes-slot { height: 108px; min-height: 108px; overflow: hidden; }
     .plant-card .plant-card-notes-slot .notes { margin-top: 0; }
-    .plant-card .plant-card-notes-slot.favorite-focus { height: 98px; margin-top: 0; }
+    .plant-card .plant-card-notes-slot.favorite-focus { height: 108px; min-height: 108px; margin-top: 0; }
     .plant-card .plant-card-notes-slot:has(.card-note) { height: 108px; overflow: visible; }
-    .plant-card:has(.card-note) .card-body {
-      grid-template-rows: var(--plant-heading-height) var(--plant-chip-height) auto minmax(64px, 1fr) 108px;
+    .plant-card:has(.plant-card-info .edit-form) .card-body {
+      grid-template-rows: var(--plant-heading-height) var(--plant-chip-height) auto 64px 108px;
     }
-    .plant-card:has(.card-note):has(.plant-card-milestone-slot:empty) .card-body {
-      grid-template-rows: var(--plant-heading-height) var(--plant-chip-height) auto 108px;
-    }
-    .plant-card:has(.card-note) .plant-card-milestone-slot:empty { display: none; }
     .card-note { display: grid; gap: 6px; }
     .card-note-label {
       color: var(--accent, #7d4f3b); font-size: .72rem; font-weight: 900;
@@ -1087,6 +1198,31 @@ function ensurePlantMilestones() {
       display: inline-flex; align-items: center; justify-content: center;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 1.4rem; font-weight: 900; line-height: 1; cursor: pointer;
     }
+    .plant-panel-section { display: grid; gap: 9px; }
+    .plant-panel-section-title {
+      color: var(--accent, #7d4f3b); text-transform: uppercase; letter-spacing: .14em;
+      font-size: .72rem; font-weight: 900;
+    }
+    .plant-status-row {
+      border: 1px solid var(--line, #ded2c2); border-radius: 16px; padding: 12px 13px;
+      background: rgba(255,255,255,.48); display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; cursor: pointer;
+    }
+    .plant-status-copy { display: grid; gap: 3px; }
+    .plant-status-copy strong { color: var(--ink, #2b251f); }
+    .plant-status-copy small { color: var(--muted, #6f655b); font-weight: 700; line-height: 1.3; }
+    .plant-status-switch { position: relative; flex: 0 0 auto; width: 48px; height: 28px; }
+    .plant-status-switch input { position: absolute; opacity: 0; pointer-events: none; }
+    .plant-status-switch span {
+      position: absolute; inset: 0; border-radius: 999px; background: var(--line, #ded2c2); transition: .16s ease;
+    }
+    .plant-status-switch span::after {
+      content: ""; position: absolute; width: 22px; height: 22px; left: 3px; top: 3px;
+      border-radius: 50%; background: var(--paper, #fffdf8); box-shadow: 0 1px 4px rgba(0,0,0,.18); transition: .16s ease;
+    }
+    .plant-status-switch input:checked + span { background: #607761; }
+    .plant-status-switch input:checked + span::after { transform: translateX(20px); }
+    .plant-status-switch input:focus-visible + span { outline: 3px solid rgba(125,79,59,.26); outline-offset: 2px; }
     .plant-log-history-title {
       list-style: none; cursor: pointer; display: flex; align-items: center; gap: 9px;
       border: 1px solid var(--line, #ded2c2); border-radius: 14px; padding: 10px 12px;
@@ -1166,17 +1302,19 @@ function ensurePlantMilestones() {
     if (!button) return;
     const card = button.closest(".plant-card");
     if (!card) return;
-    openPlantMilestones(card);
+    openPlantPanel(card);
   });
 }
 
-function openPlantMilestones(card) {
+function openPlantPanel(card) {
   const dialog = document.querySelector("#plantLogDialog");
   if (!dialog) return;
   let milestones = [];
   try { milestones = JSON.parse(card.dataset.milestones || card.dataset.log || "[]"); } catch (e) { milestones = []; }
   const title = card.dataset.plantName || card.dataset.plantId || "Växt";
   const id = card.dataset.plantId || "";
+  const category = card.dataset.category || "Pelargon";
+  const cuttingsAvailable = getPlantCuttingsStatus(id, card.dataset.cuttingsAvailable, card.dataset.cuttingsUpdatedAt);
   milestones = combinedPlantMilestones(milestones, id);
   const options = plantMilestoneTypes
     .map(type => `<option value="${htmlEscape(type)}">${htmlEscape(type)}</option>`)
@@ -1200,22 +1338,35 @@ function openPlantMilestones(card) {
         </div>
         <button class="plant-log-close" type="button" aria-label="Stäng">×</button>
       </header>
-      <details class="plant-log-history">
-        <summary class="plant-log-history-title">Tidigare milstolpar <span class="plant-log-history-count">${milestones.length}</span></summary>
-        <div class="plant-log-list">${rows || '<div class="plant-log-empty">Inga milstolpar ännu.</div>'}</div>
-      </details>
-      <form class="plant-log-form" method="dialog">
-        <div class="plant-log-form-title">Ny milstolpe</div>
-        <div class="plant-log-fields">
-          <input name="date" type="date" value="${htmlEscape(localDateString())}" aria-label="Datum" required>
-          <select name="type" aria-label="Typ av milstolpe" required>${options}</select>
-        </div>
-        <textarea name="note" maxlength="160" placeholder="Kort anteckning, frivilligt"></textarea>
-        <button class="plant-log-submit" type="submit">Spara milstolpe</button>
-      </form>
+      <section class="plant-panel-section" aria-labelledby="plantStatusTitle">
+        <div class="plant-panel-section-title" id="plantStatusTitle">Status</div>
+        <label class="plant-status-row">
+          <span class="plant-status-copy"><strong>Sticklingar</strong><small>Visar att sticklingar finns tillgängliga från moderplantan.</small></span>
+          <span class="plant-status-switch"><input name="cuttings" type="checkbox" ${cuttingsAvailable ? "checked" : ""}><span aria-hidden="true"></span></span>
+        </label>
+      </section>
+      <section class="plant-panel-section" aria-labelledby="plantHistoryTitle">
+        <div class="plant-panel-section-title" id="plantHistoryTitle">Historik</div>
+        <details class="plant-log-history">
+          <summary class="plant-log-history-title">Tidigare milstolpar <span class="plant-log-history-count">${milestones.length}</span></summary>
+          <div class="plant-log-list">${rows || '<div class="plant-log-empty">Inga milstolpar ännu.</div>'}</div>
+        </details>
+        <form class="plant-log-form" method="dialog">
+          <div class="plant-log-form-title">Ny milstolpe</div>
+          <div class="plant-log-fields">
+            <input name="date" type="date" value="${htmlEscape(localDateString())}" aria-label="Datum" required>
+            <select name="type" aria-label="Typ av milstolpe" required>${options}</select>
+          </div>
+          <textarea name="note" maxlength="160" placeholder="Kort anteckning, frivilligt"></textarea>
+          <button class="plant-log-submit" type="submit">Spara milstolpe</button>
+        </form>
+      </section>
     </div>
   `;
   dialog.querySelector(".plant-log-close").addEventListener("click", () => dialog.close(), {once: true});
+  dialog.querySelector('[name="cuttings"]').addEventListener("change", event => {
+    setPlantCuttingsStatus(id, category, event.currentTarget.checked);
+  });
   dialog.querySelector(".plant-log-form").addEventListener("submit", event => {
     event.preventDefault();
     const form = event.currentTarget;
@@ -1899,7 +2050,7 @@ async function updatePlantImageImportUI() {
   let items = [];
   try { items = await getImageImportItems(); } catch (error) { items = []; }
   const arrivalItems = await getPendingArrivalItems();
-  const syncCount = items.length + getPlantMilestoneAdditions().length + buildPlantCardNoteExport().items.length + arrivalItems.length;
+  const syncCount = items.length + getPlantMilestoneAdditions().length + buildPlantCardNoteExport().items.length + buildPlantStatusExport().items.length + arrivalItems.length;
   const button = document.querySelector(".import-queue-button");
   if (button) {
     button.classList.toggle("has-items", syncCount > 0);
@@ -1925,8 +2076,9 @@ async function openImageImportQueue() {
   try { items = await getImageImportItems(); } catch (error) { items = []; }
   const milestoneItems = buildPlantMilestoneExport().items || [];
   const cardNoteItems = buildPlantCardNoteExport().items || [];
+  const plantStatusItems = buildPlantStatusExport().items || [];
   const arrivalItems = await getPendingArrivalItems();
-  const packageCount = items.length + milestoneItems.length + cardNoteItems.length;
+  const packageCount = items.length + milestoneItems.length + cardNoteItems.length + plantStatusItems.length;
   const syncCount = packageCount + arrivalItems.length;
   const urls = [];
   const rows = items.map(item => {
@@ -1970,6 +2122,17 @@ async function openImageImportQueue() {
       <button class="import-delete" type="button" data-delete-card-note="${escapeAttr(item.id)}">Ta bort</button>
     </article>
   `).join("");
+  const plantStatusRows = plantStatusItems.map(item => `
+    <article class="import-item">
+      <div class="import-item-icon" aria-hidden="true">🌱</div>
+      <div>
+        <strong>${htmlEscape(item.id)}</strong>
+        <small>${htmlEscape(item.category)} · Sticklingar</small>
+        <small>${item.cuttingsAvailable ? "På" : "Av"}</small>
+      </div>
+      <button class="import-delete" type="button" data-delete-plant-status="${escapeAttr(item.id)}">Ta bort</button>
+    </article>
+  `).join("");
   const arrivalRows = arrivalItems.map(item => {
     const meta = [item.category, item.arrivalType, item.arrivalDate].filter(Boolean).join(" · ");
     return `
@@ -1988,11 +2151,11 @@ async function openImageImportQueue() {
       <header>
         <div>
           <h2>Synka till Mac</h2>
-          <p>${syncCount ? `${items.length} bilder · ${milestoneItems.length} milstolpar · ${cardNoteItems.length} anteckningar · ${arrivalItems.length} ankomstsamtal` : "Kön är tom just nu."}</p>
+          <p>${syncCount ? `${items.length} bilder · ${milestoneItems.length} milstolpar · ${cardNoteItems.length} anteckningar · ${plantStatusItems.length} statusar · ${arrivalItems.length} ankomstsamtal` : "Kön är tom just nu."}</p>
         </div>
         <button class="import-close" type="button" aria-label="Stäng">×</button>
       </header>
-      <div class="import-list">${rows + milestoneRows + cardNoteRows + arrivalRows || '<div class="import-empty">Inga ändringar i kön.</div>'}</div>
+      <div class="import-list">${rows + milestoneRows + cardNoteRows + plantStatusRows + arrivalRows || '<div class="import-empty">Inga ändringar i kön.</div>'}</div>
       <div class="import-buttons">
         ${packageCount ? '<button class="primary" type="button" data-export-package>Synka</button>' : (arrivalItems.length ? '<div class="import-sync-status">Sparad – behandlas när Mac-synkningen körs.</div>' : '')}
         <button class="secondary" type="button" data-clear-import ${packageCount ? "" : "disabled"}>Rensa synkkö</button>
@@ -2024,12 +2187,20 @@ async function openImageImportQueue() {
       openImageImportQueue();
     });
   });
+  dialog.querySelectorAll("[data-delete-plant-status]").forEach(button => {
+    button.addEventListener("click", () => {
+      deletePlantStatusChange(button.dataset.deletePlantStatus);
+      updatePlantImageImportUI();
+      openImageImportQueue();
+    });
+  });
   const clearButton = dialog.querySelector("[data-clear-import]");
   clearButton.addEventListener("click", async () => {
-    if (!confirm("Ta bort alla bilder, milstolpar och anteckningar i synkkön? Gör detta först när paketet är sparat eller importerat på Mac.")) return;
+    if (!confirm("Ta bort alla bilder, milstolpar, anteckningar och statusändringar i synkkön? Gör detta först när paketet är sparat eller importerat på Mac.")) return;
     await clearImageImportItems();
     clearPlantMilestoneAdditions();
     clearPlantCardNoteChanges();
+    clearPlantStatusChanges();
     window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: {cleared: true}}));
     updatePlantImageImportUI();
     openImageImportQueue();
@@ -2039,13 +2210,14 @@ async function openImageImportQueue() {
     packageButton.disabled = true;
     packageButton.textContent = "Skapar paket...";
     try {
-      const zip = await createSyncPackage(items, getPlantMilestoneAdditions(), cardNoteItems);
+      const zip = await createSyncPackage(items, getPlantMilestoneAdditions(), cardNoteItems, plantStatusItems);
       downloadBlob(`mina-vaxter-synkpaket-${localDateString()}.zip`, zip);
       packageButton.textContent = "Synka";
       if (confirm("Synkpaketet är skapat. Rensa synkkön i den här webbläsaren?")) {
         await clearImageImportItems();
         clearPlantMilestoneAdditions();
         clearPlantCardNoteChanges();
+        clearPlantStatusChanges();
         window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: {cleared: true}}));
         updatePlantImageImportUI();
         dialog.close();
@@ -2106,14 +2278,16 @@ async function createImageImportPackage(items) {
   return createZipBlob(entries);
 }
 
-async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRows = []) {
+async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRows = [], plantStatusRows = []) {
   const imageManifest = buildImageImportManifest(imageItems);
   const milestoneExport = buildPlantMilestoneExport(milestoneRows);
   const cardNoteExport = buildPlantCardNoteExport(cardNoteRows);
-  const syncManifest = buildSyncManifest(imageManifest.items, milestoneExport.items, cardNoteExport.items);
+  const plantStatusExport = buildPlantStatusExport(plantStatusRows);
+  const syncManifest = buildSyncManifest(imageManifest.items, milestoneExport.items, cardNoteExport.items, plantStatusExport.items);
   syncManifest.images = imageManifest.items;
   syncManifest.milestonesFile = "milstolpar.json";
   syncManifest.cardNotesFile = "kortanteckningar.json";
+  syncManifest.plantStatusesFile = "vaxtstatusar.json";
 
   const entries = [
     {
@@ -2127,6 +2301,10 @@ async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRo
     {
       name: "kortanteckningar.json",
       blob: new Blob([JSON.stringify(cardNoteExport, null, 2)], {type: "application/json;charset=utf-8"})
+    },
+    {
+      name: "vaxtstatusar.json",
+      blob: new Blob([JSON.stringify(plantStatusExport, null, 2)], {type: "application/json;charset=utf-8"})
     }
   ];
   imageManifest.items.forEach((manifestItem, index) => {
@@ -2174,6 +2352,8 @@ function favoriteFromCard(card) {
     image,
     dateLabel,
     chips,
+    cuttingsAvailable: getPlantCuttingsStatus(card.dataset.plantId, card.dataset.cuttingsAvailable, card.dataset.cuttingsUpdatedAt),
+    cuttingsUpdatedAt: clean(card.dataset.cuttingsUpdatedAt),
     notes,
     page: card.dataset.page || location.pathname.split("/").pop() || "index.html",
     updatedAt: new Date().toISOString()

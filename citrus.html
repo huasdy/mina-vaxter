@@ -89,6 +89,7 @@
       <a class="current" href="citrus.html">Citrus</a>
       <a href="udda.html">Udda</a>
       <a href="favoriter.html">Hundöron</a>
+      <a href="sticklingar.html">Sticklingar</a>
       <a href="galleri.html">Galleri</a>
       <a href="verktyg.html">Verktyg</a>
     </nav>
@@ -125,16 +126,17 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script type="text/plain" id="defaultPlantsCSV">id,name,type,status,source,notes,nickname,card_note,card_note_updated_at,arrival_type,start_date
-c-calamondin,Calamondin,Calamondin,Aktiv,,,,,,Gåva,
-c-limon-1,Citrus limon 1,Citron,Aktiv,Bauhaus,,,,,Köpt planta,
-c-limon-2,Citrus limon 2,Citron,Aktiv,Bauhaus,,,,,Köpt planta,
-c-okand-citrusstickling,Citrusstickling,Okänd citrus,Aktiv,,,,,,Gåva,
-c-kaffirlime,Kaffirlime – Citrus hystrix,Kaffirlime,Aktiv,Vivai Miano,,,,,Köpt planta,
-c-kumquat-1,Kumquat 1,Kumquat,Aktiv,Vivai Miano,,,,,Köpt planta,
-c-kumquat-2,Kumquat 2,Kumquat,Aktiv,Vivai Miano,,,,,Köpt planta,
-c-limequat,Limequat,Limequat,Aktiv,Vivai Miano,,,,,Köpt planta,
-c-rod-fingerlime,Röd fingerlime – Citrus australasica,Fingerlime,Aktiv,Vivai Miano,,,,,Köpt planta,</script>
+  <script type="text/plain" id="defaultPlantsCSV">id,name,type,status,source,notes,nickname,card_note,card_note_updated_at,arrival_type,start_date,cuttings_available,cuttings_updated_at
+c-calamondin,Calamondin,Calamondin,Aktiv,,,,,,Gåva,,,
+c-limon-1,Citrus limon 1,Citron,Aktiv,Bauhaus,,,,,Köpt planta,,,
+c-limon-2,Citrus limon 2,Citron,Aktiv,Bauhaus,,,,,Köpt planta,,,
+c-okand-citrusstickling,Citrusstickling,Okänd citrus,Aktiv,,,,,,Gåva,,,
+c-kaffirlime,Kaffirlime – Citrus hystrix,Kaffirlime,Aktiv,Vivai Miano,,,,,Köpt planta,,,
+c-kumquat-1,Kumquat 1,Kumquat,Aktiv,Vivai Miano,,,,,Köpt planta,,,
+c-kumquat-2,Kumquat 2,Kumquat,Aktiv,Vivai Miano,,,,,Köpt planta,,,
+c-limequat,Limequat,Limequat,Aktiv,Vivai Miano,,,,,Köpt planta,,,
+c-pomelo,Pomelo,Citrus maxima / pomelo,Aktiv,Plantagen,Inköpspris: 200 kr,,,,Köpt planta,2026-08-13,,
+c-rod-fingerlime,Röd fingerlime – Citrus australasica,Fingerlime,Aktiv,Vivai Miano,,,,,Köpt planta,,,</script>
   <script type="text/plain" id="defaultPhotosCSV">plant_id,date,type,file,label
 c-calamondin,2026-06-24,hel,bilder/citrus/c-calamondin_2026-06-24_hel.jpg,2026-06-24 · hel
 c-kaffirlime,2026-06-24,hel,bilder/citrus/c-kaffirlime_2026-06-24_hel.jpg,2026-06-24 · hel
@@ -144,6 +146,7 @@ c-limequat,2026-06-24,hel,bilder/citrus/c-limequat_2026-06-24_hel.jpg,2026-06-24
 c-limon-1,2026-06-24,hel,bilder/citrus/c-limon-1_2026-06-24_hel.jpg,2026-06-24 · hel
 c-limon-2,2026-06-24,hel,bilder/citrus/c-limon-2_2026-06-24_hel.jpg,2026-06-24 · hel
 c-okand-citrusstickling,2026-06-24,hel,bilder/citrus/c-okand-citrusstickling_2026-06-24_hel.jpg,2026-06-24 · hel
+c-pomelo,2026-08-13,hel,bilder/citrus/c-pomelo_synk-e0f75a2974_2026-08-13_hel.jpg,2026-08-13 · hel
 c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jpg,2026-06-24 · hel</script>
   <script type="text/plain" id="defaultMilestonesCSV">id,date,type,note
 SP-001,2025-01-13,Sådd,
@@ -196,8 +199,12 @@ PL-H02-D-03,2026-06-25,Sådd,
 p-torento,2026-08-08,Avslutad/död,
 SP-008,2025-11-16,Sådd,
 SP-008,2026-06-27,Omplanterad,
-SP-003,2026-08-11,Omplanterad,</script>
-  <script src="common.js?v=20260812synk1409"></script>
+SP-003,2026-08-11,Omplanterad,
+p-cys-sunburst-2,2026-08-13,Sådd,
+p-creamery,2026-08-13,Sådd,
+p-bothams-surprise-1,2026-08-13,Sådd,
+p-bothams-surprise-2,2026-08-13,Sådd,</script>
+  <script src="common.js?v=20260813synk1750"></script>
   <script>
     let plants = [];
     let editMode = false;
@@ -295,7 +302,7 @@ SP-003,2026-08-11,Omplanterad,</script>
       ` : "";
 
       return `
-        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-category="Citrus" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(displayName)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(p.nickname)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(p.logs || []))}">
+        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-category="Citrus" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(displayName)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(p.nickname)}" data-cuttings-available="${escapeAttr(p.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(p.cuttings_updated_at)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(p.logs || []))}">
           <div class="image-wrap">
             ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(displayLabel)}" data-caption="${escapeAttr(displayLabel + " · " + activeLabel)}">` : ""}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}</div>` : ""}
@@ -305,7 +312,7 @@ SP-003,2026-08-11,Omplanterad,</script>
             <div class="plant-card-head">
               <div class="plant-title-block">${plantHeadingHtml(p)}</div>
               <div class="import-actions">
-                <button class="plant-log-btn" type="button" aria-label="Milstolpar" title="Milstolpar">${logBookIcon()}</button>
+                <button class="plant-log-btn" type="button" aria-label="Växtpanel" title="Växtpanel">${logBookIcon()}</button>
                 <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
                 <span class="import-badge" data-import-badge hidden></span>
               </div>

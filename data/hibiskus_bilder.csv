@@ -1,4 +1,8 @@
 ﻿plant_id,date,type,file,label,day
+HIB-001,2026-08-13,blomma,bilder/hibiskusar/HIB-001_synk-6375bd895a_2026-08-13_blomma.jpg,2026-08-13 · blomma,
+HIB-001,2026-08-13,hel,bilder/hibiskusar/HIB-001_synk-da167d7f48_2026-08-13_hel.jpg,2026-08-13 · hel,
+HIB-002,2026-08-13,blomma,bilder/hibiskusar/HIB-002_synk-8f3fe5a3db_2026-08-13_blomma.jpg,2026-08-13 · blomma,
+HIB-002,2026-08-13,hel,bilder/hibiskusar/HIB-002_synk-6700aed7df_2026-08-13_hel.jpg,2026-08-13 · hel,
 PL-H01-A,2026-05-24,hel,bilder/hibiskusar/PL-H01-A_2026-05-24_hel.jpg,2026-05-24 · hel,189
 PL-H01-A,2026-06-07,hel,bilder/hibiskusar/PL-H01-A_2026-06-07_hel.jpg,2026-06-07 · hel,203
 PL-H01-B,2026-05-24,hel,bilder/hibiskusar/PL-H01-B_2026-05-24_hel.jpg,2026-05-24 · hel,189

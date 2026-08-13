@@ -39,7 +39,9 @@
     }
     input { width: 100%; }
     #categoryFilter { flex: 0 1 190px; }
-    #labelA, #labelB, #freeTextA, #freeTextB { flex: 1 1 180px; }
+    #labelA, #labelB { flex: 1 1 180px; }
+    .free-field-group { flex: 1 1 260px; display: grid; gap: 6px; }
+    .free-field-group input { width: 100%; }
     button { cursor: pointer; background: var(--accent); color: white; border-color: var(--accent); font-weight: 750; white-space: nowrap; }
     button.secondary { background: var(--paper); color: var(--accent); border-color: rgba(125,79,59,.35); }
     main { max-width: 980px; margin: 0 auto; padding: 28px 18px 64px; display: grid; justify-items: center; gap: 18px; }
@@ -67,6 +69,8 @@
     .plant-label.name-only .label-name { font-size: 10pt; }
     .plant-label.free-label .label-name { font-size: 12pt; }
     .label-sheet.full-label .plant-label.free-label .label-name { font-size: 18pt; }
+    .label-subline { font: 700 7.2pt -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .label-sheet.full-label .label-subline { font-size: 10pt; }
     .label-meta { font: 650 6.8pt -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .plant-label.id-badge { align-content: center; row-gap: 1mm; padding: 4.2mm 3.2mm 3.4mm; }
     .plant-label.id-badge .label-id { font-size: 23pt; line-height: .95; margin-bottom: 2.4mm; }
@@ -103,14 +107,14 @@
     .batch-preview-head { display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
     .batch-preview-title { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 1.6rem; line-height: 1; }
     .batch-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(57mm, 1fr)); gap: 12px; justify-items: center; }
-    .batch-preview-grid .plant-label {
-      height: 32mm; border: 1px solid #ddd; align-content: center; justify-items: center;
-      text-align: center; row-gap: 1mm; padding: 4.2mm 3.2mm 3.4mm; background: #fff;
-    }
-    .batch-preview-grid .label-id { font-size: 23pt; line-height: .95; margin-bottom: 2.4mm; }
-    .batch-preview-grid .label-id.label-id-compact { font-size: 20pt; letter-spacing: 0; }
-    .batch-preview-grid .label-name { font-size: 9.4pt; line-height: 1; }
-    .batch-preview-grid .label-meta { font-size: 7.4pt; line-height: 1; }
+    .batch-preview-sheet { width: 57mm; height: 32mm; border: 1px solid #ddd; background: #fff; overflow: hidden; }
+    .batch-preview-sheet.full .plant-label { height: 32mm; align-content: center; justify-items: center; text-align: center; row-gap: 1mm; padding: 4.2mm 3.2mm 3.4mm; }
+    .batch-preview-sheet.full .label-id { font-size: 23pt; line-height: .95; margin-bottom: 2.4mm; }
+    .batch-preview-sheet.full .label-id.label-id-compact { font-size: 20pt; letter-spacing: 0; }
+    .batch-preview-sheet.full .label-name { font-size: 9.4pt; line-height: 1; }
+    .batch-preview-sheet.full .label-meta { font-size: 7.4pt; line-height: 1; }
+    .batch-preview-sheet.half { display: grid; grid-template-rows: 1fr 1fr; }
+    .batch-preview-sheet.half .plant-label:first-child { border-bottom: 1px dashed #aaa; }
     .print-note {
       width: min(100%, 980px); color: var(--muted); text-align: center; font-size: .92rem;
       background: rgba(255,253,248,.58); border: 1px solid rgba(222,210,194,.7);
@@ -200,15 +204,21 @@
       .label-sheet { border: 0; }
       body.batch-printing main { display: none !important; }
       body.batch-printing .batch-print-area { display: contents; }
-      body.batch-printing .plant-label {
+      body.batch-printing .batch-print-sheet { width: 57mm; margin: 0; padding: 0; overflow: hidden; page-break-inside: avoid; break-inside: avoid; }
+      body.batch-printing .batch-print-sheet:not(:last-child) { page-break-after: always; break-after: page; }
+      body.batch-printing .batch-print-sheet.full { height: 30mm; }
+      body.batch-printing .batch-print-sheet.full .plant-label {
         width: 57mm; height: 30mm; padding: 3.3mm 3.2mm 3.1mm; border: 0;
         align-content: center; justify-items: center; text-align: center; row-gap: 1mm;
         page-break-inside: avoid; break-inside: avoid;
       }
-      body.batch-printing .label-id { font-size: 23pt; line-height: .95; margin-bottom: 2.4mm; }
-      body.batch-printing .label-id.label-id-compact { font-size: 20pt; letter-spacing: 0; }
-      body.batch-printing .label-name { font-size: 9.4pt; line-height: 1; }
-      body.batch-printing .label-meta { font-size: 7.4pt; line-height: 1; }
+      body.batch-printing .batch-print-sheet.full .label-id { font-size: 23pt; line-height: .95; margin-bottom: 2.4mm; }
+      body.batch-printing .batch-print-sheet.full .label-id.label-id-compact { font-size: 20pt; letter-spacing: 0; }
+      body.batch-printing .batch-print-sheet.full .label-name { font-size: 9.4pt; line-height: 1; }
+      body.batch-printing .batch-print-sheet.full .label-meta { font-size: 7.4pt; line-height: 1; }
+      body.batch-printing .batch-print-sheet.half { height: 32mm; display: grid; grid-template-rows: 1fr 1fr; }
+      body.batch-printing .batch-print-sheet.half .plant-label { width: 57mm; height: 16mm; padding: 1.8mm 2.4mm; border: 0; }
+      body.batch-printing .batch-print-sheet.half .plant-label:first-child { border-bottom: 1px dashed #aaa; }
     }
   </style>
 </head>
@@ -221,6 +231,7 @@
       <a href="citrus.html">Citrus</a>
       <a href="udda.html">Udda</a>
       <a href="favoriter.html">Hundöron</a>
+      <a href="sticklingar.html">Sticklingar</a>
       <a href="galleri.html">Galleri</a>
       <a class="current" href="verktyg.html">Verktyg</a>
     </nav>
@@ -351,14 +362,20 @@
         <option value="free">Fri text</option>
       </select>
       <select id="fieldCount" aria-label="Antal fält på etiketten">
-        <option value="1">1 fält</option>
-        <option value="2" selected>2 fält</option>
+        <option value="1">Hel etikett</option>
+        <option value="2" selected>2 halva etiketter</option>
       </select>
       <select id="categoryFilter" aria-label="Växtkategori"></select>
       <select id="labelA" aria-label="Övre växtetikett"></select>
       <select id="labelB" aria-label="Nedre växtetikett"></select>
-      <input id="freeTextA" type="text" maxlength="50" placeholder="Namn i övre fältet" aria-label="Text i övre fältet" autocomplete="off" hidden>
-      <input id="freeTextB" type="text" maxlength="50" placeholder="Namn i nedre fältet" aria-label="Text i nedre fältet" autocomplete="off" hidden>
+      <div class="free-field-group" id="freeFieldA" hidden>
+        <input id="freeTextA" type="text" maxlength="50" placeholder="Namn på övre etiketten" aria-label="Huvudrad på övre etiketten" autocomplete="off">
+        <input id="freeSubtextA" type="text" maxlength="50" placeholder="Valfri underrad, t.ex. Stickling" aria-label="Underrad på övre etiketten" autocomplete="off">
+      </div>
+      <div class="free-field-group" id="freeFieldB" hidden>
+        <input id="freeTextB" type="text" maxlength="50" placeholder="Namn på nedre etiketten" aria-label="Huvudrad på nedre etiketten" autocomplete="off">
+        <input id="freeSubtextB" type="text" maxlength="50" placeholder="Valfri underrad, t.ex. Stickling" aria-label="Underrad på nedre etiketten" autocomplete="off">
+      </div>
       <button id="printBtn" type="button">Skriv ut</button>
     </div>
   </section>
@@ -376,13 +393,17 @@
       <div class="batch-head">
         <div>
           <h2>Batch-utskrift</h2>
-          <p>Välj flera hibiskusar och skriv ut en etikett per planta.</p>
+          <p>Välj flera hibiskusar och skriv ut dem på hela eller halva etiketter.</p>
         </div>
         <div class="batch-controls">
           <select id="batchCategory">
             <option value="Hibiskus">Hibiskus</option>
           </select>
           <select id="batchParti"></select>
+          <select id="batchLabelSize" aria-label="Etikettstorlek för batch">
+            <option value="full" selected>Hel etikett</option>
+            <option value="half">2 halva etiketter</option>
+          </select>
         </div>
       </div>
       <div class="batch-actions">
@@ -404,7 +425,7 @@
   </main>
   <section class="batch-print-area" id="batchPrintArea" aria-label="Batchutskrift"></section>
   <script src="originalarkiv-local.js"></script>
-  <script id="labelData" type="application/json">[{"category": "Hibiskus", "id": "PL-H01-A", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-B", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-C", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-D", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-G", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-H", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-I", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-J", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-K", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-L", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-M", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-N", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-O", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-Q", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-R", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-A-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-B-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × 030", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-C-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "030 × 041", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-C-02", "name": "Hibiskus", "batch": "PL-H02", "cross": "030 × 041", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-C-03", "name": "Hibiskus", "batch": "PL-H02", "cross": "030 × 041", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-D-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-D-02", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-D-03", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × okänd", "nickname": ""}, {"category": "Pelargon", "id": "p-acetosum", "name": "P. acetosum", "nickname": ""}, {"category": "Pelargon", "id": "p-australe-1", "name": "P. australe 1", "nickname": ""}, {"category": "Pelargon", "id": "p-australe-2", "name": "P. australe 2", "nickname": ""}, {"category": "Pelargon", "id": "p-cotyledonis-1", "name": "P. cotyledonis 1", "nickname": ""}, {"category": "Pelargon", "id": "p-cotyledonis-2", "name": "P. cotyledonis 2", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-1", "name": "P. gibbosum 1", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-2", "name": "P. gibbosum 2", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-3", "name": "P. gibbosum 3", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-4", "name": "P. gibbosum 4", "nickname": "Grotesco"}, {"category": "Pelargon", "id": "p-gibbosum-maroon-1", "name": "P. gibbosum ‘Maroon’ 1", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-maroon-2", "name": "P. gibbosum ‘Maroon’ 2", "nickname": ""}, {"category": "Pelargon", "id": "p-laxum-1", "name": "P. laxum 1", "nickname": ""}, {"category": "Pelargon", "id": "p-laxum-2", "name": "P. laxum 2", "nickname": ""}, {"category": "Pelargon", "id": "p-magenteum", "name": "P. magenteum", "nickname": ""}, {"category": "Pelargon", "id": "p-odoratissimum-1", "name": "P. odoratissimum", "nickname": ""}, {"category": "Pelargon", "id": "p-sidoides", "name": "P. sidoides", "nickname": ""}, {"category": "Pelargon", "id": "p-triffidum", "name": "P. triffidum", "nickname": ""}, {"category": "Pelargon", "id": "p-caffrum-diana", "name": "P. × caffrum ‘Diana’", "nickname": ""}, {"category": "Pelargon", "id": "p-bontrosai-1", "name": "P. ‘Bontrosai’ 1", "nickname": ""}, {"category": "Pelargon", "id": "p-bontrosai-2", "name": "P. ‘Bontrosai’ 2", "nickname": ""}, {"category": "Pelargon", "id": "p-bothams-surprise-1", "name": "P. ‘Botham Surprise’ 1", "nickname": ""}, {"category": "Pelargon", "id": "p-bothams-surprise-2", "name": "P. ‘Botham Surprise’ 2", "nickname": ""}, {"category": "Pelargon", "id": "p-creamery", "name": "P. ‘Creamery’", "nickname": ""}, {"category": "Pelargon", "id": "p-cys-sunburst-1", "name": "P. ‘Cy’s Sunburst’ 1", "nickname": ""}, {"category": "Pelargon", "id": "p-cys-sunburst-2", "name": "P. ‘Cy’s Sunburst’ 2", "nickname": ""}, {"category": "Pelargon", "id": "p-cys-sunburst-3", "name": "P. ‘Cy’s Sunburst’ 3", "nickname": ""}, {"category": "Pelargon", "id": "p-dr-westerlund-1", "name": "P. ‘Dr Westerlund’ 1", "nickname": ""}, {"category": "Pelargon", "id": "p-dr-westerlund-2", "name": "P. ‘Dr Westerlund’ 2", "nickname": ""}, {"category": "Pelargon", "id": "p-lemon-queen", "name": "P. ‘Lemon Queen’", "nickname": ""}, {"category": "Pelargon", "id": "p-nielsens-fragrans-1", "name": "P. ‘Nielsens Fragrans’", "nickname": ""}, {"category": "Pelargon", "id": "p-prince-of-orange", "name": "P. ‘Prince of Orange’", "nickname": ""}, {"category": "Pelargon", "id": "p-torento", "name": "P. ‘Torento’", "nickname": ""}, {"category": "Citrus", "id": "c-calamondin", "name": "Calamondin", "nickname": ""}, {"category": "Citrus", "id": "c-limon-1", "name": "Citrus limon 1", "nickname": ""}, {"category": "Citrus", "id": "c-limon-2", "name": "Citrus limon 2", "nickname": ""}, {"category": "Citrus", "id": "c-okand-citrusstickling", "name": "Citrusstickling", "nickname": ""}, {"category": "Citrus", "id": "c-kaffirlime", "name": "Kaffirlime – Citrus hystrix", "nickname": ""}, {"category": "Citrus", "id": "c-kumquat-1", "name": "Kumquat 1", "nickname": ""}, {"category": "Citrus", "id": "c-kumquat-2", "name": "Kumquat 2", "nickname": ""}, {"category": "Citrus", "id": "c-limequat", "name": "Limequat", "nickname": ""}, {"category": "Citrus", "id": "c-rod-fingerlime", "name": "Röd fingerlime – Citrus australasica", "nickname": ""}, {"category": "Udda", "id": "SP-006", "name": "Fredskalla"}, {"category": "Udda", "id": "SP-005", "name": "Hjärtbräken"}, {"category": "Udda", "id": "SP-002", "name": "Patchouli"}, {"category": "Udda", "id": "SP-004", "name": "Plumeria"}, {"category": "Udda", "id": "SP-003", "name": "Salvia apiana"}, {"category": "Udda", "id": "SP-001", "name": "Stapelia mix"}, {"category": "Udda", "id": "SP-008", "name": "Tamarillo"}, {"category": "Udda", "id": "SP-007", "name": "Ödesträd"}]</script>
+  <script id="labelData" type="application/json">[{"category": "Hibiskus", "id": "HIB-001", "name": "Hibiskus", "batch": "", "cross": "", "nickname": "Cato"}, {"category": "Hibiskus", "id": "HIB-002", "name": "Hibiskus", "batch": "", "cross": "", "nickname": "Bemita"}, {"category": "Hibiskus", "id": "PL-H01-A", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-B", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-C", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-D", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-G", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-H", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-I", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-J", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-K", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-L", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-M", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-N", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-O", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-Q", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-R", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-A-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-B-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × 030", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-C-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "030 × 041", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-C-02", "name": "Hibiskus", "batch": "PL-H02", "cross": "030 × 041", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-C-03", "name": "Hibiskus", "batch": "PL-H02", "cross": "030 × 041", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-D-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-D-02", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-D-03", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × okänd", "nickname": ""}, {"category": "Pelargon", "id": "p-acetosum", "name": "P. acetosum", "nickname": ""}, {"category": "Pelargon", "id": "p-australe-1", "name": "P. australe 1", "nickname": ""}, {"category": "Pelargon", "id": "p-australe-2", "name": "P. australe 2", "nickname": ""}, {"category": "Pelargon", "id": "p-cotyledonis-1", "name": "P. cotyledonis 1", "nickname": ""}, {"category": "Pelargon", "id": "p-cotyledonis-2", "name": "P. cotyledonis 2", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-1", "name": "P. gibbosum 1", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-2", "name": "P. gibbosum 2", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-3", "name": "P. gibbosum 3", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-4", "name": "P. gibbosum 4", "nickname": "Grotesco"}, {"category": "Pelargon", "id": "p-gibbosum-maroon-1", "name": "P. gibbosum ‘Maroon’ 1", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-maroon-2", "name": "P. gibbosum ‘Maroon’ 2", "nickname": ""}, {"category": "Pelargon", "id": "p-laxum-1", "name": "P. laxum 1", "nickname": ""}, {"category": "Pelargon", "id": "p-laxum-2", "name": "P. laxum 2", "nickname": ""}, {"category": "Pelargon", "id": "p-magenteum", "name": "P. magenteum", "nickname": ""}, {"category": "Pelargon", "id": "p-odoratissimum-1", "name": "P. odoratissimum", "nickname": ""}, {"category": "Pelargon", "id": "p-sidoides", "name": "P. sidoides", "nickname": ""}, {"category": "Pelargon", "id": "p-triffidum", "name": "P. triffidum", "nickname": ""}, {"category": "Pelargon", "id": "p-caffrum-diana", "name": "P. × caffrum ‘Diana’", "nickname": ""}, {"category": "Pelargon", "id": "p-bontrosai-1", "name": "P. ‘Bontrosai’ 1", "nickname": ""}, {"category": "Pelargon", "id": "p-bontrosai-2", "name": "P. ‘Bontrosai’ 2", "nickname": ""}, {"category": "Pelargon", "id": "p-bothams-surprise-1", "name": "P. ‘Botham Surprise’ 1", "nickname": ""}, {"category": "Pelargon", "id": "p-bothams-surprise-2", "name": "P. ‘Botham Surprise’ 2", "nickname": ""}, {"category": "Pelargon", "id": "p-creamery", "name": "P. ‘Creamery’", "nickname": ""}, {"category": "Pelargon", "id": "p-cys-sunburst-1", "name": "P. ‘Cy’s Sunburst’ 1", "nickname": ""}, {"category": "Pelargon", "id": "p-cys-sunburst-2", "name": "P. ‘Cy’s Sunburst’ 2", "nickname": ""}, {"category": "Pelargon", "id": "p-cys-sunburst-3", "name": "P. ‘Cy’s Sunburst’ 3", "nickname": ""}, {"category": "Pelargon", "id": "p-dr-westerlund-1", "name": "P. ‘Dr Westerlund’ 1", "nickname": ""}, {"category": "Pelargon", "id": "p-dr-westerlund-2", "name": "P. ‘Dr Westerlund’ 2", "nickname": ""}, {"category": "Pelargon", "id": "p-lemon-queen", "name": "P. ‘Lemon Queen’", "nickname": ""}, {"category": "Pelargon", "id": "p-nielsens-fragrans-1", "name": "P. ‘Nielsens Fragrans’", "nickname": ""}, {"category": "Pelargon", "id": "p-prince-of-orange", "name": "P. ‘Prince of Orange’", "nickname": ""}, {"category": "Pelargon", "id": "p-torento", "name": "P. ‘Torento’", "nickname": ""}, {"category": "Citrus", "id": "c-calamondin", "name": "Calamondin", "nickname": ""}, {"category": "Citrus", "id": "c-limon-1", "name": "Citrus limon 1", "nickname": ""}, {"category": "Citrus", "id": "c-limon-2", "name": "Citrus limon 2", "nickname": ""}, {"category": "Citrus", "id": "c-okand-citrusstickling", "name": "Citrusstickling", "nickname": ""}, {"category": "Citrus", "id": "c-kaffirlime", "name": "Kaffirlime – Citrus hystrix", "nickname": ""}, {"category": "Citrus", "id": "c-kumquat-1", "name": "Kumquat 1", "nickname": ""}, {"category": "Citrus", "id": "c-kumquat-2", "name": "Kumquat 2", "nickname": ""}, {"category": "Citrus", "id": "c-limequat", "name": "Limequat", "nickname": ""}, {"category": "Citrus", "id": "c-pomelo", "name": "Pomelo", "nickname": ""}, {"category": "Citrus", "id": "c-rod-fingerlime", "name": "Röd fingerlime – Citrus australasica", "nickname": ""}, {"category": "Udda", "id": "SP-006", "name": "Fredskalla"}, {"category": "Udda", "id": "SP-005", "name": "Hjärtbräken"}, {"category": "Udda", "id": "SP-002", "name": "Patchouli"}, {"category": "Udda", "id": "SP-009", "name": "Pillerfikus"}, {"category": "Udda", "id": "SP-004", "name": "Plumeria"}, {"category": "Udda", "id": "SP-003", "name": "Salvia apiana"}, {"category": "Udda", "id": "SP-001", "name": "Stapelia mix"}, {"category": "Udda", "id": "SP-008", "name": "Tamarillo"}, {"category": "Udda", "id": "SP-007", "name": "Ödesträd"}]</script>
   <script>
     const labels = JSON.parse(document.querySelector("#labelData").textContent);
     const labelMode = document.querySelector("#labelMode");
@@ -412,14 +433,19 @@
     const categoryFilter = document.querySelector("#categoryFilter");
     const labelA = document.querySelector("#labelA");
     const labelB = document.querySelector("#labelB");
+    const freeFieldA = document.querySelector("#freeFieldA");
+    const freeFieldB = document.querySelector("#freeFieldB");
     const freeTextA = document.querySelector("#freeTextA");
     const freeTextB = document.querySelector("#freeTextB");
+    const freeSubtextA = document.querySelector("#freeSubtextA");
+    const freeSubtextB = document.querySelector("#freeSubtextB");
     const labelSheet = document.querySelector(".label-sheet");
     const previewA = document.querySelector("#previewA");
     const previewB = document.querySelector("#previewB");
     const summary = document.querySelector("#summary");
     const batchCategory = document.querySelector("#batchCategory");
     const batchParti = document.querySelector("#batchParti");
+    const batchLabelSize = document.querySelector("#batchLabelSize");
     const batchList = document.querySelector("#batchList");
     const batchSummary = document.querySelector("#batchSummary");
     const batchPrintArea = document.querySelector("#batchPrintArea");
@@ -882,9 +908,11 @@
       return labels[Number(select.value)] || null;
     }
 
-    function freeTextHtml(value) {
+    function freeTextHtml(value, subvalue) {
       const text = String(value || "").trim();
-      return text ? `<div class="label-name">${escapeHtml(text)}</div>` : "";
+      const subtext = String(subvalue || "").trim();
+      if (!text) return "";
+      return `<div class="label-name">${escapeHtml(text)}</div>${subtext ? `<div class="label-subline">${escapeHtml(subtext)}</div>` : ""}`;
     }
 
     function isFreeTextMode() {
@@ -901,8 +929,8 @@
       categoryFilter.hidden = freeTextMode;
       labelA.hidden = freeTextMode;
       labelB.hidden = freeTextMode || !twoFields;
-      freeTextA.hidden = !freeTextMode;
-      freeTextB.hidden = !freeTextMode || !twoFields;
+      freeFieldA.hidden = !freeTextMode;
+      freeFieldB.hidden = !freeTextMode || !twoFields;
     }
 
     function render() {
@@ -911,14 +939,16 @@
 
       if (isFreeTextMode()) {
         const a = freeTextA.value.trim();
+        const aSubtext = freeSubtextA.value.trim();
         const b = twoFields ? freeTextB.value.trim() : "";
+        const bSubtext = twoFields ? freeSubtextB.value.trim() : "";
         previewA.classList.add("name-only");
         previewB.classList.add("name-only");
         previewA.classList.add("free-label");
         previewB.classList.add("free-label");
-        previewA.innerHTML = freeTextHtml(a);
-        previewB.innerHTML = freeTextHtml(b);
-        summary.innerHTML = [a, b].filter(Boolean).map(text => `<span class="pill">${escapeHtml(text)}</span>`).join("");
+        previewA.innerHTML = freeTextHtml(a, aSubtext);
+        previewB.innerHTML = freeTextHtml(b, bSubtext);
+        summary.innerHTML = [[a, aSubtext], [b, bSubtext]].filter(([text]) => text).map(([text, subtext]) => `<span class="pill">${escapeHtml(text)}${subtext ? ` · ${escapeHtml(subtext)}` : ""}</span>`).join("");
         return;
       }
 
@@ -965,7 +995,8 @@
     function updateBatchSummary() {
       const selectedCount = batchList.querySelectorAll("input:checked").length;
       const totalCount = batchRows().length;
-      batchSummary.innerHTML = `<span class="pill">${selectedCount} av ${totalCount} valda</span>`;
+      const sheetCount = batchLabelSize.value === "half" ? Math.ceil(selectedCount / 2) : selectedCount;
+      batchSummary.innerHTML = `<span class="pill">${selectedCount} av ${totalCount} valda</span><span class="pill">${sheetCount} fysiska etiketter</span>`;
     }
 
     function renderBatchList() {
@@ -986,8 +1017,26 @@
       updateBatchSummary();
     }
 
+    function batchLabelArticle(row, fullSize) {
+      if (!row) return '<article class="plant-label batch-empty" aria-hidden="true"></article>';
+      return `<article class="plant-label ${fullSize && row.category === "Hibiskus" ? "id-badge" : ""}">${labelHtml(row)}</article>`;
+    }
+
+    function batchSheetsHtml(rows, preview) {
+      const halfSize = batchLabelSize.value === "half";
+      const sheetClass = preview ? "batch-preview-sheet" : "batch-print-sheet";
+      if (!halfSize) {
+        return rows.map(row => `<section class="${sheetClass} full">${batchLabelArticle(row, true)}</section>`).join("");
+      }
+      const sheets = [];
+      for (let index = 0; index < rows.length; index += 2) {
+        sheets.push(`<section class="${sheetClass} half">${batchLabelArticle(rows[index], false)}${batchLabelArticle(rows[index + 1], false)}</section>`);
+      }
+      return sheets.join("");
+    }
+
     function renderBatchPrintArea(rows) {
-      batchPrintArea.innerHTML = rows.map(row => `<article class="plant-label ${row.category === "Hibiskus" ? "id-badge" : ""}">${labelHtml(row)}</article>`).join("");
+      batchPrintArea.innerHTML = batchSheetsHtml(rows, false);
     }
 
     function resetBatchPrintMode() {
@@ -1022,7 +1071,7 @@
     }
 
     function renderBatchPreview(rows) {
-      batchPreviewGrid.innerHTML = rows.map(row => `<article class="plant-label ${row.category === "Hibiskus" ? "id-badge" : ""}">${labelHtml(row)}</article>`).join("");
+      batchPreviewGrid.innerHTML = batchSheetsHtml(rows, true);
       batchPreview.classList.add("visible");
       batchPreview.scrollIntoView({behavior: "smooth", block: "start"});
     }
@@ -1066,11 +1115,17 @@
     labelB.addEventListener("change", render);
     freeTextA.addEventListener("input", render);
     freeTextB.addEventListener("input", render);
+    freeSubtextA.addEventListener("input", render);
+    freeSubtextB.addEventListener("input", render);
     batchCategory.addEventListener("change", () => {
       fillBatchParti();
       renderBatchList();
     });
     batchParti.addEventListener("change", renderBatchList);
+    batchLabelSize.addEventListener("change", () => {
+      updateBatchSummary();
+      if (batchPreview.classList.contains("visible")) renderBatchPreview(selectedBatchRows());
+    });
     batchList.addEventListener("change", updateBatchSummary);
     document.querySelector("#selectAllBatch").addEventListener("click", () => {
       batchList.querySelectorAll("input").forEach(input => { input.checked = true; });
