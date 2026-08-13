@@ -1152,7 +1152,38 @@ function ensurePlantMilestones() {
       color: var(--ink, #2b251f); font: inherit; font-weight: 800;
     }
     @media (max-width: 700px) {
-      .plant-card { --plant-image-height: min(280px, 65vw); }
+      .plant-card {
+        --plant-image-height: min(280px, 65vw);
+        --plant-heading-height: 48px;
+      }
+      .plant-card .card-body {
+        grid-template-rows: none;
+        grid-auto-rows: auto;
+        gap: 10px;
+      }
+      .plant-card .plant-card-head {
+        height: auto;
+        min-height: var(--plant-heading-height);
+        overflow: visible;
+      }
+      .plant-card .plant-card-head .import-actions,
+      .plant-card .plant-card-head .favorite-log-action {
+        flex-direction: row;
+      }
+      .plant-card .plant-card-chip-slot {
+        height: auto;
+        min-height: 0;
+      }
+      .plant-card .plant-card-chip-slot:has(.chips:empty),
+      .plant-card .plant-card-info:empty,
+      .plant-card .plant-card-milestone-slot:empty,
+      .plant-card .plant-card-notes-slot:empty {
+        display: none;
+      }
+      .plant-card .plant-card-milestone-slot {
+        height: auto;
+        min-height: 64px;
+      }
     }
     .plant-card .card-body { position: relative; }
     .plant-card .card-body h2 { padding-right: 0; overflow-wrap: normal; word-break: normal; hyphens: none; }
@@ -1786,6 +1817,13 @@ function ensurePlantImageImport() {
     .import-empty { color: var(--muted, #6f655b); border: 1px dashed var(--line, #ded2c2); border-radius: 16px; padding: 18px; text-align: center; font-weight: 700; }
     .import-sync-status { color: var(--muted, #6f655b); font-weight: 750; padding: 10px 2px; }
     @media (max-width: 680px) {
+      .import-queue-button,
+      .mobile-view-toggle {
+        right: 12px; width: 46px; height: 46px;
+        box-shadow: 0 9px 26px rgba(43,37,31,.18);
+      }
+      .import-queue-button { bottom: max(12px, env(safe-area-inset-bottom)); }
+      .mobile-view-toggle { bottom: max(66px, calc(env(safe-area-inset-bottom) + 66px)); }
       .import-fields { grid-template-columns: 1fr; }
       .import-item { grid-template-columns: 64px 1fr; }
       .import-item img, .import-item-icon { width: 64px; height: 64px; }
