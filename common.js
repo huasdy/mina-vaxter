@@ -1411,6 +1411,26 @@ function ensurePlantMilestones() {
     .plant-document-copy { min-width: 0; display: grid; gap: 3px; }
     .plant-document-copy strong { overflow-wrap: anywhere; line-height: 1.25; }
     .plant-document-copy span { color: var(--muted, #6f655b); font-size: .77rem; font-weight: 800; }
+    dialog.plant-document-dialog {
+      width: 100vw; max-width: none; height: 100dvh; max-height: none; margin: 0; padding: 0;
+      border: 0; border-radius: 0; background: var(--paper, #fffdf8); color: var(--ink, #2b251f);
+    }
+    dialog.plant-document-dialog::backdrop { background: rgba(22,18,15,.58); }
+    .plant-document-viewer { width: 100%; height: 100%; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); }
+    .plant-document-viewer-header {
+      position: relative; z-index: 2; padding: max(12px, env(safe-area-inset-top)) 14px 12px;
+      border-bottom: 1px solid var(--line, #ded2c2); background: var(--paper, #fffdf8);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      box-shadow: 0 4px 16px rgba(43,37,31,.10);
+    }
+    .plant-document-viewer-title { min-width: 0; font-family: Georgia, "Times New Roman", serif; font-size: 1.15rem; font-weight: 800; line-height: 1.15; }
+    .plant-document-close {
+      flex: 0 0 auto; border: 0; border-radius: 999px; padding: 10px 16px;
+      background: var(--accent, #7d4f3b); color: white; font: inherit; font-weight: 900; cursor: pointer;
+    }
+    .plant-document-frame { width: 100%; height: 100%; min-height: 0; border: 0; background: white; }
+    .plant-document-image-wrap { min-height: 0; overflow: auto; display: grid; place-items: center; padding: 16px; background: #eadfce; }
+    .plant-document-image { display: block; max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 10px 30px rgba(43,37,31,.16); }
     .plant-parent-summary {
       color: var(--ink, #2b251f); font-size: 1rem; font-weight: 850;
     }
@@ -1623,6 +1643,12 @@ function openPlantPanel(card) {
       referenceDialog.showModal();
     });
   });
+  dialog.querySelectorAll(".plant-document-link").forEach(link => {
+    link.addEventListener("click", event => {
+      event.preventDefault();
+      openPlantDocument(link.dataset.documentFile, link.dataset.documentTitle, link.dataset.documentKind);
+    });
+  });
   dialog.querySelector('[name="cuttings"]').addEventListener("change", event => {
     setPlantCuttingsStatus(id, category, event.currentTarget.checked);
   });
@@ -1652,6 +1678,54 @@ function publishedPlantDocuments() {
   return parseCSV(source.textContent || "").filter(documentRow => clean(documentRow.id) && clean(documentRow.file));
 }
 
+function ensurePlantDocumentViewer() {
+  let viewer = document.querySelector("#plantDocumentDialog");
+  if (viewer) return viewer;
+  viewer = document.createElement("dialog");
+  viewer.id = "plantDocumentDialog";
+  viewer.className = "plant-document-dialog";
+  viewer.innerHTML = `<div class="plant-document-viewer">
+    <header class="plant-document-viewer-header">
+      <div class="plant-document-viewer-title">Dokument</div>
+      <button class="plant-document-close" type="button">Stäng</button>
+    </header>
+    <iframe class="plant-document-frame" title="Dokument" hidden></iframe>
+    <div class="plant-document-image-wrap" hidden><img class="plant-document-image" alt=""></div>
+  </div>`;
+  document.body.appendChild(viewer);
+  const closeViewer = () => viewer.close();
+  viewer.querySelector(".plant-document-close").addEventListener("click", closeViewer);
+  viewer.addEventListener("cancel", event => {
+    event.preventDefault();
+    closeViewer();
+  });
+  viewer.addEventListener("close", () => {
+    viewer.querySelector(".plant-document-frame").removeAttribute("src");
+    viewer.querySelector(".plant-document-image").removeAttribute("src");
+  });
+  return viewer;
+}
+
+function openPlantDocument(file, title, kind) {
+  if (!clean(file)) return;
+  const viewer = ensurePlantDocumentViewer();
+  const frame = viewer.querySelector(".plant-document-frame");
+  const imageWrap = viewer.querySelector(".plant-document-image-wrap");
+  const image = viewer.querySelector(".plant-document-image");
+  const isImage = kind === "image";
+  viewer.querySelector(".plant-document-viewer-title").textContent = title || "Dokument";
+  frame.hidden = isImage;
+  imageWrap.hidden = !isImage;
+  if (isImage) {
+    image.src = file;
+    image.alt = title || "Dokument";
+  } else {
+    frame.src = file;
+    frame.title = title || "Dokument";
+  }
+  viewer.showModal();
+}
+
 function plantDocumentsPanelHtml(card) {
   const id = clean(card.dataset.plantId);
   if (!id) return "";
@@ -1665,7 +1739,7 @@ function plantDocumentsPanelHtml(card) {
     const preview = isImage
       ? `<span class="plant-document-preview"><img src="${htmlEscape(file)}" alt="" loading="lazy"></span>`
       : `<span class="plant-document-preview" aria-hidden="true">PDF</span>`;
-    return `<a class="plant-document-link" href="${htmlEscape(file)}" target="_blank" rel="noopener">
+    return `<a class="plant-document-link" href="${htmlEscape(file)}" data-document-file="${htmlEscape(file)}" data-document-title="${htmlEscape(title)}" data-document-kind="${isImage ? "image" : "pdf"}">
       ${preview}
       <span class="plant-document-copy"><strong>${htmlEscape(title)}</strong><span>${htmlEscape(type)}${clean(documentRow.date) ? ` · ${htmlEscape(documentRow.date)}` : ""}</span></span>
     </a>`;
