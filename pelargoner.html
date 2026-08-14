@@ -213,6 +213,8 @@ p-torento,2026-06-21,hel,bilder/pelargoner/p-torento_2026-06-21_hel.jpg,2026-06-
 p-triffidum,2026-06-21,blomma,bilder/pelargoner/p-triffidum_2026-06-21_blomma.jpg,2026-06-21 · blomma
 p-triffidum,2026-06-21,hel,bilder/pelargoner/p-triffidum_2026-06-21_hel.jpg,2026-06-21 · hel
 p-triffidum,2026-08-05,blomma,bilder/pelargoner/p-triffidum_synk-8eaffe31fa_2026-08-05_blomma.jpg,2026-08-05 · blomma</script>
+  <script type="text/plain" id="defaultDocumentsCSV">id,date,type,title,file
+SP-009,2026-08-13,Växtkort,Presentkort för pillerfikus,dokument/udda/SP-009_pillerfikus_2026-08-13_vaxtkort.png</script>
   <script type="text/plain" id="defaultMilestonesCSV">id,date,type,note
 SP-001,2025-01-13,Sådd,
 SP-001,2026-06-26,Omplanterad,
@@ -265,7 +267,7 @@ p-torento,2026-08-08,Avslutad/död,
 SP-008,2025-11-16,Sådd,
 SP-008,2026-06-27,Omplanterad,
 SP-003,2026-08-11,Omplanterad,</script>
-  <script src="common.js?v=20260814synk1542"></script>
+  <script src="common.js?v=20260814dokument"></script>
   <script>
     let plants = [];
     let plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;
@@ -391,7 +393,7 @@ SP-003,2026-08-11,Omplanterad,</script>
       ].join(" ").toLowerCase();
 
       return `
-        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-category="Pelargon" data-record-kind="${escapeAttr(p.record_kind)}" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(displayName)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(p.nickname)}" data-cuttings-available="${escapeAttr(p.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(p.cuttings_updated_at)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(p.logs || []))}">
+        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-status="${escapeAttr(p.status)}" data-category="Pelargon" data-record-kind="${escapeAttr(p.record_kind)}" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(displayName)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(p.nickname)}" data-cuttings-available="${escapeAttr(p.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(p.cuttings_updated_at)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(p.logs || []))}">
           <div class="image-wrap">
             ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(displayLabel)}" data-caption="${escapeAttr(displayLabel + " · " + activeLabel)}">` : ""}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}</div>` : ""}

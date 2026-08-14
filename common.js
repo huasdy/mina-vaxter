@@ -524,6 +524,7 @@ function milestoneIcon(type) {
     "ohyra upptäckt/behandlad": "!",
     "flyttad ut/in": "↔",
     "blomning": "✿",
+    "överlämnad som gåva": "🎁",
     "avslutad/död": "×"
   };
   return icons[key] || "•";
@@ -539,6 +540,7 @@ const plantMilestoneTypes = [
   "Blomning",
   "Ohyra upptäckt/behandlad",
   "Flyttad ut/in",
+  "Överlämnad som gåva",
   "Avslutad/död"
 ];
 
@@ -745,10 +747,12 @@ function milestoneSummary(log) {
 
 function isConcludedPlantMilestone(log) {
   const type = clean(log && log.type).toLocaleLowerCase("sv");
-  return type.startsWith("avslutad") || type === "död" || type === "avliden";
+  return type.startsWith("avslutad") || type === "död" || type === "avliden" || type === "överlämnad som gåva";
 }
 
 function plantCardIsConcluded(card) {
+  const status = clean(card.dataset.status).toLocaleLowerCase("sv");
+  if (status === "bortgiven" || status.startsWith("avslutad") || status === "död") return true;
   let milestones = [];
   try { milestones = JSON.parse(card.dataset.milestones || "[]"); } catch (e) { milestones = []; }
   return isConcludedPlantMilestone(latestPlantMilestone(milestones));
@@ -765,14 +769,14 @@ function ensureConcludedPlantFilter() {
     if (!select.querySelector(`option[value="${concludedValue}"]`)) {
       const option = document.createElement("option");
       option.value = concludedValue;
-      option.textContent = "Avslutade";
+      option.textContent = "Tidigare växter";
       select.appendChild(option);
     }
   } else {
     select = document.createElement("select");
     select.className = "concluded-filter-select";
-    select.setAttribute("aria-label", "Filtrera aktiva eller avslutade växter");
-    select.innerHTML = `<option value="">Aktiva växter</option><option value="${concludedValue}">Avslutade</option>`;
+    select.setAttribute("aria-label", "Filtrera aktiva eller tidigare växter");
+    select.innerHTML = `<option value="">Aktiva växter</option><option value="${concludedValue}">Tidigare växter</option>`;
     const stats = document.querySelector("#stats, .stats");
     if (stats) stats.before(select);
   }
@@ -787,7 +791,7 @@ function ensureConcludedPlantFilter() {
       card.dataset.concludedHidden = concludedOnly ? (!concluded ? "true" : "false") : (concluded ? "true" : "false");
     });
     const option = select.querySelector(`option[value="${concludedValue}"]`);
-    if (option) option.textContent = `Avslutade (${concludedCount})`;
+    if (option) option.textContent = `Tidigare växter (${concludedCount})`;
     document.dispatchEvent(new CustomEvent("plant-concluded-filter-applied", {
       detail: {
         concludedOnly,
@@ -1392,6 +1396,21 @@ function ensurePlantMilestones() {
       color: var(--accent, #7d4f3b); text-transform: uppercase; letter-spacing: .14em;
       font-size: .72rem; font-weight: 900;
     }
+    .plant-document-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .plant-document-link {
+      min-width: 0; border: 1px solid var(--line, #ded2c2); border-radius: 16px; padding: 10px;
+      background: rgba(255,255,255,.48); color: var(--ink, #2b251f); text-decoration: none;
+      display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 10px; align-items: center;
+    }
+    .plant-document-link:hover { border-color: rgba(125,79,59,.52); }
+    .plant-document-preview {
+      width: 58px; height: 72px; border-radius: 10px; overflow: hidden; display: grid; place-items: center;
+      background: var(--chip, #efe6da); color: var(--accent, #7d4f3b); font-size: .78rem; font-weight: 950;
+    }
+    .plant-document-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .plant-document-copy { min-width: 0; display: grid; gap: 3px; }
+    .plant-document-copy strong { overflow-wrap: anywhere; line-height: 1.25; }
+    .plant-document-copy span { color: var(--muted, #6f655b); font-size: .77rem; font-weight: 800; }
     .plant-parent-summary {
       color: var(--ink, #2b251f); font-size: 1rem; font-weight: 850;
     }
@@ -1504,6 +1523,7 @@ function ensurePlantMilestones() {
     @media (max-width: 560px) {
       .plant-log-fields { grid-template-columns: 1fr; }
       .plant-log-panel { padding: 16px; }
+      .plant-document-grid { grid-template-columns: 1fr; }
     }
   `;
   document.head.appendChild(style);
@@ -1537,6 +1557,7 @@ function openPlantPanel(card) {
     ? window.hibiscusFlowerPanelHtml(id)
     : "";
   const parentPanel = plantParentReferencePanelHtml(card);
+  const documentsPanel = plantDocumentsPanelHtml(card);
   milestones = combinedPlantMilestones(milestones, id);
   const options = plantMilestoneTypes
     .map(type => `<option value="${htmlEscape(type)}">${htmlEscape(type)}</option>`)
@@ -1568,6 +1589,7 @@ function openPlantPanel(card) {
         </label>
       </section>
       ${parentPanel}
+      ${documentsPanel}
       ${categoryPanel}
       <section class="plant-panel-section" aria-labelledby="plantHistoryTitle">
         <div class="plant-panel-section-title" id="plantHistoryTitle">Historik</div>
@@ -1622,6 +1644,36 @@ function openPlantPanel(card) {
     }
   });
   dialog.showModal();
+}
+
+function publishedPlantDocuments() {
+  const source = document.querySelector("#defaultDocumentsCSV");
+  if (!source) return [];
+  return parseCSV(source.textContent || "").filter(documentRow => clean(documentRow.id) && clean(documentRow.file));
+}
+
+function plantDocumentsPanelHtml(card) {
+  const id = clean(card.dataset.plantId);
+  if (!id) return "";
+  const documents = publishedPlantDocuments().filter(documentRow => canonicalPlantId(documentRow.id) === canonicalPlantId(id));
+  if (!documents.length) return "";
+  const links = documents.map(documentRow => {
+    const file = clean(documentRow.file);
+    const type = clean(documentRow.type) || "Dokument";
+    const title = clean(documentRow.title) || type;
+    const isImage = /\.(?:jpe?g|png|webp)$/i.test(file);
+    const preview = isImage
+      ? `<span class="plant-document-preview"><img src="${htmlEscape(file)}" alt="" loading="lazy"></span>`
+      : `<span class="plant-document-preview" aria-hidden="true">PDF</span>`;
+    return `<a class="plant-document-link" href="${htmlEscape(file)}" target="_blank" rel="noopener">
+      ${preview}
+      <span class="plant-document-copy"><strong>${htmlEscape(title)}</strong><span>${htmlEscape(type)}${clean(documentRow.date) ? ` · ${htmlEscape(documentRow.date)}` : ""}</span></span>
+    </a>`;
+  }).join("");
+  return `<section class="plant-panel-section" aria-label="Dokument">
+    <div class="plant-panel-section-title">Dokument</div>
+    <div class="plant-document-grid">${links}</div>
+  </section>`;
 }
 
 function plantParentReferencePanelHtml(card) {

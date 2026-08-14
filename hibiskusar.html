@@ -98,6 +98,7 @@
     .plant-card { background: var(--paper); border: 1px solid rgba(222,210,194,.95); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column; min-height: 100%; }
     .image-wrap { position: relative; aspect-ratio: 4 / 5; background: linear-gradient(135deg, rgba(125,79,59,.16), rgba(96,119,97,.14)), #eadfce; overflow: hidden; }
     .image-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in; }
+    .image-wrap img.main-photo[data-photo-type="blomma"] { object-position: center center; }
     .date-ribbon { position: absolute; left: 12px; bottom: 12px; background: rgba(43,37,31,.76); color: white; border-radius: 999px; padding: 6px 10px; font-size: .8rem; font-weight: 750; backdrop-filter: blur(8px); }
     .thumbs { display: flex; gap: 8px; padding: 10px 12px 0; flex-wrap: wrap; }
     .thumb { border: 2px solid transparent; background: transparent; padding: 0; border-radius: 12px; overflow: hidden; width: 58px; height: 58px; cursor: pointer; }
@@ -273,6 +274,8 @@ PL-H02-D-01,2026-07-08,grodd,bilder/hibiskusar/PL-H02-D-01_2026-07-08_grodd.jpg,
 PL-H02-D-01,2026-07-26,hel,bilder/hibiskusar/PL-H02-D-01_2026-07-26_hel.jpg,2026-07-26 · hel,31,HPH-EB4FE48F366D
 PL-H02-D-02,2026-07-26,hel,bilder/hibiskusar/PL-H02-D-02_2026-07-26_hel.jpg,2026-07-26 · hel,31,HPH-C2ED7A94ECB9
 PL-H02-D-03,2026-07-26,hel,bilder/hibiskusar/PL-H02-D-03_2026-07-26_hel.jpg,2026-07-26 · hel,31,HPH-08BFC185B751</script>
+  <script type="text/plain" id="defaultDocumentsCSV">id,date,type,title,file
+SP-009,2026-08-13,Växtkort,Presentkort för pillerfikus,dokument/udda/SP-009_pillerfikus_2026-08-13_vaxtkort.png</script>
   <script type="text/plain" id="defaultMilestonesCSV">id,date,type,note
 SP-001,2025-01-13,Sådd,
 SP-001,2026-06-26,Omplanterad,
@@ -420,7 +423,7 @@ FA-HIB-002-5b6b2e034605,OBSERVED,PETAL_EDGE,edge.wavy,RECORDED
 FA-HIB-002-5b6b2e034605,OBSERVED,PRIMARY_COLOR,color.yellow,RECORDED
 FA-HIB-002-5b6b2e034605,OBSERVED,SECONDARY_COLOR,color.orange,RECORDED</script>
   <script type="text/plain" id="defaultBreedingMarkersCSV">marker_id,assessment_id,slot,trait_id,label,selected_at</script>
-  <script src="common.js?v=20260814synk1542"></script>
+  <script src="common.js?v=20260814dokument"></script>
   <script src="hibiskus-george-import.js?v=20260814v1"></script>
   <script src="hibiskus-blombedomning.js?v=20260814v3"></script>
   <script>
@@ -621,10 +624,15 @@ FA-HIB-002-5b6b2e034605,OBSERVED,SECONDARY_COLOR,color.orange,RECORDED</script>
         const label = (photo.label || (photo.date + " · " + photo.type)) + (photo.day ? " · dag " + photo.day : "");
         return `
           <button class="thumb ${photo.file === activeFile ? "active" : ""}" type="button"
-            data-plant="${escapeAttr(displayLabel)}" data-file="${photo.file}" data-label="${escapeAttr(label)}">
+            data-plant="${escapeAttr(displayLabel)}" data-file="${photo.file}" data-label="${escapeAttr(label)}" data-photo-type="${escapeAttr(photo.type)}">
             <img src="${photo.file}" alt="${escapeAttr(displayLabel + " " + photo.date)}" loading="lazy">
           </button>`;
       }).join("");
+    }
+
+    function preferredCardPhoto(photos) {
+      const flowerPhotos = photos.filter(photo => clean(photo.type).toLowerCase() === "blomma");
+      return flowerPhotos[flowerPhotos.length - 1] || photos[photos.length - 1] || {};
     }
 
     function cardTemplate(p) {
@@ -632,7 +640,7 @@ FA-HIB-002-5b6b2e034605,OBSERVED,SECONDARY_COLOR,color.orange,RECORDED</script>
       const identity = plantIdentityName(p);
       const displayLabel = plantDisplayLabel(p);
       const photos = p.photos || [];
-      const active = photos[photos.length - 1] || {};
+      const active = preferredCardPhoto(photos);
       const activeFile = active.file || "";
       const activeLabel = active.label || (active.date ? `${active.date} · ${active.type}` : "");
       const dayText = active.day ? ` · dag ${active.day}` : "";
@@ -656,7 +664,7 @@ FA-HIB-002-5b6b2e034605,OBSERVED,SECONDARY_COLOR,color.orange,RECORDED</script>
       return `
         <article class="plant-card" data-search="${escapeAttr(searchable)}" data-batch="${escapeAttr(p.batch)}" data-status="${escapeAttr(p.status)}" data-category="Hibiskus" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(displayName)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(p.nickname)}" data-parent-cross="${escapeAttr(crossLabel)}" data-parent-references="${escapeAttr(JSON.stringify(parentReferenceItems))}" data-cuttings-available="${escapeAttr(p.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(p.cuttings_updated_at)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(p.logs || []))}">
           <div class="image-wrap">
-            ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(displayLabel)}" data-caption="${escapeAttr(displayLabel + " · " + activeLabel + dayText)}">` : ""}
+            ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(displayLabel)}" data-caption="${escapeAttr(displayLabel + " · " + activeLabel + dayText)}" data-photo-type="${escapeAttr(active.type)}">` : ""}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}${dayText}</div>` : ""}
             <div class="plant-card-gallery-slot ${photos.length > 1 ? "has-gallery" : ""}">${photos.length > 1 ? `<div class="thumbs">${photoButtons(p, activeFile)}</div>` : ""}</div>
           </div>
@@ -897,6 +905,7 @@ FA-HIB-002-5b6b2e034605,OBSERVED,SECONDARY_COLOR,color.orange,RECORDED</script>
         card.querySelectorAll(".thumb").forEach(t => t.classList.remove("active"));
         thumb.classList.add("active");
         img.src = thumb.dataset.file;
+        img.dataset.photoType = thumb.dataset.photoType || "";
         img.dataset.caption = `${thumb.dataset.plant} · ${thumb.dataset.label}`;
         ribbon.textContent = thumb.dataset.label;
       }

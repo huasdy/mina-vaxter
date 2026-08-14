@@ -144,6 +144,8 @@ c-limon-1,2026-06-24,hel,bilder/citrus/c-limon-1_2026-06-24_hel.jpg,2026-06-24 �
 c-limon-1,2026-06-24,hel,bilder/citrus/c-limon-2_2026-06-24_hel.jpg,2026-06-24 · hel
 c-pomelo,2026-08-13,hel,bilder/citrus/c-pomelo_synk-e0f75a2974_2026-08-13_hel.jpg,2026-08-13 · hel
 c-rod-fingerlime,2026-06-24,hel,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jpg,2026-06-24 · hel</script>
+  <script type="text/plain" id="defaultDocumentsCSV">id,date,type,title,file
+SP-009,2026-08-13,Växtkort,Presentkort för pillerfikus,dokument/udda/SP-009_pillerfikus_2026-08-13_vaxtkort.png</script>
   <script type="text/plain" id="defaultMilestonesCSV">id,date,type,note
 SP-001,2025-01-13,Sådd,
 SP-001,2026-06-26,Omplanterad,
@@ -196,7 +198,7 @@ p-torento,2026-08-08,Avslutad/död,
 SP-008,2025-11-16,Sådd,
 SP-008,2026-06-27,Omplanterad,
 SP-003,2026-08-11,Omplanterad,</script>
-  <script src="common.js?v=20260814synk1542"></script>
+  <script src="common.js?v=20260814dokument"></script>
   <script>
     let plants = [];
     let editMode = false;
@@ -296,7 +298,7 @@ SP-003,2026-08-11,Omplanterad,</script>
       ` : "";
 
       return `
-        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-category="Citrus" data-record-kind="${escapeAttr(p.record_kind)}" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(displayName)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(p.nickname)}" data-cuttings-available="${escapeAttr(p.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(p.cuttings_updated_at)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(p.logs || []))}">
+        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-status="${escapeAttr(p.status)}" data-category="Citrus" data-record-kind="${escapeAttr(p.record_kind)}" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(displayName)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(p.nickname)}" data-cuttings-available="${escapeAttr(p.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(p.cuttings_updated_at)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(p.logs || []))}">
           <div class="image-wrap">
             ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(displayLabel)}" data-caption="${escapeAttr(displayLabel + " · " + activeLabel)}">` : ""}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}</div>` : ""}
