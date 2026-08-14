@@ -965,6 +965,11 @@ function ensurePlantCardImageChoices() {
   });
 }
 
+// Category pages render their cards in their own inline script after common.js
+// has loaded. Apply saved card choices once that first render is complete,
+// rather than waiting until someone opens the photo gallery.
+window.addEventListener("load", ensurePlantCardImageChoices, {once: true});
+
 function ensurePlantPhotoGallery() {
   ensurePlantCardImageChoices();
   let dialog = document.querySelector("#photoDialog");
