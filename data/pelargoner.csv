@@ -1,33 +1,22 @@
-﻿id,name,type,tags,status,scent,source,notes,nickname,card_note,card_note_updated_at,arrival_type,start_date,cuttings_available,cuttings_updated_at
-p-acetosum,P. acetosum,Vildpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-australe-1,P. australe 1,Vildpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-australe-2,P. australe 2,Vildpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-cotyledonis-1,P. cotyledonis 1,Vildpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-cotyledonis-2,P. cotyledonis 2,Vildpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-gibbosum-1,P. gibbosum 1,Vildpelargon,,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,ja,2026-08-13T09:17:18.390Z
-p-gibbosum-2,P. gibbosum 2,Vildpelargon,,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-gibbosum-3,P. gibbosum 3,Vildpelargon,,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-gibbosum-4,P. gibbosum 4,Vildpelargon,,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,Har både maj- och junibild i katalogen.,Grotesco,,,Köpt planta,,,
-p-gibbosum-maroon-1,P. gibbosum ‘Maroon’ 1,Vildpelargon,,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-gibbosum-maroon-2,P. gibbosum ‘Maroon’ 2,Vildpelargon,,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-laxum-1,P. laxum 1,Vildpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-laxum-2,P. laxum 2,Vildpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-magenteum,P. magenteum,Vildpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-odoratissimum-1,P. odoratissimum,Doftpelargon,,Bekräftad,Äpple / frisk doft,Sune Trygg,Doftpelargon med äppellik/frisk doft. Doftpelargon och doftande vildart.,,,,Köpt planta,,,
-p-sidoides,P. sidoides,Vildpelargon,,Bekräftad,Svag / örtig,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-triffidum,P. triffidum,Vildpelargon,,Bekräftad,,Sune Trygg,Vild art. Etiketten anger P. triffidum.,,,,Köpt planta,,,
-p-caffrum-diana,P. × caffrum ‘Diana’,Primärhybrid,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-bontrosai-1,P. ‘Bontrosai’ 1,Doftpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-bontrosai-2,P. ‘Bontrosai’ 2,Doftpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-bothams-surprise-1,P. ‘Botham Surprise’ 1,Brokbladig pelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,ja,2026-08-13T15:37:51.348Z
-p-bothams-surprise-2,P. ‘Botham Surprise’ 2,Brokbladig pelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,ja,2026-08-13T15:37:55.878Z
-p-creamery,P. ‘Creamery’,Zonalpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,ja,2026-08-13T15:37:39.639Z
-p-cys-sunburst-1,P. ‘Cy’s Sunburst’ 1,Doftpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid. Doftpelargon med brokbladigt bladverk.",,,,Köpt planta,,,
-p-cys-sunburst-2,P. ‘Cy’s Sunburst’ 2,Doftpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid. Doftpelargon med brokbladigt bladverk.",,,,Köpt planta,,ja,2026-08-13T15:39:31.056Z
-p-cys-sunburst-3,P. ‘Cy’s Sunburst’ 3,Doftpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid. Doftpelargon med brokbladigt bladverk.",,,,Köpt planta,,,
-p-dr-westerlund-1,P. ‘Dr Westerlund’ 1,Doftpelargon,,Bekräftad,Klassisk doftpelargon / frisk citrus-ros,Sune Trygg,Doftpelargon. Eget exemplar i samlingen.,,,,Köpt planta,,ja,2026-08-13T09:16:29.817Z
-p-dr-westerlund-2,P. ‘Dr Westerlund’ 2,Doftpelargon,,Bekräftad,Klassisk doftpelargon / frisk citrus-ros,Sune Trygg,Doftpelargon. Eget exemplar i samlingen.,,,,Köpt planta,,,
-p-lemon-queen,P. ‘Lemon Queen’,Doftpelargon,,Bekräftad,Citron,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-nielsens-fragrans-1,P. ‘Nielsens Fragrans’,Doftpelargon,,Bekräftad,Doftpelargon,Sune Trygg,Har både helbild och blomma från samma datum.,,,,Köpt planta,,,
-p-prince-of-orange,P. ‘Prince of Orange’,Doftpelargon,,Bekräftad,Apelsin / citrus,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-torento,P. ‘Torento’,Doftpelargon,,Bekräftad,Cola / kryddig citrus,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
+id,record_kind,collection_id,name,type,specimen_count,tags,status,scent,source,notes,nickname,card_note,card_note_updated_at,arrival_type,start_date,seed_lot_id,breeding_selected,cuttings_available,cuttings_updated_at
+p-acetosum,COLLECTION,,P. acetosum,Vildpelargon,1,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,
+p-australe-1,COLLECTION,,P. australe,Vildpelargon,2,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,
+p-cotyledonis-1,COLLECTION,,P. cotyledonis,Vildpelargon,2,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,
+p-gibbosum-1,COLLECTION,,P. gibbosum,Vildpelargon,4,,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,ja,2026-08-13T09:17:18.390Z
+p-gibbosum-4,INDIVIDUAL,p-gibbosum-1,P. gibbosum 4,Vildpelargon,,,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,Har både maj- och junibild i katalogen.,Grotesco,,,Köpt planta,,,nej,,
+p-gibbosum-maroon-1,COLLECTION,,P. gibbosum ‘Maroon’,Vildpelargon,2,,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,
+p-laxum-1,COLLECTION,,P. laxum,Vildpelargon,2,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,
+p-magenteum,COLLECTION,,P. magenteum,Vildpelargon,1,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,
+p-odoratissimum-1,COLLECTION,,P. odoratissimum,Doftpelargon,1,,Bekräftad,Äpple / frisk doft,Sune Trygg,Doftpelargon med äppellik/frisk doft. Doftpelargon och doftande vildart.,,,,Köpt planta,,,nej,,
+p-sidoides,COLLECTION,,P. sidoides,Vildpelargon,1,,Bekräftad,Svag / örtig,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,
+p-triffidum,COLLECTION,,P. triffidum,Vildpelargon,1,,Bekräftad,,Sune Trygg,Vild art. Etiketten anger P. triffidum.,,,,Köpt planta,,,nej,,
+p-caffrum-diana,COLLECTION,,P. × caffrum ‘Diana’,Primärhybrid,1,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,
+p-bontrosai-1,COLLECTION,,P. ‘Bontrosai’,Doftpelargon,2,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,
+p-bothams-surprise-1,COLLECTION,,P. ‘Botham Surprise’,Brokbladig pelargon,2,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,ja,2026-08-13T15:37:55.878Z
+p-creamery,COLLECTION,,P. ‘Creamery’,Zonalpelargon,1,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,ja,2026-08-13T15:37:39.639Z
+p-cys-sunburst-1,COLLECTION,,P. ‘Cy’s Sunburst’,Doftpelargon,3,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid. Doftpelargon med brokbladigt bladverk.",,,,Köpt planta,,,nej,ja,2026-08-13T15:39:31.056Z
+p-dr-westerlund-1,COLLECTION,,P. ‘Dr Westerlund’,Doftpelargon,2,,Bekräftad,Klassisk doftpelargon / frisk citrus-ros,Sune Trygg,Doftpelargon. Eget exemplar i samlingen.,,,,Köpt planta,,,nej,ja,2026-08-13T09:16:29.817Z
+p-lemon-queen,COLLECTION,,P. ‘Lemon Queen’,Doftpelargon,1,,Bekräftad,Citron,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,
+p-nielsens-fragrans-1,COLLECTION,,P. ‘Nielsens Fragrans’,Doftpelargon,1,,Bekräftad,Doftpelargon,Sune Trygg,Har både helbild och blomma från samma datum.,,,,Köpt planta,,,nej,,
+p-prince-of-orange,COLLECTION,,P. ‘Prince of Orange’,Doftpelargon,1,,Bekräftad,Apelsin / citrus,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,
+p-torento,COLLECTION,,P. ‘Torento’,Doftpelargon,0,,Bekräftad,Cola / kryddig citrus,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,

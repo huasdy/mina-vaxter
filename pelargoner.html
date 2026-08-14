@@ -57,6 +57,11 @@
     .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .card-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
     h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 1.55rem; line-height: 1.08; font-weight: 650; }
+    .plant-card[data-plant-id="p-odoratissimum-1"] h2 {
+      font-size: 1.36rem;
+      letter-spacing: -.025em;
+      white-space: nowrap;
+    }
     .plant-title-block { min-width: 0; }
     .plant-nickname { margin-top: -7px; color: var(--muted); font-style: italic; font-weight: 700; }
     .plant-card .plant-card-head { min-height: 82px; margin-bottom: 0; }
@@ -100,12 +105,12 @@
     </nav>
     <div class="eyebrow">Privat samling</div>
     <h1>Pelargon</h1>
-    <p class="subtitle">Katalogen är den rena visningen. Data hämtas från katalogens CSV-filer.</p>
+    <p class="subtitle">En lätt sort- och artsamling. Bara pelargoner som behöver följas separat får egna individkort.</p>
   </header>
 
   <section class="toolbar">
     <div class="toolbar-inner">
-      <input id="search" type="search" placeholder="Sök namn, exemplar, doft, datum eller anteckning…">
+      <input id="search" type="search" placeholder="Sök sort, art, individ, doft, datum eller anteckning…">
       <select id="typeFilter" aria-label="Filtrera efter växttyp"><option value="">Alla pelargontyper</option></select>
       <select id="photoTypeFilter" aria-label="Filtrera efter vad bilden visar"><option value="">Alla bildtyper</option></select>
       <select id="sortSelect" aria-label="Sortering">
@@ -130,77 +135,66 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script type="text/plain" id="defaultPlantsCSV">id,name,type,tags,status,scent,source,notes,nickname,card_note,card_note_updated_at,arrival_type,start_date,cuttings_available,cuttings_updated_at
-p-acetosum,P. acetosum,Vildpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-australe-1,P. australe 1,Vildpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-australe-2,P. australe 2,Vildpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-cotyledonis-1,P. cotyledonis 1,Vildpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-cotyledonis-2,P. cotyledonis 2,Vildpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-gibbosum-1,P. gibbosum 1,Vildpelargon,,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,ja,2026-08-13T09:17:18.390Z
-p-gibbosum-2,P. gibbosum 2,Vildpelargon,,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-gibbosum-3,P. gibbosum 3,Vildpelargon,,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-gibbosum-4,P. gibbosum 4,Vildpelargon,,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,Har både maj- och junibild i katalogen.,Grotesco,,,Köpt planta,,,
-p-gibbosum-maroon-1,P. gibbosum ‘Maroon’ 1,Vildpelargon,,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-gibbosum-maroon-2,P. gibbosum ‘Maroon’ 2,Vildpelargon,,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-laxum-1,P. laxum 1,Vildpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-laxum-2,P. laxum 2,Vildpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-magenteum,P. magenteum,Vildpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-odoratissimum-1,P. odoratissimum,Doftpelargon,,Bekräftad,Äpple / frisk doft,Sune Trygg,Doftpelargon med äppellik/frisk doft. Doftpelargon och doftande vildart.,,,,Köpt planta,,,
-p-sidoides,P. sidoides,Vildpelargon,,Bekräftad,Svag / örtig,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-triffidum,P. triffidum,Vildpelargon,,Bekräftad,,Sune Trygg,Vild art. Etiketten anger P. triffidum.,,,,Köpt planta,,,
-p-caffrum-diana,P. × caffrum ‘Diana’,Primärhybrid,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-bontrosai-1,P. ‘Bontrosai’ 1,Doftpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-bontrosai-2,P. ‘Bontrosai’ 2,Doftpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-bothams-surprise-1,P. ‘Botham Surprise’ 1,Brokbladig pelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,ja,2026-08-13T15:37:51.348Z
-p-bothams-surprise-2,P. ‘Botham Surprise’ 2,Brokbladig pelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,ja,2026-08-13T15:37:55.878Z
-p-creamery,P. ‘Creamery’,Zonalpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,ja,2026-08-13T15:37:39.639Z
-p-cys-sunburst-1,P. ‘Cy’s Sunburst’ 1,Doftpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid. Doftpelargon med brokbladigt bladverk.",,,,Köpt planta,,,
-p-cys-sunburst-2,P. ‘Cy’s Sunburst’ 2,Doftpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid. Doftpelargon med brokbladigt bladverk.",,,,Köpt planta,,ja,2026-08-13T15:39:31.056Z
-p-cys-sunburst-3,P. ‘Cy’s Sunburst’ 3,Doftpelargon,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid. Doftpelargon med brokbladigt bladverk.",,,,Köpt planta,,,
-p-dr-westerlund-1,P. ‘Dr Westerlund’ 1,Doftpelargon,,Bekräftad,Klassisk doftpelargon / frisk citrus-ros,Sune Trygg,Doftpelargon. Eget exemplar i samlingen.,,,,Köpt planta,,ja,2026-08-13T09:16:29.817Z
-p-dr-westerlund-2,P. ‘Dr Westerlund’ 2,Doftpelargon,,Bekräftad,Klassisk doftpelargon / frisk citrus-ros,Sune Trygg,Doftpelargon. Eget exemplar i samlingen.,,,,Köpt planta,,,
-p-lemon-queen,P. ‘Lemon Queen’,Doftpelargon,,Bekräftad,Citron,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-nielsens-fragrans-1,P. ‘Nielsens Fragrans’,Doftpelargon,,Bekräftad,Doftpelargon,Sune Trygg,Har både helbild och blomma från samma datum.,,,,Köpt planta,,,
-p-prince-of-orange,P. ‘Prince of Orange’,Doftpelargon,,Bekräftad,Apelsin / citrus,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,
-p-torento,P. ‘Torento’,Doftpelargon,,Bekräftad,Cola / kryddig citrus,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,</script>
+  <script type="text/plain" id="defaultPlantsCSV">id,record_kind,collection_id,name,type,specimen_count,tags,status,scent,source,notes,nickname,card_note,card_note_updated_at,arrival_type,start_date,seed_lot_id,breeding_selected,cuttings_available,cuttings_updated_at
+p-acetosum,COLLECTION,,P. acetosum,Vildpelargon,1,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,
+p-australe-1,COLLECTION,,P. australe,Vildpelargon,2,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,
+p-cotyledonis-1,COLLECTION,,P. cotyledonis,Vildpelargon,2,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,
+p-gibbosum-1,COLLECTION,,P. gibbosum,Vildpelargon,4,,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,ja,2026-08-13T09:17:18.390Z
+p-gibbosum-4,INDIVIDUAL,p-gibbosum-1,P. gibbosum 4,Vildpelargon,,,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,Har både maj- och junibild i katalogen.,Grotesco,,,Köpt planta,,,nej,,
+p-gibbosum-maroon-1,COLLECTION,,P. gibbosum ‘Maroon’,Vildpelargon,2,,Bekräftad,Kvällsdoftande / kryddigt-balsamisk,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,
+p-laxum-1,COLLECTION,,P. laxum,Vildpelargon,2,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,
+p-magenteum,COLLECTION,,P. magenteum,Vildpelargon,1,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,
+p-odoratissimum-1,COLLECTION,,P. odoratissimum,Doftpelargon,1,,Bekräftad,Äpple / frisk doft,Sune Trygg,Doftpelargon med äppellik/frisk doft. Doftpelargon och doftande vildart.,,,,Köpt planta,,,nej,,
+p-sidoides,COLLECTION,,P. sidoides,Vildpelargon,1,,Bekräftad,Svag / örtig,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,
+p-triffidum,COLLECTION,,P. triffidum,Vildpelargon,1,,Bekräftad,,Sune Trygg,Vild art. Etiketten anger P. triffidum.,,,,Köpt planta,,,nej,,
+p-caffrum-diana,COLLECTION,,P. × caffrum ‘Diana’,Primärhybrid,1,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,
+p-bontrosai-1,COLLECTION,,P. ‘Bontrosai’,Doftpelargon,2,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,
+p-bothams-surprise-1,COLLECTION,,P. ‘Botham Surprise’,Brokbladig pelargon,2,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,ja,2026-08-13T15:37:55.878Z
+p-creamery,COLLECTION,,P. ‘Creamery’,Zonalpelargon,1,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,ja,2026-08-13T15:37:39.639Z
+p-cys-sunburst-1,COLLECTION,,P. ‘Cy’s Sunburst’,Doftpelargon,3,,Bekräftad,,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid. Doftpelargon med brokbladigt bladverk.",,,,Köpt planta,,,nej,ja,2026-08-13T15:39:31.056Z
+p-dr-westerlund-1,COLLECTION,,P. ‘Dr Westerlund’,Doftpelargon,2,,Bekräftad,Klassisk doftpelargon / frisk citrus-ros,Sune Trygg,Doftpelargon. Eget exemplar i samlingen.,,,,Köpt planta,,,nej,ja,2026-08-13T09:16:29.817Z
+p-lemon-queen,COLLECTION,,P. ‘Lemon Queen’,Doftpelargon,1,,Bekräftad,Citron,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,
+p-nielsens-fragrans-1,COLLECTION,,P. ‘Nielsens Fragrans’,Doftpelargon,1,,Bekräftad,Doftpelargon,Sune Trygg,Har både helbild och blomma från samma datum.,,,,Köpt planta,,,nej,,
+p-prince-of-orange,COLLECTION,,P. ‘Prince of Orange’,Doftpelargon,1,,Bekräftad,Apelsin / citrus,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,
+p-torento,COLLECTION,,P. ‘Torento’,Doftpelargon,0,,Bekräftad,Cola / kryddig citrus,Sune Trygg,"Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",,,,Köpt planta,,,nej,,</script>
   <script type="text/plain" id="defaultPhotosCSV">plant_id,date,type,file,label
 p-acetosum,2026-06-21,hel,bilder/pelargoner/p-acetosum_2026-06-21_hel.jpg,2026-06-21 · hel
 p-acetosum,2026-07-17,blomma,bilder/pelargoner/p-acetosum_synk-fa0da0f811_2026-07-17_blomma.jpg,2026-07-17 · blomma
 p-australe-1,2026-06-21,hel,bilder/pelargoner/p-australe-1_2026-06-21_hel.jpg,2026-06-21 · hel
+p-australe-1,2026-06-21,hel,bilder/pelargoner/p-australe-2_2026-06-21_hel.jpg,2026-06-21 · hel
 p-australe-1,2026-08-05,blomma,bilder/pelargoner/p-australe-1_synk-7f4155e4dc_2026-08-05_blomma.jpg,2026-08-05 · blomma
-p-australe-2,2026-06-21,hel,bilder/pelargoner/p-australe-2_2026-06-21_hel.jpg,2026-06-21 · hel
 p-bontrosai-1,2026-06-21,hel,bilder/pelargoner/p-bontrosai-1_2026-06-21_hel.jpg,2026-06-21 · hel
-p-bontrosai-2,2026-06-21,hel,bilder/pelargoner/p-bontrosai-2_2026-06-21_hel.jpg,2026-06-21 · hel
+p-bontrosai-1,2026-06-21,hel,bilder/pelargoner/p-bontrosai-2_2026-06-21_hel.jpg,2026-06-21 · hel
 p-bothams-surprise-1,2026-06-21,hel,bilder/pelargoner/p-bothams-surprise-1_2026-06-21_hel.jpg,2026-06-21 · hel
-p-bothams-surprise-2,2026-06-21,hel,bilder/pelargoner/p-bothams-surprise-2_2026-06-21_hel.jpg,2026-06-21 · hel
+p-bothams-surprise-1,2026-06-21,hel,bilder/pelargoner/p-bothams-surprise-2_2026-06-21_hel.jpg,2026-06-21 · hel
 p-caffrum-diana,2026-06-21,hel,bilder/pelargoner/p-caffrum-diana_2026-06-21_hel.jpg,2026-06-21 · hel
 p-caffrum-diana,2026-08-01,blomma,bilder/pelargoner/p-caffrum-diana_synk-b1d8c54af2_2026-08-01_blomma.jpg,2026-08-01 · blomma
 p-cotyledonis-1,2026-06-21,hel,bilder/pelargoner/p-cotyledonis-1_2026-06-21_hel.jpg,2026-06-21 · hel
+p-cotyledonis-1,2026-06-21,hel,bilder/pelargoner/p-cotyledonis-2_2026-06-21_hel.jpg,2026-06-21 · hel
 p-cotyledonis-1,2026-06-23,stam,bilder/pelargoner/p-cotyledonis-1_2026-06-23_stam.jpg,2026-06-23 · stam
-p-cotyledonis-2,2026-06-21,hel,bilder/pelargoner/p-cotyledonis-2_2026-06-21_hel.jpg,2026-06-21 · hel
-p-cotyledonis-2,2026-06-23,stam,bilder/pelargoner/p-cotyledonis-2_2026-06-23_stam.jpg,2026-06-23 · stam
+p-cotyledonis-1,2026-06-23,stam,bilder/pelargoner/p-cotyledonis-2_2026-06-23_stam.jpg,2026-06-23 · stam
 p-creamery,2026-06-21,hel,bilder/pelargoner/p-creamery_2026-06-21_hel.jpg,2026-06-21 · hel
 p-creamery,2026-07-04,blomma,bilder/pelargoner/p-creamery_2026-07-04_blomma.jpg,2026-07-04 · blomma
 p-cys-sunburst-1,2026-06-21,blomma,bilder/pelargoner/p-cys-sunburst-1_2026-06-21_blomma.jpg,2026-06-21 · blomma
 p-cys-sunburst-1,2026-06-21,hel,bilder/pelargoner/p-cys-sunburst-1_2026-06-21_hel.jpg,2026-06-21 · hel
-p-cys-sunburst-2,2026-06-21,hel,bilder/pelargoner/p-cys-sunburst-2_2026-06-21_hel.jpg,2026-06-21 · hel
-p-cys-sunburst-3,2026-06-21,hel,bilder/pelargoner/p-cys-sunburst-3_2026-06-21_hel.jpg,2026-06-21 · hel
+p-cys-sunburst-1,2026-06-21,hel,bilder/pelargoner/p-cys-sunburst-2_2026-06-21_hel.jpg,2026-06-21 · hel
+p-cys-sunburst-1,2026-06-21,hel,bilder/pelargoner/p-cys-sunburst-3_2026-06-21_hel.jpg,2026-06-21 · hel
 p-dr-westerlund-1,2026-06-21,hel,bilder/pelargoner/p-dr-westerlund-1_2026-06-21_hel.jpg,2026-06-21 · hel
+p-dr-westerlund-1,2026-06-21,hel,bilder/pelargoner/p-dr-westerlund-2_2026-06-21_hel.jpg,2026-06-21 · hel
 p-dr-westerlund-1,2026-06-25,beskuren,bilder/pelargoner/p-dr-westerlund-1_2026-06-25_beskuren.jpg,2026-06-25 · beskuren
-p-dr-westerlund-2,2026-06-21,hel,bilder/pelargoner/p-dr-westerlund-2_2026-06-21_hel.jpg,2026-06-21 · hel
 p-gibbosum-1,2026-06-21,hel,bilder/pelargoner/p-gibbosum-1_2026-06-21_hel.jpg,2026-06-21 · hel
-p-gibbosum-2,2026-06-21,hel,bilder/pelargoner/p-gibbosum-2_2026-06-21_hel.jpg,2026-06-21 · hel
-p-gibbosum-3,2026-06-21,hel,bilder/pelargoner/p-gibbosum-3_2026-06-21_hel.jpg,2026-06-21 · hel
+p-gibbosum-1,2026-06-21,hel,bilder/pelargoner/p-gibbosum-2_2026-06-21_hel.jpg,2026-06-21 · hel
+p-gibbosum-1,2026-06-21,hel,bilder/pelargoner/p-gibbosum-3_2026-06-21_hel.jpg,2026-06-21 · hel
 p-gibbosum-4,2026-05-24,hel,bilder/pelargoner/p-gibbosum-4_2026-05-24_hel.jpg,2026-05-24 · hel
 p-gibbosum-4,2026-06-21,hel,bilder/pelargoner/p-gibbosum-4_2026-06-21_hel.jpg,2026-06-21 · hel
 p-gibbosum-4,2026-08-08,blomma,bilder/pelargoner/p-gibbosum-4_synk-b61ffb5f3d_2026-08-08_blomma.jpg,2026-08-08 · blomma
 p-gibbosum-4,2026-08-08,hel,bilder/pelargoner/p-gibbosum-4_synk-fc60acc601_2026-08-08_hel.jpg,2026-08-08 · hel
 p-gibbosum-maroon-1,2026-06-21,hel,bilder/pelargoner/p-gibbosum-maroon-1_2026-06-21_hel.jpg,2026-06-21 · hel
-p-gibbosum-maroon-2,2026-06-21,hel,bilder/pelargoner/p-gibbosum-maroon-2_2026-06-21_hel.jpg,2026-06-21 · hel
+p-gibbosum-maroon-1,2026-06-21,hel,bilder/pelargoner/p-gibbosum-maroon-2_2026-06-21_hel.jpg,2026-06-21 · hel
 p-laxum-1,2026-06-21,hel,bilder/pelargoner/p-laxum-1_2026-06-21_hel.jpg,2026-06-21 · hel
-p-laxum-2,2026-06-21,hel,bilder/pelargoner/p-laxum-2_2026-06-21_hel.jpg,2026-06-21 · hel
-p-laxum-2,2026-08-05,blomma,bilder/pelargoner/p-laxum-2_synk-2d7c2565d5_2026-08-05_blomma.jpg,2026-08-05 · blomma
-p-laxum-2,2026-08-05,knopp,bilder/pelargoner/p-laxum-2_synk-bb3e081cc5_2026-08-05_knopp.jpg,2026-08-05 · knopp
+p-laxum-1,2026-06-21,hel,bilder/pelargoner/p-laxum-2_2026-06-21_hel.jpg,2026-06-21 · hel
+p-laxum-1,2026-08-05,blomma,bilder/pelargoner/p-laxum-2_synk-2d7c2565d5_2026-08-05_blomma.jpg,2026-08-05 · blomma
+p-laxum-1,2026-08-05,knopp,bilder/pelargoner/p-laxum-2_synk-bb3e081cc5_2026-08-05_knopp.jpg,2026-08-05 · knopp
 p-lemon-queen,2026-06-21,hel,bilder/pelargoner/p-lemon-queen_2026-06-21_hel.jpg,2026-06-21 · hel
 p-magenteum,2026-05-24,start,bilder/pelargoner/p-magenteum_2026-05-24_start.jpg,2026-05-24 · start
 p-magenteum,2026-06-21,hel,bilder/pelargoner/p-magenteum_2026-06-21_hel.jpg,2026-06-21 · hel
@@ -270,12 +264,8 @@ PL-H02-D-03,2026-06-25,Sådd,
 p-torento,2026-08-08,Avslutad/död,
 SP-008,2025-11-16,Sådd,
 SP-008,2026-06-27,Omplanterad,
-SP-003,2026-08-11,Omplanterad,
-p-cys-sunburst-2,2026-08-13,Sådd,
-p-creamery,2026-08-13,Sådd,
-p-bothams-surprise-1,2026-08-13,Sådd,
-p-bothams-surprise-2,2026-08-13,Sådd,</script>
-  <script src="common.js?v=20260813synk1821"></script>
+SP-003,2026-08-11,Omplanterad,</script>
+  <script src="common.js?v=20260814synk1542"></script>
   <script>
     let plants = [];
     let plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;
@@ -383,6 +373,7 @@ p-bothams-surprise-2,2026-08-13,Sådd,</script>
       const displayName = plantDisplayName(p);
       const identity = plantIdentityName(p);
       const displayLabel = plantDisplayLabel(p);
+      const collectionName = p.collection_id ? clean(plants.find(row => row.id === p.collection_id)?.name) : "";
       const photos = p.photos || [];
       const matchingPhotos = photosMatchingSelectedType(p);
       const active = matchingPhotos[matchingPhotos.length - 1] || photos[photos.length - 1] || {};
@@ -400,7 +391,7 @@ p-bothams-surprise-2,2026-08-13,Sådd,</script>
       ].join(" ").toLowerCase();
 
       return `
-        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-category="Pelargon" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(displayName)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(p.nickname)}" data-cuttings-available="${escapeAttr(p.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(p.cuttings_updated_at)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(p.logs || []))}">
+        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-category="Pelargon" data-record-kind="${escapeAttr(p.record_kind)}" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(displayName)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(p.nickname)}" data-cuttings-available="${escapeAttr(p.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(p.cuttings_updated_at)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(p.logs || []))}">
           <div class="image-wrap">
             ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(displayLabel)}" data-caption="${escapeAttr(displayLabel + " · " + activeLabel)}">` : ""}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}</div>` : ""}
@@ -408,7 +399,7 @@ p-bothams-surprise-2,2026-08-13,Sådd,</script>
           </div>
           <div class="card-body">
             <div class="plant-card-head">
-              <div class="plant-title-block">${plantHeadingHtml(p)}</div>
+              <div class="plant-title-block">${plantHeadingHtml(p, "", clean(p.record_kind).toUpperCase() === "INDIVIDUAL")}</div>
               <div class="import-actions">
                 <button class="plant-log-btn" type="button" aria-label="Växtpanel" title="Växtpanel">${logBookIcon()}</button>
                 <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
@@ -416,7 +407,7 @@ p-bothams-surprise-2,2026-08-13,Sådd,</script>
               </div>
             </div>
             <div class="plant-card-chip-slot"><div class="chips">${cardChips(p)}</div></div>
-            <div class="plant-card-info"></div>
+            <div class="plant-card-info">${collectionRecordInfoHtml(p, collectionName)}</div>
             <div class="plant-card-milestone-slot">${milestoneSummary(latestMilestone)}</div>
             <div class="plant-card-notes-slot">${plantCardNoteField(p.id, p.card_note, p.card_note_updated_at)}</div>
           </div>
@@ -430,6 +421,9 @@ p-bothams-surprise-2,2026-08-13,Sådd,</script>
 
     function sortedPlants(list) {
       return [...list].sort((a, b) => {
+        const kindOrder = (clean(a.record_kind).toUpperCase() === "INDIVIDUAL" ? 0 : 1)
+          - (clean(b.record_kind).toUpperCase() === "INDIVIDUAL" ? 0 : 1);
+        if (kindOrder) return kindOrder;
         if (sortSelect.value === "type") {
           return sortNatural(clean(a.type) + a.name, clean(b.type) + b.name);
         }
@@ -463,6 +457,9 @@ p-bothams-surprise-2,2026-08-13,Sådd,</script>
       updatePlantFavoriteUI();
       const photoCount = plants.reduce((sum, p) => sum + (p.photos || []).length, 0);
       const withPhoto = plants.filter(p => (p.photos || []).length > 0).length;
+      const collections = plants.filter(p => clean(p.record_kind).toUpperCase() === "COLLECTION");
+      const individuals = plants.filter(p => clean(p.record_kind).toUpperCase() === "INDIVIDUAL");
+      const specimenCount = collections.reduce((sum, p) => sum + (Number.parseInt(p.specimen_count, 10) || 0), 0);
       const activeParts = [
         query ? `Sökning: “${search.value.trim()}”` : "",
         selectedType ? `Typ: ${displayChipLabel(selectedType)}` : "",
@@ -470,7 +467,9 @@ p-bothams-surprise-2,2026-08-13,Sådd,</script>
         `Sortering: ${sortSelect.options[sortSelect.selectedIndex].textContent}`
       ].filter(Boolean);
       stats.innerHTML = `
-        <span class="stat">${plants.length} exemplar</span>
+        <span class="stat">${collections.length} sorter/arter</span>
+        <span class="stat">${individuals.length} ${individuals.length === 1 ? "individ" : "individer"}</span>
+        <span class="stat">${specimenCount} exemplar</span>
         <span class="stat">${withPhoto} med bild</span>
         <span class="stat">${photoCount} bilder</span>
         <span class="stat">${visible.length} visas just nu</span>

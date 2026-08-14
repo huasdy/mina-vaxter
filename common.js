@@ -76,6 +76,99 @@ function clean(value) {
   return (value || "").toString().trim();
 }
 
+const hibiscusParentReferenceCatalog = Object.freeze({
+  "012": {
+    name: "Hibiscus 'Gara'",
+    file: "bilder/referenser/rareplants-eu/012_hibiscus-gara_referens.jpg",
+    imageSource: "PixelFlora.eu"
+  },
+  "030": {
+    name: "Hibiscus 'Ubay'",
+    file: "bilder/referenser/rareplants-eu/030_hibiscus-ubay_referens.jpg",
+    imageSource: "PixelFlora.eu"
+  },
+  "041": {
+    name: "Hibiscus 'Mattiacis Mustard Princess'",
+    file: "bilder/referenser/rareplants-eu/041_hibiscus-mattiacis-mustard-princess_referens.jpg",
+    imageSource: "PixelFlora.eu"
+  },
+  "okänd": {
+    file: "bilder/referenser/rareplants-eu/rareplants-eu_okand-hibiscus_referens.jpg",
+    imageSource: "Rareplants.eu"
+  }
+});
+
+function hibiscusCrossLabel(row) {
+  const mother = clean(row && row.mother);
+  const father = clean(row && row.father);
+  if (!mother && !father) return "";
+  return `${mother || "okänd"} × ${father || "okänd"}`;
+}
+
+function hibiscusParentReferenceItems(row) {
+  const cross = hibiscusCrossLabel(row);
+  if (!cross) return [];
+  return [
+    {role: "Moder", reference: clean(row && row.mother) || "okänd"},
+    {role: "Fader", reference: clean(row && row.father) || "okänd"}
+  ].map(item => {
+    const details = hibiscusParentReferenceCatalog[item.reference.toLowerCase()] || {};
+    return {...item, ...details};
+  });
+}
+
+const plantLegacyIdMap = Object.freeze({
+  "p-australe-2": "p-australe-1",
+  "p-cotyledonis-2": "p-cotyledonis-1",
+  "p-gibbosum-2": "p-gibbosum-1",
+  "p-gibbosum-3": "p-gibbosum-1",
+  "p-gibbosum-maroon-2": "p-gibbosum-maroon-1",
+  "p-laxum-2": "p-laxum-1",
+  "p-bontrosai-2": "p-bontrosai-1",
+  "p-bothams-surprise-2": "p-bothams-surprise-1",
+  "p-cys-sunburst-2": "p-cys-sunburst-1",
+  "p-cys-sunburst-3": "p-cys-sunburst-1",
+  "p-dr-westerlund-2": "p-dr-westerlund-1",
+  "c-limon-2": "c-limon-1",
+  "c-kumquat-2": "c-kumquat-1"
+});
+
+function canonicalPlantId(value) {
+  const id = clean(value);
+  return plantLegacyIdMap[id] || id;
+}
+
+function backupLegacyPlantStorage(storageKey, rawValue) {
+  if (!rawValue) return;
+  const backupKey = `mina-vaxter-id-migration-v2-backup:${storageKey}`;
+  try {
+    if (localStorage.getItem(backupKey) === null) localStorage.setItem(backupKey, rawValue);
+  } catch (e) {}
+}
+
+function latestLocalEntry(first, second) {
+  if (!first) return second;
+  if (!second) return first;
+  const firstTime = clean(first && typeof first === "object" ? first.updatedAt : "");
+  const secondTime = clean(second && typeof second === "object" ? second.updatedAt : "");
+  return secondTime >= firstTime ? second : first;
+}
+
+function canonicalizePlantRecordMap(records) {
+  const source = records && typeof records === "object" && !Array.isArray(records) ? records : {};
+  const migrated = {};
+  let changed = false;
+  Object.entries(source).forEach(([storedId, rawEntry]) => {
+    const targetId = canonicalPlantId(storedId);
+    const entry = rawEntry && typeof rawEntry === "object" && !Array.isArray(rawEntry)
+      ? {...rawEntry, id: targetId}
+      : rawEntry;
+    migrated[targetId] = latestLocalEntry(migrated[targetId], entry);
+    if (targetId !== storedId) changed = true;
+  });
+  return {records: migrated, changed};
+}
+
 function plantIdentityName(row, fallback = "") {
   return clean(row && row.name) || clean(row && row.id) || clean(fallback);
 }
@@ -90,11 +183,18 @@ function plantDisplayLabel(row, fallback = "") {
   return nickname && identity ? `${identity} · ${nickname}` : identity || nickname;
 }
 
-function plantHeadingHtml(row, fallback = "") {
+function plantHeadingHtml(row, fallback = "", nicknameFirst = false) {
   const nickname = clean(row && row.nickname);
   const identity = plantIdentityName(row, fallback);
+  const latin = clean(row && row.latin);
+  const latinHtml = latin && latin !== identity && latin !== nickname
+    ? `<div class="latin">${htmlEscape(latin)}</div>`
+    : "";
   const title = identity || nickname;
-  return `<h2>${htmlEscape(title)}</h2>${nickname && identity ? `<div class="plant-nickname">${htmlEscape(nickname)}</div>` : ""}`;
+  if (nicknameFirst && nickname && identity) {
+    return `<h2>${htmlEscape(nickname)}</h2><div class="plant-nickname">${htmlEscape(identity)}</div>${latinHtml}`;
+  }
+  return `<h2>${htmlEscape(title)}</h2>${nickname && identity ? `<div class="plant-nickname">${htmlEscape(nickname)}</div>` : ""}${latinHtml}`;
 }
 
 function collectionChips(category, row) {
@@ -117,14 +217,22 @@ function collectionChips(category, row) {
   };
   const hasSownMilestone = (row && Array.isArray(row.logs) ? row.logs : [])
     .some(log => clean(log && log.type).toLocaleLowerCase("sv") === "sådd");
+  const pelargonIndividual = category === "Pelargon" && clean(row && row.record_kind).toUpperCase() === "INDIVIDUAL";
 
+  if (pelargonIndividual) add("Individ");
   if (getPlantCuttingsStatus(row && row.id, row && row.cuttings_available, row && row.cuttings_updated_at)) add("🌱 Stickling");
-  if (hasSownMilestone) add("Frö");
+  if (category === "Pelargon") {
+    const seedGrown = ["frö", "egen korsning"].includes(clean(row && row.arrival_type).toLocaleLowerCase("sv")) || Boolean(clean(row && row.seed_lot_id));
+    if (pelargonIndividual && seedGrown) add("Frösådd");
+  } else if (hasSownMilestone) {
+    add("Frö");
+  }
 
   if (category === "Hibiskus") {
     if (clean(row && row.breeding_selected).toLowerCase() === "ja") add("🏷 Utvald");
   } else if (category === "Pelargon") {
-    if (haystack.includes("doft")) add("Doft");
+    if (clean(row && row.record_kind).toUpperCase() === "INDIVIDUAL" && clean(row && row.breeding_selected).toLowerCase() === "ja") add("🏷 Utvald");
+    if (clean(row && row.type).toLocaleLowerCase("sv") === "doftpelargon") add("Doft");
   } else if (category === "Citrus") {
     add("Inne");
   } else if (category === "Udda") {
@@ -132,13 +240,24 @@ function collectionChips(category, row) {
     if (haystack.includes("fredskalla") || haystack.includes("hjärtbräken")) add("Inne");
   }
 
-  return chips.length ? chips : [category];
+  return chips.length ? chips : (category === "Pelargon" ? [] : [category]);
 }
 
 function collectionChipHtml(category, row, escapeFn = htmlEscape) {
   return collectionChips(category, row)
     .map((label, index) => `<span class="chip ${index === 0 ? "green" : ""}"${label === "🌱 Stickling" ? ' data-status-chip="cuttings"' : ""}>${escapeFn(label)}</span>`)
     .join("");
+}
+
+function collectionRecordInfoHtml(row, collectionName = "") {
+  const kind = clean(row && row.record_kind).toUpperCase();
+  if (kind === "INDIVIDUAL") {
+    return `<div class="pelargon-record-info"><strong>${collectionName ? `Tillhör ${htmlEscape(collectionName)}` : "Följs separat"}</strong><span>Följs som egen planta</span></div>`;
+  }
+  if (kind !== "COLLECTION") return "";
+  const count = Number.parseInt(clean(row && row.specimen_count), 10);
+  if (!Number.isFinite(count)) return "";
+  return `<div class="pelargon-record-info"><strong>${count === 0 ? "Tidigare i samlingen" : `${count} exemplar`}</strong><span>Sort-/artkort</span></div>`;
 }
 
 function bildText(n) {
@@ -150,8 +269,14 @@ const plantStatusChangesStorageKey = "mina-vaxter-plant-status-changes-v1";
 
 function getPlantStatuses() {
   try {
-    const parsed = JSON.parse(localStorage.getItem(plantStatusesStorageKey) || "{}");
-    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+    const raw = localStorage.getItem(plantStatusesStorageKey) || "{}";
+    const parsed = JSON.parse(raw);
+    const migrated = canonicalizePlantRecordMap(parsed);
+    if (migrated.changed) {
+      backupLegacyPlantStorage(plantStatusesStorageKey, raw);
+      localStorage.setItem(plantStatusesStorageKey, JSON.stringify(migrated.records));
+    }
+    return migrated.records;
   } catch (e) {
     return {};
   }
@@ -159,8 +284,14 @@ function getPlantStatuses() {
 
 function getPlantStatusChanges() {
   try {
-    const parsed = JSON.parse(localStorage.getItem(plantStatusChangesStorageKey) || "{}");
-    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+    const raw = localStorage.getItem(plantStatusChangesStorageKey) || "{}";
+    const parsed = JSON.parse(raw);
+    const migrated = canonicalizePlantRecordMap(parsed);
+    if (migrated.changed) {
+      backupLegacyPlantStorage(plantStatusChangesStorageKey, raw);
+      localStorage.setItem(plantStatusChangesStorageKey, JSON.stringify(migrated.records));
+    }
+    return migrated.records;
   } catch (e) {
     return {};
   }
@@ -254,8 +385,14 @@ const plantCardNoteChangesStorageKey = "mina-vaxter-card-note-changes-v1";
 
 function getPlantCardNotes() {
   try {
-    const parsed = JSON.parse(localStorage.getItem(plantCardNotesStorageKey) || "{}");
-    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+    const raw = localStorage.getItem(plantCardNotesStorageKey) || "{}";
+    const parsed = JSON.parse(raw);
+    const migrated = canonicalizePlantRecordMap(parsed);
+    if (migrated.changed) {
+      backupLegacyPlantStorage(plantCardNotesStorageKey, raw);
+      localStorage.setItem(plantCardNotesStorageKey, JSON.stringify(migrated.records));
+    }
+    return migrated.records;
   } catch (e) {
     return {};
   }
@@ -263,8 +400,14 @@ function getPlantCardNotes() {
 
 function getPlantCardNoteChanges() {
   try {
-    const parsed = JSON.parse(localStorage.getItem(plantCardNoteChangesStorageKey) || "{}");
-    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+    const raw = localStorage.getItem(plantCardNoteChangesStorageKey) || "{}";
+    const parsed = JSON.parse(raw);
+    const migrated = canonicalizePlantRecordMap(parsed);
+    if (migrated.changed) {
+      backupLegacyPlantStorage(plantCardNoteChangesStorageKey, raw);
+      localStorage.setItem(plantCardNoteChangesStorageKey, JSON.stringify(migrated.records));
+    }
+    return migrated.records;
   } catch (e) {
     return {};
   }
@@ -425,7 +568,13 @@ function getPlantMilestoneAdditions() {
   try {
     const stored = localStorage.getItem(plantMilestoneStorageKey) || localStorage.getItem(plantMilestoneLegacyStorageKey) || "[]";
     const parsed = JSON.parse(stored);
-    return Array.isArray(parsed) ? cleanUpIncorrectH02SownMilestones(parsed) : [];
+    if (!Array.isArray(parsed)) return [];
+    const migrated = parsed.map(row => ({...row, id: canonicalPlantId(row && row.id)}));
+    if (migrated.some((row, index) => clean(row.id) !== clean(parsed[index] && parsed[index].id))) {
+      backupLegacyPlantStorage(plantMilestoneStorageKey, stored);
+      localStorage.setItem(plantMilestoneStorageKey, JSON.stringify(migrated));
+    }
+    return cleanUpIncorrectH02SownMilestones(migrated);
   } catch (e) {
     return [];
   }
@@ -520,7 +669,7 @@ function plantMilestoneKey(row) {
   ].join("|");
 }
 
-function buildSyncManifest(imageItems, milestoneItems, cardNoteItems, plantStatusItems) {
+function buildSyncManifest(imageItems, milestoneItems, cardNoteItems, plantStatusItems, flowerAssessmentItems = []) {
   return {
     version: 1,
     exportedAt: new Date().toISOString(),
@@ -530,7 +679,8 @@ function buildSyncManifest(imageItems, milestoneItems, cardNoteItems, plantStatu
       images: imageItems.length,
       milestones: milestoneItems.length,
       cardNotes: cardNoteItems.length,
-      plantStatuses: plantStatusItems.length
+      plantStatuses: plantStatusItems.length,
+      flowerAssessments: flowerAssessmentItems.length
     },
     note: "Hundöron och fokusnotiser är lokal arbetslista och ingår inte i synkpaketet."
   };
@@ -1076,6 +1226,9 @@ function ensurePlantMilestones() {
     .plant-card .plant-title-block { min-width: 0; }
     .plant-card .plant-title-block .plant-nickname,
     .plant-card .plant-title-block .latin { margin-top: 4px; }
+    .plant-card .plant-title-block .latin {
+      color: var(--muted, #786d63); font-style: italic; font-weight: 700; line-height: 1.15;
+    }
     .plant-card .plant-title-block h2 {
       display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3;
       overflow: hidden;
@@ -1125,6 +1278,11 @@ function ensurePlantMilestones() {
     .plant-card .plant-card-gallery-slot .photo-strip { height: 40px; padding: 0; }
     .plant-card .date-ribbon { display: none !important; }
     .plant-card .plant-card-info { min-width: 0; height: 58px; overflow: hidden; }
+    .plant-card .pelargon-record-info {
+      height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 3px;
+      color: var(--muted, #6f655b); font-size: .84rem;
+    }
+    .plant-card .pelargon-record-info strong { color: var(--ink, #2b251f); font-size: .94rem; }
     .plant-card .plant-card-info:has(.edit-form) { height: auto; overflow: visible; }
     .plant-card .plant-card-milestone-slot { height: 64px; min-height: 64px; overflow: hidden; }
     .plant-card .plant-card-notes-slot { height: 108px; min-height: 108px; overflow: hidden; }
@@ -1234,6 +1392,35 @@ function ensurePlantMilestones() {
       color: var(--accent, #7d4f3b); text-transform: uppercase; letter-spacing: .14em;
       font-size: .72rem; font-weight: 900;
     }
+    .plant-parent-summary {
+      color: var(--ink, #2b251f); font-size: 1rem; font-weight: 850;
+    }
+    .plant-parent-reference-grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;
+    }
+    .plant-parent-reference-item {
+      min-width: 0; border: 1px solid var(--line, #ded2c2); border-radius: 16px;
+      padding: 9px; background: rgba(255,255,255,.48); display: grid; gap: 7px;
+    }
+    .plant-parent-reference-button,
+    .plant-parent-reference-placeholder {
+      width: 100%; aspect-ratio: 4 / 3; border: 1px solid var(--line, #ded2c2);
+      border-radius: 12px; padding: 0; overflow: hidden; background: white;
+    }
+    .plant-parent-reference-button { cursor: zoom-in; }
+    .plant-parent-reference-button img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .plant-parent-reference-placeholder {
+      display: grid; place-items: center; color: var(--muted, #6f655b); font-weight: 850;
+      background: var(--chip, #efe6da);
+    }
+    .plant-parent-reference-caption { display: grid; gap: 2px; min-width: 0; }
+    .plant-parent-reference-caption strong { color: var(--ink, #2b251f); font-size: .88rem; }
+    .plant-parent-reference-caption span,
+    .plant-parent-reference-caption small { color: var(--muted, #6f655b); line-height: 1.3; }
+    .plant-parent-reference-caption span { font-size: .8rem; font-weight: 750; }
+    .plant-parent-reference-caption small { font-size: .72rem; font-weight: 700; }
+    .plant-parent-reference-source { color: var(--muted, #6f655b); font-size: .78rem; line-height: 1.4; }
+    .plant-parent-reference-source a { color: var(--accent, #7d4f3b); font-weight: 850; }
     .plant-status-row {
       border: 1px solid var(--line, #ded2c2); border-radius: 16px; padding: 12px 13px;
       background: rgba(255,255,255,.48); display: flex; align-items: center; justify-content: space-between;
@@ -1346,6 +1533,10 @@ function openPlantPanel(card) {
   const id = card.dataset.plantId || "";
   const category = card.dataset.category || "Pelargon";
   const cuttingsAvailable = getPlantCuttingsStatus(id, card.dataset.cuttingsAvailable, card.dataset.cuttingsUpdatedAt);
+  const categoryPanel = category === "Hibiskus" && typeof window.hibiscusFlowerPanelHtml === "function"
+    ? window.hibiscusFlowerPanelHtml(id)
+    : "";
+  const parentPanel = plantParentReferencePanelHtml(card);
   milestones = combinedPlantMilestones(milestones, id);
   const options = plantMilestoneTypes
     .map(type => `<option value="${htmlEscape(type)}">${htmlEscape(type)}</option>`)
@@ -1372,10 +1563,12 @@ function openPlantPanel(card) {
       <section class="plant-panel-section" aria-labelledby="plantStatusTitle">
         <div class="plant-panel-section-title" id="plantStatusTitle">Status</div>
         <label class="plant-status-row">
-          <span class="plant-status-copy"><strong>Sticklingar</strong><small>Visar att sticklingar finns tillgängliga från moderplantan.</small></span>
+          <span class="plant-status-copy"><strong>Sticklingar</strong><small>Visar att sticklingsmaterial finns tillgängligt.</small></span>
           <span class="plant-status-switch"><input name="cuttings" type="checkbox" ${cuttingsAvailable ? "checked" : ""}><span aria-hidden="true"></span></span>
         </label>
       </section>
+      ${parentPanel}
+      ${categoryPanel}
       <section class="plant-panel-section" aria-labelledby="plantHistoryTitle">
         <div class="plant-panel-section-title" id="plantHistoryTitle">Historik</div>
         <details class="plant-log-history">
@@ -1395,9 +1588,25 @@ function openPlantPanel(card) {
     </div>
   `;
   dialog.querySelector(".plant-log-close").addEventListener("click", () => dialog.close(), {once: true});
+  dialog.querySelectorAll(".plant-parent-reference-button").forEach(button => {
+    button.addEventListener("click", () => {
+      const referenceDialog = ensurePlantPhotoGallery();
+      referenceDialog.galleryState.items = [{
+        file: button.dataset.file,
+        title: "Föräldrareferens",
+        caption: button.dataset.caption,
+        alt: button.dataset.caption
+      }];
+      referenceDialog.galleryShow(0);
+      referenceDialog.showModal();
+    });
+  });
   dialog.querySelector('[name="cuttings"]').addEventListener("change", event => {
     setPlantCuttingsStatus(id, category, event.currentTarget.checked);
   });
+  if (category === "Hibiskus" && typeof window.bindHibiscusFlowerPanel === "function") {
+    window.bindHibiscusFlowerPanel(dialog, id);
+  }
   dialog.querySelector(".plant-log-form").addEventListener("submit", event => {
     event.preventDefault();
     const form = event.currentTarget;
@@ -1413,6 +1622,34 @@ function openPlantPanel(card) {
     }
   });
   dialog.showModal();
+}
+
+function plantParentReferencePanelHtml(card) {
+  if ((card.dataset.category || "") !== "Hibiskus") return "";
+  const cross = clean(card.dataset.parentCross);
+  let references = [];
+  try { references = JSON.parse(card.dataset.parentReferences || "[]"); } catch (e) { references = []; }
+  if (!cross || !references.length) return "";
+  const cards = references.map(reference => {
+    const caption = `${reference.role} ${reference.reference}${reference.name ? ` · ${reference.name}` : ""}${reference.imageSource ? ` · Referensbild, ${reference.imageSource}` : ""}`;
+    const visual = reference.file
+      ? `<button class="plant-parent-reference-button" type="button" data-file="${htmlEscape(reference.file)}" data-caption="${htmlEscape(caption)}" aria-label="Visa referensbild för ${htmlEscape(reference.role.toLowerCase() + " " + reference.reference)}"><img src="${htmlEscape(reference.file)}" alt="${htmlEscape(caption)}" loading="lazy"></button>`
+      : `<div class="plant-parent-reference-placeholder">Okänd</div>`;
+    return `<article class="plant-parent-reference-item">
+      ${visual}
+      <div class="plant-parent-reference-caption">
+        <strong>${htmlEscape(reference.role)} · ${htmlEscape(reference.reference)}</strong>
+        ${reference.name ? `<span>${htmlEscape(reference.name)}</span>` : ""}
+        ${reference.imageSource ? `<small>Bildkälla: ${htmlEscape(reference.imageSource)}</small>` : ""}
+      </div>
+    </article>`;
+  }).join("");
+  return `<section class="plant-panel-section" aria-labelledby="plantParentTitle">
+    <div class="plant-panel-section-title" id="plantParentTitle">Föräldrareferenser</div>
+    <div class="plant-parent-summary">Korsning ${htmlEscape(cross)}</div>
+    <div class="plant-parent-reference-grid">${cards}</div>
+    <div class="plant-parent-reference-source">Referensbilder från frökällan <a href="https://rareplants.eu" target="_blank" rel="noopener">Rareplants.eu</a> · inte egna foton.</div>
+  </section>`;
 }
 
 const plantImageImportDB = "mina-vaxter-image-import";
@@ -1674,7 +1911,9 @@ async function getImageImportItems() {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(plantImageImportStore, "readonly");
     const request = tx.objectStore(plantImageImportStore).getAll();
-    request.onsuccess = () => resolve((request.result || []).sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt))));
+    request.onsuccess = () => resolve((request.result || [])
+      .map(item => ({...item, plantId: canonicalPlantId(item && item.plantId)}))
+      .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt))));
     request.onerror = () => reject(request.error);
     tx.oncomplete = () => db.close();
     tx.onerror = () => { db.close(); reject(tx.error); };
@@ -2084,11 +2323,35 @@ async function getPendingArrivalItems() {
   }
 }
 
+async function saveSyncPackageToMac(filename, blob) {
+  const token = await loadLocalArrivalToken();
+  if (!token) return null;
+  try {
+    const response = await fetch(`http://127.0.0.1:47831/sync-package?filename=${encodeURIComponent(filename)}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/zip",
+        "X-Mina-Vaxter-Token": token
+      },
+      body: blob,
+      cache: "no-store"
+    });
+    if (!response.ok) return null;
+    const payload = await response.json();
+    return payload && payload.ok ? payload : null;
+  } catch (error) {
+    return null;
+  }
+}
+
 async function updatePlantImageImportUI() {
   let items = [];
   try { items = await getImageImportItems(); } catch (error) { items = []; }
   const arrivalItems = await getPendingArrivalItems();
-  const syncCount = items.length + getPlantMilestoneAdditions().length + buildPlantCardNoteExport().items.length + buildPlantStatusExport().items.length + arrivalItems.length;
+  const flowerAssessmentItems = typeof window.buildHibiscusFlowerAssessmentExport === "function"
+    ? (window.buildHibiscusFlowerAssessmentExport().items || [])
+    : [];
+  const syncCount = items.length + getPlantMilestoneAdditions().length + buildPlantCardNoteExport().items.length + buildPlantStatusExport().items.length + flowerAssessmentItems.length + arrivalItems.length;
   const button = document.querySelector(".import-queue-button");
   if (button) {
     button.classList.toggle("has-items", syncCount > 0);
@@ -2115,8 +2378,12 @@ async function openImageImportQueue() {
   const milestoneItems = buildPlantMilestoneExport().items || [];
   const cardNoteItems = buildPlantCardNoteExport().items || [];
   const plantStatusItems = buildPlantStatusExport().items || [];
+  const flowerAssessmentExport = typeof window.buildHibiscusFlowerAssessmentExport === "function"
+    ? window.buildHibiscusFlowerAssessmentExport()
+    : {version: 1, traits: [], items: []};
+  const flowerAssessmentItems = flowerAssessmentExport.items || [];
   const arrivalItems = await getPendingArrivalItems();
-  const packageCount = items.length + milestoneItems.length + cardNoteItems.length + plantStatusItems.length;
+  const packageCount = items.length + milestoneItems.length + cardNoteItems.length + plantStatusItems.length + flowerAssessmentItems.length;
   const syncCount = packageCount + arrivalItems.length;
   const urls = [];
   const rows = items.map(item => {
@@ -2171,6 +2438,21 @@ async function openImageImportQueue() {
       <button class="import-delete" type="button" data-delete-plant-status="${escapeAttr(item.id)}">Ta bort</button>
     </article>
   `).join("");
+  const flowerAssessmentRows = flowerAssessmentItems.map(item => {
+    const assessment = item.assessment || {};
+    const traitCount = (item.assignments || []).filter(row => row.value_status === "RECORDED").length;
+    return `
+      <article class="import-item">
+        <div class="import-item-icon" aria-hidden="true">✿</div>
+        <div>
+          <strong>${htmlEscape(assessment.plant_id || assessment.assessment_id)}</strong>
+          <small>${htmlEscape(assessment.observed_date)} · Blombedömning ${htmlEscape(assessment.status === "COMPLETE" ? "komplett" : "utkast")}</small>
+          <small>${traitCount} registrerade egenskaper · ${(item.markers || []).length ? "förädlingsmarkörer valda" : "inga förädlingsmarkörer"}</small>
+        </div>
+        <button class="import-delete" type="button" data-delete-flower-assessment="${escapeAttr(assessment.assessment_id)}">Ta bort</button>
+      </article>
+    `;
+  }).join("");
   const arrivalRows = arrivalItems.map(item => {
     const meta = [item.category, item.arrivalType, item.arrivalDate].filter(Boolean).join(" · ");
     return `
@@ -2189,11 +2471,11 @@ async function openImageImportQueue() {
       <header>
         <div>
           <h2>Synka till Mac</h2>
-          <p>${syncCount ? `${items.length} bilder · ${milestoneItems.length} milstolpar · ${cardNoteItems.length} anteckningar · ${plantStatusItems.length} statusar · ${arrivalItems.length} ankomstsamtal` : "Kön är tom just nu."}</p>
+          <p>${syncCount ? `${items.length} bilder · ${milestoneItems.length} milstolpar · ${cardNoteItems.length} anteckningar · ${plantStatusItems.length} statusar · ${flowerAssessmentItems.length} blombedömningar · ${arrivalItems.length} ankomstsamtal` : "Kön är tom just nu."}</p>
         </div>
         <button class="import-close" type="button" aria-label="Stäng">×</button>
       </header>
-      <div class="import-list">${rows + milestoneRows + cardNoteRows + plantStatusRows + arrivalRows || '<div class="import-empty">Inga ändringar i kön.</div>'}</div>
+      <div class="import-list">${rows + milestoneRows + cardNoteRows + plantStatusRows + flowerAssessmentRows + arrivalRows || '<div class="import-empty">Inga ändringar i kön.</div>'}</div>
       <div class="import-buttons">
         ${packageCount ? '<button class="primary" type="button" data-export-package>Synka</button>' : (arrivalItems.length ? '<div class="import-sync-status">Sparad – behandlas när Mac-synkningen körs.</div>' : '')}
         <button class="secondary" type="button" data-clear-import ${packageCount ? "" : "disabled"}>Rensa synkkö</button>
@@ -2232,13 +2514,23 @@ async function openImageImportQueue() {
       openImageImportQueue();
     });
   });
+  dialog.querySelectorAll("[data-delete-flower-assessment]").forEach(button => {
+    button.addEventListener("click", () => {
+      if (typeof window.deleteHibiscusFlowerAssessmentChange === "function") {
+        window.deleteHibiscusFlowerAssessmentChange(button.dataset.deleteFlowerAssessment);
+      }
+      updatePlantImageImportUI();
+      openImageImportQueue();
+    });
+  });
   const clearButton = dialog.querySelector("[data-clear-import]");
   clearButton.addEventListener("click", async () => {
-    if (!confirm("Ta bort alla bilder, milstolpar, anteckningar och statusändringar i synkkön? Gör detta först när paketet är sparat eller importerat på Mac.")) return;
+    if (!confirm("Ta bort alla bilder, milstolpar, anteckningar, statusändringar och blombedömningar i synkkön? Gör detta först när paketet är sparat eller importerat på Mac.")) return;
     await clearImageImportItems();
     clearPlantMilestoneAdditions();
     clearPlantCardNoteChanges();
     clearPlantStatusChanges();
+    if (typeof window.clearHibiscusFlowerAssessmentChanges === "function") window.clearHibiscusFlowerAssessmentChanges();
     window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: {cleared: true}}));
     updatePlantImageImportUI();
     openImageImportQueue();
@@ -2248,14 +2540,20 @@ async function openImageImportQueue() {
     packageButton.disabled = true;
     packageButton.textContent = "Skapar paket...";
     try {
-      const zip = await createSyncPackage(items, getPlantMilestoneAdditions(), cardNoteItems, plantStatusItems);
-      downloadBlob(`mina-vaxter-synkpaket-${localDateString()}.zip`, zip);
+      const zip = await createSyncPackage(items, getPlantMilestoneAdditions(), cardNoteItems, plantStatusItems, flowerAssessmentExport);
+      const filename = `mina-vaxter-synkpaket-${localDateString()}.zip`;
+      const localSave = await saveSyncPackageToMac(filename, zip);
+      if (!localSave) downloadBlob(filename, zip);
       packageButton.textContent = "Synka";
-      if (confirm("Synkpaketet är skapat. Rensa synkkön i den här webbläsaren?")) {
+      const saveMessage = localSave
+        ? `Synkpaketet ${localSave.filename} är sparat direkt i Macens Downloads.`
+        : "Synkpaketet har hämtats via webbläsaren.";
+      if (confirm(`${saveMessage}\n\nRensa synkkön i den här webbläsaren?`)) {
         await clearImageImportItems();
         clearPlantMilestoneAdditions();
         clearPlantCardNoteChanges();
         clearPlantStatusChanges();
+        if (typeof window.clearHibiscusFlowerAssessmentChanges === "function") window.clearHibiscusFlowerAssessmentChanges();
         window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: {cleared: true}}));
         updatePlantImageImportUI();
         dialog.close();
@@ -2282,6 +2580,7 @@ function buildImageImportManifest(items) {
       const suggestedFileName = `${safeFilePart(item.plantId)}_${item.date}_${safeFilePart(item.type)}_${sequence}.${extension}`;
       return {
         id: item.id,
+        photoId: item.photoId || "",
         category: item.category,
         plantId: item.plantId,
         plantName: item.plantName,
@@ -2316,16 +2615,18 @@ async function createImageImportPackage(items) {
   return createZipBlob(entries);
 }
 
-async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRows = [], plantStatusRows = []) {
+async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRows = [], plantStatusRows = [], flowerAssessmentExport = {version: 1, traits: [], items: []}) {
   const imageManifest = buildImageImportManifest(imageItems);
   const milestoneExport = buildPlantMilestoneExport(milestoneRows);
   const cardNoteExport = buildPlantCardNoteExport(cardNoteRows);
   const plantStatusExport = buildPlantStatusExport(plantStatusRows);
-  const syncManifest = buildSyncManifest(imageManifest.items, milestoneExport.items, cardNoteExport.items, plantStatusExport.items);
+  const flowerAssessmentItems = flowerAssessmentExport.items || [];
+  const syncManifest = buildSyncManifest(imageManifest.items, milestoneExport.items, cardNoteExport.items, plantStatusExport.items, flowerAssessmentItems);
   syncManifest.images = imageManifest.items;
   syncManifest.milestonesFile = "milstolpar.json";
   syncManifest.cardNotesFile = "kortanteckningar.json";
   syncManifest.plantStatusesFile = "vaxtstatusar.json";
+  syncManifest.flowerAssessmentsFile = "hibiskus-blombedomningar.json";
 
   const entries = [
     {
@@ -2343,6 +2644,10 @@ async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRo
     {
       name: "vaxtstatusar.json",
       blob: new Blob([JSON.stringify(plantStatusExport, null, 2)], {type: "application/json;charset=utf-8"})
+    },
+    {
+      name: "hibiskus-blombedomningar.json",
+      blob: new Blob([JSON.stringify(flowerAssessmentExport, null, 2)], {type: "application/json;charset=utf-8"})
     }
   ];
   imageManifest.items.forEach((manifestItem, index) => {
@@ -2357,7 +2662,28 @@ async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRo
 const plantFavoritesKey = "mina-vaxter-favorites-v1";
 
 function getPlantFavorites() {
-  try { return JSON.parse(localStorage.getItem(plantFavoritesKey) || "{}"); }
+  try {
+    const raw = localStorage.getItem(plantFavoritesKey) || "{}";
+    const parsed = JSON.parse(raw);
+    const migrated = {};
+    let changed = false;
+    Object.values(parsed && typeof parsed === "object" ? parsed : {}).forEach(item => {
+      if (!item || typeof item !== "object") return;
+      const plantId = canonicalPlantId(item.plantId);
+      const key = favoriteKey(item.category, plantId);
+      const next = {...item, key, plantId};
+      const previous = migrated[key];
+      const selected = latestLocalEntry(previous, next);
+      if (previous && !clean(selected.focusNote)) selected.focusNote = clean(previous.focusNote || next.focusNote);
+      migrated[key] = selected;
+      if (key !== item.key || plantId !== item.plantId) changed = true;
+    });
+    if (changed) {
+      backupLegacyPlantStorage(plantFavoritesKey, raw);
+      localStorage.setItem(plantFavoritesKey, JSON.stringify(migrated));
+    }
+    return migrated;
+  }
   catch (error) { return {}; }
 }
 
