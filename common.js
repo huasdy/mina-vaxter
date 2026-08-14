@@ -671,7 +671,7 @@ function plantMilestoneKey(row) {
   ].join("|");
 }
 
-function buildSyncManifest(imageItems, milestoneItems, cardNoteItems, plantStatusItems, flowerAssessmentItems = []) {
+function buildSyncManifest(imageItems, milestoneItems, cardNoteItems, plantStatusItems, flowerAssessmentItems = [], cardImageItems = []) {
   return {
     version: 1,
     exportedAt: new Date().toISOString(),
@@ -682,7 +682,8 @@ function buildSyncManifest(imageItems, milestoneItems, cardNoteItems, plantStatu
       milestones: milestoneItems.length,
       cardNotes: cardNoteItems.length,
       plantStatuses: plantStatusItems.length,
-      flowerAssessments: flowerAssessmentItems.length
+      flowerAssessments: flowerAssessmentItems.length,
+      cardImages: cardImageItems.length
     },
     note: "Hundöron och fokusnotiser är lokal arbetslista och ingår inte i synkpaketet."
   };
@@ -821,7 +822,151 @@ function downloadBlob(filename, blob) {
   URL.revokeObjectURL(url);
 }
 
+const plantCardImagesStorageKey = "mina-vaxter-card-images-v1";
+const plantCardImageChangesStorageKey = "mina-vaxter-card-image-changes-v1";
+
+function plantCardImageKey(category, plantId) {
+  return `${clean(category) || "Pelargon"}|${canonicalPlantId(plantId)}`;
+}
+
+function getPlantCardImages(storageKey = plantCardImagesStorageKey) {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(storageKey) || "{}");
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+  } catch (error) {
+    return {};
+  }
+}
+
+function savePlantCardImageRecords(storageKey, records) {
+  try { localStorage.setItem(storageKey, JSON.stringify(records || {})); } catch (error) {}
+}
+
+function normalizedCardImageChoice(choice) {
+  if (!choice || typeof choice !== "object") return null;
+  const positionX = Math.min(100, Math.max(0, Number(choice.positionX) || 50));
+  const positionY = Math.min(100, Math.max(0, Number(choice.positionY) || 50));
+  const normalized = {
+    id: canonicalPlantId(choice.id),
+    category: clean(choice.category) || "Pelargon",
+    file: clean(choice.file),
+    positionX,
+    positionY,
+    updatedAt: clean(choice.updatedAt)
+  };
+  return normalized.id && normalized.file ? normalized : null;
+}
+
+function publishedCardImageChoice(card) {
+  return normalizedCardImageChoice({
+    id: card.dataset.plantId,
+    category: card.dataset.category,
+    file: card.dataset.cardImage,
+    positionX: card.dataset.cardCropX,
+    positionY: card.dataset.cardCropY,
+    updatedAt: card.dataset.cardImageUpdatedAt
+  });
+}
+
+function cardImageChoiceForCard(card) {
+  const key = plantCardImageKey(card.dataset.category, card.dataset.plantId);
+  const local = normalizedCardImageChoice(getPlantCardImages()[key]);
+  const published = publishedCardImageChoice(card);
+  if (!local) return published;
+  if (published && published.updatedAt && local.updatedAt && published.updatedAt >= local.updatedAt) return published;
+  return local;
+}
+
+function applyPlantCardImageChoice(card) {
+  const choice = cardImageChoiceForCard(card);
+  const image = card.querySelector(".main-photo");
+  if (!choice || !image) return;
+  let gallery = [];
+  try { gallery = JSON.parse(card.dataset.gallery || "[]"); } catch (error) { gallery = []; }
+  if (gallery.length && !gallery.some(item => clean(item.file) === choice.file)) return;
+  const item = gallery.find(row => clean(row.file) === choice.file) || {};
+  image.src = choice.file;
+  image.style.objectPosition = `${choice.positionX}% ${choice.positionY}%`;
+  image.dataset.cardCrop = "true";
+  if (item.caption) image.dataset.caption = item.caption;
+  const thumb = [...card.querySelectorAll(".thumb, .photo-button")].find(button => clean(button.dataset.file) === choice.file);
+  card.querySelectorAll(".thumb, .photo-button").forEach(button => button.classList.toggle("active", button === thumb));
+  if (thumb) image.dataset.photoType = thumb.dataset.photoType || "";
+}
+
+function applyPlantCardImageChoices(root = document) {
+  root.querySelectorAll(".plant-card[data-plant-id]").forEach(applyPlantCardImageChoice);
+}
+
+function savePlantCardImageChoice(card, file, positionX, positionY) {
+  const choice = normalizedCardImageChoice({
+    id: card.dataset.plantId,
+    category: card.dataset.category,
+    file,
+    positionX,
+    positionY,
+    updatedAt: new Date().toISOString()
+  });
+  if (!choice) return null;
+  const key = plantCardImageKey(choice.category, choice.id);
+  const saved = getPlantCardImages();
+  saved[key] = choice;
+  savePlantCardImageRecords(plantCardImagesStorageKey, saved);
+  const changes = getPlantCardImages(plantCardImageChangesStorageKey);
+  changes[key] = choice;
+  savePlantCardImageRecords(plantCardImageChangesStorageKey, changes);
+  card.dataset.cardImage = choice.file;
+  card.dataset.cardCropX = String(choice.positionX);
+  card.dataset.cardCropY = String(choice.positionY);
+  card.dataset.cardImageUpdatedAt = choice.updatedAt;
+  applyPlantCardImageChoice(card);
+  updatePlantImageImportUI();
+  return choice;
+}
+
+function buildPlantCardImageExport(rows = Object.values(getPlantCardImages(plantCardImageChangesStorageKey))) {
+  return {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    source: "Mina Växter lokala kortbilder",
+    items: (rows || []).map(normalizedCardImageChoice).filter(Boolean)
+  };
+}
+
+function deletePlantCardImageChange(category, plantId) {
+  const changes = getPlantCardImages(plantCardImageChangesStorageKey);
+  delete changes[plantCardImageKey(category, plantId)];
+  savePlantCardImageRecords(plantCardImageChangesStorageKey, changes);
+}
+
+function clearPlantCardImageChanges() {
+  savePlantCardImageRecords(plantCardImageChangesStorageKey, {});
+}
+
+function ensurePlantCardImageChoices() {
+  if (document.body.dataset.plantCardImagesReady === "true") return;
+  document.body.dataset.plantCardImagesReady = "true";
+  applyPlantCardImageChoices();
+  const grid = document.querySelector("#grid, .grid");
+  if (grid) new MutationObserver(() => applyPlantCardImageChoices(grid)).observe(grid, {childList: true, subtree: true});
+  document.addEventListener("click", event => {
+    const thumb = event.target.closest(".thumb, .photo-button");
+    if (!thumb) return;
+    const card = thumb.closest(".plant-card");
+    const image = card && card.querySelector(".main-photo");
+    if (!card || !image) return;
+    requestAnimationFrame(() => {
+      const choice = cardImageChoiceForCard(card);
+      if (!choice || clean(thumb.dataset.file) !== choice.file) {
+        image.style.removeProperty("object-position");
+        delete image.dataset.cardCrop;
+      }
+    });
+  });
+}
+
 function ensurePlantPhotoGallery() {
+  ensurePlantCardImageChoices();
   let dialog = document.querySelector("#photoDialog");
   if (!dialog) {
     dialog = document.createElement("dialog");
@@ -844,6 +989,11 @@ function ensurePlantPhotoGallery() {
       }
       .gallery-title { min-width: 0; font-weight: 800; color: rgba(255,255,255,.88); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       .gallery-actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+      .gallery-card-crop-button {
+        border: 1px solid rgba(255,255,255,.28); background: rgba(255,255,255,.12); color: white;
+        border-radius: 999px; min-height: 40px; padding: 0 13px; font: 800 .86rem/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      .gallery-card-crop-button.active { background: white; color: #2b251f; }
       .gallery-tools { display: flex; align-items: center; gap: 6px; padding: 4px; border-radius: 999px; background: rgba(255,255,255,.08); }
       .gallery-tool, .gallery-close, .gallery-nav {
         border: 0; background: rgba(255,255,255,.14); color: white; border-radius: 999px;
@@ -862,6 +1012,19 @@ function ensurePlantPhotoGallery() {
         }
       .gallery-image.zoomed { cursor: grab; transition: none; }
       .gallery-image.dragging { cursor: grabbing; }
+      .gallery-image[hidden] { display: none; }
+      .gallery-crop-frame {
+        position: relative; overflow: hidden; border: 3px solid white; border-radius: 4px;
+        box-shadow: 0 0 0 9999px rgba(0,0,0,.58), 0 8px 32px rgba(0,0,0,.38);
+        touch-action: none; cursor: grab;
+      }
+      .gallery-crop-frame.dragging { cursor: grabbing; }
+      .gallery-crop-image { width: 100%; height: 100%; display: block; object-fit: cover; user-select: none; -webkit-user-drag: none; }
+      .gallery-crop-frame::after {
+        content: ""; position: absolute; inset: 0; pointer-events: none;
+        background: linear-gradient(to right, transparent 33.1%, rgba(255,255,255,.48) 33.3%, transparent 33.6%, transparent 66.4%, rgba(255,255,255,.48) 66.7%, transparent 66.9%),
+                    linear-gradient(to bottom, transparent 33.1%, rgba(255,255,255,.48) 33.3%, transparent 33.6%, transparent 66.4%, rgba(255,255,255,.48) 66.7%, transparent 66.9%);
+      }
       .gallery-nav { position: absolute; top: 50%; transform: translateY(-50%); z-index: 2; }
       .gallery-prev { left: 12px; }
       .gallery-next { right: 12px; }
@@ -872,6 +1035,15 @@ function ensurePlantPhotoGallery() {
       .gallery-dots { display: flex; justify-content: center; gap: 7px; margin-top: 10px; }
       .gallery-dot { width: 7px; height: 7px; border-radius: 999px; background: rgba(255,255,255,.32); }
       .gallery-dot.active { background: white; }
+      .gallery-crop-bottom { display: grid; gap: 10px; }
+      .gallery-crop-help { color: rgba(255,255,255,.82); font-size: .9rem; font-weight: 750; }
+      .gallery-crop-actions { display: flex; justify-content: center; gap: 9px; }
+      .gallery-crop-actions button {
+        border: 1px solid rgba(255,255,255,.28); border-radius: 999px; padding: 10px 15px;
+        background: rgba(255,255,255,.12); color: white; font: inherit; font-weight: 850;
+      }
+      .gallery-crop-actions .primary { background: white; color: #2b251f; }
+      .gallery-crop-frame[hidden], .gallery-standard-bottom[hidden], .gallery-crop-bottom[hidden] { display: none; }
       @media (max-width: 700px) {
         .gallery-tools { display: none; }
         .gallery-nav {
@@ -893,6 +1065,7 @@ function ensurePlantPhotoGallery() {
       <div class="gallery-top">
         <div class="gallery-title" id="galleryTitle"></div>
         <div class="gallery-actions">
+          <button class="gallery-card-crop-button" type="button">Kortutsnitt</button>
           <div class="gallery-tools" aria-label="Bildzoom">
             <button class="gallery-tool gallery-zoom-out" type="button" aria-label="Zooma ut">−</button>
             <button class="gallery-tool gallery-reset" type="button" aria-label="Anpassa hela bilden till fönstret">Passa</button>
@@ -904,12 +1077,19 @@ function ensurePlantPhotoGallery() {
       <div class="gallery-stage">
         <button class="gallery-nav gallery-prev" type="button" aria-label="Föregående bild">‹</button>
         <img class="gallery-image" id="modalImg" alt="">
+        <div class="gallery-crop-frame" hidden><img class="gallery-crop-image" alt=""></div>
         <button class="gallery-nav gallery-next" type="button" aria-label="Nästa bild">›</button>
       </div>
       <div class="gallery-bottom">
-        <div class="gallery-caption" id="modalCaption"></div>
-        <div class="gallery-count" id="galleryCount"></div>
-        <div class="gallery-dots" id="galleryDots"></div>
+        <div class="gallery-standard-bottom">
+          <div class="gallery-caption" id="modalCaption"></div>
+          <div class="gallery-count" id="galleryCount"></div>
+          <div class="gallery-dots" id="galleryDots"></div>
+        </div>
+        <div class="gallery-crop-bottom" hidden>
+          <div class="gallery-crop-help">Dra bilden tills rätt del syns i ramen.</div>
+          <div class="gallery-crop-actions"><button type="button" data-crop-reset>Återställ</button><button class="primary" type="button" data-crop-save>Använd på kortet</button></div>
+        </div>
       </div>
     </div>`;
   dialog.dataset.ready = "true";
@@ -917,7 +1097,8 @@ function ensurePlantPhotoGallery() {
     items: [], index: 0, startX: 0, startY: 0,
     zoom: 1, panX: 0, panY: 0, lastTap: 0, lastClick: 0, pointers: new Map(),
     dragStartX: 0, dragStartY: 0, startPanX: 0, startPanY: 0, pinchDistance: 0, pinchZoom: 1,
-    lastPointerAt: 0, lastTouchTap: 0, lastSwipeAt: 0, didSwipe: false
+    lastPointerAt: 0, lastTouchTap: 0, lastSwipeAt: 0, didSwipe: false,
+    card: null, cardAspect: 1, cropMode: false, cropX: 50, cropY: 50
   };
   const isGallerySwipe = (dx, dy) => Math.abs(dx) > 28 && Math.abs(dx) > Math.abs(dy) * 1.08;
 
@@ -925,6 +1106,11 @@ function ensurePlantPhotoGallery() {
   const zoomOutButton = dialog.querySelector(".gallery-zoom-out");
   const zoomInButton = dialog.querySelector(".gallery-zoom-in");
   const resetButton = dialog.querySelector(".gallery-reset");
+  const cropButton = dialog.querySelector(".gallery-card-crop-button");
+  const cropFrame = dialog.querySelector(".gallery-crop-frame");
+  const cropImage = dialog.querySelector(".gallery-crop-image");
+  const standardBottom = dialog.querySelector(".gallery-standard-bottom");
+  const cropBottom = dialog.querySelector(".gallery-crop-bottom");
   const updateZoomControls = () => {
     const state = dialog.galleryState;
     zoomOutButton.disabled = state.zoom <= 1.01;
@@ -969,6 +1155,45 @@ function ensurePlantPhotoGallery() {
   };
   const distance = (a, b) => Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
 
+  const updateCropPreview = () => {
+    const state = dialog.galleryState;
+    cropImage.style.objectPosition = `${state.cropX}% ${state.cropY}%`;
+  };
+  const resizeCropFrame = () => {
+    const state = dialog.galleryState;
+    if (!state.cropMode) return;
+    const bounds = stage.getBoundingClientRect();
+    const aspect = Math.max(.35, Math.min(2.5, state.cardAspect || 1));
+    let width = Math.max(1, bounds.width - 32);
+    let height = width / aspect;
+    const maxHeight = Math.max(1, bounds.height - 24);
+    if (height > maxHeight) { height = maxHeight; width = height * aspect; }
+    cropFrame.style.width = `${width}px`;
+    cropFrame.style.height = `${height}px`;
+  };
+  const setCropMode = enabled => {
+    const state = dialog.galleryState;
+    state.cropMode = Boolean(enabled && state.card);
+    img.hidden = state.cropMode;
+    cropFrame.hidden = !state.cropMode;
+    standardBottom.hidden = state.cropMode;
+    cropBottom.hidden = !state.cropMode;
+    cropButton.classList.toggle("active", state.cropMode);
+    cropButton.textContent = state.cropMode ? "Visa hela" : "Kortutsnitt";
+    dialog.querySelector(".gallery-prev").hidden = state.cropMode || state.items.length < 2;
+    dialog.querySelector(".gallery-next").hidden = state.cropMode || state.items.length < 2;
+    if (state.cropMode) {
+      const item = state.items[state.index];
+      const existing = cardImageChoiceForCard(state.card);
+      state.cropX = existing && existing.file === item.file ? existing.positionX : 50;
+      state.cropY = existing && existing.file === item.file ? existing.positionY : 50;
+      cropImage.src = item.file;
+      cropImage.alt = item.alt || item.title || "";
+      updateCropPreview();
+      requestAnimationFrame(resizeCropFrame);
+    }
+  };
+
   const show = index => {
     const state = dialog.galleryState;
     if (!state.items.length) return;
@@ -985,9 +1210,27 @@ function ensurePlantPhotoGallery() {
     ).join("");
     dialog.querySelector(".gallery-prev").hidden = state.items.length < 2;
     dialog.querySelector(".gallery-next").hidden = state.items.length < 2;
+    if (state.cropMode) setCropMode(true);
   };
   dialog.galleryShow = show;
   dialog.querySelector(".gallery-close").addEventListener("click", () => dialog.close());
+  cropButton.addEventListener("click", event => {
+    event.stopPropagation();
+    setCropMode(!dialog.galleryState.cropMode);
+  });
+  dialog.querySelector("[data-crop-reset]").addEventListener("click", () => {
+    dialog.galleryState.cropX = 50;
+    dialog.galleryState.cropY = 50;
+    updateCropPreview();
+  });
+  dialog.querySelector("[data-crop-save]").addEventListener("click", () => {
+    const state = dialog.galleryState;
+    const item = state.items[state.index];
+    if (!state.card || !item) return;
+    savePlantCardImageChoice(state.card, item.file, state.cropX, state.cropY);
+    setCropMode(false);
+    dialog.close();
+  });
   dialog.querySelector(".gallery-prev").addEventListener("click", event => {
     event.stopPropagation();
     show(dialog.galleryState.index - 1);
@@ -1020,7 +1263,37 @@ function ensurePlantPhotoGallery() {
   });
 
   const stage = dialog.querySelector(".gallery-stage");
+  let cropDrag = null;
+  cropFrame.addEventListener("pointerdown", event => {
+    event.preventDefault();
+    event.stopPropagation();
+    cropFrame.setPointerCapture(event.pointerId);
+    cropDrag = {pointerId: event.pointerId, x: event.clientX, y: event.clientY, cropX: dialog.galleryState.cropX, cropY: dialog.galleryState.cropY};
+    cropFrame.classList.add("dragging");
+  });
+  cropFrame.addEventListener("pointermove", event => {
+    if (!cropDrag || cropDrag.pointerId !== event.pointerId) return;
+    event.stopPropagation();
+    const rect = cropFrame.getBoundingClientRect();
+    dialog.galleryState.cropX = Math.min(100, Math.max(0, cropDrag.cropX - (event.clientX - cropDrag.x) / rect.width * 100));
+    dialog.galleryState.cropY = Math.min(100, Math.max(0, cropDrag.cropY - (event.clientY - cropDrag.y) / rect.height * 100));
+    updateCropPreview();
+  });
+  const endCropDrag = event => {
+    if (!cropDrag || cropDrag.pointerId !== event.pointerId) return;
+    event.stopPropagation();
+    cropDrag = null;
+    cropFrame.classList.remove("dragging");
+  };
+  cropFrame.addEventListener("pointerup", endCropDrag);
+  cropFrame.addEventListener("pointercancel", endCropDrag);
+  ["touchstart", "touchmove", "touchend"].forEach(type => cropFrame.addEventListener(type, event => event.stopPropagation(), {passive: false}));
+  // A drag ends with a synthetic click on iPhone. Keep that click inside the
+  // crop frame; otherwise the gallery interprets it as zoom or next/previous.
+  cropFrame.addEventListener("click", event => event.stopPropagation());
+  window.addEventListener("resize", resizeCropFrame);
   stage.addEventListener("click", event => {
+    if (dialog.galleryState.cropMode) return;
     if (event.target.closest(".gallery-nav")) return;
     if (dialog.galleryState.didSwipe) {
       dialog.galleryState.didSwipe = false;
@@ -1191,6 +1464,9 @@ function openPlantPhotoGallery(mainPhoto) {
   const index = Math.max(0, items.findIndex(item => item.file === current || mainPhoto.src.endsWith(item.file)));
   const dialog = ensurePlantPhotoGallery();
   dialog.galleryState.items = items;
+  dialog.galleryState.card = card;
+  const imageWrap = mainPhoto.parentElement;
+  dialog.galleryState.cardAspect = imageWrap && imageWrap.clientHeight ? imageWrap.clientWidth / imageWrap.clientHeight : 1;
   dialog.galleryShow(index);
   dialog.showModal();
 }
@@ -1429,8 +1705,16 @@ function ensurePlantMilestones() {
       background: var(--accent, #7d4f3b); color: white; font: inherit; font-weight: 900; cursor: pointer;
     }
     .plant-document-frame { width: 100%; height: 100%; min-height: 0; border: 0; background: white; }
-    .plant-document-image-wrap { min-height: 0; overflow: auto; display: grid; place-items: center; padding: 16px; background: #eadfce; }
-    .plant-document-image { display: block; max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 10px 30px rgba(43,37,31,.16); }
+    .plant-document-pages {
+      min-height: 0; overflow-y: auto; overflow-x: hidden; padding: 12px;
+      background: #d8cdbd; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y;
+    }
+    .plant-document-pages[hidden] { display: none; }
+    .plant-document-page {
+      display: block; width: min(100%, 760px); height: auto; margin: 0 auto 12px;
+      background: white; box-shadow: 0 6px 22px rgba(43,37,31,.18);
+    }
+    .plant-document-page:last-child { margin-bottom: 0; }
     .plant-parent-summary {
       color: var(--ink, #2b251f); font-size: 1rem; font-weight: 850;
     }
@@ -1646,7 +1930,7 @@ function openPlantPanel(card) {
   dialog.querySelectorAll(".plant-document-link").forEach(link => {
     link.addEventListener("click", event => {
       event.preventDefault();
-      openPlantDocument(link.dataset.documentFile, link.dataset.documentTitle, link.dataset.documentKind);
+      openPlantDocument(link.dataset.documentFile, link.dataset.documentTitle, link.dataset.documentKind, link.dataset.documentPages);
     });
   });
   dialog.querySelector('[name="cuttings"]').addEventListener("change", event => {
@@ -1690,7 +1974,7 @@ function ensurePlantDocumentViewer() {
       <button class="plant-document-close" type="button">Stäng</button>
     </header>
     <iframe class="plant-document-frame" title="Dokument" hidden></iframe>
-    <div class="plant-document-image-wrap" hidden><img class="plant-document-image" alt=""></div>
+    <div class="plant-document-pages" aria-label="Dokumentsidor" hidden></div>
   </div>`;
   document.body.appendChild(viewer);
   const closeViewer = () => viewer.close();
@@ -1701,24 +1985,32 @@ function ensurePlantDocumentViewer() {
   });
   viewer.addEventListener("close", () => {
     viewer.querySelector(".plant-document-frame").removeAttribute("src");
-    viewer.querySelector(".plant-document-image").removeAttribute("src");
+    viewer.querySelector(".plant-document-pages").replaceChildren();
   });
   return viewer;
 }
 
-function openPlantDocument(file, title, kind) {
+function openPlantDocument(file, title, kind, pages) {
   if (!clean(file)) return;
   const viewer = ensurePlantDocumentViewer();
   const frame = viewer.querySelector(".plant-document-frame");
-  const imageWrap = viewer.querySelector(".plant-document-image-wrap");
-  const image = viewer.querySelector(".plant-document-image");
-  const isImage = kind === "image";
+  const pagesContainer = viewer.querySelector(".plant-document-pages");
+  const publishedPages = clean(pages).split("|").map(clean).filter(Boolean);
+  const imageFiles = publishedPages.length ? publishedPages : (kind === "image" ? [file] : []);
   viewer.querySelector(".plant-document-viewer-title").textContent = title || "Dokument";
-  frame.hidden = isImage;
-  imageWrap.hidden = !isImage;
-  if (isImage) {
-    image.src = file;
-    image.alt = title || "Dokument";
+  frame.hidden = imageFiles.length > 0;
+  pagesContainer.hidden = imageFiles.length === 0;
+  pagesContainer.replaceChildren();
+  if (imageFiles.length) {
+    imageFiles.forEach((imageFile, index) => {
+      const image = document.createElement("img");
+      image.className = "plant-document-page";
+      image.src = imageFile;
+      image.alt = imageFiles.length > 1 ? `${title || "Dokument"}, sida ${index + 1}` : (title || "Dokument");
+      image.loading = index === 0 ? "eager" : "lazy";
+      pagesContainer.appendChild(image);
+    });
+    pagesContainer.scrollTop = 0;
   } else {
     frame.src = file;
     frame.title = title || "Dokument";
@@ -1736,10 +2028,11 @@ function plantDocumentsPanelHtml(card) {
     const type = clean(documentRow.type) || "Dokument";
     const title = clean(documentRow.title) || type;
     const isImage = /\.(?:jpe?g|png|webp)$/i.test(file);
+    const pages = clean(documentRow.pages);
     const preview = isImage
       ? `<span class="plant-document-preview"><img src="${htmlEscape(file)}" alt="" loading="lazy"></span>`
       : `<span class="plant-document-preview" aria-hidden="true">PDF</span>`;
-    return `<a class="plant-document-link" href="${htmlEscape(file)}" data-document-file="${htmlEscape(file)}" data-document-title="${htmlEscape(title)}" data-document-kind="${isImage ? "image" : "pdf"}">
+    return `<a class="plant-document-link" href="${htmlEscape(file)}" data-document-file="${htmlEscape(file)}" data-document-title="${htmlEscape(title)}" data-document-kind="${isImage ? "image" : "pdf"}" data-document-pages="${htmlEscape(pages)}">
       ${preview}
       <span class="plant-document-copy"><strong>${htmlEscape(title)}</strong><span>${htmlEscape(type)}${clean(documentRow.date) ? ` · ${htmlEscape(documentRow.date)}` : ""}</span></span>
     </a>`;
@@ -2477,7 +2770,8 @@ async function updatePlantImageImportUI() {
   const flowerAssessmentItems = typeof window.buildHibiscusFlowerAssessmentExport === "function"
     ? (window.buildHibiscusFlowerAssessmentExport().items || [])
     : [];
-  const syncCount = items.length + getPlantMilestoneAdditions().length + buildPlantCardNoteExport().items.length + buildPlantStatusExport().items.length + flowerAssessmentItems.length + arrivalItems.length;
+  const cardImageItems = buildPlantCardImageExport().items;
+  const syncCount = items.length + getPlantMilestoneAdditions().length + buildPlantCardNoteExport().items.length + buildPlantStatusExport().items.length + flowerAssessmentItems.length + cardImageItems.length + arrivalItems.length;
   const button = document.querySelector(".import-queue-button");
   if (button) {
     button.classList.toggle("has-items", syncCount > 0);
@@ -2508,8 +2802,10 @@ async function openImageImportQueue() {
     ? window.buildHibiscusFlowerAssessmentExport()
     : {version: 1, traits: [], items: []};
   const flowerAssessmentItems = flowerAssessmentExport.items || [];
+  const cardImageExport = buildPlantCardImageExport();
+  const cardImageItems = cardImageExport.items || [];
   const arrivalItems = await getPendingArrivalItems();
-  const packageCount = items.length + milestoneItems.length + cardNoteItems.length + plantStatusItems.length + flowerAssessmentItems.length;
+  const packageCount = items.length + milestoneItems.length + cardNoteItems.length + plantStatusItems.length + flowerAssessmentItems.length + cardImageItems.length;
   const syncCount = packageCount + arrivalItems.length;
   const urls = [];
   const rows = items.map(item => {
@@ -2579,6 +2875,17 @@ async function openImageImportQueue() {
       </article>
     `;
   }).join("");
+  const cardImageRows = cardImageItems.map(item => `
+    <article class="import-item">
+      <div class="import-item-icon" aria-hidden="true">▣</div>
+      <div>
+        <strong>${htmlEscape(item.id)}</strong>
+        <small>${htmlEscape(item.category)} · valt kortutsnitt</small>
+        <small>${htmlEscape(item.file.split("/").pop() || item.file)}</small>
+      </div>
+      <button class="import-delete" type="button" data-delete-card-image="${escapeAttr(item.category)}|${escapeAttr(item.id)}">Ta bort</button>
+    </article>
+  `).join("");
   const arrivalRows = arrivalItems.map(item => {
     const meta = [item.category, item.arrivalType, item.arrivalDate].filter(Boolean).join(" · ");
     return `
@@ -2597,11 +2904,11 @@ async function openImageImportQueue() {
       <header>
         <div>
           <h2>Synka till Mac</h2>
-          <p>${syncCount ? `${items.length} bilder · ${milestoneItems.length} milstolpar · ${cardNoteItems.length} anteckningar · ${plantStatusItems.length} statusar · ${flowerAssessmentItems.length} blombedömningar · ${arrivalItems.length} ankomstsamtal` : "Kön är tom just nu."}</p>
+          <p>${syncCount ? `${items.length} bilder · ${milestoneItems.length} milstolpar · ${cardNoteItems.length} anteckningar · ${plantStatusItems.length} statusar · ${flowerAssessmentItems.length} blombedömningar · ${cardImageItems.length} kortutsnitt · ${arrivalItems.length} ankomstsamtal` : "Kön är tom just nu."}</p>
         </div>
         <button class="import-close" type="button" aria-label="Stäng">×</button>
       </header>
-      <div class="import-list">${rows + milestoneRows + cardNoteRows + plantStatusRows + flowerAssessmentRows + arrivalRows || '<div class="import-empty">Inga ändringar i kön.</div>'}</div>
+      <div class="import-list">${rows + milestoneRows + cardNoteRows + plantStatusRows + flowerAssessmentRows + cardImageRows + arrivalRows || '<div class="import-empty">Inga ändringar i kön.</div>'}</div>
       <div class="import-buttons">
         ${packageCount ? '<button class="primary" type="button" data-export-package>Synka</button>' : (arrivalItems.length ? '<div class="import-sync-status">Sparad – behandlas när Mac-synkningen körs.</div>' : '')}
         <button class="secondary" type="button" data-clear-import ${packageCount ? "" : "disabled"}>Rensa synkkö</button>
@@ -2649,13 +2956,22 @@ async function openImageImportQueue() {
       openImageImportQueue();
     });
   });
+  dialog.querySelectorAll("[data-delete-card-image]").forEach(button => {
+    button.addEventListener("click", () => {
+      const [category, plantId] = button.dataset.deleteCardImage.split("|");
+      deletePlantCardImageChange(category, plantId);
+      updatePlantImageImportUI();
+      openImageImportQueue();
+    });
+  });
   const clearButton = dialog.querySelector("[data-clear-import]");
   clearButton.addEventListener("click", async () => {
-    if (!confirm("Ta bort alla bilder, milstolpar, anteckningar, statusändringar och blombedömningar i synkkön? Gör detta först när paketet är sparat eller importerat på Mac.")) return;
+    if (!confirm("Ta bort alla bilder, milstolpar, anteckningar, statusändringar, kortutsnitt och blombedömningar i synkkön? Gör detta först när paketet är sparat eller importerat på Mac.")) return;
     await clearImageImportItems();
     clearPlantMilestoneAdditions();
     clearPlantCardNoteChanges();
     clearPlantStatusChanges();
+    clearPlantCardImageChanges();
     if (typeof window.clearHibiscusFlowerAssessmentChanges === "function") window.clearHibiscusFlowerAssessmentChanges();
     window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: {cleared: true}}));
     updatePlantImageImportUI();
@@ -2666,7 +2982,7 @@ async function openImageImportQueue() {
     packageButton.disabled = true;
     packageButton.textContent = "Skapar paket...";
     try {
-      const zip = await createSyncPackage(items, getPlantMilestoneAdditions(), cardNoteItems, plantStatusItems, flowerAssessmentExport);
+      const zip = await createSyncPackage(items, getPlantMilestoneAdditions(), cardNoteItems, plantStatusItems, flowerAssessmentExport, cardImageExport);
       const filename = `mina-vaxter-synkpaket-${localDateString()}.zip`;
       const localSave = await saveSyncPackageToMac(filename, zip);
       if (!localSave) downloadBlob(filename, zip);
@@ -2679,6 +2995,7 @@ async function openImageImportQueue() {
         clearPlantMilestoneAdditions();
         clearPlantCardNoteChanges();
         clearPlantStatusChanges();
+        clearPlantCardImageChanges();
         if (typeof window.clearHibiscusFlowerAssessmentChanges === "function") window.clearHibiscusFlowerAssessmentChanges();
         window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: {cleared: true}}));
         updatePlantImageImportUI();
@@ -2741,18 +3058,20 @@ async function createImageImportPackage(items) {
   return createZipBlob(entries);
 }
 
-async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRows = [], plantStatusRows = [], flowerAssessmentExport = {version: 1, traits: [], items: []}) {
+async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRows = [], plantStatusRows = [], flowerAssessmentExport = {version: 1, traits: [], items: []}, cardImageExport = {version: 1, items: []}) {
   const imageManifest = buildImageImportManifest(imageItems);
   const milestoneExport = buildPlantMilestoneExport(milestoneRows);
   const cardNoteExport = buildPlantCardNoteExport(cardNoteRows);
   const plantStatusExport = buildPlantStatusExport(plantStatusRows);
   const flowerAssessmentItems = flowerAssessmentExport.items || [];
-  const syncManifest = buildSyncManifest(imageManifest.items, milestoneExport.items, cardNoteExport.items, plantStatusExport.items, flowerAssessmentItems);
+  const cardImageItems = cardImageExport.items || [];
+  const syncManifest = buildSyncManifest(imageManifest.items, milestoneExport.items, cardNoteExport.items, plantStatusExport.items, flowerAssessmentItems, cardImageItems);
   syncManifest.images = imageManifest.items;
   syncManifest.milestonesFile = "milstolpar.json";
   syncManifest.cardNotesFile = "kortanteckningar.json";
   syncManifest.plantStatusesFile = "vaxtstatusar.json";
   syncManifest.flowerAssessmentsFile = "hibiskus-blombedomningar.json";
+  syncManifest.cardImagesFile = "kortbilder.json";
 
   const entries = [
     {
@@ -2774,6 +3093,10 @@ async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRo
     {
       name: "hibiskus-blombedomningar.json",
       blob: new Blob([JSON.stringify(flowerAssessmentExport, null, 2)], {type: "application/json;charset=utf-8"})
+    },
+    {
+      name: "kortbilder.json",
+      blob: new Blob([JSON.stringify(cardImageExport, null, 2)], {type: "application/json;charset=utf-8"})
     }
   ];
   imageManifest.items.forEach((manifestItem, index) => {
