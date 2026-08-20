@@ -1,0 +1,3823 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "2026-08-20-synk-0938",
+  "categories": {
+    "Hibiskus": {
+      "titleField": "id",
+      "plants": [
+        {
+          "id": "HIB-001",
+          "status": "Aktiv",
+          "nickname": "Cato",
+          "arrival_type": "Köpt planta",
+          "source": "Plantagen",
+          "start_date": "2026-08-13",
+          "breeding_selected": "nej",
+          "mother": "",
+          "father": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "bilder/hibiskusar/HIB-001_synk-c157b46745_2026-08-14_blomma.jpg",
+          "card_crop_x": "32.896",
+          "card_crop_y": "57.4362",
+          "card_image_updated_at": "2026-08-14T15:33:20.442Z"
+        },
+        {
+          "id": "HIB-002",
+          "status": "Aktiv",
+          "nickname": "Bemita",
+          "arrival_type": "Köpt planta",
+          "source": "Plantagen",
+          "start_date": "2026-08-13",
+          "breeding_selected": "nej",
+          "mother": "",
+          "father": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "bilder/hibiskusar/HIB-002_synk-8f3fe5a3db_2026-08-13_blomma.jpg",
+          "card_crop_x": "50.0972",
+          "card_crop_y": "55.7461",
+          "card_image_updated_at": "2026-08-14T15:33:05.920Z"
+        },
+        {
+          "id": "PL-H01-A",
+          "status": "Ej blommat / under utvärdering",
+          "nickname": "",
+          "arrival_type": "Frö",
+          "source": "Rareplants.eu",
+          "start_date": "",
+          "breeding_selected": "nej",
+          "mother": "okänd",
+          "father": "okänd",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "PL-H01-B",
+          "status": "Ej blommat / under utvärdering",
+          "nickname": "",
+          "arrival_type": "Frö",
+          "source": "Rareplants.eu",
+          "start_date": "",
+          "breeding_selected": "nej",
+          "mother": "okänd",
+          "father": "okänd",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "PL-H01-C",
+          "status": "Ej blommat / under utvärdering",
+          "nickname": "",
+          "arrival_type": "Frö",
+          "source": "Rareplants.eu",
+          "start_date": "",
+          "breeding_selected": "nej",
+          "mother": "okänd",
+          "father": "okänd",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "PL-H01-D",
+          "status": "Ej blommat / under utvärdering",
+          "nickname": "",
+          "arrival_type": "Frö",
+          "source": "Rareplants.eu",
+          "start_date": "",
+          "breeding_selected": "nej",
+          "mother": "okänd",
+          "father": "okänd",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "PL-H01-G",
+          "status": "Ej blommat / under utvärdering",
+          "nickname": "",
+          "arrival_type": "Frö",
+          "source": "Rareplants.eu",
+          "start_date": "",
+          "breeding_selected": "nej",
+          "mother": "okänd",
+          "father": "okänd",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "PL-H01-H",
+          "status": "Ej blommat / under utvärdering",
+          "nickname": "",
+          "arrival_type": "Frö",
+          "source": "Rareplants.eu",
+          "start_date": "",
+          "breeding_selected": "nej",
+          "mother": "okänd",
+          "father": "okänd",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "PL-H01-I",
+          "status": "Ej blommat / under utvärdering",
+          "nickname": "",
+          "arrival_type": "Frö",
+          "source": "Rareplants.eu",
+          "start_date": "",
+          "breeding_selected": "nej",
+          "mother": "okänd",
+          "father": "okänd",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "PL-H01-J",
+          "status": "Ej blommat / under utvärdering",
+          "nickname": "",
+          "arrival_type": "Frö",
+          "source": "Rareplants.eu",
+          "start_date": "",
+          "breeding_selected": "nej",
+          "mother": "okänd",
+          "father": "okänd",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "PL-H01-K",
+          "status": "Ej blommat / under utvärdering",
+          "nickname": "",
+          "arrival_type": "Frö",
+          "source": "Rareplants.eu",
+          "start_date": "",
+          "breeding_selected": "nej",
+          "mother": "okänd",
+          "father": "okänd",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "PL-H01-L",
+          "status": "Ej blommat / under utvärdering",
+          "nickname": "",
+          "arrival_type": "Frö",
+          "source": "Rareplants.eu",
+          "start_date": "",
+          "breeding_selected": "nej",
+          "mother": "okänd",
+          "father": "okänd",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "PL-H01-M",
+          "status": "Ej blommat / under utvärdering",
+          "nickname": "",
+          "arrival_type": "Frö",
+          "source": "Rareplants.eu",
+          "start_date": "",
+          "breeding_selected": "nej",
+          "mother": "okänd",
+          "father": "okänd",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "PL-H01-N",
+          "status": "Ej blommat / under utvärdering",
+          "nickname": "",
+          "arrival_type": "Frö",
+          "source": "Rareplants.eu",
+          "start_date": "",
+          "breeding_selected": "nej",
+          "mother": "okänd",
+          "father": "okänd",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "PL-H01-O",
+          "status": "Ej blommat / under utvärdering",
+          "nickname": "",
+          "arrival_type": "Frö",
+          "source": "Rareplants.eu",
+          "start_date": "",
+          "breeding_selected": "nej",
+          "mother": "okänd",
+          "father": "okänd",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "PL-H01-Q",
+          "status": "Ej blommat / under utvärdering",
+          "nickname": "",
+          "arrival_type": "Frö",
+          "source": "Rareplants.eu",
+          "start_date": "",
+          "breeding_selected": "nej",
+          "mother": "okänd",
+          "father": "okänd",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "PL-H01-R",
+          "status": "Ej blommat / under utvärdering",
+          "nickname": "",
+          "arrival_type": "Frö",
+          "source": "Rareplants.eu",
+          "start_date": "",
+          "breeding_selected": "nej",
+          "mother": "okänd",
+          "father": "okänd",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "PL-H02-A-01",
+          "status": "Grodd",
+          "nickname": "",
+          "arrival_type": "Frö",
+          "source": "Rareplants.eu",
+          "start_date": "",
+          "breeding_selected": "nej",
+          "mother": "okänd",
+          "father": "okänd",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "PL-H02-B-01",
+          "status": "Grodd",
+          "nickname": "",
+          "arrival_type": "Frö",
+          "source": "Rareplants.eu",
+          "start_date": "",
+          "breeding_selected": "nej",
+          "mother": "012",
+          "father": "030",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "PL-H02-C-01",
+          "status": "Grodd",
+          "nickname": "",
+          "arrival_type": "Frö",
+          "source": "Rareplants.eu",
+          "start_date": "",
+          "breeding_selected": "nej",
+          "mother": "030",
+          "father": "041",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "PL-H02-C-02",
+          "status": "Grodd",
+          "nickname": "",
+          "arrival_type": "Frö",
+          "source": "Rareplants.eu",
+          "start_date": "",
+          "breeding_selected": "nej",
+          "mother": "030",
+          "father": "041",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "PL-H02-C-03",
+          "status": "Grodd",
+          "nickname": "",
+          "arrival_type": "Frö",
+          "source": "Rareplants.eu",
+          "start_date": "",
+          "breeding_selected": "nej",
+          "mother": "030",
+          "father": "041",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "PL-H02-D-01",
+          "status": "Grodd",
+          "nickname": "",
+          "arrival_type": "Frö",
+          "source": "Rareplants.eu",
+          "start_date": "",
+          "breeding_selected": "nej",
+          "mother": "012",
+          "father": "okänd",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "PL-H02-D-02",
+          "status": "Grodd",
+          "nickname": "",
+          "arrival_type": "Frö",
+          "source": "Rareplants.eu",
+          "start_date": "",
+          "breeding_selected": "nej",
+          "mother": "012",
+          "father": "okänd",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "PL-H02-D-03",
+          "status": "Grodd",
+          "nickname": "",
+          "arrival_type": "Frö",
+          "source": "Rareplants.eu",
+          "start_date": "",
+          "breeding_selected": "nej",
+          "mother": "012",
+          "father": "okänd",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        }
+      ],
+      "photos": [
+        {
+          "plant_id": "HIB-001",
+          "date": "2026-08-13",
+          "type": "blomma",
+          "file": "bilder/hibiskusar/HIB-001_synk-6375bd895a_2026-08-13_blomma.jpg",
+          "label": "2026-08-13 · blomma",
+          "day": "",
+          "photo_id": "HPH-8650E17E98F0"
+        },
+        {
+          "plant_id": "HIB-001",
+          "date": "2026-08-13",
+          "type": "hel",
+          "file": "bilder/hibiskusar/HIB-001_synk-da167d7f48_2026-08-13_hel.jpg",
+          "label": "2026-08-13 · hel",
+          "day": "",
+          "photo_id": "HPH-CFA6DA907BE7"
+        },
+        {
+          "plant_id": "HIB-001",
+          "date": "2026-08-14",
+          "type": "blomma",
+          "file": "bilder/hibiskusar/HIB-001_synk-c157b46745_2026-08-14_blomma.jpg",
+          "label": "2026-08-14 · blomma",
+          "day": "",
+          "photo_id": "HPH-B2B058AC22DA"
+        },
+        {
+          "plant_id": "HIB-002",
+          "date": "2026-08-13",
+          "type": "blomma",
+          "file": "bilder/hibiskusar/HIB-002_synk-8f3fe5a3db_2026-08-13_blomma.jpg",
+          "label": "2026-08-13 · blomma",
+          "day": "",
+          "photo_id": "HPH-FBCF9B19D30B"
+        },
+        {
+          "plant_id": "HIB-002",
+          "date": "2026-08-13",
+          "type": "hel",
+          "file": "bilder/hibiskusar/HIB-002_synk-6700aed7df_2026-08-13_hel.jpg",
+          "label": "2026-08-13 · hel",
+          "day": "",
+          "photo_id": "HPH-0C1969F74497"
+        },
+        {
+          "plant_id": "PL-H01-A",
+          "date": "2026-05-24",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-A_2026-05-24_hel.jpg",
+          "label": "2026-05-24 · hel",
+          "day": "189",
+          "photo_id": "HPH-684E08324FFB"
+        },
+        {
+          "plant_id": "PL-H01-A",
+          "date": "2026-06-07",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-A_2026-06-07_hel.jpg",
+          "label": "2026-06-07 · hel",
+          "day": "203",
+          "photo_id": "HPH-B5C6DE87E9AF"
+        },
+        {
+          "plant_id": "PL-H01-A",
+          "date": "2026-08-15",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-A_2026-08-15_hel.jpg",
+          "label": "2026-08-15 · hel",
+          "day": "272",
+          "photo_id": "HPH-C47FF7A05DCF"
+        },
+        {
+          "plant_id": "PL-H01-B",
+          "date": "2026-05-24",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-B_2026-05-24_hel.jpg",
+          "label": "2026-05-24 · hel",
+          "day": "189",
+          "photo_id": "HPH-7A50F87CE4F2"
+        },
+        {
+          "plant_id": "PL-H01-B",
+          "date": "2026-06-07",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-B_2026-06-07_hel.jpg",
+          "label": "2026-06-07 · hel",
+          "day": "203",
+          "photo_id": "HPH-82828D9D1B58"
+        },
+        {
+          "plant_id": "PL-H01-B",
+          "date": "2026-08-15",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-B_2026-08-15_hel.jpg",
+          "label": "2026-08-15 · hel",
+          "day": "272",
+          "photo_id": "HPH-DD4D6125F070"
+        },
+        {
+          "plant_id": "PL-H01-B",
+          "date": "2026-08-17",
+          "type": "beskuren",
+          "file": "bilder/hibiskusar/PL-H01-B_synk-d5cff0ca0f_2026-08-17_beskuren.jpg",
+          "label": "2026-08-17 · beskuren",
+          "day": "274",
+          "photo_id": "HPH-96527B48632B"
+        },
+        {
+          "plant_id": "PL-H01-B",
+          "date": "2026-08-17",
+          "type": "stickling",
+          "file": "bilder/hibiskusar/PL-H01-B_synk-61c1556416_2026-08-17_stickling.jpg",
+          "label": "2026-08-17 · stickling",
+          "day": "274",
+          "photo_id": "HPH-5B1B88FC77B6"
+        },
+        {
+          "plant_id": "PL-H01-C",
+          "date": "2026-05-24",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-C_2026-05-24_hel.jpg",
+          "label": "2026-05-24 · hel",
+          "day": "189",
+          "photo_id": "HPH-D46ED3222E1E"
+        },
+        {
+          "plant_id": "PL-H01-C",
+          "date": "2026-06-07",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-C_2026-06-07_hel.jpg",
+          "label": "2026-06-07 · hel",
+          "day": "203",
+          "photo_id": "HPH-053B362F745D"
+        },
+        {
+          "plant_id": "PL-H01-C",
+          "date": "2026-08-15",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-C_2026-08-15_hel.jpg",
+          "label": "2026-08-15 · hel",
+          "day": "272",
+          "photo_id": "HPH-14B5DB846707"
+        },
+        {
+          "plant_id": "PL-H01-C",
+          "date": "2026-08-17",
+          "type": "beskuren",
+          "file": "bilder/hibiskusar/PL-H01-C_synk-b74031172b_2026-08-17_beskuren.jpg",
+          "label": "2026-08-17 · beskuren",
+          "day": "274",
+          "photo_id": "HPH-9D009BB0CEAE"
+        },
+        {
+          "plant_id": "PL-H01-C",
+          "date": "2026-08-17",
+          "type": "stickling",
+          "file": "bilder/hibiskusar/PL-H01-C_synk-83ba3f3e0c_2026-08-17_stickling.jpg",
+          "label": "2026-08-17 · stickling",
+          "day": "274",
+          "photo_id": "HPH-E3DB3CB91301"
+        },
+        {
+          "plant_id": "PL-H01-D",
+          "date": "2026-05-24",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-D_2026-05-24_hel.jpg",
+          "label": "2026-05-24 · hel",
+          "day": "189",
+          "photo_id": "HPH-54995AF3CF70"
+        },
+        {
+          "plant_id": "PL-H01-D",
+          "date": "2026-06-07",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-D_2026-06-07_hel.jpg",
+          "label": "2026-06-07 · hel",
+          "day": "203",
+          "photo_id": "HPH-7964F9739EB4"
+        },
+        {
+          "plant_id": "PL-H01-D",
+          "date": "2026-08-15",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-D_2026-08-15_hel.jpg",
+          "label": "2026-08-15 · hel",
+          "day": "272",
+          "photo_id": "HPH-BE96ED2CBD75"
+        },
+        {
+          "plant_id": "PL-H01-G",
+          "date": "2026-05-24",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-G_2026-05-24_hel.jpg",
+          "label": "2026-05-24 · hel",
+          "day": "189",
+          "photo_id": "HPH-427754C7A045"
+        },
+        {
+          "plant_id": "PL-H01-G",
+          "date": "2026-06-07",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-G_2026-06-07_hel.jpg",
+          "label": "2026-06-07 · hel",
+          "day": "203",
+          "photo_id": "HPH-3694B4EE0411"
+        },
+        {
+          "plant_id": "PL-H01-G",
+          "date": "2026-08-15",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-G_2026-08-15_hel.jpg",
+          "label": "2026-08-15 · hel",
+          "day": "272",
+          "photo_id": "HPH-378D21923FC0"
+        },
+        {
+          "plant_id": "PL-H01-H",
+          "date": "2026-05-24",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-H_2026-05-24_hel.jpg",
+          "label": "2026-05-24 · hel",
+          "day": "189",
+          "photo_id": "HPH-0BBC8254EA2D"
+        },
+        {
+          "plant_id": "PL-H01-H",
+          "date": "2026-06-07",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-H_2026-06-07_hel.jpg",
+          "label": "2026-06-07 · hel",
+          "day": "203",
+          "photo_id": "HPH-91F79146AA4B"
+        },
+        {
+          "plant_id": "PL-H01-H",
+          "date": "2026-08-15",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-H_2026-08-15_hel.jpg",
+          "label": "2026-08-15 · hel",
+          "day": "272",
+          "photo_id": "HPH-D3EEA6DB4872"
+        },
+        {
+          "plant_id": "PL-H01-H",
+          "date": "2026-08-17",
+          "type": "beskuren",
+          "file": "bilder/hibiskusar/PL-H01-H_synk-26fdad341f_2026-08-17_beskuren.jpg",
+          "label": "2026-08-17 · beskuren",
+          "day": "274",
+          "photo_id": "HPH-FB2882D97D10"
+        },
+        {
+          "plant_id": "PL-H01-H",
+          "date": "2026-08-17",
+          "type": "stickling",
+          "file": "bilder/hibiskusar/PL-H01-H_synk-b8782bb620_2026-08-17_stickling.jpg",
+          "label": "2026-08-17 · stickling",
+          "day": "274",
+          "photo_id": "HPH-A76C71FF00C9"
+        },
+        {
+          "plant_id": "PL-H01-I",
+          "date": "2026-05-24",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-I_2026-05-24_hel.jpg",
+          "label": "2026-05-24 · hel",
+          "day": "189",
+          "photo_id": "HPH-EF919D077D73"
+        },
+        {
+          "plant_id": "PL-H01-I",
+          "date": "2026-06-07",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-I_2026-06-07_hel.jpg",
+          "label": "2026-06-07 · hel",
+          "day": "203",
+          "photo_id": "HPH-D5D0ADBBA3D1"
+        },
+        {
+          "plant_id": "PL-H01-I",
+          "date": "2026-08-15",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-I_2026-08-15_hel.jpg",
+          "label": "2026-08-15 · hel",
+          "day": "272",
+          "photo_id": "HPH-75DEC465690C"
+        },
+        {
+          "plant_id": "PL-H01-J",
+          "date": "2026-05-24",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-J_2026-05-24_hel.jpg",
+          "label": "2026-05-24 · hel",
+          "day": "189",
+          "photo_id": "HPH-932BD3DF0BF1"
+        },
+        {
+          "plant_id": "PL-H01-J",
+          "date": "2026-06-07",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-J_2026-06-07_hel.jpg",
+          "label": "2026-06-07 · hel",
+          "day": "203",
+          "photo_id": "HPH-A67B8F0B1A76"
+        },
+        {
+          "plant_id": "PL-H01-J",
+          "date": "2026-08-15",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-J_2026-08-15_hel.jpg",
+          "label": "2026-08-15 · hel",
+          "day": "272",
+          "photo_id": "HPH-5EE74C38311F"
+        },
+        {
+          "plant_id": "PL-H01-K",
+          "date": "2026-05-24",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-K_2026-05-24_hel.jpg",
+          "label": "2026-05-24 · hel",
+          "day": "189",
+          "photo_id": "HPH-D90DB743E71F"
+        },
+        {
+          "plant_id": "PL-H01-K",
+          "date": "2026-06-07",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-K_2026-06-07_hel.jpg",
+          "label": "2026-06-07 · hel",
+          "day": "203",
+          "photo_id": "HPH-3975FC9CC2F5"
+        },
+        {
+          "plant_id": "PL-H01-K",
+          "date": "2026-08-15",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-K_2026-08-15_hel.jpg",
+          "label": "2026-08-15 · hel",
+          "day": "272",
+          "photo_id": "HPH-9B31E15E5326"
+        },
+        {
+          "plant_id": "PL-H01-K",
+          "date": "2026-08-17",
+          "type": "beskuren",
+          "file": "bilder/hibiskusar/PL-H01-K_synk-bd2cd658db_2026-08-17_beskuren.jpg",
+          "label": "2026-08-17 · beskuren",
+          "day": "274",
+          "photo_id": "HPH-D2AE6F2363EB"
+        },
+        {
+          "plant_id": "PL-H01-K",
+          "date": "2026-08-17",
+          "type": "stickling",
+          "file": "bilder/hibiskusar/PL-H01-K_synk-48dfb49844_2026-08-17_stickling.jpg",
+          "label": "2026-08-17 · stickling",
+          "day": "274",
+          "photo_id": "HPH-F009596D7FAE"
+        },
+        {
+          "plant_id": "PL-H01-L",
+          "date": "2026-05-24",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-L_2026-05-24_hel.jpg",
+          "label": "2026-05-24 · hel",
+          "day": "189",
+          "photo_id": "HPH-B32CC6BDBE51"
+        },
+        {
+          "plant_id": "PL-H01-L",
+          "date": "2026-06-07",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-L_2026-06-07_hel.jpg",
+          "label": "2026-06-07 · hel",
+          "day": "203",
+          "photo_id": "HPH-B00D6C4283AF"
+        },
+        {
+          "plant_id": "PL-H01-L",
+          "date": "2026-08-15",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-L_2026-08-15_hel.jpg",
+          "label": "2026-08-15 · hel",
+          "day": "272",
+          "photo_id": "HPH-FBB69859A466"
+        },
+        {
+          "plant_id": "PL-H01-M",
+          "date": "2026-05-24",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-M_2026-05-24_hel.jpg",
+          "label": "2026-05-24 · hel",
+          "day": "189",
+          "photo_id": "HPH-D1E032CC078B"
+        },
+        {
+          "plant_id": "PL-H01-M",
+          "date": "2026-06-07",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-M_2026-06-07_hel.jpg",
+          "label": "2026-06-07 · hel",
+          "day": "203",
+          "photo_id": "HPH-A91A6E61C24F"
+        },
+        {
+          "plant_id": "PL-H01-M",
+          "date": "2026-08-15",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-M_2026-08-15_hel.jpg",
+          "label": "2026-08-15 · hel",
+          "day": "272",
+          "photo_id": "HPH-6E4829C8546A"
+        },
+        {
+          "plant_id": "PL-H01-N",
+          "date": "2026-05-24",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-N_2026-05-24_hel.jpg",
+          "label": "2026-05-24 · hel",
+          "day": "189",
+          "photo_id": "HPH-1D6E38B8D07F"
+        },
+        {
+          "plant_id": "PL-H01-N",
+          "date": "2026-06-07",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-N_2026-06-07_hel.jpg",
+          "label": "2026-06-07 · hel",
+          "day": "203",
+          "photo_id": "HPH-1728EC4B7854"
+        },
+        {
+          "plant_id": "PL-H01-N",
+          "date": "2026-08-15",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-N_2026-08-15_hel.jpg",
+          "label": "2026-08-15 · hel",
+          "day": "272",
+          "photo_id": "HPH-A585B19A6C86"
+        },
+        {
+          "plant_id": "PL-H01-O",
+          "date": "2026-05-24",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-O_2026-05-24_hel.jpg",
+          "label": "2026-05-24 · hel",
+          "day": "189",
+          "photo_id": "HPH-2E9236CCBAE2"
+        },
+        {
+          "plant_id": "PL-H01-O",
+          "date": "2026-06-07",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-O_2026-06-07_hel.jpg",
+          "label": "2026-06-07 · hel",
+          "day": "203",
+          "photo_id": "HPH-AF2C19EAFA58"
+        },
+        {
+          "plant_id": "PL-H01-O",
+          "date": "2026-08-15",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-O_2026-08-15_hel.jpg",
+          "label": "2026-08-15 · hel",
+          "day": "272",
+          "photo_id": "HPH-3E541073934B"
+        },
+        {
+          "plant_id": "PL-H01-Q",
+          "date": "2026-05-24",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-Q_2026-05-24_hel.jpg",
+          "label": "2026-05-24 · hel",
+          "day": "189",
+          "photo_id": "HPH-A0AB3342F27C"
+        },
+        {
+          "plant_id": "PL-H01-Q",
+          "date": "2026-06-07",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-Q_2026-06-07_hel.jpg",
+          "label": "2026-06-07 · hel",
+          "day": "203",
+          "photo_id": "HPH-E68DEF9D1EE9"
+        },
+        {
+          "plant_id": "PL-H01-Q",
+          "date": "2026-08-15",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-Q_2026-08-15_hel.jpg",
+          "label": "2026-08-15 · hel",
+          "day": "272",
+          "photo_id": "HPH-4DAC67F7303F"
+        },
+        {
+          "plant_id": "PL-H01-R",
+          "date": "2026-05-24",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-R_2026-05-24_hel.jpg",
+          "label": "2026-05-24 · hel",
+          "day": "189",
+          "photo_id": "HPH-3D55CE1D5A79"
+        },
+        {
+          "plant_id": "PL-H01-R",
+          "date": "2026-06-07",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-R_2026-06-07_hel.jpg",
+          "label": "2026-06-07 · hel",
+          "day": "203",
+          "photo_id": "HPH-0B8FB5A8F497"
+        },
+        {
+          "plant_id": "PL-H01-R",
+          "date": "2026-08-15",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H01-R_2026-08-15_hel.jpg",
+          "label": "2026-08-15 · hel",
+          "day": "272",
+          "photo_id": "HPH-737C3F409AE1"
+        },
+        {
+          "plant_id": "PL-H01-R",
+          "date": "2026-08-17",
+          "type": "beskuren",
+          "file": "bilder/hibiskusar/PL-H01-R_synk-7cdd30efce_2026-08-17_beskuren.jpg",
+          "label": "2026-08-17 · beskuren",
+          "day": "274",
+          "photo_id": "HPH-4DFB292523AC"
+        },
+        {
+          "plant_id": "PL-H01-R",
+          "date": "2026-08-17",
+          "type": "stickling",
+          "file": "bilder/hibiskusar/PL-H01-R_synk-e8f523ed16_2026-08-17_stickling.jpg",
+          "label": "2026-08-17 · stickling",
+          "day": "274",
+          "photo_id": "HPH-63E5A6B8BAAB"
+        },
+        {
+          "plant_id": "PL-H02-A-01",
+          "date": "2026-07-26",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H02-A-01_2026-07-26_hel.jpg",
+          "label": "2026-07-26 · hel",
+          "day": "31",
+          "photo_id": "HPH-321FDDB557D0"
+        },
+        {
+          "plant_id": "PL-H02-A-01",
+          "date": "2026-08-15",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H02-A-01_2026-08-15_hel.jpg",
+          "label": "2026-08-15 · hel",
+          "day": "51",
+          "photo_id": "HPH-6C9FF56F4B61"
+        },
+        {
+          "plant_id": "PL-H02-B-01",
+          "date": "2026-07-08",
+          "type": "grodd",
+          "file": "bilder/hibiskusar/PL-H02-B-01_2026-07-08_grodd.jpg",
+          "label": "2026-07-08 · grodd",
+          "day": "13",
+          "photo_id": "HPH-3F5C829A5BCE"
+        },
+        {
+          "plant_id": "PL-H02-B-01",
+          "date": "2026-07-26",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H02-B-01_2026-07-26_hel.jpg",
+          "label": "2026-07-26 · hel",
+          "day": "31",
+          "photo_id": "HPH-B2517204B56C"
+        },
+        {
+          "plant_id": "PL-H02-B-01",
+          "date": "2026-08-15",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H02-B-01_2026-08-15_hel.jpg",
+          "label": "2026-08-15 · hel",
+          "day": "51",
+          "photo_id": "HPH-D150A1037794"
+        },
+        {
+          "plant_id": "PL-H02-C-01",
+          "date": "2026-07-26",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H02-C-01_2026-07-26_hel.jpg",
+          "label": "2026-07-26 · hel",
+          "day": "31",
+          "photo_id": "HPH-632D36E3C4CF"
+        },
+        {
+          "plant_id": "PL-H02-C-01",
+          "date": "2026-08-15",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H02-C-01_2026-08-15_hel.jpg",
+          "label": "2026-08-15 · hel",
+          "day": "51",
+          "photo_id": "HPH-3A0BA42766D2"
+        },
+        {
+          "plant_id": "PL-H02-C-02",
+          "date": "2026-08-02",
+          "type": "grodd",
+          "file": "bilder/hibiskusar/PL-H02-C-02_2026-08-02_grodd.jpg",
+          "label": "2026-08-02 · grodd",
+          "day": "38",
+          "photo_id": "HPH-36A73FF88A3D"
+        },
+        {
+          "plant_id": "PL-H02-C-02",
+          "date": "2026-08-15",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H02-C-02_2026-08-15_hel.jpg",
+          "label": "2026-08-15 · hel",
+          "day": "51",
+          "photo_id": "HPH-07C79F1D922A"
+        },
+        {
+          "plant_id": "PL-H02-C-03",
+          "date": "2026-08-02",
+          "type": "grodd",
+          "file": "bilder/hibiskusar/PL-H02-C-03_2026-08-02_grodd.jpg",
+          "label": "2026-08-02 · grodd",
+          "day": "38",
+          "photo_id": "HPH-EC278B6DB101"
+        },
+        {
+          "plant_id": "PL-H02-C-03",
+          "date": "2026-08-15",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H02-C-03_2026-08-15_hel.jpg",
+          "label": "2026-08-15 · hel",
+          "day": "51",
+          "photo_id": "HPH-93976520D1F0"
+        },
+        {
+          "plant_id": "PL-H02-D-01",
+          "date": "2026-07-08",
+          "type": "grodd",
+          "file": "bilder/hibiskusar/PL-H02-D-01_2026-07-08_grodd.jpg",
+          "label": "2026-07-08 · grodd",
+          "day": "13",
+          "photo_id": "HPH-31FD60C92AC8"
+        },
+        {
+          "plant_id": "PL-H02-D-01",
+          "date": "2026-07-26",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H02-D-01_2026-07-26_hel.jpg",
+          "label": "2026-07-26 · hel",
+          "day": "31",
+          "photo_id": "HPH-EB4FE48F366D"
+        },
+        {
+          "plant_id": "PL-H02-D-01",
+          "date": "2026-08-15",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H02-D-01_2026-08-15_hel.jpg",
+          "label": "2026-08-15 · hel",
+          "day": "51",
+          "photo_id": "HPH-D87206200C62"
+        },
+        {
+          "plant_id": "PL-H02-D-02",
+          "date": "2026-07-26",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H02-D-02_2026-07-26_hel.jpg",
+          "label": "2026-07-26 · hel",
+          "day": "31",
+          "photo_id": "HPH-C2ED7A94ECB9"
+        },
+        {
+          "plant_id": "PL-H02-D-02",
+          "date": "2026-08-15",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H02-D-02_2026-08-15_hel.jpg",
+          "label": "2026-08-15 · hel",
+          "day": "51",
+          "photo_id": "HPH-A6555240C694"
+        },
+        {
+          "plant_id": "PL-H02-D-03",
+          "date": "2026-07-26",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H02-D-03_2026-07-26_hel.jpg",
+          "label": "2026-07-26 · hel",
+          "day": "31",
+          "photo_id": "HPH-08BFC185B751"
+        },
+        {
+          "plant_id": "PL-H02-D-03",
+          "date": "2026-08-15",
+          "type": "hel",
+          "file": "bilder/hibiskusar/PL-H02-D-03_2026-08-15_hel.jpg",
+          "label": "2026-08-15 · hel",
+          "day": "51",
+          "photo_id": "HPH-8C8D2CD4932C"
+        }
+      ]
+    },
+    "Pelargon": {
+      "titleField": "name",
+      "plants": [
+        {
+          "id": "p-acetosum",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "P. acetosum",
+          "type": "Vildpelargon",
+          "specimen_count": "1",
+          "tags": "",
+          "status": "Bekräftad",
+          "scent": "",
+          "source": "Sune Trygg",
+          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "seed_lot_id": "",
+          "breeding_selected": "nej",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "bilder/pelargoner/p-acetosum_synk-fa0da0f811_2026-07-17_blomma.jpg",
+          "card_crop_x": "52.2352",
+          "card_crop_y": "50.676",
+          "card_image_updated_at": "2026-08-14T16:06:44.526Z"
+        },
+        {
+          "id": "p-australe-1",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "P. australe",
+          "type": "Vildpelargon",
+          "specimen_count": "2",
+          "tags": "",
+          "status": "Bekräftad",
+          "scent": "",
+          "source": "Sune Trygg",
+          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "seed_lot_id": "",
+          "breeding_selected": "nej",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "p-cotyledonis-1",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "P. cotyledonis",
+          "type": "Vildpelargon",
+          "specimen_count": "2",
+          "tags": "",
+          "status": "Bekräftad",
+          "scent": "",
+          "source": "Sune Trygg",
+          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "seed_lot_id": "",
+          "breeding_selected": "nej",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "p-gibbosum-1",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "P. gibbosum",
+          "type": "Vildpelargon",
+          "specimen_count": "4",
+          "tags": "",
+          "status": "Bekräftad",
+          "scent": "Kvällsdoftande / kryddigt-balsamisk",
+          "source": "Sune Trygg",
+          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "seed_lot_id": "",
+          "breeding_selected": "nej",
+          "cuttings_available": "ja",
+          "cuttings_updated_at": "2026-08-13T09:17:18.390Z",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "p-gibbosum-4",
+          "record_kind": "INDIVIDUAL",
+          "collection_id": "p-gibbosum-1",
+          "name": "P. gibbosum 4",
+          "type": "Vildpelargon",
+          "specimen_count": "",
+          "tags": "",
+          "status": "Bekräftad",
+          "scent": "Kvällsdoftande / kryddigt-balsamisk",
+          "source": "Sune Trygg",
+          "notes": "Har både maj- och junibild i katalogen.",
+          "nickname": "Grotesco",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "seed_lot_id": "",
+          "breeding_selected": "nej",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "bilder/pelargoner/p-gibbosum-4_synk-b61ffb5f3d_2026-08-08_blomma.jpg",
+          "card_crop_x": "50",
+          "card_crop_y": "50",
+          "card_image_updated_at": "2026-08-14T16:06:14.548Z"
+        },
+        {
+          "id": "p-gibbosum-maroon-1",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "P. gibbosum ‘Maroon’",
+          "type": "Vildpelargon",
+          "specimen_count": "2",
+          "tags": "",
+          "status": "Bekräftad",
+          "scent": "Kvällsdoftande / kryddigt-balsamisk",
+          "source": "Sune Trygg",
+          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "seed_lot_id": "",
+          "breeding_selected": "nej",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "p-laxum-1",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "P. laxum",
+          "type": "Vildpelargon",
+          "specimen_count": "2",
+          "tags": "",
+          "status": "Bekräftad",
+          "scent": "",
+          "source": "Sune Trygg",
+          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "seed_lot_id": "",
+          "breeding_selected": "nej",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "p-magenteum",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "P. magenteum",
+          "type": "Vildpelargon",
+          "specimen_count": "1",
+          "tags": "",
+          "status": "Bekräftad",
+          "scent": "",
+          "source": "Sune Trygg",
+          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "seed_lot_id": "",
+          "breeding_selected": "nej",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "bilder/pelargoner/p-magenteum_synk-f66141400c_2026-08-01_blomma.jpg",
+          "card_crop_x": "47.7648",
+          "card_crop_y": "44.2539",
+          "card_image_updated_at": "2026-08-14T16:07:17.774Z"
+        },
+        {
+          "id": "p-odoratissimum-1",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "P. odoratissimum",
+          "type": "Doftpelargon",
+          "specimen_count": "1",
+          "tags": "",
+          "status": "Bekräftad",
+          "scent": "Äpple / frisk doft",
+          "source": "Sune Trygg",
+          "notes": "Doftpelargon med äppellik/frisk doft. Doftpelargon och doftande vildart.",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "seed_lot_id": "",
+          "breeding_selected": "nej",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "p-sidoides",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "P. sidoides",
+          "type": "Vildpelargon",
+          "specimen_count": "1",
+          "tags": "",
+          "status": "Bekräftad",
+          "scent": "Svag / örtig",
+          "source": "Sune Trygg",
+          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "seed_lot_id": "",
+          "breeding_selected": "nej",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "bilder/pelargoner/p-sidoides_synk-0e0577ba2f_2026-08-05_blomma.jpg",
+          "card_crop_x": "52.0408",
+          "card_crop_y": "26.5085",
+          "card_image_updated_at": "2026-08-14T16:07:27.279Z"
+        },
+        {
+          "id": "p-triffidum",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "P. triffidum",
+          "type": "Vildpelargon",
+          "specimen_count": "1",
+          "tags": "",
+          "status": "Bekräftad",
+          "scent": "",
+          "source": "Sune Trygg",
+          "notes": "Vild art. Etiketten anger P. triffidum.",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "seed_lot_id": "",
+          "breeding_selected": "nej",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "p-caffrum-diana",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "P. × caffrum ‘Diana’",
+          "type": "Primärhybrid",
+          "specimen_count": "1",
+          "tags": "",
+          "status": "Bekräftad",
+          "scent": "",
+          "source": "Sune Trygg",
+          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "seed_lot_id": "",
+          "breeding_selected": "nej",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "bilder/pelargoner/p-caffrum-diana_synk-b1d8c54af2_2026-08-01_blomma.jpg",
+          "card_crop_x": "50.5831",
+          "card_crop_y": "37.6627",
+          "card_image_updated_at": "2026-08-14T16:07:36.835Z"
+        },
+        {
+          "id": "p-bontrosai-1",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "P. ‘Bontrosai’",
+          "type": "Doftpelargon",
+          "specimen_count": "2",
+          "tags": "",
+          "status": "Bekräftad",
+          "scent": "",
+          "source": "Sune Trygg",
+          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "seed_lot_id": "",
+          "breeding_selected": "nej",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "p-bothams-surprise-1",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "P. ‘Botham Surprise’",
+          "type": "Brokbladig pelargon",
+          "specimen_count": "2",
+          "tags": "",
+          "status": "Bekräftad",
+          "scent": "",
+          "source": "Sune Trygg",
+          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "seed_lot_id": "",
+          "breeding_selected": "nej",
+          "cuttings_available": "ja",
+          "cuttings_updated_at": "2026-08-13T15:37:55.878Z",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "p-creamery",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "P. ‘Creamery’",
+          "type": "Zonalpelargon",
+          "specimen_count": "1",
+          "tags": "",
+          "status": "Bekräftad",
+          "scent": "",
+          "source": "Sune Trygg",
+          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "seed_lot_id": "",
+          "breeding_selected": "nej",
+          "cuttings_available": "ja",
+          "cuttings_updated_at": "2026-08-13T15:37:39.639Z",
+          "card_image": "bilder/pelargoner/p-creamery_2026-07-04_blomma.jpg",
+          "card_crop_x": "51.8465",
+          "card_crop_y": "2.19705",
+          "card_image_updated_at": "2026-08-14T16:33:34.193Z"
+        },
+        {
+          "id": "p-cys-sunburst-1",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "P. ‘Cy’s Sunburst’",
+          "type": "Doftpelargon",
+          "specimen_count": "3",
+          "tags": "",
+          "status": "Bekräftad",
+          "scent": "",
+          "source": "Sune Trygg",
+          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid. Doftpelargon med brokbladigt bladverk.",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "seed_lot_id": "",
+          "breeding_selected": "nej",
+          "cuttings_available": "ja",
+          "cuttings_updated_at": "2026-08-13T15:39:31.056Z",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "p-dr-westerlund-1",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "P. ‘Dr Westerlund’",
+          "type": "Doftpelargon",
+          "specimen_count": "2",
+          "tags": "",
+          "status": "Bekräftad",
+          "scent": "Klassisk doftpelargon / frisk citrus-ros",
+          "source": "Sune Trygg",
+          "notes": "Doftpelargon. Eget exemplar i samlingen.",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "seed_lot_id": "",
+          "breeding_selected": "nej",
+          "cuttings_available": "ja",
+          "cuttings_updated_at": "2026-08-13T09:16:29.817Z",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "p-lemon-queen",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "P. ‘Lemon Queen’",
+          "type": "Doftpelargon",
+          "specimen_count": "1",
+          "tags": "",
+          "status": "Bekräftad",
+          "scent": "Citron",
+          "source": "Sune Trygg",
+          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "seed_lot_id": "",
+          "breeding_selected": "nej",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "p-nielsens-fragrans-1",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "P. ‘Nielsens Fragrans’",
+          "type": "Doftpelargon",
+          "specimen_count": "1",
+          "tags": "",
+          "status": "Bekräftad",
+          "scent": "Doftpelargon",
+          "source": "Sune Trygg",
+          "notes": "Har både helbild och blomma från samma datum.",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "seed_lot_id": "",
+          "breeding_selected": "nej",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "p-prince-of-orange",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "P. ‘Prince of Orange’",
+          "type": "Doftpelargon",
+          "specimen_count": "1",
+          "tags": "",
+          "status": "Bekräftad",
+          "scent": "Apelsin / citrus",
+          "source": "Sune Trygg",
+          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "seed_lot_id": "",
+          "breeding_selected": "nej",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "bilder/pelargoner/p-prince-of-orange_2026-07-01_blomma.jpg",
+          "card_crop_x": "50.7775",
+          "card_crop_y": "39.8598",
+          "card_image_updated_at": "2026-08-14T16:08:08.137Z"
+        },
+        {
+          "id": "p-torento",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "P. ‘Torento’",
+          "type": "Doftpelargon",
+          "specimen_count": "0",
+          "tags": "",
+          "status": "Bekräftad",
+          "scent": "Cola / kryddig citrus",
+          "source": "Sune Trygg",
+          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "seed_lot_id": "",
+          "breeding_selected": "nej",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        }
+      ],
+      "photos": [
+        {
+          "plant_id": "p-acetosum",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-acetosum_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-acetosum",
+          "date": "2026-07-17",
+          "type": "blomma",
+          "file": "bilder/pelargoner/p-acetosum_synk-fa0da0f811_2026-07-17_blomma.jpg",
+          "label": "2026-07-17 · blomma"
+        },
+        {
+          "plant_id": "p-australe-1",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-australe-1_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-australe-1",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-australe-2_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-australe-1",
+          "date": "2026-08-05",
+          "type": "blomma",
+          "file": "bilder/pelargoner/p-australe-1_synk-7f4155e4dc_2026-08-05_blomma.jpg",
+          "label": "2026-08-05 · blomma"
+        },
+        {
+          "plant_id": "p-bontrosai-1",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-bontrosai-1_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-bontrosai-1",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-bontrosai-2_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-bothams-surprise-1",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-bothams-surprise-1_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-bothams-surprise-1",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-bothams-surprise-2_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-caffrum-diana",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-caffrum-diana_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-caffrum-diana",
+          "date": "2026-08-01",
+          "type": "blomma",
+          "file": "bilder/pelargoner/p-caffrum-diana_synk-b1d8c54af2_2026-08-01_blomma.jpg",
+          "label": "2026-08-01 · blomma"
+        },
+        {
+          "plant_id": "p-cotyledonis-1",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-cotyledonis-1_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-cotyledonis-1",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-cotyledonis-2_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-cotyledonis-1",
+          "date": "2026-06-23",
+          "type": "stam",
+          "file": "bilder/pelargoner/p-cotyledonis-1_2026-06-23_stam.jpg",
+          "label": "2026-06-23 · stam"
+        },
+        {
+          "plant_id": "p-cotyledonis-1",
+          "date": "2026-06-23",
+          "type": "stam",
+          "file": "bilder/pelargoner/p-cotyledonis-2_2026-06-23_stam.jpg",
+          "label": "2026-06-23 · stam"
+        },
+        {
+          "plant_id": "p-creamery",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-creamery_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-creamery",
+          "date": "2026-07-04",
+          "type": "blomma",
+          "file": "bilder/pelargoner/p-creamery_2026-07-04_blomma.jpg",
+          "label": "2026-07-04 · blomma"
+        },
+        {
+          "plant_id": "p-cys-sunburst-1",
+          "date": "2026-06-21",
+          "type": "blomma",
+          "file": "bilder/pelargoner/p-cys-sunburst-1_2026-06-21_blomma.jpg",
+          "label": "2026-06-21 · blomma"
+        },
+        {
+          "plant_id": "p-cys-sunburst-1",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-cys-sunburst-1_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-cys-sunburst-1",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-cys-sunburst-2_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-cys-sunburst-1",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-cys-sunburst-3_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-dr-westerlund-1",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-dr-westerlund-1_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-dr-westerlund-1",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-dr-westerlund-2_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-dr-westerlund-1",
+          "date": "2026-06-25",
+          "type": "beskuren",
+          "file": "bilder/pelargoner/p-dr-westerlund-1_2026-06-25_beskuren.jpg",
+          "label": "2026-06-25 · beskuren"
+        },
+        {
+          "plant_id": "p-gibbosum-1",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-gibbosum-1_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-gibbosum-1",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-gibbosum-2_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-gibbosum-1",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-gibbosum-3_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-gibbosum-4",
+          "date": "2026-05-24",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-gibbosum-4_2026-05-24_hel.jpg",
+          "label": "2026-05-24 · hel"
+        },
+        {
+          "plant_id": "p-gibbosum-4",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-gibbosum-4_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-gibbosum-4",
+          "date": "2026-08-08",
+          "type": "blomma",
+          "file": "bilder/pelargoner/p-gibbosum-4_synk-b61ffb5f3d_2026-08-08_blomma.jpg",
+          "label": "2026-08-08 · blomma"
+        },
+        {
+          "plant_id": "p-gibbosum-4",
+          "date": "2026-08-08",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-gibbosum-4_synk-fc60acc601_2026-08-08_hel.jpg",
+          "label": "2026-08-08 · hel"
+        },
+        {
+          "plant_id": "p-gibbosum-maroon-1",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-gibbosum-maroon-1_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-gibbosum-maroon-1",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-gibbosum-maroon-2_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-laxum-1",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-laxum-1_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-laxum-1",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-laxum-2_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-laxum-1",
+          "date": "2026-08-05",
+          "type": "blomma",
+          "file": "bilder/pelargoner/p-laxum-2_synk-2d7c2565d5_2026-08-05_blomma.jpg",
+          "label": "2026-08-05 · blomma"
+        },
+        {
+          "plant_id": "p-laxum-1",
+          "date": "2026-08-05",
+          "type": "knopp",
+          "file": "bilder/pelargoner/p-laxum-2_synk-bb3e081cc5_2026-08-05_knopp.jpg",
+          "label": "2026-08-05 · knopp"
+        },
+        {
+          "plant_id": "p-lemon-queen",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-lemon-queen_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-magenteum",
+          "date": "2026-05-24",
+          "type": "start",
+          "file": "bilder/pelargoner/p-magenteum_2026-05-24_start.jpg",
+          "label": "2026-05-24 · start"
+        },
+        {
+          "plant_id": "p-magenteum",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-magenteum_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-magenteum",
+          "date": "2026-06-27",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-magenteum_2026-06-27_hel.jpg",
+          "label": "2026-06-27 · hel"
+        },
+        {
+          "plant_id": "p-magenteum",
+          "date": "2026-08-01",
+          "type": "blomma",
+          "file": "bilder/pelargoner/p-magenteum_synk-f66141400c_2026-08-01_blomma.jpg",
+          "label": "2026-08-01 · blomma"
+        },
+        {
+          "plant_id": "p-nielsens-fragrans-1",
+          "date": "2026-06-21",
+          "type": "blomma",
+          "file": "bilder/pelargoner/p-nielsens-fragrans_2026-06-21_blomma.jpg",
+          "label": "2026-06-21 · blomma"
+        },
+        {
+          "plant_id": "p-nielsens-fragrans-1",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-nielsens-fragrans_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-odoratissimum-1",
+          "date": "2026-06-21",
+          "type": "blomma",
+          "file": "bilder/pelargoner/p-odoratissimum-1_2026-06-21_blomma.jpg",
+          "label": "2026-06-21 · blomma"
+        },
+        {
+          "plant_id": "p-odoratissimum-1",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-odoratissimum-1_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-prince-of-orange",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-prince-of-orange_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-prince-of-orange",
+          "date": "2026-06-25",
+          "type": "blomma",
+          "file": "bilder/pelargoner/p-prince-of-orange_2026-06-25_blomma.jpg",
+          "label": "2026-06-25 · blomma"
+        },
+        {
+          "plant_id": "p-prince-of-orange",
+          "date": "2026-07-01",
+          "type": "blomma",
+          "file": "bilder/pelargoner/p-prince-of-orange_2026-07-01_blomma.jpg",
+          "label": "2026-07-01 · blomma"
+        },
+        {
+          "plant_id": "p-sidoides",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-sidoides_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-sidoides",
+          "date": "2026-08-05",
+          "type": "blomma",
+          "file": "bilder/pelargoner/p-sidoides_synk-0e0577ba2f_2026-08-05_blomma.jpg",
+          "label": "2026-08-05 · blomma"
+        },
+        {
+          "plant_id": "p-torento",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-torento_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-triffidum",
+          "date": "2026-06-21",
+          "type": "blomma",
+          "file": "bilder/pelargoner/p-triffidum_2026-06-21_blomma.jpg",
+          "label": "2026-06-21 · blomma"
+        },
+        {
+          "plant_id": "p-triffidum",
+          "date": "2026-06-21",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-triffidum_2026-06-21_hel.jpg",
+          "label": "2026-06-21 · hel"
+        },
+        {
+          "plant_id": "p-triffidum",
+          "date": "2026-08-05",
+          "type": "blomma",
+          "file": "bilder/pelargoner/p-triffidum_synk-8eaffe31fa_2026-08-05_blomma.jpg",
+          "label": "2026-08-05 · blomma"
+        }
+      ]
+    },
+    "Citrus": {
+      "titleField": "name",
+      "plants": [
+        {
+          "id": "c-calamondin",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "Calamondin",
+          "latin": "",
+          "type": "Calamondin",
+          "specimen_count": "1",
+          "status": "Aktiv",
+          "source": "",
+          "notes": "",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Gåva",
+          "start_date": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "bilder/citrus/c-calamondin_2026-06-24_hel.jpg",
+          "card_crop_x": "41.3508",
+          "card_crop_y": "18.9033",
+          "card_image_updated_at": "2026-08-14T16:04:23.464Z"
+        },
+        {
+          "id": "c-limon-1",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "Citron",
+          "latin": "Citrus × limon",
+          "type": "Citron",
+          "specimen_count": "2",
+          "status": "Aktiv",
+          "source": "Bauhaus",
+          "notes": "",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "bilder/citrus/c-limon-1_2026-06-24_hel.jpg",
+          "card_crop_x": "66.1322",
+          "card_crop_y": "11.8052",
+          "card_image_updated_at": "2026-08-14T16:04:13.224Z"
+        },
+        {
+          "id": "c-kaffirlime",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "Kaffirlime",
+          "latin": "Citrus hystrix",
+          "type": "Kaffirlime",
+          "specimen_count": "1",
+          "status": "Aktiv",
+          "source": "Vivai Miano",
+          "notes": "",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "bilder/citrus/c-kaffirlime_2026-06-24_hel.jpg",
+          "card_crop_x": "49.8056",
+          "card_crop_y": "23.6354",
+          "card_image_updated_at": "2026-08-14T16:03:37.703Z"
+        },
+        {
+          "id": "c-kumquat-1",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "Kumquat",
+          "latin": "",
+          "type": "Kumquat",
+          "specimen_count": "2",
+          "status": "Aktiv",
+          "source": "Vivai Miano",
+          "notes": "",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "bilder/citrus/c-kumquat-1_2026-06-24_hel.jpg",
+          "card_crop_x": "43.6832",
+          "card_crop_y": "11.9993",
+          "card_image_updated_at": "2026-08-14T16:03:27.219Z"
+        },
+        {
+          "id": "c-limequat",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "Limequat",
+          "latin": "",
+          "type": "Limequat",
+          "specimen_count": "1",
+          "status": "Aktiv",
+          "source": "Vivai Miano",
+          "notes": "",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "c-pomelo",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "Pomelo",
+          "latin": "Citrus maxima",
+          "type": "Pomelo",
+          "specimen_count": "1",
+          "status": "Aktiv",
+          "source": "Plantagen",
+          "notes": "Inköpspris: 200 kr",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "2026-08-13",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "bilder/citrus/c-pomelo_synk-e0f75a2974_2026-08-13_hel.jpg",
+          "card_crop_x": "51.4577",
+          "card_crop_y": "69.4354",
+          "card_image_updated_at": "2026-08-14T16:03:04.964Z"
+        },
+        {
+          "id": "c-rod-fingerlime",
+          "record_kind": "COLLECTION",
+          "collection_id": "",
+          "name": "Röd fingerlime",
+          "latin": "Citrus australasica",
+          "type": "Fingerlime",
+          "specimen_count": "1",
+          "status": "Aktiv",
+          "source": "Vivai Miano",
+          "notes": "",
+          "nickname": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jpg",
+          "card_crop_x": "48.2507",
+          "card_crop_y": "16.7063",
+          "card_image_updated_at": "2026-08-14T16:04:34.628Z"
+        }
+      ],
+      "photos": [
+        {
+          "plant_id": "c-calamondin",
+          "date": "2026-06-24",
+          "type": "hel",
+          "file": "bilder/citrus/c-calamondin_2026-06-24_hel.jpg",
+          "label": "2026-06-24 · hel"
+        },
+        {
+          "plant_id": "c-kaffirlime",
+          "date": "2026-06-24",
+          "type": "hel",
+          "file": "bilder/citrus/c-kaffirlime_2026-06-24_hel.jpg",
+          "label": "2026-06-24 · hel"
+        },
+        {
+          "plant_id": "c-kumquat-1",
+          "date": "2026-06-24",
+          "type": "hel",
+          "file": "bilder/citrus/c-kumquat-1_2026-06-24_hel.jpg",
+          "label": "2026-06-24 · hel"
+        },
+        {
+          "plant_id": "c-kumquat-1",
+          "date": "2026-06-24",
+          "type": "hel",
+          "file": "bilder/citrus/c-kumquat-2_2026-06-24_hel.jpg",
+          "label": "2026-06-24 · hel"
+        },
+        {
+          "plant_id": "c-limequat",
+          "date": "2026-06-24",
+          "type": "hel",
+          "file": "bilder/citrus/c-limequat_2026-06-24_hel.jpg",
+          "label": "2026-06-24 · hel"
+        },
+        {
+          "plant_id": "c-limon-1",
+          "date": "2026-06-24",
+          "type": "hel",
+          "file": "bilder/citrus/c-limon-1_2026-06-24_hel.jpg",
+          "label": "2026-06-24 · hel"
+        },
+        {
+          "plant_id": "c-limon-1",
+          "date": "2026-06-24",
+          "type": "hel",
+          "file": "bilder/citrus/c-limon-2_2026-06-24_hel.jpg",
+          "label": "2026-06-24 · hel"
+        },
+        {
+          "plant_id": "c-pomelo",
+          "date": "2026-08-13",
+          "type": "hel",
+          "file": "bilder/citrus/c-pomelo_synk-e0f75a2974_2026-08-13_hel.jpg",
+          "label": "2026-08-13 · hel"
+        },
+        {
+          "plant_id": "c-rod-fingerlime",
+          "date": "2026-06-24",
+          "type": "hel",
+          "file": "bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jpg",
+          "label": "2026-06-24 · hel"
+        }
+      ]
+    },
+    "Udda": {
+      "titleField": "name",
+      "plants": [
+        {
+          "id": "SP-006",
+          "name": "Fredskalla",
+          "latin": "Spathiphyllum wallisii",
+          "type": "Krukväxt",
+          "tags": "",
+          "status": "Aktiv",
+          "source": "",
+          "notes": "Två exemplar dokumenteras gemensamt som udda växt i samlingen.",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "",
+          "start_date": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "SP-005",
+          "name": "Hjärtbräken",
+          "latin": "Hemionitis arifolia",
+          "type": "Krukväxt",
+          "tags": "",
+          "status": "Aktiv",
+          "source": "",
+          "notes": "Dokumenteras som udda växt i samlingen.",
+          "card_note": "Vattna idag",
+          "card_note_updated_at": "2026-08-15T08:28:21.352Z",
+          "arrival_type": "Gåva",
+          "start_date": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "SP-002",
+          "name": "Patchouli",
+          "latin": "Pogostemon cablin",
+          "type": "Doftväxt",
+          "tags": "Frö",
+          "status": "Aktiv",
+          "source": "",
+          "notes": "Flera plantor finns men dokumenteras som växttyp snarare än individer.",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Frö",
+          "start_date": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "SP-010",
+          "name": "Patchouli",
+          "latin": "Pogostemon cablin",
+          "type": "Doftväxt",
+          "tags": "Frö",
+          "status": "Bortgiven",
+          "source": "",
+          "notes": "Individ från grupposten SP-002. Överlämnad som bröllopspresent.",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Frö",
+          "start_date": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "SP-009",
+          "name": "Pillerfikus",
+          "latin": "Ficus deltoidea",
+          "type": "",
+          "tags": "",
+          "status": "",
+          "source": "Blomsterlandet",
+          "notes": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "2026-08-13",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "SP-004",
+          "name": "Plumeria",
+          "latin": "Plumeria spp.",
+          "type": "Krukväxt",
+          "tags": "",
+          "status": "Aktiv",
+          "source": "",
+          "notes": "Dokumenteras som udda växt i samlingen.",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Frö",
+          "start_date": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "bilder/udda/SP-004_plumeria_2026-06-27_hel.jpg",
+          "card_crop_x": "46.4043",
+          "card_crop_y": "26.5085",
+          "card_image_updated_at": "2026-08-14T16:12:44.763Z"
+        },
+        {
+          "id": "SP-003",
+          "name": "Salvia apiana",
+          "latin": "Salvia apiana",
+          "type": "Doftväxt",
+          "tags": "Frö",
+          "status": "Under uppdragning",
+          "source": "",
+          "notes": "Dokumenteras om sådden tar sig.",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Frö",
+          "start_date": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "SP-001",
+          "name": "Stapelia mix",
+          "latin": "Stapelia spp.",
+          "type": "Krukväxt",
+          "tags": "Frö",
+          "status": "Aktiv",
+          "source": "",
+          "notes": "Samplantering med flera individer i samma kruka. Dokumenteras som grupp tills blomning visar skillnader.",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Frö",
+          "start_date": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "bilder/udda/SP-001_synk-e1900dea6f_2026-07-17_hel.jpg",
+          "card_crop_x": "57.483",
+          "card_crop_y": "12.4812",
+          "card_image_updated_at": "2026-08-14T16:12:21.818Z"
+        },
+        {
+          "id": "SP-008",
+          "name": "The Monster",
+          "latin": "Cyphomandra betacea",
+          "type": "Krukväxt",
+          "tags": "Frö",
+          "status": "",
+          "source": "Jalapeno.nu",
+          "notes": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Frö",
+          "start_date": "2025-11-16",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
+          "id": "SP-007",
+          "name": "Ödesträd",
+          "latin": "Clerodendrum thomsoniae",
+          "type": "Krukväxt",
+          "tags": "",
+          "status": "Aktiv",
+          "source": "Tradera",
+          "notes": "Tradera-annons 23. Fokus framåt är etablering, tillväxt och framtida blomning. Trivs ljust utan stark direkt sol och vill ha jämn fuktighet under tillväxtperioden.",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "",
+          "start_date": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        }
+      ],
+      "photos": [
+        {
+          "plant_id": "SP-001",
+          "date": "2026-06-26",
+          "type": "hel",
+          "file": "bilder/udda/SP-001_stapelia_2026-06-26_hel.jpg",
+          "label": "2026-06-26 · hel"
+        },
+        {
+          "plant_id": "SP-001",
+          "date": "2026-07-17",
+          "type": "hel",
+          "file": "bilder/udda/SP-001_synk-e1900dea6f_2026-07-17_hel.jpg",
+          "label": "2026-07-17 · hel"
+        },
+        {
+          "plant_id": "SP-002",
+          "date": "2026-06-26",
+          "type": "hel",
+          "file": "bilder/udda/SP-002_patchouli_2026-06-26_hel.jpg",
+          "label": "2026-06-26 · hel"
+        },
+        {
+          "plant_id": "SP-002",
+          "date": "2026-08-06",
+          "type": "beskuren",
+          "file": "bilder/udda/SP-002_synk-e7e37e0e4b_2026-08-06_beskuren.jpg",
+          "label": "2026-08-06 · beskuren"
+        },
+        {
+          "plant_id": "SP-003",
+          "date": "2026-06-25",
+          "type": "hel",
+          "file": "bilder/udda/SP-003_salvia_apiana_2026-06-25_hel.jpg",
+          "label": "2026-06-25 · hel"
+        },
+        {
+          "plant_id": "SP-003",
+          "date": "2026-08-11",
+          "type": "omplanterad",
+          "file": "bilder/udda/SP-003_synk-f684bdb6dc_2026-08-11_omplanterad.jpg",
+          "label": "2026-08-11 · omplanterad"
+        },
+        {
+          "plant_id": "SP-004",
+          "date": "2026-06-27",
+          "type": "hel",
+          "file": "bilder/udda/SP-004_plumeria_2026-06-27_hel.jpg",
+          "label": "2026-06-27 · hel"
+        },
+        {
+          "plant_id": "SP-005",
+          "date": "2026-06-26",
+          "type": "hel",
+          "file": "bilder/udda/SP-005_hjartbraken_2026-06-26_hel.jpg",
+          "label": "2026-06-26 · hel"
+        },
+        {
+          "plant_id": "SP-006",
+          "date": "2026-07-01",
+          "type": "hel",
+          "file": "bilder/udda/SP-006_fredskalla_2026-07-01_hel.jpg",
+          "label": "2026-07-01 · hel"
+        },
+        {
+          "plant_id": "SP-007",
+          "date": "2026-08-02",
+          "type": "hel",
+          "file": "bilder/udda/SP-007_odestrad_2026-08-02_hel.jpg",
+          "label": "2026-08-02 · hel"
+        },
+        {
+          "plant_id": "SP-008",
+          "date": "2026-06-27",
+          "type": "omplanterad",
+          "file": "bilder/udda/SP-008_synk-255feca870_2026-06-27_omplanterad.jpg",
+          "label": "2026-06-27 · omplanterad"
+        },
+        {
+          "plant_id": "SP-008",
+          "date": "2026-07-19",
+          "type": "detalj",
+          "file": "bilder/udda/SP-008_synk-829691f1df_2026-07-19_detalj.jpg",
+          "label": "2026-07-19 · detalj"
+        },
+        {
+          "plant_id": "SP-008",
+          "date": "2026-08-10",
+          "type": "detalj",
+          "file": "bilder/udda/SP-008_synk-220c4880f7_2026-08-10_detalj.jpg",
+          "label": "2026-08-10 · detalj"
+        },
+        {
+          "plant_id": "SP-008",
+          "date": "2026-08-10",
+          "type": "hel",
+          "file": "bilder/udda/SP-008_synk-95dd650246_2026-08-10_hel.jpg",
+          "label": "2026-08-10 · hel"
+        },
+        {
+          "plant_id": "SP-009",
+          "date": "2026-08-13",
+          "type": "detalj",
+          "file": "bilder/udda/SP-009_synk-18ea339e05_2026-08-13_detalj.jpg",
+          "label": "2026-08-13 · detalj"
+        },
+        {
+          "plant_id": "SP-009",
+          "date": "2026-08-13",
+          "type": "hel",
+          "file": "bilder/udda/SP-009_synk-9cd9cc3e6e_2026-08-13_hel.jpg",
+          "label": "2026-08-13 · hel"
+        },
+        {
+          "plant_id": "SP-010",
+          "date": "2026-06-26",
+          "type": "hel",
+          "file": "bilder/udda/SP-010_synk-f02779bfde_2026-06-26_hel.jpg",
+          "label": "2026-06-26 · hel"
+        },
+        {
+          "plant_id": "SP-010",
+          "date": "2026-08-17",
+          "type": "hel",
+          "file": "bilder/udda/SP-010_synk-bbf4025ec8_2026-08-17_hel.jpg",
+          "label": "2026-08-17 · hel"
+        }
+      ]
+    }
+  },
+  "milestones": [
+    {
+      "id": "PL-H01-A",
+      "date": "2025-11-16",
+      "type": "Sådd",
+      "note": "Frö med okänd moder och fader såddes som del av fröbatch PL-H01."
+    },
+    {
+      "id": "PL-H01-B",
+      "date": "2025-11-16",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "PL-H01-B",
+      "date": "2026-08-17",
+      "type": "Beskuren",
+      "note": ""
+    },
+    {
+      "id": "PL-H01-C",
+      "date": "2025-11-16",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "PL-H01-C",
+      "date": "2026-08-17",
+      "type": "Beskuren",
+      "note": ""
+    },
+    {
+      "id": "PL-H01-D",
+      "date": "2025-11-16",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "PL-H01-G",
+      "date": "2025-11-16",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "PL-H01-H",
+      "date": "2025-11-16",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "PL-H01-H",
+      "date": "2026-08-17",
+      "type": "Beskuren",
+      "note": ""
+    },
+    {
+      "id": "PL-H01-I",
+      "date": "2025-11-16",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "PL-H01-J",
+      "date": "2025-11-16",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "PL-H01-K",
+      "date": "2025-11-16",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "PL-H01-K",
+      "date": "2026-08-17",
+      "type": "Beskuren",
+      "note": ""
+    },
+    {
+      "id": "PL-H01-L",
+      "date": "2025-11-16",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "PL-H01-M",
+      "date": "2025-11-16",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "PL-H01-N",
+      "date": "2025-11-16",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "PL-H01-O",
+      "date": "2025-11-16",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "PL-H01-Q",
+      "date": "2025-11-16",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "PL-H01-R",
+      "date": "2025-11-16",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "PL-H01-R",
+      "date": "2026-08-17",
+      "type": "Beskuren",
+      "note": ""
+    },
+    {
+      "id": "PL-H02-A-01",
+      "date": "2026-06-25",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "PL-H02-A-01",
+      "date": "2026-07-06",
+      "type": "Grodd",
+      "note": ""
+    },
+    {
+      "id": "PL-H02-B-01",
+      "date": "2026-06-25",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "PL-H02-B-01",
+      "date": "2026-07-06",
+      "type": "Grodd",
+      "note": "Första individuella plantan från korsning B."
+    },
+    {
+      "id": "PL-H02-C-01",
+      "date": "2026-06-25",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "PL-H02-C-01",
+      "date": "2026-07-06",
+      "type": "Grodd",
+      "note": ""
+    },
+    {
+      "id": "PL-H02-C-02",
+      "date": "2026-06-25",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "PL-H02-C-02",
+      "date": "2026-07-27",
+      "type": "Grodd",
+      "note": "Individuell planta från korsning C dokumenterad."
+    },
+    {
+      "id": "PL-H02-C-03",
+      "date": "2026-06-25",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "PL-H02-C-03",
+      "date": "2026-07-31",
+      "type": "Grodd",
+      "note": "Individuell planta från korsning C dokumenterad."
+    },
+    {
+      "id": "PL-H02-D-01",
+      "date": "2026-06-25",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "PL-H02-D-01",
+      "date": "2026-07-06",
+      "type": "Grodd",
+      "note": "Första individuella plantan från korsning D."
+    },
+    {
+      "id": "PL-H02-D-02",
+      "date": "2026-06-25",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "PL-H02-D-02",
+      "date": "2026-07-06",
+      "type": "Grodd",
+      "note": ""
+    },
+    {
+      "id": "PL-H02-D-03",
+      "date": "2026-06-25",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "PL-H02-D-03",
+      "date": "2026-07-23",
+      "type": "Grodd",
+      "note": ""
+    },
+    {
+      "id": "SP-001",
+      "date": "2025-01-13",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "SP-001",
+      "date": "2026-06-26",
+      "type": "Omplanterad",
+      "note": ""
+    },
+    {
+      "id": "SP-002",
+      "date": "2025-11-13",
+      "type": "Sådd",
+      "note": "Sådd av första batchen."
+    },
+    {
+      "id": "SP-002",
+      "date": "2026-02-02",
+      "type": "Omplanterad",
+      "note": "Till 9 × 9 cm."
+    },
+    {
+      "id": "SP-002",
+      "date": "2026-08-06",
+      "type": "Beskuren",
+      "note": "Alla plantor friserade\nFormade efter individ\nStora inåtvända blad borttagna\nBasen städad\nBredd anpassad till nuvarande krukstorlek\nBad och avrinning efter beskä"
+    },
+    {
+      "id": "SP-003",
+      "date": "2026-06-25",
+      "type": "Sådd",
+      "note": "Frön blötlagda 24 h med rökpapper före sådd."
+    },
+    {
+      "id": "SP-003",
+      "date": "2026-07-04",
+      "type": "Grodd",
+      "note": "Första synliga grodd."
+    },
+    {
+      "id": "SP-003",
+      "date": "2026-08-11",
+      "type": "Omplanterad",
+      "note": ""
+    },
+    {
+      "id": "SP-004",
+      "date": "2025-11-13",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "SP-007",
+      "date": "2026-07-26",
+      "type": "Plantering",
+      "note": "Mottagen och planterad samma dag."
+    },
+    {
+      "id": "SP-008",
+      "date": "2025-11-16",
+      "type": "Sådd",
+      "note": ""
+    },
+    {
+      "id": "SP-008",
+      "date": "2026-06-27",
+      "type": "Omplanterad",
+      "note": ""
+    },
+    {
+      "id": "SP-010",
+      "date": "2025-11-13",
+      "type": "Sådd",
+      "note": "Sådd av första batchen."
+    },
+    {
+      "id": "SP-010",
+      "date": "2026-02-02",
+      "type": "Omplanterad",
+      "note": "Till 9 × 9 cm."
+    },
+    {
+      "id": "SP-010",
+      "date": "2026-06-15",
+      "type": "Omplanterad",
+      "note": "Den utvalda plantan planterades i sin terrakottakruka inför bröllopet."
+    },
+    {
+      "id": "SP-010",
+      "date": "2026-07-21",
+      "type": "Överlämnad som gåva",
+      "note": "Överlämnad som bröllopspresent."
+    },
+    {
+      "id": "p-creamery",
+      "date": "2026-07-04",
+      "type": "Första blomning",
+      "note": "Ny blommbild importerad och gammal knoppbild ersatt."
+    },
+    {
+      "id": "p-prince-of-orange",
+      "date": "2026-07-01",
+      "type": "Första blomning",
+      "note": "Ny blommbild dokumenterad."
+    },
+    {
+      "id": "p-torento",
+      "date": "2026-08-08",
+      "type": "Avslutad/död",
+      "note": ""
+    }
+  ],
+  "documents": [
+    {
+      "id": "SP-009",
+      "date": "2026-08-13",
+      "type": "Växtkort",
+      "title": "Presentkort för pillerfikus",
+      "file": "dokument/udda/SP-009_pillerfikus_2026-08-13_vaxtkort.png",
+      "pages": []
+    },
+    {
+      "id": "SP-010",
+      "date": "2026-07-25",
+      "type": "Kompendium",
+      "title": "Patchouli – Från ett litet frö",
+      "file": "dokument/udda/SP-010_patchouli_2026-07-25_kompendium.pdf",
+      "pages": [
+        "dokument/udda/SP-010_patchouli_sidor/sida-1.jpg",
+        "dokument/udda/SP-010_patchouli_sidor/sida-2.jpg",
+        "dokument/udda/SP-010_patchouli_sidor/sida-3.jpg",
+        "dokument/udda/SP-010_patchouli_sidor/sida-4.jpg",
+        "dokument/udda/SP-010_patchouli_sidor/sida-5.jpg",
+        "dokument/udda/SP-010_patchouli_sidor/sida-6.jpg"
+      ]
+    }
+  ],
+  "flowerAssessments": {
+    "assessments": [
+      {
+        "assessment_id": "FA-HIB-001-3af7febc46bc",
+        "plant_id": "HIB-001",
+        "observed_date": "2026-08-14",
+        "photo_id": "HPH-B2B058AC22DA",
+        "standard_version": "HIB-FLOWER-V1",
+        "status": "COMPLETE",
+        "note": "",
+        "created_at": "2026-08-14T11:12:26.442Z",
+        "updated_at": "2026-08-14T11:12:26.442Z"
+      },
+      {
+        "assessment_id": "FA-HIB-001-55f7e0a0f6e7",
+        "plant_id": "HIB-001",
+        "observed_date": "2026-08-13",
+        "photo_id": "HPH-8650E17E98F0",
+        "standard_version": "HIB-FLOWER-V1",
+        "status": "COMPLETE",
+        "note": "",
+        "created_at": "2026-08-14T10:13:50.510Z",
+        "updated_at": "2026-08-14T10:13:50.510Z"
+      },
+      {
+        "assessment_id": "FA-HIB-002-5b6b2e034605",
+        "plant_id": "HIB-002",
+        "observed_date": "2026-08-13",
+        "photo_id": "HPH-FBCF9B19D30B",
+        "standard_version": "HIB-FLOWER-V1",
+        "status": "COMPLETE",
+        "note": "",
+        "created_at": "2026-08-14T10:16:50.020Z",
+        "updated_at": "2026-08-14T10:16:50.020Z"
+      }
+    ],
+    "traits": [
+      {
+        "trait_id": "clarity.clear",
+        "domain": "CLARITY",
+        "label": "Klar",
+        "definition": "Klar och relativt ren färgkaraktär",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "clarity.muted",
+        "domain": "CLARITY",
+        "label": "Dämpad",
+        "definition": "Dämpad eller nedtonad färgkaraktär",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "color.apricot",
+        "domain": "COLOR",
+        "label": "Aprikos",
+        "definition": "Aprikosfärgad ton",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "color.black",
+        "domain": "COLOR",
+        "label": "Svart",
+        "definition": "Svart eller nästintill svart färg",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "color.bronze",
+        "domain": "COLOR",
+        "label": "Brons",
+        "definition": "Bronsfärgad ton",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "color.brown",
+        "domain": "COLOR",
+        "label": "Brun",
+        "definition": "Brun färg",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "color.burgundy",
+        "domain": "COLOR",
+        "label": "Vinröd",
+        "definition": "Djupt vinröd ton",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "color.copper",
+        "domain": "COLOR",
+        "label": "Koppar",
+        "definition": "Kopparfärgad ton",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "color.cream",
+        "domain": "COLOR",
+        "label": "Creme",
+        "definition": "Cremefärgad ton",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "color.golden",
+        "domain": "COLOR",
+        "label": "Gyllene",
+        "definition": "Gyllene gul ton",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "color.green",
+        "domain": "COLOR",
+        "label": "Grön",
+        "definition": "Grön färg",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "color.grey",
+        "domain": "COLOR",
+        "label": "Grå",
+        "definition": "Grå färg eller tydlig gråton",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "color.lavender",
+        "domain": "COLOR",
+        "label": "Lavendel",
+        "definition": "Ljus lavendellila ton",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "color.magenta",
+        "domain": "COLOR",
+        "label": "Magenta",
+        "definition": "Magentaröd ton",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "color.orange",
+        "domain": "COLOR",
+        "label": "Orange",
+        "definition": "Orange färg",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "color.pink",
+        "domain": "COLOR",
+        "label": "Rosa",
+        "definition": "Rosa färg",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "color.purple",
+        "domain": "COLOR",
+        "label": "Lila",
+        "definition": "Lila färg",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "color.red",
+        "domain": "COLOR",
+        "label": "Röd",
+        "definition": "Röd färg",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "color.rust",
+        "domain": "COLOR",
+        "label": "Rost",
+        "definition": "Rostfärgad ton",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "color.terracotta",
+        "domain": "COLOR",
+        "label": "Terrakotta",
+        "definition": "Terrakottafärgad ton",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "color.white",
+        "domain": "COLOR",
+        "label": "Vit",
+        "definition": "Vit färg",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "color.yellow",
+        "domain": "COLOR",
+        "label": "Gul",
+        "definition": "Gul färg",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "edge.ruffled",
+        "domain": "PETAL_EDGE",
+        "label": "Rufflad",
+        "definition": "Tydligt rufflad kronbladskant",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "edge.smooth",
+        "domain": "PETAL_EDGE",
+        "label": "Rak / slät",
+        "definition": "Rak eller slät kronbladskant",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "edge.strongly_ruffled",
+        "domain": "PETAL_EDGE",
+        "label": "Kraftigt rufflad",
+        "definition": "Kraftigt veckad eller rufflad kronbladskant",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "edge.wavy",
+        "domain": "PETAL_EDGE",
+        "label": "Vågig",
+        "definition": "Vågformad kronbladskant",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "eye.large",
+        "domain": "EYE_SIZE",
+        "label": "Stort",
+        "definition": "Eyet upptar en stor del av blomman",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "eye.medium",
+        "domain": "EYE_SIZE",
+        "label": "Medel",
+        "definition": "Eyet upptar en medelstor del av blomman",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "eye.none",
+        "domain": "EYE_SIZE",
+        "label": "Saknas",
+        "definition": "Ingen avgränsad mittcirkel syns",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "eye.small",
+        "domain": "EYE_SIZE",
+        "label": "Litet",
+        "definition": "Eyet upptar en liten del av blomman",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "form.double",
+        "domain": "FORM",
+        "label": "Dubbel",
+        "definition": "Tätt fylld blomma med flera lager kronblad",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "form.semidouble",
+        "domain": "FORM",
+        "label": "Semidubbel",
+        "definition": "Fler kronblad än singel men ett synligt centrum",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "form.single",
+        "domain": "FORM",
+        "label": "Singel",
+        "definition": "En enkel krans kronblad",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "pattern.edged",
+        "domain": "PATTERN",
+        "label": "Kantfärgad",
+        "definition": "Avvikande färg längs kronbladskanten",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "pattern.even",
+        "domain": "PATTERN",
+        "label": "Jämn",
+        "definition": "Färgen är jämnt fördelad",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "pattern.flamed",
+        "domain": "PATTERN",
+        "label": "Flammig",
+        "definition": "Flamlik färgspridning",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "pattern.marble",
+        "domain": "PATTERN",
+        "label": "Marmorerad",
+        "definition": "Oregelbundet marmorerad färgspridning",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "pattern.radial",
+        "domain": "PATTERN",
+        "label": "Radiell",
+        "definition": "Färgen sprids radiellt från centrum",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "pattern.sooty",
+        "domain": "PATTERN",
+        "label": "Sotig",
+        "definition": "Mörk eller grå sotlik färgspridning",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "pattern.speckled",
+        "domain": "PATTERN",
+        "label": "Stänkt",
+        "definition": "Prickar eller stänk av avvikande färg",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "pattern.veined",
+        "domain": "PATTERN",
+        "label": "Ådrad",
+        "definition": "Tydliga färgade ådror",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "pattern.zoned",
+        "domain": "PATTERN",
+        "label": "Zonad / ringformad",
+        "definition": "Färgen bildar en zon eller ring",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "temperature.cool",
+        "domain": "TEMPERATURE",
+        "label": "Kall",
+        "definition": "Övervägande kall färgtemperatur",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "temperature.mixed",
+        "domain": "TEMPERATURE",
+        "label": "Blandad",
+        "definition": "Tydligt både kall och varm färgtemperatur",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "temperature.neutral",
+        "domain": "TEMPERATURE",
+        "label": "Neutral",
+        "definition": "Varken tydligt kall eller varm",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "temperature.warm",
+        "domain": "TEMPERATURE",
+        "label": "Varm",
+        "definition": "Övervägande varm färgtemperatur",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "transition.hard",
+        "domain": "TRANSITION",
+        "label": "Hård",
+        "definition": "Tydligt avgränsad färgövergång från centrum mot kronblad",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "transition.medium",
+        "domain": "TRANSITION",
+        "label": "Mellan",
+        "definition": "Delvis gradvis färgövergång från centrum mot kronblad",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "transition.none",
+        "domain": "TRANSITION",
+        "label": "Ingen tydlig övergång",
+        "definition": "Ingen tydlig färgövergång kan urskiljas",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      },
+      {
+        "trait_id": "transition.soft",
+        "domain": "TRANSITION",
+        "label": "Mjuk",
+        "definition": "Gradvis mjuk färgövergång från centrum mot kronblad",
+        "status": "ACTIVE",
+        "canonical_trait_id": ""
+      }
+    ],
+    "assignments": [
+      {
+        "assessment_id": "FA-HIB-001-3af7febc46bc",
+        "layer": "CAN_CONTRIBUTE",
+        "slot": "COLOR_TRANSITION",
+        "trait_id": "transition.soft",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-001-3af7febc46bc",
+        "layer": "CAN_CONTRIBUTE",
+        "slot": "EYE_SIZE",
+        "trait_id": "eye.small",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-001-3af7febc46bc",
+        "layer": "OBSERVED",
+        "slot": "COLOR_CLARITY",
+        "trait_id": "clarity.muted",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-001-3af7febc46bc",
+        "layer": "OBSERVED",
+        "slot": "COLOR_PATTERN",
+        "trait_id": "pattern.radial",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-001-3af7febc46bc",
+        "layer": "OBSERVED",
+        "slot": "COLOR_PATTERN",
+        "trait_id": "pattern.veined",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-001-3af7febc46bc",
+        "layer": "OBSERVED",
+        "slot": "COLOR_TEMPERATURE",
+        "trait_id": "temperature.mixed",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-001-3af7febc46bc",
+        "layer": "OBSERVED",
+        "slot": "COLOR_TRANSITION",
+        "trait_id": "transition.soft",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-001-3af7febc46bc",
+        "layer": "OBSERVED",
+        "slot": "EYE_COLOR",
+        "trait_id": "color.magenta",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-001-3af7febc46bc",
+        "layer": "OBSERVED",
+        "slot": "EYE_SIZE",
+        "trait_id": "eye.small",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-001-3af7febc46bc",
+        "layer": "OBSERVED",
+        "slot": "FORM",
+        "trait_id": "form.single",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-001-3af7febc46bc",
+        "layer": "OBSERVED",
+        "slot": "PETAL_EDGE",
+        "trait_id": "edge.wavy",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-001-3af7febc46bc",
+        "layer": "OBSERVED",
+        "slot": "PRIMARY_COLOR",
+        "trait_id": "color.lavender",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-001-3af7febc46bc",
+        "layer": "OBSERVED",
+        "slot": "SECONDARY_COLOR",
+        "trait_id": "color.white",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-001-3af7febc46bc",
+        "layer": "WATCH",
+        "slot": "EYE_COLOR",
+        "trait_id": "color.magenta",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-001-55f7e0a0f6e7",
+        "layer": "OBSERVED",
+        "slot": "COLOR_CLARITY",
+        "trait_id": "clarity.muted",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-001-55f7e0a0f6e7",
+        "layer": "OBSERVED",
+        "slot": "COLOR_PATTERN",
+        "trait_id": "pattern.even",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-001-55f7e0a0f6e7",
+        "layer": "OBSERVED",
+        "slot": "COLOR_TEMPERATURE",
+        "trait_id": "temperature.cool",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-001-55f7e0a0f6e7",
+        "layer": "OBSERVED",
+        "slot": "COLOR_TRANSITION",
+        "trait_id": "transition.medium",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-001-55f7e0a0f6e7",
+        "layer": "OBSERVED",
+        "slot": "EYE_COLOR",
+        "trait_id": "color.red",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-001-55f7e0a0f6e7",
+        "layer": "OBSERVED",
+        "slot": "EYE_SIZE",
+        "trait_id": "eye.medium",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-001-55f7e0a0f6e7",
+        "layer": "OBSERVED",
+        "slot": "FORM",
+        "trait_id": "form.single",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-001-55f7e0a0f6e7",
+        "layer": "OBSERVED",
+        "slot": "PETAL_EDGE",
+        "trait_id": "edge.strongly_ruffled",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-001-55f7e0a0f6e7",
+        "layer": "OBSERVED",
+        "slot": "PRIMARY_COLOR",
+        "trait_id": "color.lavender",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-001-55f7e0a0f6e7",
+        "layer": "OBSERVED",
+        "slot": "SECONDARY_COLOR",
+        "trait_id": "",
+        "value_status": "NONE"
+      },
+      {
+        "assessment_id": "FA-HIB-002-5b6b2e034605",
+        "layer": "CAN_CONTRIBUTE",
+        "slot": "COLOR_TEMPERATURE",
+        "trait_id": "temperature.warm",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-002-5b6b2e034605",
+        "layer": "CAN_CONTRIBUTE",
+        "slot": "COLOR_TRANSITION",
+        "trait_id": "transition.soft",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-002-5b6b2e034605",
+        "layer": "CAN_CONTRIBUTE",
+        "slot": "PRIMARY_COLOR",
+        "trait_id": "color.yellow",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-002-5b6b2e034605",
+        "layer": "CAN_CONTRIBUTE",
+        "slot": "SECONDARY_COLOR",
+        "trait_id": "color.orange",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-002-5b6b2e034605",
+        "layer": "OBSERVED",
+        "slot": "COLOR_CLARITY",
+        "trait_id": "clarity.clear",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-002-5b6b2e034605",
+        "layer": "OBSERVED",
+        "slot": "COLOR_PATTERN",
+        "trait_id": "pattern.radial",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-002-5b6b2e034605",
+        "layer": "OBSERVED",
+        "slot": "COLOR_TEMPERATURE",
+        "trait_id": "temperature.warm",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-002-5b6b2e034605",
+        "layer": "OBSERVED",
+        "slot": "COLOR_TRANSITION",
+        "trait_id": "transition.soft",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-002-5b6b2e034605",
+        "layer": "OBSERVED",
+        "slot": "EYE_COLOR",
+        "trait_id": "color.red",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-002-5b6b2e034605",
+        "layer": "OBSERVED",
+        "slot": "EYE_SIZE",
+        "trait_id": "eye.medium",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-002-5b6b2e034605",
+        "layer": "OBSERVED",
+        "slot": "FORM",
+        "trait_id": "form.single",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-002-5b6b2e034605",
+        "layer": "OBSERVED",
+        "slot": "PETAL_EDGE",
+        "trait_id": "edge.wavy",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-002-5b6b2e034605",
+        "layer": "OBSERVED",
+        "slot": "PRIMARY_COLOR",
+        "trait_id": "color.yellow",
+        "value_status": "RECORDED"
+      },
+      {
+        "assessment_id": "FA-HIB-002-5b6b2e034605",
+        "layer": "OBSERVED",
+        "slot": "SECONDARY_COLOR",
+        "trait_id": "color.orange",
+        "value_status": "RECORDED"
+      }
+    ],
+    "breedingMarkers": []
+  },
+  "galleries": {
+    "Lilium": [
+      {
+        "date": "2026-06-29",
+        "file": "bilder/galleri/liljor/1e4e1dc7d7e86a6044ea8341.jpg"
+      },
+      {
+        "date": "2026-06-29",
+        "file": "bilder/galleri/liljor/2056f9c27ec85d2f43293025.jpg"
+      },
+      {
+        "date": "2026-06-29",
+        "file": "bilder/galleri/liljor/734608834bffc9010e051ff0.jpg"
+      },
+      {
+        "date": "2026-06-29",
+        "file": "bilder/galleri/liljor/a5c4dee7a89ba98ce3a4b5b1.jpg"
+      },
+      {
+        "date": "2026-08-03",
+        "file": "bilder/galleri/liljor/368b3bf09f4d9b863fe31594.jpg"
+      }
+    ],
+    "Rosa": [
+      {
+        "date": "2026-06-24",
+        "file": "bilder/galleri/rosor/f47bf7d3379b7d693484b2f7.jpg"
+      },
+      {
+        "date": "2026-07-05",
+        "file": "bilder/galleri/rosor/6d7dd7131bc142427894c4f5.jpg"
+      },
+      {
+        "date": "2026-07-05",
+        "file": "bilder/galleri/rosor/b747e18cd8842d4a38e34eff.jpg"
+      }
+    ],
+    "Dahlia": [
+      {
+        "date": "2026-08-04",
+        "file": "bilder/galleri/dahlior/a1fb8fa0f6905762f15e43cc.jpg"
+      },
+      {
+        "date": "2026-08-04",
+        "file": "bilder/galleri/dahlior/dce2500195d3b1e1a6312d90.jpg"
+      }
+    ],
+    "Echinacea": [
+      {
+        "date": "2026-08-12",
+        "file": "bilder/galleri/echinacea/5fa744f116c9d394a9e456a4.jpg"
+      },
+      {
+        "date": "2026-08-12",
+        "file": "bilder/galleri/echinacea/78cd80b70fff6e8010d262fc.jpg"
+      },
+      {
+        "date": "2026-08-12",
+        "file": "bilder/galleri/echinacea/8eeb23e745199ae92f5259ca.jpg"
+      },
+      {
+        "date": "2026-08-12",
+        "file": "bilder/galleri/echinacea/cea8efd73aa18254ae3d391d.jpg"
+      }
+    ]
+  }
+}
