@@ -1954,6 +1954,10 @@ function openPlantPanel(card) {
 }
 
 function publishedPlantDocuments() {
+  const publicDocuments = window.publicCatalogSnapshot?.documents;
+  if (Array.isArray(publicDocuments)) {
+    return publicDocuments.filter(documentRow => clean(documentRow.id) && clean(documentRow.file));
+  }
   const source = document.querySelector("#defaultDocumentsCSV");
   if (!source) return [];
   return parseCSV(source.textContent || "").filter(documentRow => clean(documentRow.id) && clean(documentRow.file));

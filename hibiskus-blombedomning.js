@@ -19,11 +19,19 @@
   ];
   const slotMap = new Map(slots.map(item => [item.slot, item]));
   const embedded = id => document.querySelector(`#${id}`)?.textContent || "";
-  const baseAssessments = parseCSV(embedded("defaultFlowerAssessmentsCSV"));
-  const baseTraits = parseCSV(embedded("defaultFlowerTraitsCSV"));
-  const baseAssignments = parseCSV(embedded("defaultFlowerAssignmentsCSV"));
-  const baseMarkers = parseCSV(embedded("defaultBreedingMarkersCSV"));
-  const basePhotos = parseCSV(embedded("defaultPhotosCSV"));
+  const publicSnapshot = window.publicCatalogSnapshot || {};
+  const publicFlowerData = publicSnapshot.flowerAssessments || {};
+  const publicHibiscusPhotos = publicSnapshot.categories?.Hibiskus?.photos;
+  const baseAssessments = Array.isArray(publicFlowerData.assessments)
+    ? publicFlowerData.assessments : parseCSV(embedded("defaultFlowerAssessmentsCSV"));
+  const baseTraits = Array.isArray(publicFlowerData.traits)
+    ? publicFlowerData.traits : parseCSV(embedded("defaultFlowerTraitsCSV"));
+  const baseAssignments = Array.isArray(publicFlowerData.assignments)
+    ? publicFlowerData.assignments : parseCSV(embedded("defaultFlowerAssignmentsCSV"));
+  const baseMarkers = Array.isArray(publicFlowerData.breedingMarkers)
+    ? publicFlowerData.breedingMarkers : parseCSV(embedded("defaultBreedingMarkersCSV"));
+  const basePhotos = Array.isArray(publicHibiscusPhotos)
+    ? publicHibiscusPhotos : parseCSV(embedded("defaultPhotosCSV"));
 
   function readQueue() {
     try {
