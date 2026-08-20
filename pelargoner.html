@@ -32,7 +32,7 @@
       background: rgba(245,241,234,.84); border-top: 1px solid rgba(222,210,194,.75);
       border-bottom: 1px solid rgba(222,210,194,.95); padding: 14px 18px;
     }
-    .toolbar-inner { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto auto auto auto; gap: 10px; align-items: center; }
+    .toolbar-inner { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto auto auto auto auto; gap: 10px; align-items: center; }
     input, select, button, label.filebutton {
       border: 1px solid var(--line); background: var(--paper); border-radius: 999px; color: var(--ink);
       padding: 11px 14px; font-size: .95rem; font: inherit;
@@ -229,8 +229,8 @@ SP-003,2026-06-25,Sådd,Frön blötlagda 24 h med rökpapper före sådd.
 SP-003,2026-07-04,Grodd,Första synliga grodd.
 SP-004,2025-11-13,Sådd,
 SP-007,2026-07-26,Plantering,Mottagen och planterad samma dag.
-p-creamery,2026-07-04,Blomning,Ny blommbild importerad och gammal knoppbild ersatt.
-p-prince-of-orange,2026-07-01,Blomning,Ny blommbild dokumenterad.
+p-creamery,2026-07-04,Första blomning,Ny blommbild importerad och gammal knoppbild ersatt.
+p-prince-of-orange,2026-07-01,Första blomning,Ny blommbild dokumenterad.
 PL-H01-A,2025-11-16,Sådd,Frö med okänd moder och fader såddes som del av fröbatch PL-H01.
 PL-H02-B-01,2026-07-06,Grodd,Första individuella plantan från korsning B.
 PL-H02-D-01,2026-07-06,Grodd,Första individuella plantan från korsning D.
@@ -240,7 +240,7 @@ PL-H02-D-02,2026-07-06,Grodd,
 PL-H02-D-03,2026-07-23,Grodd,
 PL-H02-C-02,2026-07-27,Grodd,Individuell planta från korsning C dokumenterad.
 PL-H02-C-03,2026-07-31,Grodd,Individuell planta från korsning C dokumenterad.
-SP-002,2026-08-06,Toppad/beskuren,"Alla plantor friserade
+SP-002,2026-08-06,Beskuren,"Alla plantor friserade
 Formade efter individ
 Stora inåtvända blad borttagna
 Basen städad
@@ -271,8 +271,13 @@ PL-H02-D-03,2026-06-25,Sådd,
 p-torento,2026-08-08,Avslutad/död,
 SP-008,2025-11-16,Sådd,
 SP-008,2026-06-27,Omplanterad,
-SP-003,2026-08-11,Omplanterad,</script>
-  <script src="common.js?v=20260814synk1835"></script>
+SP-003,2026-08-11,Omplanterad,
+PL-H01-B,2026-08-17,Beskuren,
+PL-H01-C,2026-08-17,Beskuren,
+PL-H01-H,2026-08-17,Beskuren,
+PL-H01-K,2026-08-17,Beskuren,
+PL-H01-R,2026-08-17,Beskuren,</script>
+  <script src="common.js?v=20260820synk0938"></script>
   <script>
     let plants = [];
     let plantCSVText = document.querySelector("#defaultPlantsCSV").textContent;

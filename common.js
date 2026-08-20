@@ -519,11 +519,11 @@ function milestoneIcon(type) {
     "förökning": "↟",
     "omplanterad": "🪴",
     "omplantering": "🪴",
-    "toppad/beskuren": "✂️",
-    "knopp": "●",
+    "beskuren": "✂️",
+    "första knopp": "●",
     "ohyra upptäckt/behandlad": "!",
     "flyttad ut/in": "↔",
-    "blomning": "✿",
+    "första blomning": "✿",
     "överlämnad som gåva": "🎁",
     "avslutad/död": "×"
   };
@@ -535,9 +535,9 @@ const plantMilestoneTypes = [
   "Grodd",
   "Förökning",
   "Omplanterad",
-  "Toppad/beskuren",
-  "Knopp",
-  "Blomning",
+  "Beskuren",
+  "Första knopp",
+  "Första blomning",
   "Ohyra upptäckt/behandlad",
   "Flyttad ut/in",
   "Överlämnad som gåva",
@@ -765,22 +765,14 @@ function ensureConcludedPlantFilter() {
   if (!grid) return;
   document.body.dataset.concludedPlantFilterReady = "true";
   const concludedValue = "__concluded_only__";
-  let select = document.querySelector("#typeFilter, #statusFilter");
-  if (select) {
-    if (!select.querySelector(`option[value="${concludedValue}"]`)) {
-      const option = document.createElement("option");
-      option.value = concludedValue;
-      option.textContent = "Tidigare växter";
-      select.appendChild(option);
-    }
-  } else {
-    select = document.createElement("select");
-    select.className = "concluded-filter-select";
-    select.setAttribute("aria-label", "Filtrera aktiva eller tidigare växter");
-    select.innerHTML = `<option value="">Aktiva växter</option><option value="${concludedValue}">Tidigare växter</option>`;
-    const stats = document.querySelector("#stats, .stats");
-    if (stats) stats.before(select);
-  }
+  const select = document.createElement("select");
+  select.className = "concluded-filter-select";
+  select.setAttribute("aria-label", "Visa aktiva eller tidigare växter");
+  select.innerHTML = `<option value="">Visa: Aktiva växter</option><option value="${concludedValue}">Visa: Tidigare växter</option>`;
+  const referenceFilter = document.querySelector("#typeFilter, #statusFilter");
+  const stats = document.querySelector("#stats, .stats");
+  if (referenceFilter) referenceFilter.after(select);
+  else if (stats) stats.before(select);
 
   const applyFilter = () => {
     const cards = [...grid.querySelectorAll(".plant-card[data-milestones]")];
