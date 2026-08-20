@@ -2029,7 +2029,9 @@ function plantDocumentsPanelHtml(card) {
     const type = clean(documentRow.type) || "Dokument";
     const title = clean(documentRow.title) || type;
     const isImage = /\.(?:jpe?g|png|webp)$/i.test(file);
-    const pages = clean(documentRow.pages);
+    const pages = Array.isArray(documentRow.pages)
+      ? documentRow.pages.map(clean).filter(Boolean).join("|")
+      : clean(documentRow.pages);
     const preview = isImage
       ? `<span class="plant-document-preview"><img src="${htmlEscape(file)}" alt="" loading="lazy"></span>`
       : `<span class="plant-document-preview" aria-hidden="true">PDF</span>`;
