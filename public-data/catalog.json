@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "catalogVersion": "2026-08-20-synk-0938",
+  "catalogVersion": "2026-08-21-synk-1945",
   "categories": {
     "Hibiskus": {
       "titleField": "id",
@@ -2527,8 +2527,8 @@
           "status": "",
           "source": "Jalapeno.nu",
           "notes": "",
-          "card_note": "",
-          "card_note_updated_at": "",
+          "card_note": "En anteckning",
+          "card_note_updated_at": "2026-08-20T15:08:20.844Z",
           "arrival_type": "Frö",
           "start_date": "2025-11-16",
           "cuttings_available": "",
@@ -2629,6 +2629,20 @@
           "type": "hel",
           "file": "bilder/udda/SP-007_odestrad_2026-08-02_hel.jpg",
           "label": "2026-08-02 · hel"
+        },
+        {
+          "plant_id": "SP-008",
+          "date": "2026-02-13",
+          "type": "hel",
+          "file": "bilder/udda/SP-008_synk-4c030148ef_2026-02-13_hel.jpg",
+          "label": "2026-02-13 · hel"
+        },
+        {
+          "plant_id": "SP-008",
+          "date": "2026-05-24",
+          "type": "hel",
+          "file": "bilder/udda/SP-008_synk-7102a47eed_2026-05-24_hel.jpg",
+          "label": "2026-05-24 · hel"
         },
         {
           "plant_id": "SP-008",
@@ -3817,7 +3831,28 @@
       {
         "date": "2026-08-12",
         "file": "bilder/galleri/echinacea/cea8efd73aa18254ae3d391d.jpg"
+      },
+      {
+        "date": "2026-08-17",
+        "file": "bilder/galleri/echinacea/eae8074ec7999d29ea59c13d.jpg"
       }
-    ]
+    ],
+    "Clematis": [
+      {
+        "date": "2026-08-17",
+        "file": "bilder/galleri/klematis/ae0bc2b22c07a1bd362a171c.jpg"
+      }
+    ],
+    "Lonicera": [
+      {
+        "date": "2026-08-17",
+        "file": "bilder/galleri/kaprifol/0bb900e75b188e09b020a8a2.jpg"
+      },
+      {
+        "date": "2026-08-17",
+        "file": "bilder/galleri/kaprifol/908caae0ef09b2db680451b4.jpg"
+      }
+    ],
+    "Varietas": []
   }
 }

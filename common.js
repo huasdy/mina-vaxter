@@ -2455,6 +2455,8 @@ function ensurePlantImageImport() {
     }
     .import-date-help { min-height: 1.15em; color: var(--muted, #6f655b); font-size: .72rem; font-weight: 650; line-height: 1.25; }
     .import-type-help { color: var(--accent, #7d4f3b); font-size: .72rem; font-weight: 750; line-height: 1.25; }
+    .import-pairing { display: grid; gap: 5px; color: var(--muted, #6f655b); font-size: .82rem; font-weight: 800; }
+    .import-pairing input { border: 1px solid var(--line, #ded2c2); border-radius: 12px; padding: 10px 11px; background: white; color: var(--ink, #2b251f); font: inherit; }
     .import-fields textarea { grid-column: 1 / -1; min-height: 74px; resize: vertical; }
     .import-buttons { display: flex; justify-content: flex-end; gap: 9px; flex-wrap: wrap; }
     .import-buttons button {
@@ -2706,6 +2708,40 @@ async function openImageImportForm(file) {
 }
 
 let localArrivalTokenPromise = null;
+const localSyncTokenKey = "mina-vaxter-lokal-synk-token-v1";
+
+function localSyncEndpoint() {
+  const host = window.location.hostname;
+  if (window.location.protocol !== "http:" || !host) return "";
+  const formattedHost = host.includes(":") ? `[${host}]` : host;
+  return `http://${formattedHost}:47832`;
+}
+
+function localSyncToken() {
+  try { return localStorage.getItem(localSyncTokenKey) || ""; }
+  catch (error) { return ""; }
+}
+
+function saveLocalSyncToken(token) {
+  try { localStorage.setItem(localSyncTokenKey, token); return true; }
+  catch (error) { return false; }
+}
+
+async function pairWithLocalMac(code) {
+  const endpoint = localSyncEndpoint();
+  if (!endpoint) throw new Error("Öppna den lokala förhandsvisningen från Macen för att parkoppla iPhone.");
+  const response = await fetch(`${endpoint}/pair`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({code: String(code || "").trim()}),
+    cache: "no-store"
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok || !payload.ok || !payload.token || !saveLocalSyncToken(payload.token)) {
+    throw new Error(payload.error || "Kunde inte parkoppla iPhone med Macen.");
+  }
+  return payload;
+}
 
 function loadLocalArrivalToken() {
   if (window.MINA_VAXTER_ARCHIVE_TOKEN || window.location.protocol !== "file:") {
@@ -2746,8 +2782,28 @@ async function getPendingArrivalItems() {
 }
 
 async function saveSyncPackageToMac(filename, blob) {
+  const endpoint = localSyncEndpoint();
+  const syncToken = localSyncToken();
+  if (endpoint && syncToken) {
+    try {
+      const response = await fetch(`${endpoint}/sync?filename=${encodeURIComponent(filename)}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/zip",
+          "X-Mina-Vaxter-Sync-Token": syncToken
+        },
+        body: blob,
+        cache: "no-store"
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (response.ok && payload.ok) return payload;
+      return {ok: false, error: payload.error || "Macen kunde inte ta emot synken."};
+    } catch (error) {
+      return {ok: false, error: "Kunde inte nå Macen. Kontrollera att du använder den lokala förhandsvisningen på samma wifi."};
+    }
+  }
   const token = await loadLocalArrivalToken();
-  if (!token) return null;
+  if (!token) return {ok: false, needsPairing: Boolean(endpoint), error: "iPhone är inte parkopplad med Macen."};
   try {
     const response = await fetch(`http://127.0.0.1:47831/sync-package?filename=${encodeURIComponent(filename)}`, {
       method: "POST",
@@ -2758,11 +2814,11 @@ async function saveSyncPackageToMac(filename, blob) {
       body: blob,
       cache: "no-store"
     });
-    if (!response.ok) return null;
+    if (!response.ok) return {ok: false, error: "Macen kunde inte ta emot synken."};
     const payload = await response.json();
-    return payload && payload.ok ? payload : null;
+    return payload && payload.ok ? payload : {ok: false, error: "Macen kunde inte ta emot synken."};
   } catch (error) {
-    return null;
+    return {ok: false, error: "Kunde inte nå Macen."};
   }
 }
 
@@ -2810,6 +2866,8 @@ async function openImageImportQueue() {
   const arrivalItems = await getPendingArrivalItems();
   const packageCount = items.length + milestoneItems.length + cardNoteItems.length + plantStatusItems.length + flowerAssessmentItems.length + cardImageItems.length;
   const syncCount = packageCount + arrivalItems.length;
+  const localSyncReady = Boolean(localSyncEndpoint());
+  const needsPairing = localSyncReady && !localSyncToken();
   const urls = [];
   const rows = items.map(item => {
     const url = URL.createObjectURL(imageImportBlob(item));
@@ -2913,7 +2971,11 @@ async function openImageImportQueue() {
       </header>
       <div class="import-list">${rows + milestoneRows + cardNoteRows + plantStatusRows + flowerAssessmentRows + cardImageRows + arrivalRows || '<div class="import-empty">Inga ändringar i kön.</div>'}</div>
       <div class="import-buttons">
-        ${packageCount ? '<button class="primary" type="button" data-export-package>Synka</button>' : (arrivalItems.length ? '<div class="import-sync-status">Sparad – behandlas när Mac-synkningen körs.</div>' : '')}
+        ${packageCount ? `
+          ${needsPairing ? '<label class="import-pairing"><span>Parkopplingskod från Macen</span><input data-sync-pairing-code autocomplete="one-time-code" inputmode="text" autocapitalize="none" spellcheck="false"></label>' : ''}
+          <button class="primary" type="button" data-export-package>${needsPairing ? 'Parkoppla och synka' : 'Synka'}</button>
+          <div class="import-sync-status" data-sync-status>${localSyncReady ? 'Synkar direkt till Macen på samma wifi.' : 'Öppna den lokala förhandsvisningen från Macen för att synka.'}</div>
+        ` : (arrivalItems.length ? '<div class="import-sync-status">Sparad – behandlas när Mac-synkningen körs.</div>' : '')}
         <button class="secondary" type="button" data-clear-import ${packageCount ? "" : "disabled"}>Rensa synkkö</button>
       </div>
     </div>
@@ -2983,30 +3045,34 @@ async function openImageImportQueue() {
   const packageButton = dialog.querySelector("[data-export-package]");
   if (packageButton) packageButton.addEventListener("click", async () => {
     packageButton.disabled = true;
-    packageButton.textContent = "Skapar paket...";
+    const status = dialog.querySelector("[data-sync-status]");
     try {
+      if (localSyncEndpoint() && !localSyncToken()) {
+        const code = dialog.querySelector("[data-sync-pairing-code]")?.value || "";
+        packageButton.textContent = "Parkopplar...";
+        await pairWithLocalMac(code);
+      }
+      packageButton.textContent = "Synkar...";
       const zip = await createSyncPackage(items, getPlantMilestoneAdditions(), cardNoteItems, plantStatusItems, flowerAssessmentExport, cardImageExport);
       const filename = `mina-vaxter-synkpaket-${localDateString()}.zip`;
       const localSave = await saveSyncPackageToMac(filename, zip);
-      if (!localSave) downloadBlob(filename, zip);
-      packageButton.textContent = "Synka";
-      const saveMessage = localSave
-        ? `Synkpaketet ${localSave.filename} är sparat direkt i Macens Downloads.`
-        : "Synkpaketet har hämtats via webbläsaren.";
-      if (confirm(`${saveMessage}\n\nRensa synkkön i den här webbläsaren?`)) {
-        await clearImageImportItems();
-        clearPlantMilestoneAdditions();
-        clearPlantCardNoteChanges();
-        clearPlantStatusChanges();
-        clearPlantCardImageChanges();
-        if (typeof window.clearHibiscusFlowerAssessmentChanges === "function") window.clearHibiscusFlowerAssessmentChanges();
-        window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: {cleared: true}}));
-        updatePlantImageImportUI();
-        dialog.close();
-      }
+      if (!localSave || !localSave.ok) throw new Error(localSave?.error || "Kunde inte nå Macen.");
+      await clearImageImportItems();
+      clearPlantMilestoneAdditions();
+      clearPlantCardNoteChanges();
+      clearPlantStatusChanges();
+      clearPlantCardImageChanges();
+      if (typeof window.clearHibiscusFlowerAssessmentChanges === "function") window.clearHibiscusFlowerAssessmentChanges();
+      window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: {cleared: true}}));
+      await updatePlantImageImportUI();
+      packageButton.textContent = "Synkat";
+      if (status) status.textContent = localSave.duplicate ? "Synken var redan mottagen av Macen." : "Synkat med Macen.";
+      dialog.close();
+      alert(localSave.duplicate ? "Synken var redan mottagen av Macen." : "Synkat med Macen.");
     } catch (error) {
       packageButton.textContent = "Kunde inte exportera";
-      alert("Kunde inte skapa synkpaketet. Prova igen.");
+      if (status) status.textContent = error.message || "Kunde inte synka. Kön ligger kvar på iPhone.";
+      alert(error.message || "Kunde inte synka. Kön ligger kvar på iPhone.");
     } finally {
       packageButton.disabled = false;
     }

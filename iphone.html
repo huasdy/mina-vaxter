@@ -136,7 +136,7 @@ PL-H01-C,2026-08-17,Beskuren,
 PL-H01-H,2026-08-17,Beskuren,
 PL-H01-K,2026-08-17,Beskuren,
 PL-H01-R,2026-08-17,Beskuren,</script>
-  <script src="common.js?v=20260820synk0938"></script>
+  <script src="common.js?v=20260821synk1945"></script>
   <script>
     let data = {};
     let catalogReady = false;
@@ -147,7 +147,7 @@ PL-H01-R,2026-08-17,Beskuren,</script>
     const search = document.querySelector('#search');
     const mobileViewToggle = document.querySelector('#mobileViewToggle');
     const mobileRefresh = document.querySelector('#mobileRefresh');
-    const MOBILE_APP_VERSION = "2026-08-20-synk-0938";
+    const MOBILE_APP_VERSION = "2026-08-21-synk-1945";
     const initialParams = new URLSearchParams(window.location.search);
     const requestedCategory = initialParams.get('kategori');
     let active = 'Hibiskus';
@@ -400,7 +400,7 @@ PL-H01-R,2026-08-17,Beskuren,</script>
     tabs.addEventListener('click', event => {
       const button = event.target.closest('.tab');
       if (button && button.dataset.name === "Galleri") {
-        window.location.href = "galleri.html?v=2026-08-20-synk-0938";
+        window.location.href = "galleri.html?v=2026-08-21-synk-1945";
         return;
       }
       if (!button) return;

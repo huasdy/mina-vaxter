@@ -244,7 +244,7 @@
       <a class="tool-card" id="dataViewCard" data-tool-card="datavy" href="#datavy" aria-expanded="false" hidden><strong>Datavy</strong><span>Granska och komplettera bara de strukturerade fält som är aktiva för växttypen.</span></a>
       <a class="tool-card" data-tool-card="etiketter" href="#etiketter" aria-expanded="false"><strong>Etiketter</strong><span>Växtetiketter, fri text och batchutskrift för DYMO.</span></a>
       <a class="tool-card" href="hibiskusar.html?tool=milstolpar"><strong>Milstolpar flera</strong><span>Spara samma milstolpe på flera hibiskusar.</span></a>
-      <a class="tool-card" href="hibiskusar.html?tool=frobatcher"><strong>Fröbatcher</strong><span>Översikt och historik för hibiskussådder.</span></a>
+      <a class="tool-card" id="localSyncCard" data-tool-card="lokal-synk" href="#lokal-synk" aria-expanded="false" hidden><strong>Lokal synk</strong><span>Parkoppla iPhone med Macen för synkning hemma på wifi.</span></a>
       <a class="tool-card" id="originalArchiveLink" href="#" hidden><strong>Öppna originalarkiv</strong><span>Fullstora originalbilder sparade lokalt på denna Mac.</span></a>
     </div>
   </section>
@@ -336,6 +336,19 @@
           <div class="arrival-status" id="arrivalStatus" role="status" aria-live="polite"></div>
         </div>
       </form>
+    </div>
+  </section>
+  <section class="data-shell" id="lokal-synk" aria-labelledby="localSyncTitle" hidden>
+    <div class="data-card">
+      <div class="data-head">
+        <div class="eyebrow">Hemma på wifi</div>
+        <h2 id="localSyncTitle">Lokal synk</h2>
+        <p>Visa en engångskod här och skriv den på iPhone första gången. Därefter räcker knappen Synka i den lokala iPhone-förhandsvisningen.</p>
+      </div>
+      <div class="data-actions">
+        <button type="button" id="createLocalSyncCode">Visa parkopplingskod</button>
+        <span class="data-status" id="localSyncCode" role="status" aria-live="polite"></span>
+      </div>
     </div>
   </section>
   <section class="data-shell" id="datavy" aria-labelledby="dataViewTitle" hidden>
@@ -452,6 +465,9 @@
     const batchPreview = document.querySelector("#batchPreview");
     const batchPreviewGrid = document.querySelector("#batchPreviewGrid");
     const originalArchiveLink = document.querySelector("#originalArchiveLink");
+    const localSyncCard = document.querySelector("#localSyncCard");
+    const createLocalSyncCode = document.querySelector("#createLocalSyncCode");
+    const localSyncCode = document.querySelector("#localSyncCode");
     const arrivalForm = document.querySelector("#arrivalForm");
     const arrivalName = document.querySelector("#arrivalName");
     const arrivalDate = document.querySelector("#arrivalDate");
@@ -480,17 +496,19 @@
       const selected = window.location.hash.slice(1);
       const showArrival = selected === "ankomstsamtal";
       const showDataView = selected === "datavy" && Boolean(window.MINA_VAXTER_ARCHIVE_TOKEN);
+      const showLocalSync = selected === "lokal-synk" && Boolean(window.MINA_VAXTER_ARCHIVE_TOKEN);
       const showLabels = selected === "etiketter";
       document.querySelector("#ankomstsamtal").hidden = !showArrival;
       document.querySelector("#datavy").hidden = !showDataView;
+      document.querySelector("#lokal-synk").hidden = !showLocalSync;
       document.querySelector("#etiketterToolbar").hidden = !showLabels;
       document.querySelector("#etiketter").hidden = !showLabels;
       document.querySelectorAll("[data-tool-card]").forEach(card => {
         card.setAttribute("aria-expanded", card.dataset.toolCard === selected ? "true" : "false");
       });
       if (showDataView && !dataViewLoaded) loadDataView();
-      if (scrollToTool && (showArrival || showDataView || showLabels)) {
-        document.querySelector(showArrival ? "#ankomstsamtal" : showDataView ? "#datavy" : "#etiketterToolbar").scrollIntoView({behavior: "smooth", block: "start"});
+      if (scrollToTool && (showArrival || showDataView || showLocalSync || showLabels)) {
+        document.querySelector(showArrival ? "#ankomstsamtal" : showDataView ? "#datavy" : showLocalSync ? "#lokal-synk" : "#etiketterToolbar").scrollIntoView({behavior: "smooth", block: "start"});
       }
     }
 
@@ -844,7 +862,30 @@
       originalArchiveLink.href = "minavaxter-originalarkiv://open";
       originalArchiveLink.hidden = false;
       document.querySelector("#dataViewCard").hidden = false;
+      localSyncCard.hidden = false;
     }
+
+    createLocalSyncCode.addEventListener("click", async () => {
+      const token = window.MINA_VAXTER_ARCHIVE_TOKEN || "";
+      if (!token) return;
+      createLocalSyncCode.disabled = true;
+      createLocalSyncCode.textContent = "Skapar kod…";
+      try {
+        const response = await fetch("http://127.0.0.1:47831/sync-pairing", {
+          headers: {"X-Mina-Vaxter-Token": token}, cache: "no-store"
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || !result.ok || !result.code) throw new Error(result.error || "Kunde inte skapa en kod.");
+        localSyncCode.textContent = `Kod: ${result.code} · giltig i 10 minuter.`;
+        localSyncCode.className = "data-status success";
+      } catch (error) {
+        localSyncCode.textContent = error.message || "Kunde inte skapa en kod.";
+        localSyncCode.className = "data-status error";
+      } finally {
+        createLocalSyncCode.disabled = false;
+        createLocalSyncCode.textContent = "Visa parkopplingskod";
+      }
+    });
 
     function escapeHtml(value) {
       return String(value || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
