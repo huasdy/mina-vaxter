@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tidigare växter · Mina Växter</title>
+  <style>
+    :root { --bg:#f5f1ea; --paper:#fffdf8; --ink:#2b251f; --muted:#6f655b; --line:#ded2c2; --accent:#7d4f3b; --shadow:0 14px 40px rgba(62,43,28,.12); --radius:22px; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); line-height:1.5; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:radial-gradient(circle at top left,rgba(125,79,59,.1),transparent 35rem),var(--bg); }
+    header { padding:46px 22px 30px; text-align:center; }
+    nav { margin-bottom:18px; display:flex; justify-content:center; flex-wrap:wrap; gap:12px; }
+    nav a { color:var(--accent); text-decoration:none; font-weight:750; }
+    nav a.current { color:var(--ink); }
+    .eyebrow { letter-spacing:.18em; text-transform:uppercase; font-size:.78rem; color:var(--accent); font-weight:800; }
+    h1 { margin:8px 0; font-family:Georgia,"Times New Roman",serif; font-size:clamp(2.7rem,8vw,5.6rem); line-height:.92; font-weight:500; }
+    .subtitle { margin:0 auto; max-width:720px; color:var(--muted); font-size:1.05rem; }
+    main { max-width:1240px; margin:0 auto; padding:20px 18px 64px; }
+    .toolbar { display:flex; align-items:center; gap:12px; margin-bottom:20px; }
+    .toolbar input, .toolbar select { border:1px solid var(--line); border-radius:999px; padding:11px 15px; background:var(--paper); color:var(--ink); font:inherit; }
+    .toolbar input { width:min(430px,100%); }
+    .stats { color:var(--muted); font-weight:750; margin-left:auto; white-space:nowrap; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(285px,1fr)); gap:18px; align-items:start; }
+    .plant-card { background:var(--paper); border:1px solid rgba(222,210,194,.95); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); display:flex; flex-direction:column; }
+    .image-wrap { position:relative; aspect-ratio:4 / 5; background:linear-gradient(135deg,rgba(125,79,59,.16),rgba(96,119,97,.14)),#eadfce; overflow:hidden; }
+    .image-wrap > img { width:100%; height:100%; object-fit:cover; display:block; cursor:zoom-in; }
+    .image-empty { height:100%; display:grid; place-items:center; color:var(--muted); font-weight:800; }
+    .date-ribbon { position:absolute; left:12px; bottom:12px; background:rgba(43,37,31,.76); color:white; border-radius:999px; padding:6px 10px; font-size:.8rem; font-weight:750; }
+    .card-body { padding:16px 18px 18px; display:flex; flex-direction:column; gap:12px; position:relative; }
+    h2 { margin:0; font-family:Georgia,"Times New Roman",serif; font-size:1.55rem; line-height:1.08; font-weight:650; }
+    .plant-id, .latin, .plant-nickname { margin-top:4px; color:var(--muted); }
+    .plant-id { font-size:.76rem; font-weight:900; letter-spacing:.1em; text-transform:uppercase; }
+    .latin, .plant-nickname { font-style:italic; }
+    .chips { display:flex; flex-wrap:wrap; gap:7px; }
+    .chip { background:#efe6da; color:var(--muted); border-radius:999px; padding:5px 9px; font-size:.8rem; font-weight:750; }
+    .chip.archive { background:rgba(125,79,59,.12); color:var(--accent); }
+    .empty { grid-column:1 / -1; border:1px dashed var(--line); border-radius:20px; padding:34px; background:rgba(255,253,248,.7); color:var(--muted); text-align:center; font-weight:750; }
+    @media (max-width:700px) { header { padding-top:28px; } .toolbar { align-items:stretch; flex-direction:column; } .stats { margin-left:0; } }
+  </style>
+</head>
+<body data-concluded-plant-archive="true">
+  <header>
+    <nav>
+      <a href="index.html">← Mina Växter</a>
+      <a href="hibiskusar.html">Hibiskus</a>
+      <a href="pelargoner.html">Pelargon</a>
+      <a href="citrus.html">Citrus</a>
+      <a href="udda.html">Udda</a>
+      <a href="favoriter.html">Hundöron</a>
+      <a href="vaxtliv.html">Växtliv</a>
+      <a href="galleri.html">Galleri</a>
+      <a href="verktyg.html">Verktyg</a>
+    </nav>
+    <div class="eyebrow">Katalogarkiv</div>
+    <h1>Tidigare växter</h1>
+    <p class="subtitle">Bortgivna och avslutade växter samlade med bilder och historik.</p>
+  </header>
+  <main>
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="Sök bland tidigare växter" aria-label="Sök bland tidigare växter">
+      <select id="categoryFilter" aria-label="Filtrera kategori"><option value="">Alla kategorier</option></select>
+      <select id="archiveFilter" aria-label="Filtrera tidigare växter"><option value="">Alla tidigare växter</option><option value="gift">Gåva</option><option value="ended">Avslutade</option></select>
+      <div class="stats" id="stats">Laddar…</div>
+    </div>
+    <section class="grid" id="grid"></section>
+  </main>
+  <script src="common.js?v=3beb2c7af0f3"></script>
+  <script>
+    const grid = document.querySelector("#grid");
+    const search = document.querySelector("#search");
+    const categoryFilter = document.querySelector("#categoryFilter");
+    const archiveFilter = document.querySelector("#archiveFilter");
+    const stats = document.querySelector("#stats");
+    let entries = [];
+
+    function archiveKind(row, logs) {
+      const status = clean(row.status).toLocaleLowerCase("sv");
+      const latest = clean(latestPlantMilestone(logs)?.type).toLocaleLowerCase("sv");
+      if (status === "bortgiven" || latest === "överlämnad som gåva") return "gift";
+      if (status.startsWith("avslutad") || status === "död" || latest.startsWith("avslutad") || latest === "död" || latest === "avliden") return "ended";
+      return "";
+    }
+
+    function displayName(category, row) {
+      if (category === "Hibiskus") return clean(row.nickname) || clean(row.id);
+      return clean(row.name) || clean(row.nickname) || clean(row.id);
+    }
+
+    function plantCard(entry) {
+      const {category, row, photos, logs} = entry;
+      const name = displayName(category, row);
+      const identity = category === "Hibiskus" ? clean(row.id) : clean(row.name) || clean(row.id);
+      const nickname = category === "Hibiskus" ? "" : clean(row.nickname);
+      const active = photos[photos.length - 1] || null;
+      const gallery = photos.map(photo => ({file: photo.file, title: name, caption: `${name} · ${photo.label || photo.date || ""}`, alt: name}));
+      const latest = latestPlantMilestone(logs);
+      const caption = active ? (active.label || active.date || "") : "";
+      return `
+        <article class="plant-card" data-category="${escapeAttr(category)}" data-status="${escapeAttr(row.status)}" data-plant-id="${escapeAttr(row.id)}" data-plant-name="${escapeAttr(name)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(nickname)}" data-page="${escapeAttr({Hibiskus:"hibiskusar.html",Pelargon:"pelargoner.html",Citrus:"citrus.html",Udda:"udda.html"}[category])}" data-card-image="${escapeAttr(row.card_image)}" data-card-crop-x="${escapeAttr(row.card_crop_x)}" data-card-crop-y="${escapeAttr(row.card_crop_y)}" data-card-image-updated-at="${escapeAttr(row.card_image_updated_at)}" data-cuttings-available="${escapeAttr(row.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(row.cuttings_updated_at)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(logs))}">
+          <div class="image-wrap">
+            ${active ? `<img class="main-photo" src="${escapeAttr(active.file)}" alt="${escapeAttr(name)}" data-caption="${escapeAttr(name + (caption ? " · " + caption : ""))}">` : '<div class="image-empty">Bild saknas</div>'}
+            ${caption ? `<div class="date-ribbon">${htmlEscape(caption)}</div>` : ""}
+            <div class="plant-card-gallery-slot ${photos.length > 1 ? "has-gallery" : ""}"></div>
+          </div>
+          <div class="card-body">
+            <div class="plant-card-head">
+              <div class="plant-title-block"><div class="plant-id">${htmlEscape(row.id)}</div><h2>${htmlEscape(name)}</h2>${nickname ? `<div class="plant-nickname">${htmlEscape(nickname)}</div>` : ""}${row.latin ? `<div class="latin">${htmlEscape(row.latin)}</div>` : ""}</div>
+              <div class="import-actions"><button class="plant-log-btn" type="button" aria-label="Växtpanel" title="Växtpanel">${logBookIcon()}</button><button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button><span class="import-badge" data-import-badge hidden></span></div>
+            </div>
+            <div class="plant-card-chip-slot"><div class="chips"><span class="chip">${htmlEscape(category)}</span><span class="chip archive">${htmlEscape(row.status || "Tidigare")}</span></div></div>
+            <div class="plant-card-info"></div>
+            <div class="plant-card-milestone-slot">${milestoneSummary(latest)}</div>
+            <div class="plant-card-notes-slot">${plantCardNoteField(row.id, row.card_note, row.card_note_updated_at, category)}</div>
+          </div>
+        </article>`;
+    }
+
+    function render() {
+      const query = search.value.trim().toLocaleLowerCase("sv");
+      const category = categoryFilter.value;
+      const archive = archiveFilter.value;
+      const rows = entries.filter(entry => (!category || entry.category === category) && (!archive || entry.archiveKind === archive) && (!query || JSON.stringify(entry.row).toLocaleLowerCase("sv").includes(query)));
+      const label = archive === "gift" ? "gåva" : archive === "ended" ? "avslutad växt" : "tidigare växt";
+      stats.textContent = `${rows.length} ${rows.length === 1 ? label : (archive === "gift" ? "gåvor" : archive === "ended" ? "avslutade växter" : "tidigare växter")}`;
+      grid.innerHTML = rows.length ? rows.map(plantCard).join("") : '<div class="empty">Inga tidigare växter matchar sökningen.</div>';
+      updatePlantFavoriteUI();
+    }
+
+    async function initialise() {
+      try {
+        const response = await fetch("public-data/catalog.json", {cache: "no-store"});
+        if (!response.ok) throw new Error("Katalogen kunde inte läsas.");
+        const catalog = await response.json();
+        window.publicCatalogSnapshot = catalog;
+        const milestones = milestonesByPlant(catalog.milestones || []);
+        entries = Object.entries(catalog.categories || {}).flatMap(([category, section]) => {
+          const photosByPlant = new Map();
+          (section.photos || []).forEach(photo => {
+            const photos = photosByPlant.get(photo.plant_id) || [];
+            photos.push(photo);
+            photosByPlant.set(photo.plant_id, photos);
+          });
+          return (section.plants || []).map(row => {
+            const logs = milestones.get(row.id) || [];
+            return {category, row, photos: photosByPlant.get(row.id) || [], logs, archiveKind: archiveKind(row, logs)};
+          }).filter(entry => entry.archiveKind);
+        }).sort((a, b) => sortNatural(`${a.category} ${displayName(a.category, a.row)}`, `${b.category} ${displayName(b.category, b.row)}`));
+        [...new Set(entries.map(entry => entry.category))].forEach(category => categoryFilter.add(new Option(category, category)));
+        ensurePlantPhotoGallery();
+        ensurePlantMilestones();
+        ensurePlantImageImport();
+        ensurePlantFavorites();
+        render();
+      } catch (error) {
+        stats.textContent = "Kunde inte läsa arkivet.";
+        grid.innerHTML = '<div class="empty">Katalogen kunde inte läsas just nu.</div>';
+      }
+    }
+
+    grid.addEventListener("click", event => {
+      const image = event.target.closest(".main-photo");
+      if (image) openPlantPhotoGallery(image);
+    });
+    search.addEventListener("input", render);
+    categoryFilter.addEventListener("change", render);
+    archiveFilter.addEventListener("change", render);
+    initialise();
+  </script>
+</body>
+</html>

@@ -20,7 +20,7 @@ function friendlyDate(value) {
 async function loadPhotos() {
   if (window.location.protocol !== "file:" || !archiveToken) return [];
   try {
-    const response = await fetch(`http://127.0.0.1:47831/gallery?album=${encodeURIComponent(albumSlug)}`, {
+    const response = await fetch(`https://127.0.0.1:47831/gallery?album=${encodeURIComponent(albumSlug)}`, {
       cache: "no-store", headers: {"X-Mina-Vaxter-Token": archiveToken}
     });
     const payload = await response.json();

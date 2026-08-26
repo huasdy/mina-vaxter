@@ -222,7 +222,7 @@ function collectionChips(category, row) {
   if (pelargonIndividual) add("Individ");
   if (getPlantCuttingsStatus(row && row.id, row && row.cuttings_available, row && row.cuttings_updated_at)) add("🌱 Stickling");
   if (category === "Pelargon") {
-    const seedGrown = ["frö", "egen korsning"].includes(clean(row && row.arrival_type).toLocaleLowerCase("sv")) || Boolean(clean(row && row.seed_lot_id));
+    const seedGrown = ["frö", "egen korsning"].includes(clean(row && row.arrival_type).toLocaleLowerCase("sv")) || Boolean(clean(row && row.seed_lot_id)) || Boolean(clean(row && row.crossing_id));
     if (pelargonIndividual && seedGrown) add("Frösådd");
   } else if (hasSownMilestone) {
     add("Frö");
@@ -548,6 +548,13 @@ const plantMilestoneStorageKey = "mina-vaxter-milestone-additions-v1";
 const plantMilestoneLegacyStorageKey = "mina-vaxter-plant-log-additions-v1";
 const plantMilestoneCleanupH02Sown20251116Key = "mina-vaxter-cleanup-h02-sown-2025-11-16-v1";
 
+function localQueueId(prefix) {
+  const random = typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+    ? crypto.randomUUID().replaceAll("-", "")
+    : `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 12)}`;
+  return `${prefix}-${random}`;
+}
+
 function cleanUpIncorrectH02SownMilestones(rows) {
   try {
     if (localStorage.getItem(plantMilestoneCleanupH02Sown20251116Key) === "true") return rows;
@@ -571,8 +578,15 @@ function getPlantMilestoneAdditions() {
     const stored = localStorage.getItem(plantMilestoneStorageKey) || localStorage.getItem(plantMilestoneLegacyStorageKey) || "[]";
     const parsed = JSON.parse(stored);
     if (!Array.isArray(parsed)) return [];
-    const migrated = parsed.map(row => ({...row, id: canonicalPlantId(row && row.id)}));
-    if (migrated.some((row, index) => clean(row.id) !== clean(parsed[index] && parsed[index].id))) {
+    const migrated = parsed.map(row => ({
+      ...row,
+      id: canonicalPlantId(row && row.id),
+      operationId: clean(row && row.operationId) || localQueueId("milestone")
+    }));
+    if (migrated.some((row, index) =>
+      clean(row.id) !== clean(parsed[index] && parsed[index].id) ||
+      clean(row.operationId) !== clean(parsed[index] && parsed[index].operationId)
+    )) {
       backupLegacyPlantStorage(plantMilestoneStorageKey, stored);
       localStorage.setItem(plantMilestoneStorageKey, JSON.stringify(migrated));
     }
@@ -598,7 +612,8 @@ function addPlantMilestoneEntry(entry) {
     type,
     note: clean(entry.note),
     local: "true",
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
+    operationId: localQueueId("milestone")
   };
   const rows = getPlantMilestoneAdditions();
   rows.push(row);
@@ -626,7 +641,7 @@ function addPlantMilestoneEntries(entries) {
     const key = [id, date, type, note].join("|");
     if (existing.has(key)) return;
     existing.add(key);
-    const row = {id, date, type, note, local: "true", createdAt};
+    const row = {id, date, type, note, local: "true", createdAt, operationId: localQueueId("milestone")};
     rows.push(row);
     added.push(row);
   });
@@ -657,8 +672,114 @@ function buildPlantMilestoneExport(rows = getPlantMilestoneAdditions()) {
       date: clean(row.date),
       type: clean(row.type),
       note: clean(row.note),
-      createdAt: clean(row.createdAt)
+      createdAt: clean(row.createdAt),
+      operationId: clean(row.operationId)
     })).filter(row => row.id && row.date && row.type)
+  };
+}
+
+const plantArrivalStorageKey = "mina-vaxter-arrival-queue-v1";
+
+function getPendingArrivalItems() {
+  try {
+    const items = JSON.parse(localStorage.getItem(plantArrivalStorageKey) || "[]");
+    return Array.isArray(items) ? items.filter(item => item && typeof item === "object" && clean(item.request_id)) : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function savePendingArrivalItems(items) {
+  try { localStorage.setItem(plantArrivalStorageKey, JSON.stringify(items || [])); } catch (error) {}
+  if (typeof updatePlantImageImportUI === "function") updatePlantImageImportUI();
+}
+
+function queuePendingArrival(payload) {
+  const requestId = clean(payload && payload.request_id) || localQueueId("arrival");
+  const item = {
+    name: clean(payload && payload.name),
+    category: clean(payload && payload.category),
+    taxon: clean(payload && payload.taxon),
+    arrival_type: clean(payload && payload.arrival_type),
+    source: clean(payload && payload.source),
+    gift_from: clean(payload && payload.gift_from),
+    arrival_date: clean(payload && payload.arrival_date),
+    background: clean(payload && payload.background),
+    first_impression: clean(payload && payload.first_impression),
+    hibiscus_batch: clean(payload && payload.hibiscus_batch),
+    hibiscus_sub_batch: clean(payload && payload.hibiscus_sub_batch),
+    mother: clean(payload && payload.mother),
+    father: clean(payload && payload.father),
+    request_id: requestId,
+    queued_at: new Date().toISOString()
+  };
+  const items = getPendingArrivalItems().filter(row => clean(row.request_id) !== requestId);
+  items.push(item);
+  savePendingArrivalItems(items);
+  return item;
+}
+
+function deletePendingArrivalItem(requestId) {
+  const id = clean(requestId);
+  savePendingArrivalItems(getPendingArrivalItems().filter(item => clean(item.request_id) !== id));
+}
+
+function clearPendingArrivalItems() {
+  savePendingArrivalItems([]);
+}
+
+const crossingChangeStorageKey = "mina-vaxter-crossing-changes-v1";
+
+function getPendingCrossingItems() {
+  try {
+    const items = JSON.parse(localStorage.getItem(crossingChangeStorageKey) || "[]");
+    return Array.isArray(items)
+      ? items.filter(item => item && typeof item === "object" && clean(item.operation_id) && ["crossing", "event", "offspring"].includes(clean(item.kind)))
+      : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function savePendingCrossingItems(items) {
+  try { localStorage.setItem(crossingChangeStorageKey, JSON.stringify(items || [])); } catch (error) {}
+  if (typeof updatePlantImageImportUI === "function") updatePlantImageImportUI();
+}
+
+function queueCrossingChange(kind, payload = {}, operationId = "") {
+  const normalizedKind = clean(kind);
+  if (!["crossing", "event", "offspring"].includes(normalizedKind)) return null;
+  const item = {
+    operation_id: clean(operationId) || localQueueId("crossing"),
+    kind: normalizedKind,
+    created_at: new Date().toISOString(),
+    ...(normalizedKind === "crossing" ? {crossing: payload} : normalizedKind === "event" ? {event: payload} : {offspring: payload})
+  };
+  const items = getPendingCrossingItems().filter(row => clean(row.operation_id) !== item.operation_id);
+  items.push(item);
+  savePendingCrossingItems(items);
+  return item;
+}
+
+function deletePendingCrossingItem(operationId) {
+  const id = clean(operationId);
+  savePendingCrossingItems(getPendingCrossingItems().filter(item => clean(item.operation_id) !== id));
+}
+
+function clearPendingCrossingItems() {
+  savePendingCrossingItems([]);
+}
+
+function buildCrossingExport(items = getPendingCrossingItems()) {
+  return {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    items: (items || []).map(item => ({
+      operation_id: clean(item.operation_id),
+      kind: clean(item.kind),
+      created_at: clean(item.created_at),
+      ...(item.kind === "crossing" ? {crossing: item.crossing || {}} : item.kind === "event" ? {event: item.event || {}} : {offspring: item.offspring || {}})
+    })).filter(item => item.operation_id && ["crossing", "event", "offspring"].includes(item.kind))
   };
 }
 
@@ -671,11 +792,12 @@ function plantMilestoneKey(row) {
   ].join("|");
 }
 
-function buildSyncManifest(imageItems, milestoneItems, cardNoteItems, plantStatusItems, flowerAssessmentItems = [], cardImageItems = []) {
+function buildSyncManifest(imageItems, milestoneItems, cardNoteItems, plantStatusItems, flowerAssessmentItems = [], cardImageItems = [], arrivalItems = [], crossingItems = [], wishlistItems = [], packageId = "") {
   return {
     version: 1,
     exportedAt: new Date().toISOString(),
     source: "Mina Växter synkpaket",
+    packageId: clean(packageId),
     targetFolder: "iCloud Drive/Downloads",
     contains: {
       images: imageItems.length,
@@ -683,7 +805,10 @@ function buildSyncManifest(imageItems, milestoneItems, cardNoteItems, plantStatu
       cardNotes: cardNoteItems.length,
       plantStatuses: plantStatusItems.length,
       flowerAssessments: flowerAssessmentItems.length,
-      cardImages: cardImageItems.length
+      cardImages: cardImageItems.length,
+      arrivals: arrivalItems.length,
+      crossings: crossingItems.length,
+      wishlists: wishlistItems.length
     },
     note: "Hundöron och fokusnotiser är lokal arbetslista och ingår inte i synkpaketet."
   };
@@ -764,39 +889,38 @@ function ensureConcludedPlantFilter() {
   const grid = document.querySelector("#grid, .grid");
   if (!grid) return;
   document.body.dataset.concludedPlantFilterReady = "true";
-  const concludedValue = "__concluded_only__";
-  const select = document.createElement("select");
-  select.className = "concluded-filter-select";
-  select.setAttribute("aria-label", "Visa aktiva eller tidigare växter");
-  select.innerHTML = `<option value="">Visa: Aktiva växter</option><option value="${concludedValue}">Visa: Tidigare växter</option>`;
-  const referenceFilter = document.querySelector("#typeFilter, #statusFilter");
-  const stats = document.querySelector("#stats, .stats");
-  if (referenceFilter) referenceFilter.after(select);
-  else if (stats) stats.before(select);
 
   const applyFilter = () => {
     const cards = [...grid.querySelectorAll(".plant-card[data-milestones]")];
-    const concludedOnly = select.value === concludedValue;
+    const archiveMode = document.body.dataset.concludedPlantArchive === "true";
     let concludedCount = 0;
     cards.forEach(card => {
       const concluded = plantCardIsConcluded(card);
       if (concluded) concludedCount += 1;
-      card.dataset.concludedHidden = concludedOnly ? (!concluded ? "true" : "false") : (concluded ? "true" : "false");
+      card.dataset.concludedHidden = archiveMode ? (!concluded ? "true" : "false") : (concluded ? "true" : "false");
     });
-    const option = select.querySelector(`option[value="${concludedValue}"]`);
-    if (option) option.textContent = `Tidigare växter (${concludedCount})`;
     document.dispatchEvent(new CustomEvent("plant-concluded-filter-applied", {
       detail: {
-        concludedOnly,
+        concludedOnly: archiveMode,
         concludedCount,
         activeCount: cards.length - concludedCount
       }
     }));
   };
 
-  select.addEventListener("change", applyFilter);
   new MutationObserver(applyFilter).observe(grid, {childList: true});
   applyFilter();
+}
+
+function ensurePlantLifeNavigation() {
+  const nav = document.querySelector("header nav");
+  if (!nav) return;
+  const oldLink = nav.querySelector('a[href="sticklingar.html"]');
+  if (oldLink) {
+    oldLink.href = "vaxtliv.html";
+    oldLink.textContent = "Växtliv";
+  }
+  nav.querySelectorAll('a[href="tidigare.html"]').forEach(link => link.remove());
 }
 
 function sortNatural(a, b) {
@@ -1761,6 +1885,11 @@ function ensurePlantMilestones() {
     .plant-status-switch input:checked + span { background: #607761; }
     .plant-status-switch input:checked + span::after { transform: translateX(20px); }
     .plant-status-switch input:focus-visible + span { outline: 3px solid rgba(125,79,59,.26); outline-offset: 2px; }
+    .plant-crossing-action {
+      display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 14px;
+      border-radius: 999px; background: var(--accent, #7d4f3b); color: white; text-decoration: none;
+      font-weight: 900; width: fit-content;
+    }
     .plant-log-history-title {
       list-style: none; cursor: pointer; display: flex; align-items: center; gap: 9px;
       border: 1px solid var(--line, #ded2c2); border-radius: 14px; padding: 10px 12px;
@@ -1788,7 +1917,16 @@ function ensurePlantMilestones() {
       color: var(--accent, #7d4f3b); text-transform: uppercase; letter-spacing: .14em;
       font-size: .72rem; font-weight: 900;
     }
-    .plant-log-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 8px; }
+    .plant-log-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 8px; min-width: 0; }
+    .plant-log-fields > * { min-width: 0; max-width: 100%; }
+    .plant-log-date-field {
+      min-width: 0; max-width: 100%; overflow: hidden; border: 1px solid var(--line, #ded2c2);
+      border-radius: 13px; background: var(--paper, #fffdf8);
+    }
+    .plant-log-date-field input[type="date"] {
+      display: block; width: 100%; min-width: 0; min-inline-size: 0; max-width: 100%; max-inline-size: 100%;
+      border: 0; border-radius: 0; background: transparent;
+    }
     .plant-log-form input, .plant-log-form select, .plant-log-form textarea {
       width: 100%; border: 1px solid var(--line, #ded2c2); border-radius: 13px;
       padding: 10px 11px; background: var(--paper, #fffdf8); color: var(--ink, #2b251f);
@@ -1828,6 +1966,7 @@ function ensurePlantMilestones() {
     }
   `;
   document.head.appendChild(style);
+  ensurePlantLifeNavigation();
   ensureConcludedPlantFilter();
   ensurePlantCardNotes();
 
@@ -1854,6 +1993,21 @@ function openPlantPanel(card) {
   const id = card.dataset.plantId || "";
   const category = card.dataset.category || "Pelargon";
   const cuttingsAvailable = getPlantCuttingsStatus(id, card.dataset.cuttingsAvailable, card.dataset.cuttingsUpdatedAt);
+  const concluded = plantCardIsConcluded(card);
+  const canRegisterCrossing = !concluded && (category === "Hibiskus" || (category === "Pelargon" && clean(card.dataset.recordKind).toUpperCase() === "COLLECTION"));
+  const crossingPanel = canRegisterCrossing ? `
+      <section class="plant-panel-section" aria-label="Korsningar">
+        <div class="plant-panel-section-title">Korsningar</div>
+        <a class="plant-crossing-action" href="korsningar.html?category=${encodeURIComponent(category)}&mother=${encodeURIComponent(id)}">Registrera korsning</a>
+      </section>` : "";
+  const statusPanel = concluded ? "" : `
+      <section class="plant-panel-section" aria-labelledby="plantStatusTitle">
+        <div class="plant-panel-section-title" id="plantStatusTitle">Status</div>
+        <label class="plant-status-row">
+          <span class="plant-status-copy"><strong>Sticklingar</strong><small>Visar att sticklingsmaterial finns tillgängligt.</small></span>
+          <span class="plant-status-switch"><input name="cuttings" type="checkbox" ${cuttingsAvailable ? "checked" : ""}><span aria-hidden="true"></span></span>
+        </label>
+      </section>`;
   const categoryPanel = category === "Hibiskus" && typeof window.hibiscusFlowerPanelHtml === "function"
     ? window.hibiscusFlowerPanelHtml(id)
     : "";
@@ -1882,13 +2036,8 @@ function openPlantPanel(card) {
         </div>
         <button class="plant-log-close" type="button" aria-label="Stäng">×</button>
       </header>
-      <section class="plant-panel-section" aria-labelledby="plantStatusTitle">
-        <div class="plant-panel-section-title" id="plantStatusTitle">Status</div>
-        <label class="plant-status-row">
-          <span class="plant-status-copy"><strong>Sticklingar</strong><small>Visar att sticklingsmaterial finns tillgängligt.</small></span>
-          <span class="plant-status-switch"><input name="cuttings" type="checkbox" ${cuttingsAvailable ? "checked" : ""}><span aria-hidden="true"></span></span>
-        </label>
-      </section>
+      ${statusPanel}
+      ${crossingPanel}
       ${parentPanel}
       ${documentsPanel}
       ${categoryPanel}
@@ -1901,7 +2050,7 @@ function openPlantPanel(card) {
         <form class="plant-log-form" method="dialog">
           <div class="plant-log-form-title">Ny milstolpe</div>
           <div class="plant-log-fields">
-            <input name="date" type="date" value="${htmlEscape(localDateString())}" aria-label="Datum" required>
+            <div class="plant-log-date-field"><input name="date" type="date" value="${htmlEscape(localDateString())}" aria-label="Datum" required></div>
             <select name="type" aria-label="Typ av milstolpe" required>${options}</select>
           </div>
           <textarea name="note" maxlength="160" placeholder="Kort anteckning, frivilligt"></textarea>
@@ -1930,7 +2079,7 @@ function openPlantPanel(card) {
       openPlantDocument(link.dataset.documentFile, link.dataset.documentTitle, link.dataset.documentKind, link.dataset.documentPages);
     });
   });
-  dialog.querySelector('[name="cuttings"]').addEventListener("change", event => {
+  dialog.querySelector('[name="cuttings"]')?.addEventListener("change", event => {
     setPlantCuttingsStatus(id, category, event.currentTarget.checked);
   });
   if (category === "Hibiskus" && typeof window.bindHibiscusFlowerPanel === "function") {
@@ -1961,6 +2110,12 @@ function publishedPlantDocuments() {
   const source = document.querySelector("#defaultDocumentsCSV");
   if (!source) return [];
   return parseCSV(source.textContent || "").filter(documentRow => clean(documentRow.id) && clean(documentRow.file));
+}
+
+function plantDocumentResourceUrl(file) {
+  const source = clean(file);
+  if (!source) return "";
+  return `${source}${source.includes("?") ? "&" : "?"}visning=${Date.now()}`;
 }
 
 function ensurePlantDocumentViewer() {
@@ -2026,6 +2181,7 @@ function plantDocumentsPanelHtml(card) {
   if (!documents.length) return "";
   const links = documents.map(documentRow => {
     const file = clean(documentRow.file);
+    const documentUrl = plantDocumentResourceUrl(file);
     const type = clean(documentRow.type) || "Dokument";
     const title = clean(documentRow.title) || type;
     const isImage = /\.(?:jpe?g|png|webp)$/i.test(file);
@@ -2033,9 +2189,9 @@ function plantDocumentsPanelHtml(card) {
       ? documentRow.pages.map(clean).filter(Boolean).join("|")
       : clean(documentRow.pages);
     const preview = isImage
-      ? `<span class="plant-document-preview"><img src="${htmlEscape(file)}" alt="" loading="lazy"></span>`
+      ? `<span class="plant-document-preview"><img src="${htmlEscape(documentUrl)}" alt="" loading="lazy"></span>`
       : `<span class="plant-document-preview" aria-hidden="true">PDF</span>`;
-    return `<a class="plant-document-link" href="${htmlEscape(file)}" data-document-file="${htmlEscape(file)}" data-document-title="${htmlEscape(title)}" data-document-kind="${isImage ? "image" : "pdf"}" data-document-pages="${htmlEscape(pages)}">
+    return `<a class="plant-document-link" href="${htmlEscape(documentUrl)}" data-document-file="${htmlEscape(documentUrl)}" data-document-title="${htmlEscape(title)}" data-document-kind="${isImage ? "image" : "pdf"}" data-document-pages="${htmlEscape(pages)}">
       ${preview}
       <span class="plant-document-copy"><strong>${htmlEscape(title)}</strong><span>${htmlEscape(type)}${clean(documentRow.date) ? ` · ${htmlEscape(documentRow.date)}` : ""}</span></span>
     </a>`;
@@ -2075,8 +2231,10 @@ function plantParentReferencePanelHtml(card) {
 }
 
 const plantImageImportDB = "mina-vaxter-image-import";
-const plantImageImportDBVersion = 2;
+const plantImageImportDBVersion = 3;
 const plantImageImportStore = "photos";
+const plantSyncOutboxStore = "sync-outbox";
+const activeSyncOutboxId = "active";
 let plantImageImportPending = null;
 
 function htmlEscape(value) {
@@ -2322,6 +2480,9 @@ function openPlantImageImportDB() {
       if (!store.indexNames.contains("createdAt")) {
         store.createIndex("createdAt", "createdAt", {unique: false});
       }
+      if (!db.objectStoreNames.contains(plantSyncOutboxStore)) {
+        db.createObjectStore(plantSyncOutboxStore, {keyPath: "id"});
+      }
     };
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
@@ -2370,6 +2531,470 @@ async function clearImageImportItems() {
     tx.oncomplete = () => { db.close(); resolve(); };
     tx.onerror = () => { db.close(); reject(tx.error); };
   });
+}
+
+async function getPendingSyncPackage() {
+  const db = await openPlantImageImportDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(plantSyncOutboxStore, "readonly");
+    const request = tx.objectStore(plantSyncOutboxStore).get(activeSyncOutboxId);
+    request.onsuccess = () => resolve(request.result || null);
+    request.onerror = () => reject(request.error);
+    tx.oncomplete = () => db.close();
+    tx.onerror = () => { db.close(); reject(tx.error); };
+  });
+}
+
+async function savePendingSyncPackage(item) {
+  const db = await openPlantImageImportDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(plantSyncOutboxStore, "readwrite");
+    tx.objectStore(plantSyncOutboxStore).put({...item, id: activeSyncOutboxId});
+    tx.oncomplete = () => { db.close(); resolve(); };
+    tx.onerror = () => { db.close(); reject(tx.error); };
+  });
+}
+
+async function clearPendingSyncPackage() {
+  const db = await openPlantImageImportDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(plantSyncOutboxStore, "readwrite");
+    tx.objectStore(plantSyncOutboxStore).delete(activeSyncOutboxId);
+    tx.oncomplete = () => { db.close(); resolve(); };
+    tx.onerror = () => { db.close(); reject(tx.error); };
+  });
+}
+
+const wishlistStorageKey = "mina-vaxter-wishlists-v1";
+const wishlistChangesStorageKey = "mina-vaxter-wishlist-changes-v1";
+const wishlistCategories = new Set(["Pelargon", "Hibiskus", "Citrus", "Udda"]);
+
+function wishlistItemKey(item) {
+  return `${clean(item && item.category)}|${clean(item && item.id)}`;
+}
+
+function normalizeWishlistItem(item) {
+  if (!item || typeof item !== "object") return null;
+  const category = clean(item.category);
+  const id = clean(item.id);
+  const text = clean(item.text);
+  const updatedAt = clean(item.updatedAt);
+  const createdAt = clean(item.createdAt) || updatedAt;
+  const deleted = item.deleted === true;
+  if (!wishlistCategories.has(category) || !/^wish-[A-Za-z0-9]{8,160}$/.test(id) || !updatedAt || (!deleted && !text)) return null;
+  return {id, category, text, createdAt, updatedAt, deleted};
+}
+
+function getWishlistRecords(storageKey = wishlistStorageKey) {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(storageKey) || "{}");
+    const rawItems = Array.isArray(parsed) ? parsed : (parsed && Array.isArray(parsed.items) ? parsed.items : Object.values(parsed || {}));
+    const records = {};
+    rawItems.map(normalizeWishlistItem).filter(Boolean).forEach(item => {
+      const key = wishlistItemKey(item);
+      const current = records[key];
+      if (!current || clean(item.updatedAt) >= clean(current.updatedAt)) records[key] = item;
+    });
+    return records;
+  } catch (error) {
+    return {};
+  }
+}
+
+function saveWishlistRecords(records, storageKey = wishlistStorageKey) {
+  try { localStorage.setItem(storageKey, JSON.stringify(records || {})); }
+  catch (error) {}
+}
+
+function mergeWishlistRecords(...groups) {
+  const merged = {};
+  groups.flat().map(normalizeWishlistItem).filter(Boolean).forEach(item => {
+    const key = wishlistItemKey(item);
+    const current = merged[key];
+    if (!current || clean(item.updatedAt) >= clean(current.updatedAt)) merged[key] = item;
+  });
+  return merged;
+}
+
+function wishlistVisibleItems(category) {
+  return Object.values(getWishlistRecords())
+    .filter(item => item.category === category && !item.deleted)
+    .sort((first, second) => clean(first.createdAt).localeCompare(clean(second.createdAt)) || clean(first.id).localeCompare(clean(second.id)));
+}
+
+function wishlistChangeItems() {
+  return Object.values(getWishlistRecords(wishlistChangesStorageKey));
+}
+
+function buildWishlistExport(items = wishlistChangeItems()) {
+  return {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    items: (items || []).map(normalizeWishlistItem).filter(Boolean)
+  };
+}
+
+function saveWishlistItem(category, text, id = "") {
+  const now = new Date().toISOString();
+  const currentRecords = getWishlistRecords();
+  const itemId = clean(id) || localQueueId("wish");
+  const key = wishlistItemKey({category, id: itemId});
+  const previous = currentRecords[key];
+  const item = normalizeWishlistItem({
+    id: itemId,
+    category,
+    text,
+    createdAt: previous ? previous.createdAt : now,
+    updatedAt: now,
+    deleted: false
+  });
+  if (!item) return null;
+  currentRecords[key] = item;
+  saveWishlistRecords(currentRecords);
+  const changes = getWishlistRecords(wishlistChangesStorageKey);
+  changes[key] = item;
+  saveWishlistRecords(changes, wishlistChangesStorageKey);
+  if (typeof updatePlantImageImportUI === "function") updatePlantImageImportUI();
+  savePrivateWishlistChanges();
+  return item;
+}
+
+function deleteWishlistItem(category, id) {
+  const currentRecords = getWishlistRecords();
+  const key = wishlistItemKey({category, id});
+  const previous = currentRecords[key];
+  if (!previous) return;
+  const item = {...previous, text: "", deleted: true, updatedAt: new Date().toISOString()};
+  currentRecords[key] = item;
+  saveWishlistRecords(currentRecords);
+  const changes = getWishlistRecords(wishlistChangesStorageKey);
+  changes[key] = item;
+  saveWishlistRecords(changes, wishlistChangesStorageKey);
+  if (typeof updatePlantImageImportUI === "function") updatePlantImageImportUI();
+  savePrivateWishlistChanges();
+}
+
+function clearWishlistChanges() {
+  saveWishlistRecords({}, wishlistChangesStorageKey);
+}
+
+function mergeRemoteWishlistItems(items) {
+  const local = Object.values(getWishlistRecords());
+  const pending = wishlistChangeItems();
+  saveWishlistRecords(mergeWishlistRecords(local, items || [], pending));
+}
+
+function clearWishlistChangesIfUnchanged(expectedItems) {
+  clearChangedRecordsIfUnchanged(
+    () => getWishlistRecords(wishlistChangesStorageKey),
+    records => saveWishlistRecords(records, wishlistChangesStorageKey),
+    expectedItems,
+    wishlistItemKey,
+    item => clean(item.updatedAt)
+  );
+}
+
+function localPreviewWishlistEndpoint() {
+  const host = clean(window.location.hostname).toLocaleLowerCase("sv");
+  if (!(["localhost", "127.0.0.1"].includes(host) && ["http:", "https:"].includes(window.location.protocol))) return "";
+  return "https://127.0.0.1:47831/wishlists";
+}
+
+async function privateWishlistRequest(method, items = []) {
+  let endpoint = "";
+  let headers = {};
+  if (window.location.protocol === "file:") {
+    const token = await loadLocalArrivalToken();
+    if (!token) return null;
+    endpoint = "https://127.0.0.1:47831/wishlists";
+    headers = {"X-Mina-Vaxter-Token": token};
+  } else if (localPreviewWishlistEndpoint()) {
+    endpoint = localPreviewWishlistEndpoint();
+  } else {
+    const syncEndpoint = localSyncEndpoint();
+    const token = localSyncToken();
+    if (!syncEndpoint || !token) return null;
+    endpoint = `${syncEndpoint}/wishlists`;
+    headers = {"X-Mina-Vaxter-Sync-Token": token};
+  }
+  if (method === "POST") {
+    headers["Content-Type"] = "application/json";
+  }
+  try {
+    const response = await fetch(endpoint, {
+      method,
+      headers,
+      body: method === "POST" ? JSON.stringify(buildWishlistExport(items)) : undefined,
+      cache: "no-store"
+    });
+    const payload = await response.json().catch(() => null);
+    if (!response.ok || !payload || !payload.ok || !Array.isArray(payload.items)) return null;
+    return payload.items;
+  } catch (error) {
+    return null;
+  }
+}
+
+async function loadPrivateWishlists() {
+  return privateWishlistRequest("GET");
+}
+
+function savePrivateWishlistChanges() {
+  const changes = wishlistChangeItems();
+  if (!changes.length) return;
+  privateWishlistRequest("POST", changes).then(items => {
+    if (!items) return;
+    mergeRemoteWishlistItems(items);
+    clearWishlistChangesIfUnchanged(changes);
+    if (typeof updatePlantImageImportUI === "function") updatePlantImageImportUI();
+  });
+}
+
+function wishlistStyles() {
+  if (document.querySelector("#wishlistStyles")) return;
+  const style = document.createElement("style");
+  style.id = "wishlistStyles";
+  style.textContent = `
+    .wishlist-slot { display: grid; justify-items: center; gap: 8px; margin: 10px auto 0; max-width: min(100%, 440px); }
+    .wishlist-toggle { border: 0; padding: 4px 7px; background: transparent; color: var(--muted, #6f655b); font: inherit; font-size: .95rem; font-weight: 800; cursor: pointer; line-height: 1.2; }
+    .wishlist-toggle:hover, .wishlist-toggle:focus-visible { color: var(--accent, #7d4f3b); text-decoration: underline; text-underline-offset: 3px; }
+    .wishlist-toggle .wishlist-count { margin-left: 3px; font-variant-numeric: tabular-nums; }
+    .wishlist-panel { width: 100%; border: 1px solid #e3d3a1; border-radius: 14px; padding: 11px; background: #fff5cd; color: var(--ink, #2b251f); box-shadow: 0 7px 18px rgba(89,68,30,.10); text-align: left; }
+    .wishlist-panel[hidden] { display: none; }
+    .wishlist-list { display: grid; gap: 6px; margin: 0 0 8px; padding: 0; list-style: none; }
+    .wishlist-item { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 4px; align-items: center; min-width: 0; }
+    .wishlist-item-text { overflow-wrap: anywhere; font-size: .92rem; }
+    .wishlist-action, .wishlist-add-toggle, .wishlist-save, .wishlist-cancel { border: 0; padding: 5px 6px; background: transparent; color: var(--accent, #7d4f3b); font: inherit; font-size: .81rem; font-weight: 800; cursor: pointer; }
+    .wishlist-action:hover, .wishlist-add-toggle:hover, .wishlist-save:hover, .wishlist-cancel:hover { text-decoration: underline; text-underline-offset: 2px; }
+    .wishlist-action.remove { color: #8a4a3c; }
+    .wishlist-add-form, .wishlist-edit-form { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 6px; align-items: center; }
+    .wishlist-edit-form { grid-column: 1 / -1; }
+    .wishlist-add-form[hidden] { display: none; }
+    .wishlist-add-form input, .wishlist-edit-form input { min-width: 0; width: 100%; border: 1px solid rgba(164,132,56,.42); border-radius: 10px; padding: 7px 8px; background: rgba(255,255,255,.65); color: var(--ink, #2b251f); font: inherit; font-size: .92rem; }
+    .wishlist-empty { margin: 0 0 8px; color: var(--muted, #6f655b); font-size: .9rem; }
+    @media (max-width: 700px) { .wishlist-slot { max-width: 100%; } .wishlist-panel { border-radius: 12px; } }
+  `;
+  document.head.appendChild(style);
+}
+
+async function ensurePrivateWishlists() {
+  const heading = document.querySelector("h1[data-wishlist-category]");
+  let category = clean(heading && heading.dataset.wishlistCategory);
+  if (!heading || !wishlistCategories.has(category) || heading.dataset.wishlistReady === "true") return;
+  const remoteItems = await loadPrivateWishlists();
+  if (remoteItems === null) return;
+  heading.dataset.wishlistReady = "true";
+  mergeRemoteWishlistItems(remoteItems);
+  wishlistStyles();
+
+  const slot = document.createElement("div");
+  slot.className = "wishlist-slot";
+  slot.innerHTML = `
+    <button class="wishlist-toggle" type="button" aria-expanded="false" aria-label="Öppna önskelista för ${htmlEscape(category)}" title="Önskelista"></button>
+    <section class="wishlist-panel" aria-label="Önskelista för ${htmlEscape(category)}" hidden></section>
+  `;
+  const targetSelector = clean(heading.dataset.wishlistTarget);
+  const target = targetSelector ? document.querySelector(targetSelector) : null;
+  if (target) target.appendChild(slot);
+  else heading.insertAdjacentElement("afterend", slot);
+  const toggle = slot.querySelector(".wishlist-toggle");
+  const panel = slot.querySelector(".wishlist-panel");
+  let editingId = "";
+  let adding = false;
+
+  const render = () => {
+    const items = wishlistVisibleItems(category);
+    toggle.innerHTML = `🗒️${items.length ? `<span class="wishlist-count">· ${items.length}</span>` : ""}`;
+    toggle.setAttribute("aria-label", `${panel.hidden ? "Öppna" : "Stäng"} önskelista för ${category}${items.length ? `, ${items.length} poster` : ""}`);
+    const rows = items.map(item => editingId === item.id ? `
+      <li class="wishlist-item">
+        <form class="wishlist-edit-form" data-wishlist-edit="${escapeAttr(item.id)}">
+          <input name="text" value="${escapeAttr(item.text)}" aria-label="Redigera önskemål" required>
+          <button class="wishlist-save" type="submit">Spara</button>
+          <button class="wishlist-cancel" type="button" data-wishlist-cancel>Avbryt</button>
+        </form>
+      </li>
+    ` : `
+      <li class="wishlist-item">
+        <span class="wishlist-item-text">${htmlEscape(item.text)}</span>
+        <button class="wishlist-action" type="button" data-wishlist-edit="${escapeAttr(item.id)}">Ändra</button>
+        <button class="wishlist-action remove" type="button" data-wishlist-remove="${escapeAttr(item.id)}" aria-label="Ta bort ${escapeAttr(item.text)}">×</button>
+      </li>
+    `).join("");
+    panel.innerHTML = `
+      <ul class="wishlist-list">${rows}</ul>
+      ${items.length ? "" : '<p class="wishlist-empty">Inga önskemål ännu.</p>'}
+      <button class="wishlist-add-toggle" type="button" data-wishlist-add ${adding ? "hidden" : ""}>＋ Lägg till</button>
+      <form class="wishlist-add-form" data-wishlist-add-form ${adding ? "" : "hidden"}>
+        <input name="text" placeholder="Skriv ett önskemål…" aria-label="Nytt önskemål" required>
+        <button class="wishlist-save" type="submit">Spara</button>
+        <button class="wishlist-cancel" type="button" data-wishlist-cancel>Avbryt</button>
+      </form>
+    `;
+    if (adding) panel.querySelector("[name=text]")?.focus();
+    if (editingId) panel.querySelector("[name=text]")?.focus();
+  };
+
+  toggle.addEventListener("click", () => {
+    panel.hidden = !panel.hidden;
+    toggle.setAttribute("aria-expanded", panel.hidden ? "false" : "true");
+    render();
+  });
+  panel.addEventListener("click", event => {
+    const edit = event.target.closest("[data-wishlist-edit]");
+    if (edit && edit.tagName === "BUTTON") {
+      editingId = edit.dataset.wishlistEdit;
+      adding = false;
+      render();
+      return;
+    }
+    const remove = event.target.closest("[data-wishlist-remove]");
+    if (remove) {
+      deleteWishlistItem(category, remove.dataset.wishlistRemove);
+      if (editingId === remove.dataset.wishlistRemove) editingId = "";
+      render();
+      return;
+    }
+    if (event.target.closest("[data-wishlist-add]")) {
+      adding = true;
+      editingId = "";
+      render();
+      return;
+    }
+    if (event.target.closest("[data-wishlist-cancel]")) {
+      adding = false;
+      editingId = "";
+      render();
+    }
+  });
+  panel.addEventListener("submit", event => {
+    const form = event.target.closest("form");
+    if (!form) return;
+    event.preventDefault();
+    const text = clean(new FormData(form).get("text"));
+    if (!text) return;
+    saveWishlistItem(category, text, form.dataset.wishlistEdit || "");
+    adding = false;
+    editingId = "";
+    render();
+  });
+  document.addEventListener("wishlist-category-changed", event => {
+    const nextCategory = clean(event.detail && event.detail.category);
+    if (!wishlistCategories.has(nextCategory)) {
+      slot.hidden = true;
+      return;
+    }
+    if (nextCategory === category) {
+      slot.hidden = false;
+      return;
+    }
+    category = nextCategory;
+    editingId = "";
+    adding = false;
+    panel.hidden = true;
+    toggle.setAttribute("aria-expanded", "false");
+    slot.hidden = false;
+    render();
+  });
+  render();
+}
+
+function syncPackageSnapshot(imageItems, milestoneItems, cardNoteItems, plantStatusItems, flowerAssessmentItems, cardImageItems, arrivalItems, crossingItems, wishlistItems) {
+  return {
+    imageIds: (imageItems || []).map(item => clean(item.id)).filter(Boolean),
+    milestoneOperationIds: (milestoneItems || []).map(item => clean(item.operationId)).filter(Boolean),
+    cardNotes: (cardNoteItems || []).map(item => ({id: clean(item.id), updatedAt: clean(item.updatedAt)})).filter(item => item.id && item.updatedAt),
+    plantStatuses: (plantStatusItems || []).map(item => ({id: clean(item.id), updatedAt: clean(item.updatedAt)})).filter(item => item.id && item.updatedAt),
+    flowerAssessments: (flowerAssessmentItems || []).map(item => ({
+      assessmentId: clean(item && item.assessment && item.assessment.assessment_id),
+      updatedAt: clean(item && item.assessment && item.assessment.updated_at)
+    })).filter(item => item.assessmentId && item.updatedAt),
+    cardImages: (cardImageItems || []).map(item => ({
+      category: clean(item.category), id: clean(item.id), updatedAt: clean(item.updatedAt)
+    })).filter(item => item.category && item.id && item.updatedAt),
+    arrivalRequestIds: (arrivalItems || []).map(item => clean(item.request_id)).filter(Boolean),
+    crossingOperationIds: (crossingItems || []).map(item => clean(item.operation_id)).filter(Boolean),
+    wishlists: (wishlistItems || []).map(item => ({category: clean(item.category), id: clean(item.id), updatedAt: clean(item.updatedAt)})).filter(item => item.category && item.id && item.updatedAt)
+  };
+}
+
+async function createPendingSyncPackage(payload) {
+  const packageId = localQueueId("sync");
+  const filename = `mina-vaxter-synkpaket-${localDateString()}.zip`;
+  const blob = await createSyncPackage(
+    payload.imageItems,
+    payload.milestoneItems,
+    payload.cardNoteItems,
+    payload.plantStatusItems,
+    payload.flowerAssessmentExport,
+    payload.cardImageExport,
+    payload.arrivalItems,
+    payload.crossingItems,
+    payload.wishlistItems,
+    packageId
+  );
+  const item = {
+    packageId,
+    filename,
+    blob,
+    createdAt: new Date().toISOString(),
+    snapshot: syncPackageSnapshot(
+      payload.imageItems,
+      payload.milestoneItems,
+      payload.cardNoteItems,
+      payload.plantStatusItems,
+      payload.flowerAssessmentExport.items || [],
+      payload.cardImageExport.items || [],
+      payload.arrivalItems,
+      payload.crossingItems,
+      payload.wishlistItems
+    )
+  };
+  await savePendingSyncPackage(item);
+  return {...item, id: activeSyncOutboxId};
+}
+
+function clearChangedRecordsIfUnchanged(storageReader, storageWriter, expectedItems, keyForItem, updatedAtForItem) {
+  const records = storageReader();
+  let changed = false;
+  (expectedItems || []).forEach(item => {
+    const key = keyForItem(item);
+    const current = records[key];
+    if (current && updatedAtForItem(current) === item.updatedAt) {
+      delete records[key];
+      changed = true;
+    }
+  });
+  if (changed) storageWriter(records);
+}
+
+async function clearAcknowledgedSyncPackage(outbox) {
+  const snapshot = outbox && outbox.snapshot;
+  if (!snapshot) throw new Error("Synkpaketet saknar ett säkert lokalt kvitto.");
+  for (const id of snapshot.imageIds || []) await deleteImageImportItem(id);
+
+  const milestoneIds = new Set(snapshot.milestoneOperationIds || []);
+  if (milestoneIds.size) {
+    savePlantMilestoneAdditions(getPlantMilestoneAdditions().filter(item => !milestoneIds.has(clean(item.operationId))));
+  }
+  clearChangedRecordsIfUnchanged(getPlantCardNoteChanges, savePlantCardNoteChanges, snapshot.cardNotes, item => item.id, noteUpdatedAt);
+  clearChangedRecordsIfUnchanged(getPlantStatusChanges, savePlantStatusChanges, snapshot.plantStatuses, item => item.id, item => clean(item.updatedAt));
+  clearChangedRecordsIfUnchanged(
+    () => getPlantCardImages(plantCardImageChangesStorageKey),
+    records => savePlantCardImageRecords(plantCardImageChangesStorageKey, records),
+    snapshot.cardImages,
+    item => plantCardImageKey(item.category, item.id),
+    item => clean(item.updatedAt)
+  );
+  if (typeof window.clearHibiscusFlowerAssessmentChangesIfUnchanged === "function") {
+    window.clearHibiscusFlowerAssessmentChangesIfUnchanged(snapshot.flowerAssessments || []);
+  }
+  const arrivalIds = new Set(snapshot.arrivalRequestIds || []);
+  if (arrivalIds.size) savePendingArrivalItems(getPendingArrivalItems().filter(item => !arrivalIds.has(clean(item.request_id))));
+  const crossingIds = new Set(snapshot.crossingOperationIds || []);
+  if (crossingIds.size) savePendingCrossingItems(getPendingCrossingItems().filter(item => !crossingIds.has(clean(item.operation_id))));
+  clearWishlistChangesIfUnchanged(snapshot.wishlists || []);
+  await clearPendingSyncPackage();
 }
 
 function ensurePlantImageImport() {
@@ -2446,6 +3071,7 @@ function ensurePlantImageImport() {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 1.35rem; font-weight: 900; line-height: 1; cursor: pointer;
     }
     .import-form { display: grid; gap: 12px; }
+    .import-form-content { display: grid; gap: 12px; }
     .import-preview { width: 100%; max-height: 320px; object-fit: contain; border-radius: 16px; background: #eadfce; }
     .import-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .import-fields label { display: grid; align-content: start; gap: 5px; color: var(--muted, #6f655b); font-size: .86rem; font-weight: 800; }
@@ -2480,6 +3106,23 @@ function ensurePlantImageImport() {
     .import-empty { color: var(--muted, #6f655b); border: 1px dashed var(--line, #ded2c2); border-radius: 16px; padding: 18px; text-align: center; font-weight: 700; }
     .import-sync-status { color: var(--muted, #6f655b); font-weight: 750; padding: 10px 2px; }
     @media (max-width: 680px) {
+      dialog.import-dialog {
+        height: min(88dvh, calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)));
+        max-height: min(88dvh, calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)));
+        overflow: hidden;
+      }
+      .import-form {
+        height: 100%; min-height: 0; grid-template-rows: minmax(0, 1fr) auto;
+        gap: 0; padding: 0;
+      }
+      .import-form-content {
+        min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch; padding: 18px 18px 12px;
+      }
+      .import-form .import-buttons {
+        padding: 12px 18px max(18px, env(safe-area-inset-bottom));
+        background: var(--paper, #fffdf8);
+      }
       .import-queue-button,
       .mobile-view-toggle {
         right: 12px; width: 46px; height: 46px;
@@ -2620,36 +3263,38 @@ async function openImageImportForm(file) {
   const milestoneTypeByImageType = {omplanterad: "Omplanterad"};
   dialog.innerHTML = `
     <form method="dialog" class="import-panel import-form" id="plantImageImportForm">
-      <header>
-        <div>
-          <h2>Lägg till bild</h2>
-          <p>${htmlEscape(plantImageImportPending.plantName)} · sparas i lokal importkö</p>
+      <div class="import-form-content">
+        <header>
+          <div>
+            <h2>Lägg till bild</h2>
+            <p>${htmlEscape(plantImageImportPending.plantName)} · sparas i lokal importkö</p>
+          </div>
+          <button class="import-close" value="cancel" type="submit" aria-label="Stäng">×</button>
+        </header>
+        <img class="import-preview" src="${previewUrl}" alt="">
+        <div class="import-fields">
+          <label>Datum
+            <input name="date" type="date" value="${suggestedDate.date}">
+            <small class="import-date-help">${suggestedDate.source}</small>
+          </label>
+          <label>Bildtyp
+            <select name="type">
+              <option value="hel">hel</option>
+              <option value="omplanterad">omplanterad</option>
+              <option value="stam">stam</option>
+              <option value="blomma">blomma</option>
+              <option value="blad">blad</option>
+              <option value="detalj">detalj</option>
+              <option value="knopp">knopp</option>
+              <option value="stickling">stickling</option>
+              <option value="grodd">grodd</option>
+              <option value="beskuren">beskuren</option>
+              <option value="etikett">etikett</option>
+            </select>
+            <small class="import-type-help" hidden>Skapar samtidigt milstolpen Omplanterad.</small>
+          </label>
+          <textarea name="note" placeholder="Kort anteckning, frivilligt"></textarea>
         </div>
-        <button class="import-close" value="cancel" type="submit" aria-label="Stäng">×</button>
-      </header>
-      <img class="import-preview" src="${previewUrl}" alt="">
-      <div class="import-fields">
-        <label>Datum
-          <input name="date" type="date" value="${suggestedDate.date}">
-          <small class="import-date-help">${suggestedDate.source}</small>
-        </label>
-        <label>Bildtyp
-          <select name="type">
-            <option value="hel">hel</option>
-            <option value="omplanterad">omplanterad</option>
-            <option value="stam">stam</option>
-            <option value="blomma">blomma</option>
-            <option value="blad">blad</option>
-            <option value="detalj">detalj</option>
-            <option value="knopp">knopp</option>
-            <option value="stickling">stickling</option>
-            <option value="grodd">grodd</option>
-            <option value="beskuren">beskuren</option>
-            <option value="etikett">etikett</option>
-          </select>
-          <small class="import-type-help" hidden>Skapar samtidigt milstolpen Omplanterad.</small>
-        </label>
-        <textarea name="note" placeholder="Kort anteckning, frivilligt"></textarea>
       </div>
       <div class="import-buttons">
         <button class="secondary" value="cancel" type="submit">Avbryt</button>
@@ -2712,9 +3357,11 @@ const localSyncTokenKey = "mina-vaxter-lokal-synk-token-v1";
 
 function localSyncEndpoint() {
   const host = window.location.hostname;
-  if (window.location.protocol !== "http:" || !host) return "";
+  const localHost = host === "localhost" || host.endsWith(".local") || /^(?:10\.|192\.168\.|172\.(?:1[6-9]|2\d|3[01])\.)/.test(host);
+  if (!localHost || !["http:", "https:"].includes(window.location.protocol)) return "";
   const formattedHost = host.includes(":") ? `[${host}]` : host;
-  return `http://${formattedHost}:47832`;
+  const syncProtocol = window.location.protocol === "http:" ? "https:" : window.location.protocol;
+  return `${syncProtocol}//${formattedHost}:47832`;
 }
 
 function localSyncToken() {
@@ -2765,22 +3412,6 @@ function loadLocalArrivalToken() {
   return localArrivalTokenPromise;
 }
 
-async function getPendingArrivalItems() {
-  const token = await loadLocalArrivalToken();
-  if (!token) return [];
-  try {
-    const response = await fetch("http://127.0.0.1:47831/arrivals", {
-      headers: {"X-Mina-Vaxter-Token": token},
-      cache: "no-store"
-    });
-    if (!response.ok) return [];
-    const payload = await response.json();
-    return Array.isArray(payload.arrivals) ? payload.arrivals : [];
-  } catch (error) {
-    return [];
-  }
-}
-
 async function saveSyncPackageToMac(filename, blob) {
   const endpoint = localSyncEndpoint();
   const syncToken = localSyncToken();
@@ -2805,7 +3436,7 @@ async function saveSyncPackageToMac(filename, blob) {
   const token = await loadLocalArrivalToken();
   if (!token) return {ok: false, needsPairing: Boolean(endpoint), error: "iPhone är inte parkopplad med Macen."};
   try {
-    const response = await fetch(`http://127.0.0.1:47831/sync-package?filename=${encodeURIComponent(filename)}`, {
+    const response = await fetch(`https://127.0.0.1:47831/sync-package?filename=${encodeURIComponent(filename)}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/zip",
@@ -2830,7 +3461,9 @@ async function updatePlantImageImportUI() {
     ? (window.buildHibiscusFlowerAssessmentExport().items || [])
     : [];
   const cardImageItems = buildPlantCardImageExport().items;
-  const syncCount = items.length + getPlantMilestoneAdditions().length + buildPlantCardNoteExport().items.length + buildPlantStatusExport().items.length + flowerAssessmentItems.length + cardImageItems.length + arrivalItems.length;
+  const wishlistItems = buildWishlistExport().items;
+  const crossingItems = getPendingCrossingItems();
+  const syncCount = items.length + getPlantMilestoneAdditions().length + buildPlantCardNoteExport().items.length + buildPlantStatusExport().items.length + flowerAssessmentItems.length + cardImageItems.length + arrivalItems.length + crossingItems.length + wishlistItems.length;
   const button = document.querySelector(".import-queue-button");
   if (button) {
     button.classList.toggle("has-items", syncCount > 0);
@@ -2863,9 +3496,11 @@ async function openImageImportQueue() {
   const flowerAssessmentItems = flowerAssessmentExport.items || [];
   const cardImageExport = buildPlantCardImageExport();
   const cardImageItems = cardImageExport.items || [];
-  const arrivalItems = await getPendingArrivalItems();
-  const packageCount = items.length + milestoneItems.length + cardNoteItems.length + plantStatusItems.length + flowerAssessmentItems.length + cardImageItems.length;
-  const syncCount = packageCount + arrivalItems.length;
+  const arrivalItems = getPendingArrivalItems();
+  const crossingItems = getPendingCrossingItems();
+  const wishlistItems = buildWishlistExport().items;
+  const pendingSyncPackage = await getPendingSyncPackage().catch(() => null);
+  const syncCount = items.length + milestoneItems.length + cardNoteItems.length + plantStatusItems.length + flowerAssessmentItems.length + cardImageItems.length + arrivalItems.length + crossingItems.length + wishlistItems.length;
   const localSyncReady = Boolean(localSyncEndpoint());
   const needsPairing = localSyncReady && !localSyncToken();
   const urls = [];
@@ -2948,7 +3583,7 @@ async function openImageImportQueue() {
     </article>
   `).join("");
   const arrivalRows = arrivalItems.map(item => {
-    const meta = [item.category, item.arrivalType, item.arrivalDate].filter(Boolean).join(" · ");
+    const meta = [item.category, item.arrival_type, item.arrival_date].filter(Boolean).join(" · ");
     return `
       <article class="import-item">
         <div class="import-item-icon" aria-hidden="true">🌱</div>
@@ -2957,26 +3592,54 @@ async function openImageImportQueue() {
           <small>${htmlEscape(meta)}</small>
           <small>Ankomstsamtal · sparad för Mac-synk</small>
         </div>
+        <button class="import-delete" type="button" data-delete-arrival="${escapeAttr(item.request_id)}">Ta bort</button>
       </article>
     `;
   }).join("");
+  const crossingRows = crossingItems.map(item => {
+    const data = item.kind === "crossing" ? item.crossing : item.kind === "event" ? item.event : item.offspring;
+    const title = item.kind === "crossing"
+      ? `${data?.mother_id || ""} × ${data?.father_id || ""}`
+      : item.kind === "event"
+        ? `${data?.type || "Korsningshändelse"} · ${data?.date || ""}`
+        : `Avkomma · ${data?.date || ""}`;
+    return `
+      <article class="import-item">
+        <div class="import-item-icon" aria-hidden="true">✿</div>
+        <div>
+          <strong>${htmlEscape(title || "Korsning")}</strong>
+          <small>Korsning · sparad för Mac-synk</small>
+        </div>
+        <button class="import-delete" type="button" data-delete-crossing="${escapeAttr(item.operation_id)}">Ta bort</button>
+      </article>
+    `;
+  }).join("");
+  const wishlistRows = wishlistItems.map(item => `
+    <article class="import-item">
+      <div class="import-item-icon" aria-hidden="true">🗒️</div>
+      <div>
+        <strong>${htmlEscape(item.category)}</strong>
+        <small>Önskelista · ${item.deleted ? "borttagen post" : htmlEscape(item.text)}</small>
+      </div>
+    </article>
+  `).join("");
   dialog.innerHTML = `
     <div class="import-panel">
       <header>
         <div>
           <h2>Synka till Mac</h2>
-          <p>${syncCount ? `${items.length} bilder · ${milestoneItems.length} milstolpar · ${cardNoteItems.length} anteckningar · ${plantStatusItems.length} statusar · ${flowerAssessmentItems.length} blombedömningar · ${cardImageItems.length} kortutsnitt · ${arrivalItems.length} ankomstsamtal` : "Kön är tom just nu."}</p>
+          <p>${syncCount ? `${items.length} bilder · ${milestoneItems.length} milstolpar · ${cardNoteItems.length} anteckningar · ${plantStatusItems.length} statusar · ${flowerAssessmentItems.length} blombedömningar · ${cardImageItems.length} kortutsnitt · ${arrivalItems.length} ankomstsamtal · ${crossingItems.length} korsningsändringar · ${wishlistItems.length} önskelisteändringar` : "Kön är tom just nu."}</p>
         </div>
         <button class="import-close" type="button" aria-label="Stäng">×</button>
       </header>
-      <div class="import-list">${rows + milestoneRows + cardNoteRows + plantStatusRows + flowerAssessmentRows + cardImageRows + arrivalRows || '<div class="import-empty">Inga ändringar i kön.</div>'}</div>
+      <div class="import-list">${rows + milestoneRows + cardNoteRows + plantStatusRows + flowerAssessmentRows + cardImageRows + arrivalRows + crossingRows + wishlistRows || '<div class="import-empty">Inga ändringar i kön.</div>'}</div>
       <div class="import-buttons">
-        ${packageCount ? `
+        ${syncCount || pendingSyncPackage ? `
           ${needsPairing ? '<label class="import-pairing"><span>Parkopplingskod från Macen</span><input data-sync-pairing-code autocomplete="one-time-code" inputmode="text" autocapitalize="none" spellcheck="false"></label>' : ''}
-          <button class="primary" type="button" data-export-package>${needsPairing ? 'Parkoppla och synka' : 'Synka'}</button>
-          <div class="import-sync-status" data-sync-status>${localSyncReady ? 'Synkar direkt till Macen på samma wifi.' : 'Öppna den lokala förhandsvisningen från Macen för att synka.'}</div>
-        ` : (arrivalItems.length ? '<div class="import-sync-status">Sparad – behandlas när Mac-synkningen körs.</div>' : '')}
-        <button class="secondary" type="button" data-clear-import ${packageCount ? "" : "disabled"}>Rensa synkkö</button>
+          <button class="primary" type="button" data-export-package>${needsPairing ? 'Parkoppla och synka' : (pendingSyncPackage ? 'Försök synka igen' : 'Synka')}</button>
+          <div class="import-sync-status" data-sync-status>${pendingSyncPackage ? 'En tidigare synk väntar på Macens kvitto. Nya ändringar följer med nästa synkning.' : (localSyncReady ? 'Synkar direkt till Macen på samma wifi.' : 'Öppna den lokala förhandsvisningen från Macen för att synka.')}</div>
+        ` : ''}
+        <button class="secondary" type="button" data-clear-import ${syncCount || pendingSyncPackage ? "" : "disabled"}>Rensa synkkö</button>
       </div>
     </div>
   `;
@@ -2985,13 +3648,15 @@ async function openImageImportQueue() {
   dialog.querySelector(".import-close").addEventListener("click", () => dialog.close());
   dialog.querySelectorAll("[data-delete-import]").forEach(button => {
     button.addEventListener("click", async () => {
+      await clearPendingSyncPackage();
       await deleteImageImportItem(button.dataset.deleteImport);
       updatePlantImageImportUI();
       openImageImportQueue();
     });
   });
   dialog.querySelectorAll("[data-delete-milestone]").forEach(button => {
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
+      await clearPendingSyncPackage();
       deletePlantMilestoneAddition(button.dataset.deleteMilestone);
       window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: {deleted: true}}));
       updatePlantImageImportUI();
@@ -2999,21 +3664,24 @@ async function openImageImportQueue() {
     });
   });
   dialog.querySelectorAll("[data-delete-card-note]").forEach(button => {
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
+      await clearPendingSyncPackage();
       deletePlantCardNoteChange(button.dataset.deleteCardNote);
       updatePlantImageImportUI();
       openImageImportQueue();
     });
   });
   dialog.querySelectorAll("[data-delete-plant-status]").forEach(button => {
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
+      await clearPendingSyncPackage();
       deletePlantStatusChange(button.dataset.deletePlantStatus);
       updatePlantImageImportUI();
       openImageImportQueue();
     });
   });
   dialog.querySelectorAll("[data-delete-flower-assessment]").forEach(button => {
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
+      await clearPendingSyncPackage();
       if (typeof window.deleteHibiscusFlowerAssessmentChange === "function") {
         window.deleteHibiscusFlowerAssessmentChange(button.dataset.deleteFlowerAssessment);
       }
@@ -3022,21 +3690,42 @@ async function openImageImportQueue() {
     });
   });
   dialog.querySelectorAll("[data-delete-card-image]").forEach(button => {
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
+      await clearPendingSyncPackage();
       const [category, plantId] = button.dataset.deleteCardImage.split("|");
       deletePlantCardImageChange(category, plantId);
       updatePlantImageImportUI();
       openImageImportQueue();
     });
   });
+  dialog.querySelectorAll("[data-delete-arrival]").forEach(button => {
+    button.addEventListener("click", async () => {
+      await clearPendingSyncPackage();
+      deletePendingArrivalItem(button.dataset.deleteArrival);
+      updatePlantImageImportUI();
+      openImageImportQueue();
+    });
+  });
+  dialog.querySelectorAll("[data-delete-crossing]").forEach(button => {
+    button.addEventListener("click", async () => {
+      await clearPendingSyncPackage();
+      deletePendingCrossingItem(button.dataset.deleteCrossing);
+      updatePlantImageImportUI();
+      openImageImportQueue();
+    });
+  });
   const clearButton = dialog.querySelector("[data-clear-import]");
   clearButton.addEventListener("click", async () => {
-    if (!confirm("Ta bort alla bilder, milstolpar, anteckningar, statusändringar, kortutsnitt och blombedömningar i synkkön? Gör detta först när paketet är sparat eller importerat på Mac.")) return;
+    if (!confirm("Ta bort alla bilder, milstolpar, anteckningar, statusändringar, kortutsnitt, blombedömningar, ankomstsamtal, korsningsändringar och önskelisteändringar i synkkön? Gör detta först när paketet är sparat eller importerat på Mac.")) return;
+    await clearPendingSyncPackage();
     await clearImageImportItems();
     clearPlantMilestoneAdditions();
     clearPlantCardNoteChanges();
     clearPlantStatusChanges();
     clearPlantCardImageChanges();
+    clearPendingArrivalItems();
+    clearPendingCrossingItems();
+    clearWishlistChanges();
     if (typeof window.clearHibiscusFlowerAssessmentChanges === "function") window.clearHibiscusFlowerAssessmentChanges();
     window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: {cleared: true}}));
     updatePlantImageImportUI();
@@ -3053,16 +3742,20 @@ async function openImageImportQueue() {
         await pairWithLocalMac(code);
       }
       packageButton.textContent = "Synkar...";
-      const zip = await createSyncPackage(items, getPlantMilestoneAdditions(), cardNoteItems, plantStatusItems, flowerAssessmentExport, cardImageExport);
-      const filename = `mina-vaxter-synkpaket-${localDateString()}.zip`;
-      const localSave = await saveSyncPackageToMac(filename, zip);
+      const outbox = pendingSyncPackage || await createPendingSyncPackage({
+        imageItems: items,
+        milestoneItems,
+        cardNoteItems,
+        plantStatusItems,
+        flowerAssessmentExport,
+        cardImageExport,
+        arrivalItems,
+        crossingItems,
+        wishlistItems
+      });
+      const localSave = await saveSyncPackageToMac(outbox.filename, outbox.blob);
       if (!localSave || !localSave.ok) throw new Error(localSave?.error || "Kunde inte nå Macen.");
-      await clearImageImportItems();
-      clearPlantMilestoneAdditions();
-      clearPlantCardNoteChanges();
-      clearPlantStatusChanges();
-      clearPlantCardImageChanges();
-      if (typeof window.clearHibiscusFlowerAssessmentChanges === "function") window.clearHibiscusFlowerAssessmentChanges();
+      await clearAcknowledgedSyncPackage(outbox);
       window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: {cleared: true}}));
       await updatePlantImageImportUI();
       packageButton.textContent = "Synkat";
@@ -3127,20 +3820,25 @@ async function createImageImportPackage(items) {
   return createZipBlob(entries);
 }
 
-async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRows = [], plantStatusRows = [], flowerAssessmentExport = {version: 1, traits: [], items: []}, cardImageExport = {version: 1, items: []}) {
+async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRows = [], plantStatusRows = [], flowerAssessmentExport = {version: 1, traits: [], items: []}, cardImageExport = {version: 1, items: []}, arrivalItems = [], crossingItems = [], wishlistItems = [], packageId = "") {
   const imageManifest = buildImageImportManifest(imageItems);
   const milestoneExport = buildPlantMilestoneExport(milestoneRows);
   const cardNoteExport = buildPlantCardNoteExport(cardNoteRows);
   const plantStatusExport = buildPlantStatusExport(plantStatusRows);
   const flowerAssessmentItems = flowerAssessmentExport.items || [];
   const cardImageItems = cardImageExport.items || [];
-  const syncManifest = buildSyncManifest(imageManifest.items, milestoneExport.items, cardNoteExport.items, plantStatusExport.items, flowerAssessmentItems, cardImageItems);
+  const crossingExport = buildCrossingExport(crossingItems);
+  const wishlistExport = buildWishlistExport(wishlistItems);
+  const syncManifest = buildSyncManifest(imageManifest.items, milestoneExport.items, cardNoteExport.items, plantStatusExport.items, flowerAssessmentItems, cardImageItems, arrivalItems, crossingExport.items, wishlistExport.items, packageId);
   syncManifest.images = imageManifest.items;
   syncManifest.milestonesFile = "milstolpar.json";
   syncManifest.cardNotesFile = "kortanteckningar.json";
   syncManifest.plantStatusesFile = "vaxtstatusar.json";
   syncManifest.flowerAssessmentsFile = "hibiskus-blombedomningar.json";
   syncManifest.cardImagesFile = "kortbilder.json";
+  syncManifest.arrivalsFile = "ankomstsamtal.json";
+  syncManifest.crossingsFile = "korsningar.json";
+  syncManifest.wishlistsFile = "onskelistor.json";
 
   const entries = [
     {
@@ -3166,6 +3864,18 @@ async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRo
     {
       name: "kortbilder.json",
       blob: new Blob([JSON.stringify(cardImageExport, null, 2)], {type: "application/json;charset=utf-8"})
+    },
+    {
+      name: "ankomstsamtal.json",
+      blob: new Blob([JSON.stringify({version: 1, exportedAt: new Date().toISOString(), items: arrivalItems}, null, 2)], {type: "application/json;charset=utf-8"})
+    },
+    {
+      name: "korsningar.json",
+      blob: new Blob([JSON.stringify(crossingExport, null, 2)], {type: "application/json;charset=utf-8"})
+    },
+    {
+      name: "onskelistor.json",
+      blob: new Blob([JSON.stringify(wishlistExport, null, 2)], {type: "application/json;charset=utf-8"})
     }
   ];
   imageManifest.items.forEach((manifestItem, index) => {

@@ -84,12 +84,12 @@
       <a href="citrus.html">Citrus</a>
       <a class="current" href="udda.html">Udda</a>
       <a href="favoriter.html">Hundöron</a>
-      <a href="sticklingar.html">Sticklingar</a>
+      <a href="vaxtliv.html">Växtliv</a>
       <a href="galleri.html">Galleri</a>
       <a href="verktyg.html">Verktyg</a>
     </nav>
     <div class="eyebrow">Privat samling</div>
-    <h1>Udda</h1>
+    <h1 data-wishlist-category="Udda">Udda</h1>
     <p class="subtitle">Art- och gruppkatalog för udda växter, doftväxter, samplanteringar och frögrupper där individ-ID inte är det viktiga.</p>
   </header>
 
@@ -120,7 +120,7 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script src="common.js?v=20260821synk1945"></script>
+  <script src="common.js?v=3beb2c7af0f3"></script>
   <script>
     function startUddaPage(snapshot) {
     let plants = [];
@@ -296,6 +296,7 @@
     ensurePlantPhotoGallery();
     ensurePlantMilestones();
     ensurePlantImageImport();
+    ensurePrivateWishlists();
     ensurePlantFavorites();
     clearBtn.addEventListener("click", () => {
       search.value = "";
@@ -311,7 +312,7 @@
     }
   </script>
   <script>
-    const PUBLIC_CATALOG_SCHEMA_VERSION = 1;
+    const PUBLIC_CATALOG_SCHEMA_VERSION = 2;
 
     function showCatalogLoadError() {
       document.querySelector("#stats").textContent = "Katalogdata kunde inte hämtas.";

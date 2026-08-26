@@ -22,11 +22,18 @@
     .mobile-refresh:active { transform: scale(.96); }
     .tabs { display: flex; gap: 6px; overflow-x: auto; padding: 1px 0 3px; scrollbar-width: none; scroll-snap-type: x proximity; }
     .tabs::-webkit-scrollbar { display: none; }
+    .legacy-migration { margin: 0 0 8px; padding: 9px 11px; border: 1px solid #d8b782; border-radius: 12px; background: #fff4df; color: #745127; font-size: .82rem; line-height: 1.35; font-weight: 700; }
+    .legacy-migration a { color: inherit; text-decoration-thickness: 1px; }
     .tab { flex: 0 0 auto; scroll-snap-align: start; border: 1px solid var(--line); background: var(--paper); color: var(--accent); border-radius: 999px; padding: 9px 14px; font-weight: 800; font-size: .84rem; }
     .tab.active { background: var(--accent); color: white; border-color: var(--accent); }
     main { padding: 12px 10px 72px; }
     .search { width: 100%; border: 1px solid var(--line); background: var(--paper); border-radius: 999px; padding: 11px 14px; font: inherit; margin-bottom: 10px; }
-    .stats { color: var(--muted); font-weight: 750; margin: 2px 0 10px; }
+    .catalog-status-row { display: flex; align-items: center; gap: 8px; margin: 2px 0 10px; min-width: 0; }
+    .catalog-status-row .stats { flex: 1 1 auto; min-width: 0; margin: 0; }
+    #mobileWishlistAnchor { position: relative; flex: 0 0 auto; }
+    #mobileWishlistAnchor .wishlist-slot { display: block; margin: 0; max-width: none; }
+    #mobileWishlistAnchor .wishlist-toggle { padding: 4px 0 4px 7px; white-space: nowrap; }
+    #mobileWishlistAnchor .wishlist-panel { position: absolute; z-index: 30; top: calc(100% + 6px); right: 0; width: min(320px, calc(100vw - 20px)); }
     .grid { display: grid; gap: 16px; }
     .card { background: var(--paper); border: 1px solid #d5c6b4; border-radius: 18px; overflow: hidden; box-shadow: 0 5px 16px rgba(43,37,31,.08); }
     .image { position: relative; height: min(218px, 54vw); background: linear-gradient(135deg, rgba(125,79,59,.15), rgba(96,119,97,.15)); overflow: hidden; }
@@ -58,15 +65,16 @@
 </head>
 <body>
   <header>
-    <h1>Mina Växter</h1>
+    <h1 id="mobileHeading" data-wishlist-target="#mobileWishlistAnchor">Mina Växter</h1>
     <button class="mobile-refresh" id="mobileRefresh" type="button" aria-label="Uppdatera Mina Växter" title="Uppdatera">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6v5h-5"/><path d="M18.2 15.5A7.5 7.5 0 1 1 19.6 8L20 11"/></svg>
     </button>
     <div class="tabs" id="tabs"></div>
   </header>
   <main>
+    <div class="legacy-migration" id="legacyMigration" hidden>Det här är den äldre lokala adressen. Använd den bara för att synka en befintlig kö, och öppna sedan <a id="legacyMigrationLink" href="#">den säkra HTTPS-appen</a>.</div>
     <input class="search" id="search" type="search" placeholder="Sök i vald kategori">
-    <div class="stats" id="stats"></div>
+    <div class="catalog-status-row"><div class="stats" id="stats"></div><div id="mobileWishlistAnchor"></div></div>
     <section class="grid" id="grid"></section>
   </main>
   <dialog id="photoDialog"></dialog>
@@ -135,9 +143,13 @@ PL-H01-B,2026-08-17,Beskuren,
 PL-H01-C,2026-08-17,Beskuren,
 PL-H01-H,2026-08-17,Beskuren,
 PL-H01-K,2026-08-17,Beskuren,
-PL-H01-R,2026-08-17,Beskuren,</script>
-  <script src="common.js?v=20260821synk1945"></script>
+PL-H01-R,2026-08-17,Beskuren,
+SP-009,2026-08-23,Överlämnad som gåva,</script>
+  <script src="common.js?v=3beb2c7af0f3"></script>
   <script>
+    if ("serviceWorker" in navigator && window.isSecureContext) {
+      window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js").catch(() => {}), {once: true});
+    }
     let data = {};
     let catalogReady = false;
     let logMap = combinedMilestonesByPlant(parseCSV(document.querySelector('#defaultMilestonesCSV').textContent));
@@ -147,11 +159,20 @@ PL-H01-R,2026-08-17,Beskuren,</script>
     const search = document.querySelector('#search');
     const mobileViewToggle = document.querySelector('#mobileViewToggle');
     const mobileRefresh = document.querySelector('#mobileRefresh');
-    const MOBILE_APP_VERSION = "2026-08-21-synk-1945";
+    const mobileHeading = document.querySelector('#mobileHeading');
+    const legacyMigration = document.querySelector('#legacyMigration');
+    const legacyMigrationLink = document.querySelector('#legacyMigrationLink');
+    const MOBILE_APP_VERSION = "2026-08-25-synk-1800";
+    const MOBILE_CATALOG_CACHE_KEY = "mina-vaxter-mobile-catalog-v1";
     const initialParams = new URLSearchParams(window.location.search);
     const requestedCategory = initialParams.get('kategori');
     let active = 'Hibiskus';
     let lastCatalogCategory = 'Hibiskus';
+
+    if (window.location.protocol === "http:") {
+      legacyMigration.hidden = false;
+      legacyMigrationLink.href = `https://${window.location.hostname}:8766/iphone.html`;
+    }
 
     function clean(value) { return String(value || '').trim(); }
     function escapeHtml(value) { return String(value || '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;'); }
@@ -163,7 +184,7 @@ PL-H01-R,2026-08-17,Beskuren,</script>
     }
     function snapshotToCatalog(snapshot) {
       const titleKeys = {Hibiskus: 'id', Pelargon: 'name', Citrus: 'name', Udda: 'name'};
-      if (!snapshot || snapshot.schemaVersion !== 1 || !snapshot.categories || typeof snapshot.categories !== 'object') {
+      if (!snapshot || snapshot.schemaVersion !== 2 || !snapshot.categories || typeof snapshot.categories !== 'object') {
         throw new Error('Katalogens format stöds inte.');
       }
       const result = {};
@@ -188,17 +209,37 @@ PL-H01-R,2026-08-17,Beskuren,</script>
       }
       return result;
     }
+    function readCachedMobileCatalog() {
+      try {
+        const snapshot = JSON.parse(localStorage.getItem(MOBILE_CATALOG_CACHE_KEY) || "");
+        window.publicCatalogSnapshot = snapshot;
+        return snapshotToCatalog(snapshot);
+      } catch (error) {
+        return null;
+      }
+    }
+    function saveCachedMobileCatalog(snapshot) {
+      try { localStorage.setItem(MOBILE_CATALOG_CACHE_KEY, JSON.stringify(snapshot)); } catch (error) {}
+    }
     async function loadPublicCatalog() {
-      const versionResponse = await fetch('version.json', {cache: 'no-store'});
-      if (!versionResponse.ok) throw new Error('Kunde inte hämta katalogversionen.');
-      const versionInfo = await versionResponse.json();
-      const version = clean(versionInfo?.version);
-      if (!version) throw new Error('Katalogversion saknas.');
-      const catalogResponse = await fetch(`public-data/catalog.json?v=${encodeURIComponent(version)}`);
-      if (!catalogResponse.ok) throw new Error('Kunde inte hämta katalogdata.');
-      const snapshot = await catalogResponse.json();
-      if (clean(snapshot?.catalogVersion) !== version) throw new Error('Katalogversionerna stämmer inte överens.');
-      return snapshotToCatalog(snapshot);
+      try {
+        const versionResponse = await fetch('version.json', {cache: 'no-store'});
+        if (!versionResponse.ok) throw new Error('Kunde inte hämta katalogversionen.');
+        const versionInfo = await versionResponse.json();
+        const version = clean(versionInfo?.version);
+        if (!version) throw new Error('Katalogversion saknas.');
+        const catalogResponse = await fetch(`public-data/catalog.json?v=${encodeURIComponent(version)}`);
+        if (!catalogResponse.ok) throw new Error('Kunde inte hämta katalogdata.');
+        const snapshot = await catalogResponse.json();
+        if (clean(snapshot?.catalogVersion) !== version) throw new Error('Katalogversionerna stämmer inte överens.');
+        window.publicCatalogSnapshot = snapshot;
+        saveCachedMobileCatalog(snapshot);
+        return snapshotToCatalog(snapshot);
+      } catch (error) {
+        const cached = readCachedMobileCatalog();
+        if (cached) return cached;
+        throw error;
+      }
     }
     async function checkMobileVersion() {
       try {
@@ -239,7 +280,7 @@ PL-H01-R,2026-08-17,Beskuren,</script>
       return labels.map((label, index) => `<span class="chip ${index === 0 ? "green" : ""}"${label === "🌱 Stickling" ? ' data-status-chip="cuttings"' : ""}>${escapeHtml(label)}</span>`).join("");
     }
     function renderTabs() {
-      const names = [...Object.keys(data), "Sticklingar", "Galleri"];
+      const names = [...Object.keys(data), "Tidigare", "Växtliv", "Galleri", "Ankomstsamtal"];
       tabs.innerHTML = names.map(name => `<button class="tab ${name === active ? 'active' : ''}" type="button" data-name="${escapeHtml(name)}">${escapeHtml(name)}</button>`).join('');
       requestAnimationFrame(() => tabs.querySelector('.tab.active')?.scrollIntoView({block: 'nearest', inline: 'nearest'}));
     }
@@ -265,10 +306,16 @@ PL-H01-R,2026-08-17,Beskuren,</script>
       mobileViewToggle.setAttribute('aria-label', inFavorites ? `Tillbaka till ${lastCatalogCategory}` : 'Öppna Hundöron');
       mobileViewToggle.title = inFavorites ? 'Katalog' : 'Hundöron';
     }
+    function updateMobileWishlist() {
+      const category = data[active] ? active : '';
+      mobileHeading.dataset.wishlistCategory = category;
+      document.dispatchEvent(new CustomEvent('wishlist-category-changed', {detail: {category}}));
+    }
     function showMobileView(name) {
       if (name !== "Hundöron" && data[name]) lastCatalogCategory = name;
       if (name === active) return;
       active = name;
+      updateMobileWishlist();
       search.value = '';
       render();
     }
@@ -354,6 +401,7 @@ PL-H01-R,2026-08-17,Beskuren,</script>
     }
     function render() {
       if (!catalogReady) return;
+      document.body.dataset.concludedPlantArchive = active === "Tidigare" ? "true" : "false";
       renderTabs();
       updateMobileViewToggle();
       if (active === "Hundöron") {
@@ -379,6 +427,20 @@ PL-H01-R,2026-08-17,Beskuren,</script>
         updatePlantFavoriteUI();
         return;
       }
+      if (active === "Tidigare") {
+        const q = search.value.trim().toLowerCase();
+        const rows = Object.entries(data).flatMap(([categoryName, section]) =>
+          section.rows.filter(row => {
+            const status = clean(row.status).toLocaleLowerCase("sv");
+            return status === "bortgiven" || status.startsWith("avslutad") || status === "död" || isConcludedPlantMilestone(latestPlantMilestone(logMap.get(row.id) || []));
+          }).map(row => ({categoryName, section, row}))
+        ).filter(item => !q || JSON.stringify(item.row).toLowerCase().includes(q));
+        rows.sort((a, b) => sortNatural(`${a.categoryName} ${a.row.name || a.row.nickname || a.row.id}`, `${b.categoryName} ${b.row.name || b.row.nickname || b.row.id}`));
+        stats.textContent = `${rows.length} ${rows.length === 1 ? "tidigare växt" : "tidigare växter"}`;
+        grid.innerHTML = rows.length ? rows.map(item => card(item.section, item.row, item.categoryName)).join('') : '<div class="empty">Inga tidigare växter ännu.</div>';
+        updatePlantFavoriteUI();
+        return;
+      }
       const section = data[active];
       const q = search.value.trim().toLowerCase();
       const rows = section.rows.filter(row => !q || JSON.stringify(row).toLowerCase().includes(q));
@@ -400,7 +462,15 @@ PL-H01-R,2026-08-17,Beskuren,</script>
     tabs.addEventListener('click', event => {
       const button = event.target.closest('.tab');
       if (button && button.dataset.name === "Galleri") {
-        window.location.href = "galleri.html?v=2026-08-21-synk-1945";
+        window.location.href = "galleri.html?v=2026-08-25-synk-1800";
+        return;
+      }
+      if (button && button.dataset.name === "Växtliv") {
+        window.location.href = "vaxtliv.html";
+        return;
+      }
+      if (button && button.dataset.name === "Ankomstsamtal") {
+        window.location.href = "verktyg.html#ankomstsamtal";
         return;
       }
       if (!button) return;
@@ -462,6 +532,8 @@ PL-H01-R,2026-08-17,Beskuren,</script>
         ensurePlantPhotoGallery();
         ensurePlantMilestones();
         ensurePlantImageImport();
+        updateMobileWishlist();
+        ensurePrivateWishlists();
         ensurePlantFavorites();
         render();
         checkMobileVersion();

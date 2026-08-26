@@ -873,6 +873,19 @@
     window.dispatchEvent(new CustomEvent("hibiscus-flower-data-changed", {detail: {cleared: true}}));
   };
 
+  window.clearHibiscusFlowerAssessmentChangesIfUnchanged = function (expectedItems) {
+    const expected = new Map((expectedItems || []).map(item => [item.assessmentId, item.updatedAt]));
+    const remaining = readQueue().filter(item => {
+      const assessment = item.assessment || {};
+      const updatedAt = expected.get(assessment.assessment_id);
+      return !updatedAt || assessment.updated_at !== updatedAt;
+    });
+    if (remaining.length !== readQueue().length) {
+      writeQueue(remaining);
+      window.dispatchEvent(new CustomEvent("hibiscus-flower-data-changed", {detail: {synced: true}}));
+    }
+  };
+
   const style = document.createElement("style");
   style.id = "hibiscusFlowerAssessmentStyles";
   style.textContent = `

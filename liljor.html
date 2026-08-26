@@ -185,7 +185,7 @@
     async function serverPhotos() {
       if (window.location.protocol !== "file:" || !archiveToken) return [];
       try {
-        const response = await fetch("http://127.0.0.1:47831/gallery", {
+        const response = await fetch("https://127.0.0.1:47831/gallery", {
           cache: "no-store", headers: {"X-Mina-Vaxter-Token": archiveToken}
         });
         const payload = await response.json();

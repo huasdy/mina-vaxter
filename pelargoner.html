@@ -99,12 +99,12 @@
       <a href="citrus.html">Citrus</a>
       <a href="udda.html">Udda</a>
       <a href="favoriter.html">Hundöron</a>
-      <a href="sticklingar.html">Sticklingar</a>
+      <a href="vaxtliv.html">Växtliv</a>
       <a href="galleri.html">Galleri</a>
       <a href="verktyg.html">Verktyg</a>
     </nav>
     <div class="eyebrow">Privat samling</div>
-    <h1>Pelargon</h1>
+    <h1 data-wishlist-category="Pelargon">Pelargon</h1>
     <p class="subtitle">En lätt sort- och artsamling. Bara pelargoner som behöver följas separat får egna individkort.</p>
   </header>
 
@@ -112,6 +112,7 @@
     <div class="toolbar-inner">
       <input id="search" type="search" placeholder="Sök sort, art, individ, doft, datum eller anteckning…">
       <select id="typeFilter" aria-label="Filtrera efter växttyp"><option value="">Alla pelargontyper</option></select>
+      <select id="seedlingFilter" aria-label="Filtrera frösådda pelargoner"><option value="">Alla ursprung</option><option value="seedling">Frösådd</option></select>
       <select id="photoTypeFilter" aria-label="Filtrera efter vad bilden visar"><option value="">Alla bildtyper</option></select>
       <select id="sortSelect" aria-label="Sortering">
         <option value="name">Namn A-Ö</option>
@@ -135,7 +136,7 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script src="common.js?v=20260821synk1945"></script>
+  <script src="common.js?v=3beb2c7af0f3"></script>
   <script>
     function startPelargonPage(snapshot) {
     let plants = [];
@@ -147,6 +148,7 @@
     const grid = document.querySelector("#grid");
     const search = document.querySelector("#search");
     const typeFilter = document.querySelector("#typeFilter");
+    const seedlingFilter = document.querySelector("#seedlingFilter");
     const photoTypeFilter = document.querySelector("#photoTypeFilter");
     const sortSelect = document.querySelector("#sortSelect");
     const clearBtn = document.querySelector("#clearBtn");
@@ -154,6 +156,7 @@
     const dialog = document.querySelector("#photoDialog");
     const modalImg = document.querySelector("#modalImg");
     const modalCaption = document.querySelector("#modalCaption");
+    const crossingsById = new Map((snapshot.crossings?.items || []).map(row => [row.crossing_id, row]));
 
     function rebuild() {
       const rows = plantRows;
@@ -241,11 +244,20 @@
       return collectionChipHtml("Pelargon", p, escapeAttr);
     }
 
+    function crossingLabel(crossing) {
+      if (!crossing) return "";
+      const mother = plantRows.find(row => row.id === crossing.mother_id)?.name || crossing.mother_id;
+      const father = plantRows.find(row => row.id === crossing.father_id)?.name || crossing.father_id;
+      return `${mother} × ${father}`;
+    }
+
     function cardTemplate(p) {
       const displayName = plantDisplayName(p);
       const identity = plantIdentityName(p);
       const displayLabel = plantDisplayLabel(p);
       const collectionName = p.collection_id ? clean(plants.find(row => row.id === p.collection_id)?.name) : "";
+      const crossing = crossingsById.get(p.crossing_id);
+      const crossingInfo = crossing ? `<dl><dt>Korsning</dt><dd><a href="korsningar.html#${escapeAttr(crossing.crossing_id)}">${escapeText(crossingLabel(crossing))}</a></dd></dl>` : "";
       const photos = p.photos || [];
       const matchingPhotos = photosMatchingSelectedType(p);
       const active = matchingPhotos[matchingPhotos.length - 1] || photos[photos.length - 1] || {};
@@ -279,7 +291,7 @@
               </div>
             </div>
             <div class="plant-card-chip-slot"><div class="chips">${cardChips(p)}</div></div>
-            <div class="plant-card-info">${collectionRecordInfoHtml(p, collectionName)}</div>
+            <div class="plant-card-info">${collectionRecordInfoHtml(p, collectionName)}${crossingInfo}</div>
             <div class="plant-card-milestone-slot">${milestoneSummary(latestMilestone)}</div>
             <div class="plant-card-notes-slot">${plantCardNoteField(p.id, p.card_note, p.card_note_updated_at)}</div>
           </div>
@@ -312,6 +324,7 @@
     function render() {
       const query = search.value.trim().toLowerCase();
       const selectedType = typeFilter.value === "__concluded_only__" ? "" : typeFilter.value;
+      const selectedSeedling = seedlingFilter.value;
       const selectedPhotoType = normalizedPhotoType(photoTypeFilter.value);
       const filtered = plants.filter(p => {
         const combined = [
@@ -321,6 +334,7 @@
         ].join(" ").toLowerCase();
         return (!query || combined.includes(query))
           && (!selectedType || p.type === selectedType)
+          && (!selectedSeedling || (clean(p.record_kind).toUpperCase() === "INDIVIDUAL" && (clean(p.arrival_type).toLocaleLowerCase("sv") === "egen korsning" || Boolean(clean(p.crossing_id)))))
           && (!selectedPhotoType || photosMatchingSelectedType(p).length > 0);
       });
       const visible = sortedPlants(filtered);
@@ -335,6 +349,7 @@
       const activeParts = [
         query ? `Sökning: “${search.value.trim()}”` : "",
         selectedType ? `Typ: ${displayChipLabel(selectedType)}` : "",
+        selectedSeedling ? "Frösådd" : "",
         selectedPhotoType ? `Bildtyp: ${displayPhotoTypeLabel(selectedPhotoType)}` : "",
         `Sortering: ${sortSelect.options[sortSelect.selectedIndex].textContent}`
       ].filter(Boolean);
@@ -369,16 +384,19 @@
     ensurePlantPhotoGallery();
     ensurePlantMilestones();
     ensurePlantImageImport();
+    ensurePrivateWishlists();
     ensurePlantFavorites();
     clearBtn.addEventListener("click", () => {
       search.value = "";
       typeFilter.value = "";
+      seedlingFilter.value = "";
       photoTypeFilter.value = "";
       sortSelect.value = "name";
       render();
     });
     search.addEventListener("input", render);
     typeFilter.addEventListener("change", render);
+    seedlingFilter.addEventListener("change", render);
     photoTypeFilter.addEventListener("change", render);
     sortSelect.addEventListener("change", render);
     window.addEventListener("plant-milestone-added", rebuild);
@@ -386,7 +404,7 @@
     }
   </script>
   <script>
-    const PUBLIC_CATALOG_SCHEMA_VERSION = 1;
+    const PUBLIC_CATALOG_SCHEMA_VERSION = 2;
 
     function showCatalogLoadError() {
       document.querySelector("#stats").textContent = "Katalogdata kunde inte hämtas.";

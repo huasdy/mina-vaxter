@@ -161,12 +161,12 @@
       <a href="citrus.html">Citrus</a>
       <a href="udda.html">Udda</a>
       <a href="favoriter.html">Hundöron</a>
-      <a href="sticklingar.html">Sticklingar</a>
+      <a href="vaxtliv.html">Växtliv</a>
       <a href="galleri.html">Galleri</a>
       <a href="verktyg.html">Verktyg</a>
     </nav>
     <div class="eyebrow">Privat samling</div>
-    <h1>Hibiskus</h1>
+    <h1 data-wishlist-category="Hibiskus">Hibiskus</h1>
     <p class="subtitle">Katalogen är den rena visningen. Data hämtas från katalogens CSV-filer.</p>
   </header>
 
@@ -202,7 +202,7 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script src="common.js?v=20260821synk1945"></script>
+  <script src="common.js?v=3beb2c7af0f3"></script>
   <script src="hibiskus-george-import.js?v=20260814v1"></script>
   <script>
     function startHibiscusPage(snapshot) {
@@ -211,6 +211,7 @@
     const plantRows = hibiscusSection.plants;
     const photoRows = hibiscusSection.photos;
     const milestoneRows = snapshot.milestones;
+    const crossingsById = new Map((snapshot.crossings?.items || []).map(row => [row.crossing_id, row]));
 
     const grid = document.querySelector("#grid");
     const search = document.querySelector("#search");
@@ -415,6 +416,11 @@
       return flowerPhotos[flowerPhotos.length - 1] || photos[photos.length - 1] || {};
     }
 
+    function crossingLabelForPlant(p) {
+      const crossing = crossingsById.get(p.crossing_id);
+      return crossing ? `${crossing.mother_id} × ${crossing.father_id}` : hibiscusCrossLabel(p);
+    }
+
     function cardTemplate(p) {
       const displayName = plantDisplayName(p);
       const identity = plantIdentityName(p);
@@ -424,12 +430,13 @@
       const activeFile = active.file || "";
       const activeLabel = active.label || (active.date ? `${active.date} · ${active.type}` : "");
       const dayText = active.day ? ` · dag ${active.day}` : "";
-      const crossLabel = hibiscusCrossLabel(p);
+      const crossing = crossingsById.get(p.crossing_id);
+      const crossLabel = crossingLabelForPlant(p);
       const parentReferenceItems = hibiscusParentReferenceItems(p);
       const latestMilestone = latestPlantMilestone(p.logs);
       const isGift = clean(p.arrival_type) === "Gåva";
       const batchInfo = clean(p.batch)
-        ? `<dt>Fröbatch</dt><dd>${escapeText(p.batch)}</dd><dt>Korsning</dt><dd>${escapeText(crossLabel || "Ej angiven")}</dd>`
+        ? `<dt>Fröbatch</dt><dd>${escapeText(p.batch)}</dd><dt>Korsning</dt><dd>${crossing ? `<a href="korsningar.html#${escapeAttr(crossing.crossing_id)}">${escapeText(crossLabel || "Ej angiven")}</a>` : escapeText(crossLabel || "Ej angiven")}</dd>`
         : `<dt>Ursprung</dt><dd>${escapeText(clean(p.arrival_type) || "Ej ifyllt")}</dd><dt>${isGift ? "Från" : "Källa"}</dt><dd>${escapeText(isGift ? "Privat" : (clean(p.source) || "Ej ifyllt"))}</dd>`;
       const gallery = photos.map(photo => {
         const label = (photo.label || (photo.date + " · " + photo.type)) + (photo.day ? " · dag " + photo.day : "");
@@ -701,6 +708,7 @@
     ensurePlantPhotoGallery();
     ensurePlantMilestones();
     ensurePlantImageImport();
+    ensurePrivateWishlists();
     ensurePlantFavorites();
     clearBtn.addEventListener("click", () => {
       search.value = "";
@@ -727,7 +735,7 @@
     }
   </script>
   <script>
-    const PUBLIC_CATALOG_SCHEMA_VERSION = 1;
+    const PUBLIC_CATALOG_SCHEMA_VERSION = 2;
 
     function showCatalogLoadError() {
       document.querySelector("#stats").textContent = "Katalogdata kunde inte hämtas.";

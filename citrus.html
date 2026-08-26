@@ -89,12 +89,12 @@
       <a class="current" href="citrus.html">Citrus</a>
       <a href="udda.html">Udda</a>
       <a href="favoriter.html">Hundöron</a>
-      <a href="sticklingar.html">Sticklingar</a>
+      <a href="vaxtliv.html">Växtliv</a>
       <a href="galleri.html">Galleri</a>
       <a href="verktyg.html">Verktyg</a>
     </nav>
     <div class="eyebrow">Privat samling</div>
-    <h1>Citrus</h1>
+    <h1 data-wishlist-category="Citrus">Citrus</h1>
     <p class="subtitle">Citrusplantor, sorter, ursprung, placering, bildhistorik och anteckningar.</p>
   </header>
 
@@ -126,7 +126,7 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script src="common.js?v=20260821synk1945"></script>
+  <script src="common.js?v=3beb2c7af0f3"></script>
   <script>
     function startCitrusPage(snapshot) {
     let plants = [];
@@ -340,6 +340,7 @@
     ensurePlantPhotoGallery();
     ensurePlantMilestones();
     ensurePlantImageImport();
+    ensurePrivateWishlists();
     ensurePlantFavorites();
     editBtn.addEventListener("click", () => {
       editMode = !editMode;
@@ -360,7 +361,7 @@
     }
   </script>
   <script>
-    const PUBLIC_CATALOG_SCHEMA_VERSION = 1;
+    const PUBLIC_CATALOG_SCHEMA_VERSION = 2;
 
     function showCatalogLoadError() {
       document.querySelector("#stats").textContent = "Katalogdata kunde inte hämtas.";
