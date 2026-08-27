@@ -1,4 +1,4 @@
-const CACHE_NAME = "mina-vaxter-offline-v3";
+const CACHE_NAME = "mina-vaxter-offline-v4";
 const CORE_ASSETS = [
   "./iphone.html",
   "./vaxtliv.html",
@@ -35,18 +35,19 @@ self.addEventListener("fetch", event => {
   const request = event.request;
   const url = new URL(request.url);
   if (request.method !== "GET" || url.origin !== self.location.origin || !shouldCache(request, url)) return;
-  event.respondWith((async () => {
-    try {
-      const response = await fetch(request);
-      if (response.ok) {
-        const cache = await caches.open(CACHE_NAME);
-        cache.put(request, response.clone());
-      }
-      return response;
-    } catch (error) {
-      const cached = await cachedResponse(request);
-      if (cached) return cached;
-      throw error;
+  const refresh = fetch(request).then(async response => {
+    if (response.ok) {
+      const cache = await caches.open(CACHE_NAME);
+      await cache.put(request, response.clone());
     }
+    return response;
+  }).catch(() => null);
+  event.waitUntil(refresh.then(() => {}));
+  event.respondWith((async () => {
+    const cached = await cachedResponse(request);
+    if (cached) return cached;
+    const response = await refresh;
+    if (response) return response;
+    throw new Error("Katalogen saknas i offline-cachen.");
   })());
 });

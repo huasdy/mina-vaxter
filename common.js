@@ -3354,10 +3354,17 @@ async function openImageImportForm(file) {
 
 let localArrivalTokenPromise = null;
 const localSyncTokenKey = "mina-vaxter-lokal-synk-token-v1";
+const publicMobileAppOrigin = "https://huasdy.github.io";
+const publicMobileMacHost = "ny-imac.local";
+
+function isPublicMobileApp() {
+  return window.location.origin === publicMobileAppOrigin;
+}
 
 function localSyncEndpoint() {
   const host = window.location.hostname;
   const localHost = host === "localhost" || host.endsWith(".local") || /^(?:10\.|192\.168\.|172\.(?:1[6-9]|2\d|3[01])\.)/.test(host);
+  if (isPublicMobileApp()) return `https://${publicMobileMacHost}:47832`;
   if (!localHost || !["http:", "https:"].includes(window.location.protocol)) return "";
   const formattedHost = host.includes(":") ? `[${host}]` : host;
   const syncProtocol = window.location.protocol === "http:" ? "https:" : window.location.protocol;
@@ -3376,7 +3383,7 @@ function saveLocalSyncToken(token) {
 
 async function pairWithLocalMac(code) {
   const endpoint = localSyncEndpoint();
-  if (!endpoint) throw new Error("Öppna den lokala förhandsvisningen från Macen för att parkoppla iPhone.");
+  if (!endpoint) throw new Error("Öppna mobilappen hemma på samma wifi som Macen för att parkoppla iPhone.");
   const response = await fetch(`${endpoint}/pair`, {
     method: "POST",
     headers: {"Content-Type": "application/json"},
@@ -3637,7 +3644,7 @@ async function openImageImportQueue() {
         ${syncCount || pendingSyncPackage ? `
           ${needsPairing ? '<label class="import-pairing"><span>Parkopplingskod från Macen</span><input data-sync-pairing-code autocomplete="one-time-code" inputmode="text" autocapitalize="none" spellcheck="false"></label>' : ''}
           <button class="primary" type="button" data-export-package>${needsPairing ? 'Parkoppla och synka' : (pendingSyncPackage ? 'Försök synka igen' : 'Synka')}</button>
-          <div class="import-sync-status" data-sync-status>${pendingSyncPackage ? 'En tidigare synk väntar på Macens kvitto. Nya ändringar följer med nästa synkning.' : (localSyncReady ? 'Synkar direkt till Macen på samma wifi.' : 'Öppna den lokala förhandsvisningen från Macen för att synka.')}</div>
+          <div class="import-sync-status" data-sync-status>${pendingSyncPackage ? 'En tidigare synk väntar på Macens kvitto. Nya ändringar följer med nästa synkning.' : (localSyncReady ? (isPublicMobileApp() ? 'Synkar till Macen när du är hemma på samma wifi.' : 'Synkar direkt till Macen på samma wifi.') : 'Öppna mobilappen hemma på samma wifi som Macen för att synka.')}</div>
         ` : ''}
         <button class="secondary" type="button" data-clear-import ${syncCount || pendingSyncPackage ? "" : "disabled"}>Rensa synkkö</button>
       </div>
