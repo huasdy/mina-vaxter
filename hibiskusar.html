@@ -202,7 +202,7 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script src="common.js?v=3beb2c7af0f3"></script>
+  <script src="common.js?v=baf5b364f883"></script>
   <script src="hibiskus-george-import.js?v=20260814v1"></script>
   <script>
     function startHibiscusPage(snapshot) {
@@ -402,7 +402,8 @@
       if ((p.photos || []).length <= 1) return "";
       const displayLabel = plantDisplayLabel(p);
       return p.photos.map(photo => {
-        const label = (photo.label || (photo.date + " · " + photo.type)) + (photo.day ? " · dag " + photo.day : "");
+        const ageText = photoAgeText(photo.date, p.logs);
+        const label = (photo.label || (photo.date + " · " + photo.type)) + (ageText ? " · " + ageText : "");
         return `
           <button class="thumb ${photo.file === activeFile ? "active" : ""}" type="button"
             data-plant="${escapeAttr(displayLabel)}" data-file="${photo.file}" data-label="${escapeAttr(label)}" data-photo-type="${escapeAttr(photo.type)}">
@@ -429,7 +430,7 @@
       const active = preferredCardPhoto(photos);
       const activeFile = active.file || "";
       const activeLabel = active.label || (active.date ? `${active.date} · ${active.type}` : "");
-      const dayText = active.day ? ` · dag ${active.day}` : "";
+      const ageText = photoAgeText(active.date, p.logs);
       const crossing = crossingsById.get(p.crossing_id);
       const crossLabel = crossingLabelForPlant(p);
       const parentReferenceItems = hibiscusParentReferenceItems(p);
@@ -439,8 +440,9 @@
         ? `<dt>Fröbatch</dt><dd>${escapeText(p.batch)}</dd><dt>Korsning</dt><dd>${crossing ? `<a href="korsningar.html#${escapeAttr(crossing.crossing_id)}">${escapeText(crossLabel || "Ej angiven")}</a>` : escapeText(crossLabel || "Ej angiven")}</dd>`
         : `<dt>Ursprung</dt><dd>${escapeText(clean(p.arrival_type) || "Ej ifyllt")}</dd><dt>${isGift ? "Från" : "Källa"}</dt><dd>${escapeText(isGift ? "Privat" : (clean(p.source) || "Ej ifyllt"))}</dd>`;
       const gallery = photos.map(photo => {
-        const label = (photo.label || (photo.date + " · " + photo.type)) + (photo.day ? " · dag " + photo.day : "");
-        return {file: photo.file, title: displayName, caption: `${displayLabel} · ${label}`, alt: displayLabel};
+        const photoAge = photoAgeText(photo.date, p.logs);
+        const label = (photo.label || (photo.date + " · " + photo.type)) + (photoAge ? " · " + photoAge : "");
+        return {file: photo.file, title: displayName, caption: label, alt: displayLabel};
       });
       const searchable = [
         p.id, p.nickname, p.batch, p.mother, p.father, p.sown, p.status, getPlantCardNote(p.id, p.card_note, p.card_note_updated_at),
@@ -451,8 +453,8 @@
       return `
         <article class="plant-card" data-search="${escapeAttr(searchable)}" data-batch="${escapeAttr(p.batch)}" data-status="${escapeAttr(p.status)}" data-category="Hibiskus" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(displayName)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(p.nickname)}" data-parent-cross="${escapeAttr(crossLabel)}" data-parent-references="${escapeAttr(JSON.stringify(parentReferenceItems))}" data-card-image="${escapeAttr(p.card_image)}" data-card-crop-x="${escapeAttr(p.card_crop_x)}" data-card-crop-y="${escapeAttr(p.card_crop_y)}" data-card-image-updated-at="${escapeAttr(p.card_image_updated_at)}" data-cuttings-available="${escapeAttr(p.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(p.cuttings_updated_at)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(p.logs || []))}">
           <div class="image-wrap">
-            ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(displayLabel)}" data-caption="${escapeAttr(displayLabel + " · " + activeLabel + dayText)}" data-photo-type="${escapeAttr(active.type)}">` : ""}
-            ${activeLabel ? `<div class="date-ribbon">${activeLabel}${dayText}</div>` : ""}
+            ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(displayLabel)}" data-caption="${escapeAttr(displayLabel + " · " + activeLabel + (ageText ? " · " + ageText : ""))}" data-photo-type="${escapeAttr(active.type)}">` : ""}
+            ${activeLabel ? `<div class="date-ribbon">${activeLabel}${ageText ? " · " + ageText : ""}</div>` : ""}
             <div class="plant-card-gallery-slot ${photos.length > 1 ? "has-gallery" : ""}">${photos.length > 1 ? `<div class="thumbs">${photoButtons(p, activeFile)}</div>` : ""}</div>
           </div>
           <div class="card-body">

@@ -126,7 +126,7 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script src="common.js?v=3beb2c7af0f3"></script>
+  <script src="common.js?v=baf5b364f883"></script>
   <script>
     function startCitrusPage(snapshot) {
     let plants = [];
@@ -188,11 +188,15 @@
     function photoButtons(p, activeFile) {
       if ((p.photos || []).length <= 1) return "";
       const displayLabel = plantDisplayLabel(p);
-      return p.photos.map(photo => `
+      return p.photos.map(photo => {
+        const ageText = photoAgeText(photo.date, p.logs);
+        const label = (photo.label || (photo.date + " · " + photo.type)) + (ageText ? " · " + ageText : "");
+        return `
         <button class="thumb ${photo.file === activeFile ? "active" : ""}" type="button"
-          data-plant="${escapeAttr(displayLabel)}" data-file="${photo.file}" data-label="${escapeAttr(photo.label || (photo.date + " · " + photo.type))}">
+          data-plant="${escapeAttr(displayLabel)}" data-file="${photo.file}" data-label="${escapeAttr(label)}">
           <img src="${photo.file}" alt="${escapeAttr(displayLabel + " " + photo.date)}" loading="lazy">
-        </button>`).join("");
+        </button>`;
+      }).join("");
     }
 
     function cardTemplate(p) {
@@ -204,10 +208,12 @@
       const active = photos[photos.length - 1] || {};
       const activeFile = active.file || "";
       const activeLabel = active.label || (active.date ? `${active.date} · ${active.type}` : "");
+      const ageText = photoAgeText(active.date, p.logs);
       const latestMilestone = latestPlantMilestone(p.logs);
       const gallery = photos.map(photo => {
-        const label = photo.label || (photo.date + " · " + photo.type);
-        return {file: photo.file, title: displayName, caption: `${displayLabel} · ${label}`, alt: displayLabel};
+        const photoAge = photoAgeText(photo.date, p.logs);
+        const label = (photo.label || (photo.date + " · " + photo.type)) + (photoAge ? " · " + photoAge : "");
+        return {file: photo.file, title: displayName, caption: label, alt: displayLabel};
       });
       const searchable = [
         p.id, p.name, p.latin, p.nickname, p.type, p.status, p.source, p.notes, getPlantCardNote(p.id, p.card_note, p.card_note_updated_at),
@@ -230,8 +236,8 @@
       return `
         <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-status="${escapeAttr(p.status)}" data-category="Citrus" data-record-kind="${escapeAttr(p.record_kind)}" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(displayName)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(p.nickname)}" data-card-image="${escapeAttr(p.card_image)}" data-card-crop-x="${escapeAttr(p.card_crop_x)}" data-card-crop-y="${escapeAttr(p.card_crop_y)}" data-card-image-updated-at="${escapeAttr(p.card_image_updated_at)}" data-cuttings-available="${escapeAttr(p.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(p.cuttings_updated_at)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(p.logs || []))}">
           <div class="image-wrap">
-            ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(displayLabel)}" data-caption="${escapeAttr(displayLabel + " · " + activeLabel)}">` : ""}
-            ${activeLabel ? `<div class="date-ribbon">${activeLabel}</div>` : ""}
+            ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(displayLabel)}" data-caption="${escapeAttr(displayLabel + " · " + activeLabel + (ageText ? " · " + ageText : ""))}">` : ""}
+            ${activeLabel ? `<div class="date-ribbon">${activeLabel}${ageText ? " · " + ageText : ""}</div>` : ""}
             <div class="plant-card-gallery-slot ${photos.length > 1 ? "has-gallery" : ""}">${photos.length > 1 ? `<div class="thumbs">${photoButtons(p, activeFile)}</div>` : ""}</div>
           </div>
           <div class="card-body">

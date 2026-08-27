@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "catalogVersion": "2026-08-25-synk-1800",
+  "catalogVersion": "2026-08-27-synk-1807",
   "categories": {
     "Hibiskus": {
       "titleField": "id",
@@ -1586,13 +1586,13 @@
           "type": "Brokbladig pelargon",
           "specimen_count": "2",
           "tags": "",
-          "status": "Bekräftad",
+          "status": "Bortgiven",
           "scent": "",
           "source": "Sune Trygg",
           "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
           "nickname": "",
-          "card_note": "",
-          "card_note_updated_at": "",
+          "card_note": "Till Marie",
+          "card_note_updated_at": "2026-08-27T15:55:43.307Z",
           "arrival_type": "Köpt planta",
           "start_date": "",
           "seed_lot_id": "",
@@ -1614,13 +1614,13 @@
           "type": "Zonalpelargon",
           "specimen_count": "1",
           "tags": "",
-          "status": "Bekräftad",
+          "status": "Bortgiven",
           "scent": "",
           "source": "Sune Trygg",
           "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
           "nickname": "",
-          "card_note": "",
-          "card_note_updated_at": "",
+          "card_note": "Till Marie",
+          "card_note_updated_at": "2026-08-27T15:55:49.490Z",
           "arrival_type": "Köpt planta",
           "start_date": "",
           "seed_lot_id": "",
@@ -2522,8 +2522,8 @@
           "status": "Bortgiven",
           "source": "",
           "notes": "Individ från grupposten SP-002. Överlämnad som bröllopspresent.",
-          "card_note": "",
-          "card_note_updated_at": "",
+          "card_note": "Till Stefan",
+          "card_note_updated_at": "2026-08-27T15:55:57.104Z",
           "arrival_type": "Frö",
           "start_date": "",
           "cuttings_available": "",
@@ -2542,8 +2542,8 @@
           "status": "Bortgiven",
           "source": "Blomsterlandet",
           "notes": "",
-          "card_note": "",
-          "card_note_updated_at": "",
+          "card_note": "Till Elin",
+          "card_note_updated_at": "2026-08-27T15:56:02.898Z",
           "arrival_type": "Köpt planta",
           "start_date": "2026-08-13",
           "cuttings_available": "",
@@ -2562,8 +2562,8 @@
           "status": "Aktiv",
           "source": "",
           "notes": "Dokumenteras som udda växt i samlingen.",
-          "card_note": "",
-          "card_note_updated_at": "",
+          "card_note": "Tog in",
+          "card_note_updated_at": "2026-08-27T16:07:16.900Z",
           "arrival_type": "Frö",
           "start_date": "",
           "cuttings_available": "",
@@ -2632,6 +2632,26 @@
           "card_crop_x": "",
           "card_crop_y": "",
           "card_image_updated_at": ""
+        },
+        {
+          "id": "SP-011",
+          "name": "Vippjasmin",
+          "latin": "Jasminum polyanthum",
+          "type": "",
+          "tags": "",
+          "status": "",
+          "source": "Blomsterlandet",
+          "notes": "",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "arrival_type": "Köpt planta",
+          "start_date": "2026-05-08",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "bilder/udda/SP-011_synk-ca92cff2f5_2026-08-27_hel.jpg",
+          "card_crop_x": "62.8999",
+          "card_crop_y": "50",
+          "card_image_updated_at": "2026-08-27T15:50:39.197Z"
         },
         {
           "id": "SP-007",
@@ -2801,6 +2821,20 @@
           "type": "hel",
           "file": "bilder/udda/SP-010_synk-bbf4025ec8_2026-08-17_hel.jpg",
           "label": "2026-08-17 · hel"
+        },
+        {
+          "plant_id": "SP-011",
+          "date": "2026-05-08",
+          "type": "detalj",
+          "file": "bilder/udda/SP-011_synk-75f8bc658c_2026-05-08_detalj.jpg",
+          "label": "2026-05-08 · detalj"
+        },
+        {
+          "plant_id": "SP-011",
+          "date": "2026-08-27",
+          "type": "hel",
+          "file": "bilder/udda/SP-011_synk-ca92cff2f5_2026-08-27_hel.jpg",
+          "label": "2026-08-27 · hel"
         }
       ]
     }
@@ -3125,10 +3159,22 @@
       "note": "Överlämnad som bröllopspresent."
     },
     {
+      "id": "p-bothams-surprise-1",
+      "date": "2026-08-27",
+      "type": "Överlämnad som gåva",
+      "note": ""
+    },
+    {
       "id": "p-creamery",
       "date": "2026-07-04",
       "type": "Första blomning",
       "note": "Ny blommbild importerad och gammal knoppbild ersatt."
+    },
+    {
+      "id": "p-creamery",
+      "date": "2026-08-27",
+      "type": "Överlämnad som gåva",
+      "note": ""
     },
     {
       "id": "p-prince-of-orange",
@@ -3156,6 +3202,20 @@
         "hibiscus_batch": "",
         "hibiscus_cross_code": "",
         "created_at": "2026-08-25T16:00:03.404Z",
+        "closed_at": "",
+        "closed_note": ""
+      },
+      {
+        "crossing_id": "KRS-P-335486E61ACD",
+        "category": "Pelargon",
+        "mother_id": "p-cotyledonis-1",
+        "father_id": "p-gibbosum-1",
+        "status": "Pollinerad",
+        "note": "",
+        "seedling_prefix": "C×G 26",
+        "hibiscus_batch": "",
+        "hibiscus_cross_code": "",
+        "created_at": "2026-08-26T16:24:54.181Z",
         "closed_at": "",
         "closed_note": ""
       },
@@ -3190,6 +3250,14 @@
         "type": "Pollinerad",
         "note": "",
         "created_at": "2026-08-25T16:00:03.404Z"
+      },
+      {
+        "event_id": "cross-event-cece07cd867d427d99dfc0284c4c2c6f",
+        "crossing_id": "KRS-P-335486E61ACD",
+        "date": "2026-08-26",
+        "type": "Pollinerad",
+        "note": "",
+        "created_at": "2026-08-26T16:24:54.181Z"
       }
     ]
   },
@@ -3947,6 +4015,14 @@
       {
         "date": "2026-08-03",
         "file": "bilder/galleri/liljor/368b3bf09f4d9b863fe31594.jpg"
+      },
+      {
+        "date": "2026-08-21",
+        "file": "bilder/galleri/liljor/238bd6fcf32c926a37ef80b9.jpg"
+      },
+      {
+        "date": "2026-08-25",
+        "file": "bilder/galleri/liljor/2500d9f21f748bd98c3b1b4e.jpg"
       }
     ],
     "Rosa": [

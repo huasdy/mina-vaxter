@@ -76,6 +76,27 @@ function clean(value) {
   return (value || "").toString().trim();
 }
 
+function photoAgeText(photoDate, logs = []) {
+  const validDate = value => /^\d{4}-\d{2}-\d{2}$/.test(clean(value));
+  const daysSince = anchorDate => {
+    if (!validDate(photoDate) || !validDate(anchorDate)) return null;
+    const photoTime = Date.parse(`${photoDate}T00:00:00Z`);
+    const anchorTime = Date.parse(`${anchorDate}T00:00:00Z`);
+    const days = Math.round((photoTime - anchorTime) / 86400000);
+    return days >= 0 ? days : null;
+  };
+  const firstMilestoneDate = predicate => (logs || [])
+    .filter(log => predicate(clean(log && log.type).toLocaleLowerCase("sv")) && validDate(log && log.date))
+    .map(log => clean(log.date))
+    .sort()[0] || "";
+  const germinationDate = firstMilestoneDate(type => type === "grodd" || type.includes("grodd"));
+  const germinationDays = daysSince(germinationDate);
+  if (germinationDays !== null) return `dag ${germinationDays}`;
+  const sownDate = firstMilestoneDate(type => type === "sådd");
+  const sownDays = daysSince(sownDate);
+  return sownDays === null ? "" : `${sownDays} dagar från sådd`;
+}
+
 const hibiscusParentReferenceCatalog = Object.freeze({
   "012": {
     name: "Hibiscus 'Gara'",
@@ -1105,11 +1126,11 @@ function ensurePlantPhotoGallery() {
       dialog.photo-gallery::backdrop { background: rgba(0,0,0,.82); }
       .gallery-shell { width: 100%; height: 100%; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; }
       .gallery-top {
-        min-height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        min-height: 58px; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 12px;
         padding: max(12px, env(safe-area-inset-top)) 14px 10px;
       }
-      .gallery-title { min-width: 0; font-weight: 800; color: rgba(255,255,255,.88); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-      .gallery-actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+      .gallery-title { grid-column: 2; min-width: 0; max-width: min(58vw, 680px); font-weight: 800; color: rgba(255,255,255,.88); overflow: hidden; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
+      .gallery-actions { grid-column: 3; justify-self: end; display: flex; align-items: center; gap: 8px; }
       .gallery-card-crop-button {
         border: 1px solid rgba(255,255,255,.28); background: rgba(255,255,255,.12); color: white;
         border-radius: 999px; min-height: 40px; padding: 0 13px; font: 800 .86rem/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -1151,9 +1172,9 @@ function ensurePlantPhotoGallery() {
       .gallery-next { right: 12px; }
       .gallery-nav[hidden] { display: none; }
       .gallery-bottom { padding: 10px 16px max(16px, env(safe-area-inset-bottom)); text-align: center; }
-      .gallery-caption { font-weight: 800; color: rgba(255,255,255,.92); }
-      .gallery-count { margin-top: 6px; color: rgba(255,255,255,.66); font-size: .9rem; font-weight: 700; }
-      .gallery-dots { display: flex; justify-content: center; gap: 7px; margin-top: 10px; }
+      .gallery-caption { color: rgba(255,255,255,.8); font-size: .94rem; font-weight: 650; }
+      .gallery-count { margin-top: 14px; color: rgba(255,255,255,.6); font-size: .82rem; font-weight: 700; }
+      .gallery-dots { display: flex; justify-content: center; gap: 7px; margin-top: 7px; }
       .gallery-dot { width: 7px; height: 7px; border-radius: 999px; background: rgba(255,255,255,.32); }
       .gallery-dot.active { background: white; }
       .gallery-crop-bottom { display: grid; gap: 10px; }
@@ -1166,6 +1187,7 @@ function ensurePlantPhotoGallery() {
       .gallery-crop-actions .primary { background: white; color: #2b251f; }
       .gallery-crop-frame[hidden], .gallery-standard-bottom[hidden], .gallery-crop-bottom[hidden] { display: none; }
       @media (max-width: 700px) {
+        .gallery-title { max-width: calc(100vw - 88px); }
         .gallery-tools { display: none; }
         .gallery-nav {
           display: grid; width: 42px; height: 52px; border-radius: 999px;
@@ -1184,6 +1206,7 @@ function ensurePlantPhotoGallery() {
   dialog.innerHTML = `
     <div class="gallery-shell">
       <div class="gallery-top">
+        <div aria-hidden="true"></div>
         <div class="gallery-title" id="galleryTitle"></div>
         <div class="gallery-actions">
           <button class="gallery-card-crop-button" type="button">Kortutsnitt</button>
@@ -1511,6 +1534,7 @@ function ensurePlantPhotoGallery() {
   });
 
   stage.addEventListener("wheel", event => {
+    if (!event.altKey) return;
     event.preventDefault();
     const delta = event.deltaY < 0 ? .18 : -.18;
     setZoom(dialog.galleryState.zoom + delta);
@@ -3084,7 +3108,11 @@ function ensurePlantImageImport() {
     .import-pairing { display: grid; gap: 5px; color: var(--muted, #6f655b); font-size: .82rem; font-weight: 800; }
     .import-pairing input { border: 1px solid var(--line, #ded2c2); border-radius: 12px; padding: 10px 11px; background: white; color: var(--ink, #2b251f); font: inherit; }
     .import-fields textarea { grid-column: 1 / -1; min-height: 74px; resize: vertical; }
-    .import-buttons { display: flex; justify-content: flex-end; gap: 9px; flex-wrap: wrap; }
+    .import-buttons { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 9px; }
+    .import-buttons .import-pairing,
+    .import-buttons .import-sync-status { grid-column: 1 / -1; }
+    .import-buttons .secondary { justify-self: start; }
+    .import-buttons .primary { justify-self: end; }
     .import-buttons button {
       border: 1px solid var(--line, #ded2c2); border-radius: 999px; padding: 10px 13px; font: inherit; font-weight: 850; cursor: pointer;
     }
@@ -3643,10 +3671,10 @@ async function openImageImportQueue() {
       <div class="import-buttons">
         ${syncCount || pendingSyncPackage ? `
           ${needsPairing ? '<label class="import-pairing"><span>Parkopplingskod från Macen</span><input data-sync-pairing-code autocomplete="one-time-code" inputmode="text" autocapitalize="none" spellcheck="false"></label>' : ''}
-          <button class="primary" type="button" data-export-package>${needsPairing ? 'Parkoppla och synka' : (pendingSyncPackage ? 'Försök synka igen' : 'Synka')}</button>
           <div class="import-sync-status" data-sync-status>${pendingSyncPackage ? 'En tidigare synk väntar på Macens kvitto. Nya ändringar följer med nästa synkning.' : (localSyncReady ? (isPublicMobileApp() ? 'Synkar till Macen när du är hemma på samma wifi.' : 'Synkar direkt till Macen på samma wifi.') : 'Öppna mobilappen hemma på samma wifi som Macen för att synka.')}</div>
         ` : ''}
         <button class="secondary" type="button" data-clear-import ${syncCount || pendingSyncPackage ? "" : "disabled"}>Rensa synkkö</button>
+        ${syncCount || pendingSyncPackage ? `<button class="primary" type="button" data-export-package>${needsPairing ? 'Parkoppla och synka' : (pendingSyncPackage ? 'Försök synka igen' : 'Synka')}</button>` : ''}
       </div>
     </div>
   `;
