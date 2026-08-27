@@ -1,4 +1,4 @@
-const CACHE_NAME = "mina-vaxter-offline-v4";
+const CACHE_NAME = "mina-vaxter-offline-v5";
 const CORE_ASSETS = [
   "./iphone.html",
   "./vaxtliv.html",
@@ -23,7 +23,7 @@ self.addEventListener("activate", event => {
 
 async function cachedResponse(request) {
   const cache = await caches.open(CACHE_NAME);
-  return cache.match(request, {ignoreSearch: true});
+  return cache.match(request) || cache.match(request, {ignoreSearch: true});
 }
 
 function shouldCache(request, url) {
@@ -35,6 +35,7 @@ self.addEventListener("fetch", event => {
   const request = event.request;
   const url = new URL(request.url);
   if (request.method !== "GET" || url.origin !== self.location.origin || !shouldCache(request, url)) return;
+  const forceRefresh = url.searchParams.has("uppdaterad") || url.searchParams.has("v");
   const refresh = fetch(request).then(async response => {
     if (response.ok) {
       const cache = await caches.open(CACHE_NAME);
@@ -43,6 +44,16 @@ self.addEventListener("fetch", event => {
     return response;
   }).catch(() => null);
   event.waitUntil(refresh.then(() => {}));
+  if (forceRefresh) {
+    event.respondWith((async () => {
+      const response = await refresh;
+      if (response) return response;
+      const cached = await cachedResponse(request);
+      if (cached) return cached;
+      throw new Error("Katalogen kunde inte uppdateras.");
+    })());
+    return;
+  }
   event.respondWith((async () => {
     const cached = await cachedResponse(request);
     if (cached) return cached;
