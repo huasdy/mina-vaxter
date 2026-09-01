@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "catalogVersion": "2026-08-27-synk-1952",
+  "catalogVersion": "2026-09-01-synk-0752",
   "categories": {
     "Hibiskus": {
       "titleField": "id",
@@ -1237,10 +1237,10 @@
           "breeding_selected": "nej",
           "cuttings_available": "",
           "cuttings_updated_at": "",
-          "card_image": "",
-          "card_crop_x": "",
-          "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image": "bilder/pelargoner/p-bowkeri-silver-leaf_synk-83844cb492_2026-09-01_hel.jpg",
+          "card_crop_x": "71.8609",
+          "card_crop_y": "49.2365",
+          "card_image_updated_at": "2026-09-01T05:52:03.216Z"
         },
         {
           "id": "p-dimeierii-selma",
@@ -1265,10 +1265,10 @@
           "breeding_selected": "nej",
           "cuttings_available": "",
           "cuttings_updated_at": "",
-          "card_image": "",
-          "card_crop_x": "",
-          "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image": "bilder/pelargoner/p-dimeierii-selma_synk-9bce2214fe_2026-09-01_hel.jpg",
+          "card_crop_x": "39.5865",
+          "card_crop_y": "46.7686",
+          "card_image_updated_at": "2026-09-01T05:52:17.450Z"
         },
         {
           "id": "p-gibbosum-anethifolium",
@@ -2008,6 +2008,13 @@
           "label": "2026-06-21 · hel"
         },
         {
+          "plant_id": "p-bowkeri-silver-leaf",
+          "date": "2026-09-01",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-bowkeri-silver-leaf_synk-83844cb492_2026-09-01_hel.jpg",
+          "label": "2026-09-01 · hel"
+        },
+        {
           "plant_id": "p-caffrum-diana",
           "date": "2026-06-21",
           "type": "hel",
@@ -2099,6 +2106,13 @@
           "label": "2026-06-21 · hel"
         },
         {
+          "plant_id": "p-dimeierii-selma",
+          "date": "2026-09-01",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-dimeierii-selma_synk-9bce2214fe_2026-09-01_hel.jpg",
+          "label": "2026-09-01 · hel"
+        },
+        {
           "plant_id": "p-dr-westerlund-1",
           "date": "2026-06-21",
           "type": "hel",
@@ -2176,6 +2190,13 @@
           "label": "2026-08-08 · hel"
         },
         {
+          "plant_id": "p-gibbosum-anethifolium",
+          "date": "2026-09-01",
+          "type": "detalj",
+          "file": "bilder/pelargoner/p-gibbosum-anethifolium_synk-7be1d99bbd_2026-09-01_detalj.jpg",
+          "label": "2026-09-01 · detalj"
+        },
+        {
           "plant_id": "p-gibbosum-maroon-1",
           "date": "2026-06-21",
           "type": "hel",
@@ -2202,6 +2223,13 @@
           "type": "hel",
           "file": "bilder/pelargoner/p-gibbosum-maroon-1_synk-cad4019d9b_2026-08-25_hel.jpg",
           "label": "2026-08-25 · hel"
+        },
+        {
+          "plant_id": "p-glauciifolium",
+          "date": "2026-09-01",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-glauciifolium_synk-5825ea04d0_2026-09-01_hel.jpg",
+          "label": "2026-09-01 · hel"
         },
         {
           "plant_id": "p-laxum-1",
@@ -2314,6 +2342,13 @@
           "type": "blomma",
           "file": "bilder/pelargoner/p-prince-of-orange_2026-07-01_blomma.jpg",
           "label": "2026-07-01 · blomma"
+        },
+        {
+          "plant_id": "p-rushmoor-mississippi",
+          "date": "2026-09-01",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-rushmoor-mississippi_synk-f3f8817e93_2026-09-01_hel.jpg",
+          "label": "2026-09-01 · hel"
         },
         {
           "plant_id": "p-sidoides",
@@ -2622,8 +2657,8 @@
           "status": "Aktiv",
           "source": "",
           "notes": "Dokumenteras som udda växt i samlingen.",
-          "card_note": "Vattna idag",
-          "card_note_updated_at": "2026-08-15T08:28:21.352Z",
+          "card_note": "",
+          "card_note_updated_at": "2026-08-27T17:03:05.679Z",
           "arrival_type": "Gåva",
           "start_date": "",
           "cuttings_available": "",
@@ -2856,6 +2891,13 @@
           "type": "omplanterad",
           "file": "bilder/udda/SP-003_synk-f684bdb6dc_2026-08-11_omplanterad.jpg",
           "label": "2026-08-11 · omplanterad"
+        },
+        {
+          "plant_id": "SP-003",
+          "date": "2026-08-27",
+          "type": "hel",
+          "file": "bilder/udda/SP-003_synk-627140b716_2026-08-27_hel.jpg",
+          "label": "2026-08-27 · hel"
         },
         {
           "plant_id": "SP-004",

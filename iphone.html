@@ -147,7 +147,7 @@ PL-H01-R,2026-08-17,Beskuren,
 SP-009,2026-08-23,Överlämnad som gåva,
 p-bothams-surprise-1,2026-08-27,Överlämnad som gåva,
 p-creamery,2026-08-27,Överlämnad som gåva,</script>
-  <script src="common.js?v=baf5b364f883"></script>
+  <script src="common.js?v=dfde3db0e4aa"></script>
   <script>
     if ("serviceWorker" in navigator && window.isSecureContext) {
       window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js?v=5").catch(() => {}), {once: true});
@@ -164,7 +164,7 @@ p-creamery,2026-08-27,Överlämnad som gåva,</script>
     const mobileHeading = document.querySelector('#mobileHeading');
     const legacyMigration = document.querySelector('#legacyMigration');
     const legacyMigrationLink = document.querySelector('#legacyMigrationLink');
-    const MOBILE_APP_VERSION = "2026-08-27-synk-1807";
+    const MOBILE_APP_VERSION = "2026-09-01-synk-0752";
     const MOBILE_CATALOG_CACHE_KEY = "mina-vaxter-mobile-catalog-v1";
     const initialParams = new URLSearchParams(window.location.search);
     const requestedCategory = initialParams.get('kategori');
@@ -464,7 +464,7 @@ p-creamery,2026-08-27,Överlämnad som gåva,</script>
     tabs.addEventListener('click', event => {
       const button = event.target.closest('.tab');
       if (button && button.dataset.name === "Galleri") {
-        window.location.href = "galleri.html?v=2026-08-27-synk-1807";
+        window.location.href = "galleri.html?v=2026-09-01-synk-0752";
         return;
       }
       if (button && button.dataset.name === "Växtliv") {

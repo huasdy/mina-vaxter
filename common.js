@@ -3111,13 +3111,19 @@ function ensurePlantImageImport() {
     .import-buttons { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 9px; }
     .import-buttons .import-pairing,
     .import-buttons .import-sync-status { grid-column: 1 / -1; }
-    .import-buttons .secondary { justify-self: start; }
     .import-buttons .primary { justify-self: end; }
     .import-buttons button {
       border: 1px solid var(--line, #ded2c2); border-radius: 999px; padding: 10px 13px; font: inherit; font-weight: 850; cursor: pointer;
     }
     .import-buttons .primary { background: var(--accent, #7d4f3b); color: white; border-color: var(--accent, #7d4f3b); }
     .import-buttons .secondary { background: white; color: var(--accent, #7d4f3b); border-color: rgba(125,79,59,.35); }
+    .import-more-actions { grid-column: 1; justify-self: start; position: relative; }
+    .import-more-actions summary { list-style: none; color: var(--muted, #6f655b); font-weight: 800; cursor: pointer; padding: 9px 2px; }
+    .import-more-actions summary::-webkit-details-marker { display: none; }
+    .import-more-actions summary::after { content: " ›"; color: var(--accent, #7d4f3b); font-size: 1.1em; }
+    .import-more-actions[open] { display: grid; gap: 6px; }
+    .import-more-actions[open] summary::after { content: " ˅"; }
+    .import-more-actions .secondary { justify-self: start; }
     .import-list { display: grid; gap: 10px; }
     .import-item {
       display: grid; grid-template-columns: 76px 1fr auto; gap: 11px; align-items: center;
@@ -3671,10 +3677,13 @@ async function openImageImportQueue() {
       <div class="import-buttons">
         ${syncCount || pendingSyncPackage ? `
           ${needsPairing ? '<label class="import-pairing"><span>Parkopplingskod från Macen</span><input data-sync-pairing-code autocomplete="one-time-code" inputmode="text" autocapitalize="none" spellcheck="false"></label>' : ''}
-          <div class="import-sync-status" data-sync-status>${pendingSyncPackage ? 'En tidigare synk väntar på Macens kvitto. Nya ändringar följer med nästa synkning.' : (localSyncReady ? (isPublicMobileApp() ? 'Synkar till Macen när du är hemma på samma wifi.' : 'Synkar direkt till Macen på samma wifi.') : 'Öppna mobilappen hemma på samma wifi som Macen för att synka.')}</div>
+          <div class="import-sync-status" data-sync-status>${pendingSyncPackage ? 'En tidigare synkning väntar på Macens kvitto. Försök igen när du är hemma.' : (needsPairing ? 'Ange parkopplingskoden från Macen och synka.' : 'Synka när du är hemma på samma wifi som Macen.')}</div>
+          <details class="import-more-actions">
+            <summary>Fler val</summary>
+            <button class="secondary" type="button" data-clear-import>Rensa synkkö</button>
+          </details>
+          <button class="primary" type="button" data-export-package>${needsPairing ? 'Parkoppla och synka' : (pendingSyncPackage ? 'Försök synka igen' : 'Synka')}</button>
         ` : ''}
-        <button class="secondary" type="button" data-clear-import ${syncCount || pendingSyncPackage ? "" : "disabled"}>Rensa synkkö</button>
-        ${syncCount || pendingSyncPackage ? `<button class="primary" type="button" data-export-package>${needsPairing ? 'Parkoppla och synka' : (pendingSyncPackage ? 'Försök synka igen' : 'Synka')}</button>` : ''}
       </div>
     </div>
   `;
@@ -3750,7 +3759,7 @@ async function openImageImportQueue() {
     });
   });
   const clearButton = dialog.querySelector("[data-clear-import]");
-  clearButton.addEventListener("click", async () => {
+  if (clearButton) clearButton.addEventListener("click", async () => {
     if (!confirm("Ta bort alla bilder, milstolpar, anteckningar, statusändringar, kortutsnitt, blombedömningar, ankomstsamtal, korsningsändringar och önskelisteändringar i synkkön? Gör detta först när paketet är sparat eller importerat på Mac.")) return;
     await clearPendingSyncPackage();
     await clearImageImportItems();
