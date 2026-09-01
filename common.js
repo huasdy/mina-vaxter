@@ -207,15 +207,17 @@ function plantDisplayLabel(row, fallback = "") {
 function plantHeadingHtml(row, fallback = "", nicknameFirst = false) {
   const nickname = clean(row && row.nickname);
   const identity = plantIdentityName(row, fallback);
+  const parentage = clean(row && row.parentage);
   const latin = clean(row && row.latin);
+  const parentageHtml = parentage ? `<div class="parentage">${htmlEscape(parentage)}</div>` : "";
   const latinHtml = latin && latin !== identity && latin !== nickname
     ? `<div class="latin">${htmlEscape(latin)}</div>`
     : "";
   const title = identity || nickname;
   if (nicknameFirst && nickname && identity) {
-    return `<h2>${htmlEscape(nickname)}</h2><div class="plant-nickname">${htmlEscape(identity)}</div>${latinHtml}`;
+    return `<h2>${htmlEscape(nickname)}</h2><div class="plant-nickname">${htmlEscape(identity)}</div>${parentageHtml}${latinHtml}`;
   }
-  return `<h2>${htmlEscape(title)}</h2>${nickname && identity ? `<div class="plant-nickname">${htmlEscape(nickname)}</div>` : ""}${latinHtml}`;
+  return `<h2>${htmlEscape(title)}</h2>${nickname && identity ? `<div class="plant-nickname">${htmlEscape(nickname)}</div>` : ""}${parentageHtml}${latinHtml}`;
 }
 
 function collectionChips(category, row) {
@@ -223,6 +225,7 @@ function collectionChips(category, row) {
     category,
     row && row.id,
     row && row.name,
+    row && row.parentage,
     row && row.latin,
     row && row.type,
     row && row.tags,
@@ -1650,9 +1653,13 @@ function ensurePlantMilestones() {
     }
     .plant-card .plant-title-block { min-width: 0; }
     .plant-card .plant-title-block .plant-nickname,
-    .plant-card .plant-title-block .latin { margin-top: 4px; }
+    .plant-card .plant-title-block .latin,
+    .plant-card .plant-title-block .parentage { margin-top: 4px; }
     .plant-card .plant-title-block .latin {
       color: var(--muted, #786d63); font-style: italic; font-weight: 700; line-height: 1.15;
+    }
+    .plant-card .plant-title-block .parentage {
+      color: var(--muted, #786d63); font-style: italic; font-size: .86rem; line-height: 1.15;
     }
     .plant-card .plant-title-block h2 {
       display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3;
@@ -1975,6 +1982,10 @@ function ensurePlantMilestones() {
       color: var(--muted, #6f655b); border: 1px dashed var(--line, #ded2c2);
       border-radius: 16px; padding: 18px; text-align: center; font-weight: 800;
     }
+    .plant-arrival-list { display: grid; gap: 7px; }
+    .plant-arrival-row { display: grid; gap: 2px; color: var(--muted, #6f655b); line-height: 1.4; }
+    .plant-arrival-row strong { color: var(--ink, #2b251f); }
+    .plant-arrival-note { margin: 2px 0 0; color: var(--muted, #6f655b); line-height: 1.45; }
     @media (max-width: 700px) {
       nav a[href="verktyg.html"],
       #printBtn,
@@ -2065,6 +2076,7 @@ function openPlantPanel(card) {
       ${parentPanel}
       ${documentsPanel}
       ${categoryPanel}
+      <section class="plant-panel-section" data-plant-arrival hidden></section>
       <section class="plant-panel-section" aria-labelledby="plantHistoryTitle">
         <div class="plant-panel-section-title" id="plantHistoryTitle">Historik</div>
         <details class="plant-log-history">
@@ -2106,6 +2118,13 @@ function openPlantPanel(card) {
   dialog.querySelector('[name="cuttings"]')?.addEventListener("change", event => {
     setPlantCuttingsStatus(id, category, event.currentTarget.checked);
   });
+  loadPrivatePlantArrival(category, id).then(arrival => {
+    if (!dialog.open || !arrival) return;
+    const panel = dialog.querySelector("[data-plant-arrival]");
+    if (!panel) return;
+    panel.innerHTML = plantArrivalPanelHtml(arrival, category, id);
+    panel.hidden = false;
+  });
   if (category === "Hibiskus" && typeof window.bindHibiscusFlowerPanel === "function") {
     window.bindHibiscusFlowerPanel(dialog, id);
   }
@@ -2124,6 +2143,42 @@ function openPlantPanel(card) {
     }
   });
   dialog.showModal();
+}
+
+function localPlantArrivalEndpoint() {
+  const host = clean(window.location.hostname).toLocaleLowerCase("sv");
+  if (window.location.protocol === "file:") return "https://127.0.0.1:47831/plant-arrival";
+  if (["localhost", "127.0.0.1"].includes(host) && ["http:", "https:"].includes(window.location.protocol)) {
+    return "https://127.0.0.1:47831/plant-arrival";
+  }
+  return "";
+}
+
+async function loadPrivatePlantArrival(category, id) {
+  const endpoint = localPlantArrivalEndpoint();
+  if (!endpoint || !clean(id)) return null;
+  const headers = {};
+  if (window.location.protocol === "file:") {
+    const token = await loadLocalArrivalToken();
+    if (!token) return null;
+    headers["X-Mina-Vaxter-Token"] = token;
+  }
+  try {
+    const response = await fetch(`${endpoint}?category=${encodeURIComponent(category)}&id=${encodeURIComponent(id)}`, {
+      headers,
+      cache: "no-store"
+    });
+    const payload = await response.json().catch(() => null);
+    return response.ok && payload?.ok && payload.arrival ? payload.arrival : null;
+  } catch (error) {
+    return null;
+  }
+}
+
+function plantArrivalPanelHtml(arrival, category, id) {
+  if (!Object.values(arrival).some(value => clean(value))) return "";
+  const href = `verktyg.html?arrivalCategory=${encodeURIComponent(category)}&arrivalId=${encodeURIComponent(id)}#ankomstsamtal`;
+  return `<div class="plant-panel-section-title">Ankomst</div><a class="plant-crossing-action" href="${escapeAttr(href)}">Visa Ankomstsamtal</a>`;
 }
 
 function publishedPlantDocuments() {
