@@ -46,6 +46,7 @@
       <a href="pelargoner.html">Pelargon</a>
       <a href="citrus.html">Citrus</a>
       <a href="udda.html">Udda</a>
+      <a href="stapeliader.html">Stapelia</a>
       <a href="favoriter.html">Hundöron</a>
       <a href="vaxtliv.html">Växtliv</a>
       <a href="galleri.html">Galleri</a>
@@ -64,7 +65,7 @@
     </div>
     <section class="grid" id="grid"></section>
   </main>
-  <script src="common.js?v=0867e719205a"></script>
+  <script src="common.js?v=98b4c100a4fd"></script>
   <script>
     const grid = document.querySelector("#grid");
     const search = document.querySelector("#search");
@@ -83,20 +84,21 @@
 
     function displayName(category, row) {
       if (category === "Hibiskus") return clean(row.nickname) || clean(row.id);
+      if (category === "Stapeliader") return clean(row.short_name) || clean(row.id);
       return clean(row.name) || clean(row.nickname) || clean(row.id);
     }
 
     function plantCard(entry) {
       const {category, row, photos, logs} = entry;
       const name = displayName(category, row);
-      const identity = category === "Hibiskus" ? clean(row.id) : clean(row.name) || clean(row.id);
+      const identity = category === "Hibiskus" ? clean(row.id) : category === "Stapeliader" ? clean(row.full_botanical_name) || clean(row.id) : clean(row.name) || clean(row.id);
       const nickname = category === "Hibiskus" ? "" : clean(row.nickname);
       const active = photos[photos.length - 1] || null;
       const gallery = photos.map(photo => ({file: photo.file, title: name, caption: `${name} · ${photo.label || photo.date || ""}`, alt: name}));
       const latest = latestPlantMilestone(logs);
       const caption = active ? (active.label || active.date || "") : "";
       return `
-        <article class="plant-card" data-category="${escapeAttr(category)}" data-status="${escapeAttr(row.status)}" data-plant-id="${escapeAttr(row.id)}" data-plant-name="${escapeAttr(name)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(nickname)}" data-page="${escapeAttr({Hibiskus:"hibiskusar.html",Pelargon:"pelargoner.html",Citrus:"citrus.html",Udda:"udda.html"}[category])}" data-card-image="${escapeAttr(row.card_image)}" data-card-crop-x="${escapeAttr(row.card_crop_x)}" data-card-crop-y="${escapeAttr(row.card_crop_y)}" data-card-image-updated-at="${escapeAttr(row.card_image_updated_at)}" data-cuttings-available="${escapeAttr(row.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(row.cuttings_updated_at)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(logs))}">
+        <article class="plant-card" data-category="${escapeAttr(category)}" data-status="${escapeAttr(row.status)}" data-plant-id="${escapeAttr(row.id)}" data-plant-name="${escapeAttr(name)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(nickname)}" data-page="${escapeAttr({Hibiskus:"hibiskusar.html",Pelargon:"pelargoner.html",Citrus:"citrus.html",Udda:"udda.html",Stapeliader:"stapeliader.html"}[category])}" data-card-image="${escapeAttr(row.card_image)}" data-card-crop-x="${escapeAttr(row.card_crop_x)}" data-card-crop-y="${escapeAttr(row.card_crop_y)}" data-card-image-updated-at="${escapeAttr(row.card_image_updated_at)}" data-cuttings-available="${escapeAttr(row.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(row.cuttings_updated_at)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(logs))}">
           <div class="image-wrap">
             ${active ? `<img class="main-photo" src="${escapeAttr(active.file)}" alt="${escapeAttr(name)}" data-caption="${escapeAttr(name + (caption ? " · " + caption : ""))}">` : '<div class="image-empty">Bild saknas</div>'}
             ${caption ? `<div class="date-ribbon">${htmlEscape(caption)}</div>` : ""}

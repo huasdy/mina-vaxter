@@ -59,6 +59,7 @@
       <a href="pelargoner.html">Pelargon</a>
       <a href="citrus.html">Citrus</a>
       <a href="udda.html">Udda</a>
+      <a href="stapeliader.html">Stapelia</a>
       <a href="favoriter.html">Hundöron</a>
       <a href="vaxtliv.html">Växtliv</a>
       <a href="galleri.html">Galleri</a>
@@ -77,7 +78,7 @@
     <section class="grid" id="grid"></section>
   </main>
 
-  <script src="common.js?v=0867e719205a"></script>
+  <script src="common.js?v=98b4c100a4fd"></script>
 
   <script type="text/plain" id="defaultDocumentsCSV">id,date,type,title,file,pages
 SP-009,2026-08-13,Växtkort,Presentkort för pillerfikus,dokument/udda/SP-009_pillerfikus_2026-08-13_vaxtkort.png,
@@ -160,7 +161,7 @@ p-creamery,2026-08-27,Överlämnad som gåva,</script>
     }
 
     function snapshotToCatalog(snapshot) {
-      const titleKeys = {Hibiskus: "id", Pelargon: "name", Citrus: "name", Udda: "name"};
+      const titleKeys = {Hibiskus: "id", Pelargon: "name", Citrus: "name", Udda: "name", Stapeliader: "short_name"};
       if (!snapshot || snapshot.schemaVersion !== 2 || !snapshot.categories || typeof snapshot.categories !== "object") {
         throw new Error("Katalogens format stöds inte.");
       }
@@ -201,7 +202,7 @@ p-creamery,2026-08-27,Överlämnad som gåva,</script>
     }
 
     function pageForCategory(category) {
-      return {Hibiskus: "hibiskusar.html", Pelargon: "pelargoner.html", Citrus: "citrus.html", Udda: "udda.html"}[category] || "index.html";
+      return {Hibiskus: "hibiskusar.html", Pelargon: "pelargoner.html", Citrus: "citrus.html", Udda: "udda.html", Stapeliader: "stapeliader.html"}[category] || "index.html";
     }
 
     function cuttingsCard(category, section, row) {

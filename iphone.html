@@ -147,10 +147,10 @@ PL-H01-R,2026-08-17,Beskuren,
 SP-009,2026-08-23,Överlämnad som gåva,
 p-bothams-surprise-1,2026-08-27,Överlämnad som gåva,
 p-creamery,2026-08-27,Överlämnad som gåva,</script>
-  <script src="common.js?v=0867e719205a"></script>
+  <script src="common.js?v=98b4c100a4fd"></script>
   <script>
     if ("serviceWorker" in navigator && window.isSecureContext) {
-      window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js?v=5").catch(() => {}), {once: true});
+      window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js?v=6").catch(() => {}), {once: true});
     }
     let data = {};
     let catalogReady = false;
@@ -164,7 +164,7 @@ p-creamery,2026-08-27,Överlämnad som gåva,</script>
     const mobileHeading = document.querySelector('#mobileHeading');
     const legacyMigration = document.querySelector('#legacyMigration');
     const legacyMigrationLink = document.querySelector('#legacyMigrationLink');
-    const MOBILE_APP_VERSION = "2026-09-01-synk-0752";
+    const MOBILE_APP_VERSION = "2026-09-04-synk-0745";
     const MOBILE_CATALOG_CACHE_KEY = "mina-vaxter-mobile-catalog-v1";
     const initialParams = new URLSearchParams(window.location.search);
     const requestedCategory = initialParams.get('kategori');
@@ -185,7 +185,7 @@ p-creamery,2026-08-27,Överlämnad som gåva,</script>
       mobileViewToggle.hidden = true;
     }
     function snapshotToCatalog(snapshot) {
-      const titleKeys = {Hibiskus: 'id', Pelargon: 'name', Citrus: 'name', Udda: 'name'};
+      const titleKeys = {Hibiskus: 'id', Pelargon: 'name', Citrus: 'name', Udda: 'name', Stapeliader: 'short_name'};
       if (!snapshot || snapshot.schemaVersion !== 2 || !snapshot.categories || typeof snapshot.categories !== 'object') {
         throw new Error('Katalogens format stöds inte.');
       }
@@ -271,10 +271,14 @@ p-creamery,2026-08-27,Överlämnad som gåva,</script>
         Hibiskus: "hibiskusar.html",
         Pelargon: "pelargoner.html",
         Citrus: "citrus.html",
-        Udda: "udda.html"
+        Udda: "udda.html",
+        Stapeliader: "stapeliader.html"
       }[category] || "index.html";
     }
     function mobileChips(categoryName, row, logs) {
+      if (categoryName === "Stapeliader") {
+        return `<span class="chip green">${escapeHtml(clean(row.status) || "Status ej angiven")}</span>`;
+      }
       const useful = new Set(["Frö", "Frösådd", "Individ", "🏷 Utvald", "Doft", "Unik", "Inne", "🌱 Stickling"]);
       const labels = collectionChips(categoryName, {...row, logs})
         .filter(label => useful.has(label))
@@ -283,11 +287,15 @@ p-creamery,2026-08-27,Överlämnad som gåva,</script>
     }
     function renderTabs() {
       const names = [...Object.keys(data), "Tidigare", "Växtliv", "Galleri", "Ankomstsamtal"];
-      tabs.innerHTML = names.map(name => `<button class="tab ${name === active ? 'active' : ''}" type="button" data-name="${escapeHtml(name)}">${escapeHtml(name)}</button>`).join('');
+      const tabLabel = name => name === "Stapeliader" ? "Stapelia" : name;
+      tabs.innerHTML = names.map(name => `<button class="tab ${name === active ? 'active' : ''}" type="button" data-name="${escapeHtml(name)}">${escapeHtml(tabLabel(name))}</button>`).join('');
       requestAnimationFrame(() => tabs.querySelector('.tab.active')?.scrollIntoView({block: 'nearest', inline: 'nearest'}));
     }
     function mobilePlantHeadingHtml(row, identity, categoryName) {
       const nickname = clean(row.nickname);
+      if (categoryName === "Stapeliader") {
+        return `<h2>${escapeHtml(identity)}</h2><div class="plant-mobile-id">${escapeHtml(row.id)}</div>`;
+      }
       if (categoryName === "Hibiskus" && nickname && /^HIB-/i.test(clean(row.id))) {
         return `<div class="plant-mobile-id">${escapeHtml(row.id)}</div><h2>${escapeHtml(nickname)}</h2>`;
       }
@@ -295,6 +303,40 @@ p-creamery,2026-08-27,Överlämnad som gåva,</script>
         return plantHeadingHtml(row, identity, true);
       }
       return plantHeadingHtml(row, identity);
+    }
+    function mobileStapeliadDetailPanel(id) {
+      const row = data?.Stapeliader?.rows?.find(plant => plant.id === id);
+      if (!row) return "";
+      const fact = (label, value) => clean(value) ? `<dt>${escapeHtml(label)}</dt><dd>${escapeHtml(clean(value))}</dd>` : "";
+      const veto = clean(row.scent_veto).toLowerCase() === "ja";
+      return `<section class="plant-panel-section" aria-label="Stapeliaddata">
+        <div class="plant-panel-section-title">Stapeliaddata</div>
+        <dl>
+          ${fact("Fullständigt botaniskt namn", row.full_botanical_name)}
+          ${fact("Etikettnamn", row.short_name)}
+          ${fact("Inköpsnamn från leverantören", row.supplier_purchase_name)}
+          ${fact("Accession/fältnummer", row.accession_field_number)}
+          ${fact("Proveniens/lokalitet", row.provenance_location)}
+          ${fact("Accepterat namn/synonym", row.accepted_name_or_synonym)}
+          ${fact("Leverantör", row.supplier)}
+          ${fact("Ordernummer", row.order_number)}
+          ${fact("Typ", row.acquisition_type)}
+          ${fact("Mängd", row.package_quantity)}
+          ${fact("Inköpsdatum", row.purchase_date)}
+          ${fact("Ankomstdatum", row.arrival_date)}
+          ${fact("Sådatum", row.sown_date)}
+          ${fact("Grodddatum", row.germination_date)}
+          ${fact("Status", row.status)}
+          ${fact("Förväntad doft", row.expected_scent)}
+          ${fact("Egen doftobservation", row.own_scent_observation)}
+          ${fact("Doftstyrka", clean(row.scent_strength) ? `${row.scent_strength}/5` : "")}
+          ${fact("Doftbeskrivning", row.scent_description)}
+          ${fact("Doftavstånd", row.scent_distance)}
+          ${fact("☠️-flagga", veto ? "Ja" : "")}
+          ${fact("Anteckningar", row.notes)}
+        </dl>
+        ${veto ? '<p>☠️ Näsan har lagt in sitt veto.</p>' : ''}
+      </section>`;
     }
     function dogEarIcon() {
       return '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 4.5h12.5L25 10v17.5H7z"/><path d="M19.5 4.5V10H25"/></svg>';
@@ -323,7 +365,9 @@ p-creamery,2026-08-27,Överlämnad som gåva,</script>
     }
     function card(section, row, categoryName) {
       const photos = row.photos || [];
-      const identity = clean(row[section.titleKey]) || clean(row.id);
+      const identity = categoryName === "Stapeliader"
+        ? (clean(row.full_botanical_name) || clean(row.short_name) || clean(row.id))
+        : (clean(row[section.titleKey]) || clean(row.id));
       const nickname = clean(row.nickname);
       const title = identity || nickname;
       const displayLabel = nickname ? `${identity} · ${nickname}` : identity;
@@ -346,7 +390,7 @@ p-creamery,2026-08-27,Överlämnad som gåva,</script>
         ? `<div class="image"><img class="main-photo" src="${escapeHtml(activePhoto.file)}" alt="${escapeHtml(displayLabel)}" data-caption="${escapeHtml(displayLabel + " · " + activeLabel)}" data-photo-type="${escapeHtml(activePhoto.type)}" loading="lazy"><div class="plant-card-gallery-slot ${photos.length > 1 ? "has-gallery" : ""}">${thumbs}</div></div>`
         : `<div class="image"><div class="plant-card-gallery-slot"></div></div>`;
       const chips = mobileChips(categoryName, row, logs);
-      const cardNote = plantCardNoteField(row.id, row.card_note, row.card_note_updated_at, categoryName);
+      const cardNote = categoryName === "Stapeliader" ? "" : plantCardNoteField(row.id, row.card_note, row.card_note_updated_at, categoryName);
       const collectionName = ["Pelargon", "Citrus"].includes(categoryName) && row.collection_id
         ? clean(section.rows.find(item => item.id === row.collection_id)?.name)
         : "";
@@ -360,7 +404,7 @@ p-creamery,2026-08-27,Överlämnad som gåva,</script>
             <div class="plant-title-block">${mobilePlantHeadingHtml(row, identity, categoryName)}</div>
             <div class="import-actions">
               <button class="plant-log-btn" type="button" aria-label="Växtpanel" title="Växtpanel">${logBookIcon()}</button>
-              <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
+              ${categoryName === "Stapeliader" ? "" : `<button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>`}
               <span class="import-badge" data-import-badge hidden></span>
             </div>
           </div>
@@ -464,7 +508,7 @@ p-creamery,2026-08-27,Överlämnad som gåva,</script>
     tabs.addEventListener('click', event => {
       const button = event.target.closest('.tab');
       if (button && button.dataset.name === "Galleri") {
-        window.location.href = "galleri.html?v=2026-09-01-synk-0752";
+        window.location.href = "galleri.html?v=2026-09-04-synk-0745";
         return;
       }
       if (button && button.dataset.name === "Växtliv") {
@@ -526,6 +570,7 @@ p-creamery,2026-08-27,Överlämnad som gåva,</script>
     async function initialiseCatalog() {
       try {
         data = await loadPublicCatalog();
+        window.stapeliadDetailPanelHtml = mobileStapeliadDetailPanel;
         const initialCategory = requestedCategory && data[requestedCategory] ? requestedCategory : 'Hibiskus';
         active = initialParams.get('vy') === 'hundoron' ? 'Hundöron' : (initialParams.get('vy') === 'sticklingar' ? 'Sticklingar' : initialCategory);
         lastCatalogCategory = initialCategory;

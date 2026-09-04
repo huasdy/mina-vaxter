@@ -9,6 +9,7 @@ function redirectStandaloneMobileCatalog() {
     "pelargoner.html": "Pelargon",
     "citrus.html": "Citrus",
     "udda.html": "Udda",
+    "stapeliader.html": "Stapeliader",
     "favoriter.html": "Hundöron",
     "sticklingar.html": "Sticklingar"
   };
@@ -1619,6 +1620,44 @@ function openPlantPhotoGallery(mainPhoto) {
   dialog.showModal();
 }
 
+function ensurePlantCardActionRails() {
+  if (document.body.dataset.plantCardActionRailsReady === "true") return;
+  document.body.dataset.plantCardActionRailsReady = "true";
+
+  const placeActionRails = root => {
+    root.querySelectorAll(".plant-card-head > .import-actions, .plant-card-head > .favorite-log-action").forEach(actions => {
+      const head = actions.parentElement;
+      const body = head && head.parentElement;
+      if (!body || !body.classList.contains("card-body")) return;
+      let rail = Array.from(body.children).find(child => child.classList && child.classList.contains("plant-card-action-rail"));
+      if (!rail) {
+        rail = document.createElement("div");
+        rail.className = "plant-card-action-rail";
+        head.insertAdjacentElement("afterend", rail);
+      }
+      rail.append(actions);
+      if (!actions.querySelector(".add-photo-btn") && !actions.querySelector(".plant-card-action-placeholder")) {
+        const placeholder = document.createElement("span");
+        placeholder.className = "plant-card-action-placeholder";
+        placeholder.setAttribute("aria-hidden", "true");
+        actions.append(placeholder);
+      }
+    });
+  };
+
+  placeActionRails(document);
+  let scheduled = false;
+  const scheduleActionRails = () => {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(() => {
+      scheduled = false;
+      placeActionRails(document);
+    });
+  };
+  new MutationObserver(scheduleActionRails).observe(document.body, {childList: true, subtree: true});
+}
+
 function ensurePlantMilestones() {
   if (document.body.dataset.plantMilestonesReady === "true") return;
   document.body.dataset.plantMilestonesReady = "true";
@@ -1642,14 +1681,16 @@ function ensurePlantMilestones() {
     }
     .plant-card .card-body {
       position: relative; display: grid !important;
+      grid-template-columns: minmax(0, 1fr) 38px;
       grid-template-rows: var(--plant-heading-height) var(--plant-chip-height) 58px 64px 108px;
       align-content: start;
       gap: 12px; flex: 1;
     }
     .plant-card .plant-card-head {
       height: var(--plant-heading-height); min-height: var(--plant-heading-height);
-      display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start;
-      gap: 10px; margin: 0; overflow: hidden;
+      grid-column: 1 / -1; grid-row: 1;
+      display: block; align-items: start;
+      gap: 0; margin: 0; overflow: hidden;
     }
     .plant-card .plant-title-block { min-width: 0; }
     .plant-card .plant-title-block .plant-nickname,
@@ -1665,12 +1706,20 @@ function ensurePlantMilestones() {
       display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3;
       overflow: hidden;
     }
-    .plant-card .plant-card-head .import-actions,
-    .plant-card .plant-card-head .favorite-log-action {
-      position: static; display: flex; align-items: center; justify-content: flex-end;
+    .plant-card .plant-card-action-rail {
+      grid-column: 2; grid-row: 2 / span 2;
+      display: flex; align-items: flex-start; justify-content: flex-end;
+    }
+    .plant-card .plant-card-action-rail .import-actions,
+    .plant-card .plant-card-action-rail .favorite-log-action {
+      position: relative; display: flex; align-items: center; justify-content: flex-start;
       flex-direction: column; gap: 6px; margin: 0;
     }
+    .plant-card .plant-card-action-placeholder {
+      display: block; width: 38px; height: 38px; flex: 0 0 38px;
+    }
     .plant-card .plant-card-chip-slot {
+      grid-column: 1; grid-row: 2;
       height: var(--plant-chip-height); min-height: var(--plant-chip-height);
       overflow: hidden; display: flex; align-items: flex-start;
     }
@@ -1709,15 +1758,15 @@ function ensurePlantMilestones() {
     }
     .plant-card .plant-card-gallery-slot .photo-strip { height: 40px; padding: 0; }
     .plant-card .date-ribbon { display: none !important; }
-    .plant-card .plant-card-info { min-width: 0; height: 58px; overflow: hidden; }
+    .plant-card .plant-card-info { grid-column: 1; grid-row: 3; min-width: 0; height: 58px; overflow: hidden; }
     .plant-card .pelargon-record-info {
       height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 3px;
       color: var(--muted, #6f655b); font-size: .84rem;
     }
     .plant-card .pelargon-record-info strong { color: var(--ink, #2b251f); font-size: .94rem; }
     .plant-card .plant-card-info:has(.edit-form) { height: auto; overflow: visible; }
-    .plant-card .plant-card-milestone-slot { height: 64px; min-height: 64px; overflow: hidden; }
-    .plant-card .plant-card-notes-slot { height: 108px; min-height: 108px; overflow: hidden; }
+    .plant-card .plant-card-milestone-slot { grid-column: 1; grid-row: 4; height: 64px; min-height: 64px; overflow: hidden; }
+    .plant-card .plant-card-notes-slot { grid-column: 1; grid-row: 5; height: 108px; min-height: 108px; overflow: hidden; }
     .plant-card .plant-card-notes-slot .notes { margin-top: 0; }
     .plant-card .plant-card-notes-slot.favorite-focus { height: 108px; min-height: 108px; margin-top: 0; }
     .plant-card .plant-card-notes-slot:has(.card-note) { height: 108px; overflow: visible; }
@@ -1747,7 +1796,8 @@ function ensurePlantMilestones() {
         --plant-heading-height: 48px;
       }
       .plant-card .card-body {
-        grid-template-rows: none;
+        grid-template-columns: minmax(0, 1fr) 38px;
+        grid-template-rows: auto auto auto auto auto;
         grid-auto-rows: auto;
         gap: 10px;
       }
@@ -1756,9 +1806,12 @@ function ensurePlantMilestones() {
         min-height: var(--plant-heading-height);
         overflow: visible;
       }
-      .plant-card .plant-card-head .import-actions,
-      .plant-card .plant-card-head .favorite-log-action {
-        flex-direction: row;
+      .plant-card .plant-card-action-rail {
+        grid-column: 2; grid-row: 2 / span 2;
+      }
+      .plant-card .plant-card-action-rail .import-actions,
+      .plant-card .plant-card-action-rail .favorite-log-action {
+        flex-direction: column;
       }
       .plant-card .plant-card-chip-slot {
         height: auto;
@@ -2001,6 +2054,7 @@ function ensurePlantMilestones() {
     }
   `;
   document.head.appendChild(style);
+  ensurePlantCardActionRails();
   ensurePlantLifeNavigation();
   ensureConcludedPlantFilter();
   ensurePlantCardNotes();
@@ -2045,7 +2099,9 @@ function openPlantPanel(card) {
       </section>`;
   const categoryPanel = category === "Hibiskus" && typeof window.hibiscusFlowerPanelHtml === "function"
     ? window.hibiscusFlowerPanelHtml(id)
-    : "";
+    : category === "Stapeliader" && typeof window.stapeliadDetailPanelHtml === "function"
+      ? window.stapeliadDetailPanelHtml(id)
+      : "";
   const parentPanel = plantParentReferencePanelHtml(card);
   const documentsPanel = plantDocumentsPanelHtml(card);
   milestones = combinedPlantMilestones(milestones, id);
@@ -2127,6 +2183,9 @@ function openPlantPanel(card) {
   });
   if (category === "Hibiskus" && typeof window.bindHibiscusFlowerPanel === "function") {
     window.bindHibiscusFlowerPanel(dialog, id);
+  }
+  if (category === "Stapeliader" && typeof window.bindStapeliadDetailPanel === "function") {
+    window.bindStapeliadDetailPanel(dialog, id);
   }
   dialog.querySelector(".plant-log-form").addEventListener("submit", event => {
     event.preventDefault();

@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stapelia · Mina Växter</title>
+  <style>
+    :root { --bg:#f5f1ea; --paper:#fffdf8; --ink:#2b251f; --muted:#6f655b; --line:#ded2c2; --accent:#7d4f3b; --shadow:0 14px 40px rgba(62,43,28,.12); --radius:22px; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; background:radial-gradient(circle at top left,rgba(125,79,59,.10),transparent 35rem),radial-gradient(circle at top right,rgba(96,119,97,.10),transparent 30rem),var(--bg); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; line-height:1.5; }
+    header { padding:46px 22px 30px; text-align:center; }
+    nav { display:flex; justify-content:center; flex-wrap:wrap; gap:12px; margin-bottom:18px; }
+    nav a { color:var(--accent); text-decoration:none; font-weight:750; }
+    nav a.current { color:var(--ink); }
+    .eyebrow { color:var(--accent); font-size:.78rem; font-weight:800; letter-spacing:.18em; text-transform:uppercase; }
+    h1 { margin:8px 0; font-family:Georgia,"Times New Roman",serif; font-size:clamp(2.7rem,8vw,5.6rem); font-weight:500; line-height:.92; }
+    .subtitle { max-width:760px; margin:0 auto; color:var(--muted); font-size:1.05rem; }
+    .scent-meaning { max-width:760px; margin:12px auto 0; color:var(--muted); font-size:.88rem; }
+    main { max-width:1240px; margin:0 auto; padding:20px 18px 64px; }
+    .toolbar { display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:20px; }
+    .toolbar input, .toolbar select, .toolbar button { border:1px solid var(--line); border-radius:999px; padding:10px 13px; background:var(--paper); color:var(--ink); font:inherit; }
+    .toolbar input { min-width:min(100%,290px); flex:1 1 290px; }
+    .toolbar button { color:var(--accent); cursor:pointer; font-weight:800; }
+    .view-toggle { display:inline-flex; overflow:hidden; border:1px solid var(--line); border-radius:999px; background:var(--paper); }
+    .toolbar .view-toggle button { border:0; border-radius:0; padding-inline:12px; }
+    .toolbar .view-toggle button[aria-pressed="true"] { background:var(--accent); color:#fff; }
+    .stats { margin-left:auto; color:var(--muted); font-size:.9rem; font-weight:750; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:18px; align-items:start; }
+    .plant-card { display:flex; flex-direction:column; overflow:hidden; min-height:100%; border:1px solid rgba(222,210,194,.95); border-radius:var(--radius); background:var(--paper); box-shadow:var(--shadow); }
+    .image-wrap { position:relative; aspect-ratio:4 / 5; overflow:hidden; background:linear-gradient(135deg,rgba(125,79,59,.16),rgba(96,119,97,.14)),#eadfce; }
+    .image-wrap img { display:block; width:100%; height:100%; object-fit:cover; cursor:zoom-in; }
+    .image-empty { display:grid; height:100%; place-items:center; color:var(--muted); font-weight:800; }
+    .date-ribbon { position:absolute; left:12px; bottom:12px; padding:6px 10px; border-radius:999px; background:rgba(43,37,31,.76); color:#fff; font-size:.8rem; font-weight:750; }
+    .card-body { display:flex; flex:1; flex-direction:column; gap:10px; padding:16px 18px 18px; }
+    .plant-card-head { display:flex; justify-content:space-between; gap:10px; align-items:start; }
+    .plant-title-block { min-width:0; }
+    h2 { margin:0; font-family:Georgia,"Times New Roman",serif; font-size:1.55rem; font-weight:650; line-height:1.08; }
+    .plant-id { margin-top:5px; color:var(--muted); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.82rem; font-weight:800; letter-spacing:.07em; }
+    .import-actions { display:flex; flex:none; gap:7px; }
+    .plant-log-btn { display:grid; width:34px; height:34px; place-items:center; border:1px solid var(--line); border-radius:999px; background:var(--paper); color:var(--accent); cursor:pointer; }
+    .chips { display:flex; flex-wrap:wrap; gap:7px; }
+    .chip { display:inline-flex; align-items:center; min-height:28px; padding:5px 9px; border-radius:999px; background:#efe6da; color:var(--muted); font-size:.8rem; font-weight:800; }
+    .plant-card-info, .plant-card-milestone-slot, .plant-card-notes-slot { min-height:0; }
+    .stapeliad-gallery { grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
+    .stapeliad-gallery-item.plant-card { min-height:0; border-radius:15px; box-shadow:none; cursor:pointer; background:var(--paper); }
+    .stapeliad-gallery-image { aspect-ratio:1; overflow:hidden; background:linear-gradient(135deg,rgba(125,79,59,.16),rgba(96,119,97,.14)),#eadfce; }
+    .stapeliad-gallery-image img { display:block; width:100%; height:100%; object-fit:cover; }
+    .stapeliad-gallery-item h2 { padding:9px 10px 11px; font-size:1rem; line-height:1.12; }
+    .empty { grid-column:1 / -1; border:1px dashed var(--line); border-radius:20px; padding:34px; background:rgba(255,253,248,.7); color:var(--muted); text-align:center; font-weight:750; }
+    .stapeliad-panel { display:grid; gap:16px; }
+    .stapeliad-panel h3 { margin:0 0 7px; color:var(--accent); font-size:.78rem; font-weight:850; letter-spacing:.09em; text-transform:uppercase; }
+    .stapeliad-facts { display:grid; grid-template-columns:minmax(0,auto) minmax(0,1fr); gap:6px 12px; margin:0; font-size:.91rem; }
+    .stapeliad-facts dt { color:var(--muted); font-weight:800; }
+    .stapeliad-facts dd { margin:0; overflow-wrap:anywhere; }
+    .scent-veto { margin:0; color:#8a4a3c; font-weight:850; }
+    .stapeliad-edit-actions { display:flex; justify-content:flex-end; }
+    .stapeliad-edit-btn, .stapeliad-save-btn, .stapeliad-cancel-btn { border:1px solid var(--line); border-radius:999px; padding:9px 13px; background:var(--paper); color:var(--accent); font:inherit; font-weight:850; cursor:pointer; }
+    .stapeliad-save-btn { border-color:var(--accent); background:var(--accent); color:#fff; }
+    .stapeliad-edit-form { display:grid; gap:12px; }
+    .stapeliad-edit-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .stapeliad-edit-field { display:grid; gap:5px; min-width:0; color:var(--muted); font-size:.84rem; font-weight:800; }
+    .stapeliad-edit-field.wide { grid-column:1 / -1; }
+    .stapeliad-edit-field input, .stapeliad-edit-field select, .stapeliad-edit-field textarea { width:100%; border:1px solid var(--line); border-radius:11px; padding:9px 10px; background:var(--paper); color:var(--ink); font:inherit; }
+    .stapeliad-edit-field textarea { min-height:72px; resize:vertical; }
+    .stapeliad-edit-status { min-height:1.25em; margin:0; color:var(--muted); font-size:.84rem; font-weight:750; }
+    .stapeliad-edit-status.error { color:#9a3d31; }
+    .stapeliad-edit-actions-row { display:flex; flex-wrap:wrap; align-items:center; gap:9px; }
+    @media (max-width:520px) { .stapeliad-edit-grid { grid-template-columns:1fr; } .stapeliad-edit-field.wide { grid-column:auto; } }
+    @media (max-width:700px) { header { padding-top:28px; } .toolbar { align-items:stretch; flex-direction:column; } .toolbar input, .toolbar select, .toolbar > button { width:100%; } .view-toggle { width:100%; } .toolbar .view-toggle button { width:50%; } .stats { margin-left:0; text-align:center; } .stapeliad-gallery { grid-template-columns:repeat(auto-fill,minmax(132px,1fr)); gap:9px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html">← Mina Växter</a>
+      <a href="hibiskusar.html">Hibiskus</a>
+      <a href="pelargoner.html">Pelargon</a>
+      <a href="citrus.html">Citrus</a>
+      <a href="udda.html">Udda</a>
+      <a class="current" href="stapeliader.html">Stapelia</a>
+      <a href="favoriter.html">Hundöron</a>
+      <a href="vaxtliv.html">Växtliv</a>
+      <a href="galleri.html">Galleri</a>
+      <a href="verktyg.html">Verktyg</a>
+    </nav>
+    <div class="eyebrow">Förvärvsregister</div>
+    <h1>Stapelia</h1>
+    <p class="subtitle">Separata förvärv, proveniens och blomdoft för stapeliader.</p>
+    <p class="scent-meaning">☠️ betyder en fysiskt ohållbar blomdoft, inte bara stark eller obehaglig lukt.</p>
+  </header>
+  <main>
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="Sök namn, ID, leverantör eller ordernummer" aria-label="Sök stapeliader">
+      <select id="typeFilter" aria-label="Filtrera typ"><option value="">Alla typer</option></select>
+      <select id="supplierFilter" aria-label="Filtrera butik"><option value="">Alla butiker</option></select>
+      <select id="statusFilter" aria-label="Filtrera status"><option value="">Alla statusar</option></select>
+      <button id="clear" type="button">Rensa</button>
+      <div class="view-toggle" aria-label="Välj visning"><button id="cardView" type="button" aria-pressed="true">Kort</button><button id="galleryView" type="button" aria-pressed="false">Galleri</button></div>
+      <div class="stats" id="stats">Laddar…</div>
+    </div>
+    <section class="grid" id="grid"></section>
+  </main>
+  <script src="common.js?v=98b4c100a4fd"></script>
+  <script>
+    const PUBLIC_CATALOG_SCHEMA_VERSION = 2;
+    const grid = document.querySelector("#grid");
+    const search = document.querySelector("#search");
+    const typeFilter = document.querySelector("#typeFilter");
+    const supplierFilter = document.querySelector("#supplierFilter");
+    const statusFilter = document.querySelector("#statusFilter");
+    const clearButton = document.querySelector("#clear");
+    const cardViewButton = document.querySelector("#cardView");
+    const galleryViewButton = document.querySelector("#galleryView");
+    const stats = document.querySelector("#stats");
+    let plants = [];
+    const stapeliadViewStorageKey = "mina-vaxter-stapeliader-view";
+    let viewMode = "cards";
+    try { viewMode = sessionStorage.getItem(stapeliadViewStorageKey) === "gallery" ? "gallery" : "cards"; } catch (error) {}
+
+    function escapeText(value) {
+      return String(value || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    }
+
+    function field(label, value) {
+      const text = clean(value);
+      return text ? `<dt>${escapeText(label)}</dt><dd>${escapeText(text)}</dd>` : "";
+    }
+
+    function detailSection(heading, rows, extra = "") {
+      const content = rows.filter(Boolean).join("");
+      return content || extra ? `<div><h3>${escapeText(heading)}</h3>${content ? `<dl class="stapeliad-facts">${content}</dl>` : ""}${extra}</div>` : "";
+    }
+
+    function editField(label, key, value, type = "text", wide = false, options = []) {
+      const control = type === "textarea"
+        ? `<textarea data-stapeliad-field="${escapeAttr(key)}">${escapeText(value)}</textarea>`
+        : type === "select"
+          ? `<select data-stapeliad-field="${escapeAttr(key)}">${options.map(option => `<option value="${escapeAttr(option.value)}"${clean(value) === option.value ? " selected" : ""}>${escapeText(option.label)}</option>`).join("")}</select>`
+          : `<input data-stapeliad-field="${escapeAttr(key)}" type="${escapeAttr(type)}" value="${escapeAttr(value)}">`;
+      return `<label class="stapeliad-edit-field${wide ? " wide" : ""}"><span>${escapeText(label)}</span>${control}</label>`;
+    }
+
+    function detailEditForm(row) {
+      const acquisitionTypes = ["", "Frö", "Levande planta"].map(value => ({value, label: value || "Välj typ"}));
+      const scentStrength = ["", "0", "1", "2", "3", "4", "5"].map(value => ({value, label: value || "Ej angivet"}));
+      const veto = [{value:"nej", label:"Nej"}, {value:"ja", label:"Ja — ☠️ Näsan har lagt in sitt veto."}];
+      return `<form class="stapeliad-edit-form" data-stapeliad-edit-form>
+        <div class="stapeliad-edit-grid">
+          ${editField("Fullständigt botaniskt namn", "full_botanical_name", row.full_botanical_name, "text", true)}
+          ${editField("Etikettnamn", "short_name", row.short_name)}
+          ${editField("Växt-ID", "id", row.id, "text")}
+          ${editField("Släkte", "genus", row.genus)}
+          ${editField("Art", "species", row.species)}
+          ${editField("Underart/varietet/form", "infraspecific_taxon", row.infraspecific_taxon)}
+          ${editField("Inköpsnamn från leverantören", "supplier_purchase_name", row.supplier_purchase_name, "text", true)}
+          ${editField("Accession/fältnummer", "accession_field_number", row.accession_field_number)}
+          ${editField("Proveniens/lokalitet", "provenance_location", row.provenance_location)}
+          ${editField("Accepterat namn/synonym", "accepted_name_or_synonym", row.accepted_name_or_synonym, "text", true)}
+          ${editField("Leverantör", "supplier", row.supplier)}
+          ${editField("Ordernummer", "order_number", row.order_number)}
+          ${editField("Typ", "acquisition_type", row.acquisition_type, "select", false, acquisitionTypes)}
+          ${editField("Mängd", "package_quantity", row.package_quantity)}
+          ${editField("Inköpsdatum", "purchase_date", row.purchase_date, "date")}
+          ${editField("Ankomstdatum", "arrival_date", row.arrival_date, "date")}
+          ${editField("Sådatum", "sown_date", row.sown_date, "date")}
+          ${editField("Grodddatum", "germination_date", row.germination_date, "date")}
+          ${editField("Status", "status", row.status)}
+          ${editField("Förväntad doft", "expected_scent", row.expected_scent)}
+          ${editField("Egen doftobservation", "own_scent_observation", row.own_scent_observation)}
+          ${editField("Doftstyrka", "scent_strength", row.scent_strength, "select", false, scentStrength)}
+          ${editField("Doftbeskrivning", "scent_description", row.scent_description, "textarea", true)}
+          ${editField("Doftavstånd", "scent_distance", row.scent_distance)}
+          ${editField("☠️-flagga", "scent_veto", clean(row.scent_veto) || "nej", "select", true, veto)}
+          ${editField("Anteckningar", "notes", row.notes, "textarea", true)}
+        </div>
+        <div class="stapeliad-edit-actions-row"><button class="stapeliad-cancel-btn" type="button" data-stapeliad-cancel>Avbryt</button><button class="stapeliad-save-btn" type="submit">Spara</button><p class="stapeliad-edit-status" data-stapeliad-edit-status aria-live="polite"></p></div>
+      </form>`;
+    }
+
+    function detailPanel(row, editing = false) {
+      if (!row) return "";
+      const veto = clean(row.scent_veto).toLowerCase() === "ja";
+      if (editing) return `<section class="plant-panel-section stapeliad-panel" data-stapeliad-detail-root aria-label="Redigera stapeliaddata"><div><h3>Redigera stapeliaddata</h3>${detailEditForm(row)}</div></section>`;
+      return `
+        <section class="plant-panel-section stapeliad-panel" data-stapeliad-detail-root aria-label="Stapeliaddata">
+          ${detailSection("Botanisk identitet", [field("Fullständigt botaniskt namn", row.full_botanical_name), field("Etikettnamn", row.short_name), field("Växt-ID", row.id), field("Släkte", row.genus), field("Art", row.species), field("Underart/varietet/form", row.infraspecific_taxon), field("Inköpsnamn från leverantören", row.supplier_purchase_name), field("Accession/fältnummer", row.accession_field_number), field("Proveniens/lokalitet", row.provenance_location), field("Accepterat namn/synonym", row.accepted_name_or_synonym)]) }
+          ${detailSection("Förvärv och odling", [field("Leverantör", row.supplier), field("Ordernummer", row.order_number), field("Typ", row.acquisition_type), field("Mängd", row.package_quantity), field("Inköpsdatum", row.purchase_date), field("Ankomstdatum", row.arrival_date), field("Sådatum", row.sown_date), field("Grodddatum", row.germination_date), field("Status", row.status)])}
+          ${detailSection("Blomdoft", [field("Förväntad doft", row.expected_scent), field("Egen doftobservation", row.own_scent_observation), field("Doftstyrka", clean(row.scent_strength) ? `${row.scent_strength}/5` : ""), field("Doftbeskrivning", row.scent_description), field("Doftavstånd", row.scent_distance), field("☠️-flagga", veto ? "Ja" : "")], veto ? '<p class="scent-veto">☠️ Näsan har lagt in sitt veto.</p>' : "")}
+          ${detailSection("Anteckningar", [field("Anteckningar", row.notes)])}
+          <div class="stapeliad-edit-actions"><button class="stapeliad-edit-btn" type="button" data-stapeliad-edit>Redigera</button></div>
+        </section>`;
+    }
+
+    function combinedRows(snapshot) {
+      const section = snapshot.categories.Stapeliader;
+      const photosByPlant = new Map();
+      (section.photos || []).forEach(photo => {
+        if (!photosByPlant.has(photo.plant_id)) photosByPlant.set(photo.plant_id, []);
+        photosByPlant.get(photo.plant_id).push(photo);
+      });
+      const logsByPlant = combinedMilestonesByPlant(snapshot.milestones || []);
+      return (section.plants || []).map(row => ({
+        ...row,
+        photos: (photosByPlant.get(row.id) || []).sort((a, b) => sortNatural(`${a.date} ${a.type}`, `${b.date} ${b.type}`)),
+        logs: logsByPlant.get(row.id) || []
+      }));
+    }
+
+    function cardTemplate(plant) {
+      const active = (plant.photos || []).at(-1) || {};
+      const caption = active.label || (active.date ? `${active.date} · ${active.type}` : "");
+      const gallery = (plant.photos || []).map(photo => ({
+        file: photo.file, title: plant.full_botanical_name, caption: photo.label || photo.date || "", alt: plant.full_botanical_name
+      }));
+      const searchable = Object.values(plant).filter(value => typeof value === "string").join(" ").toLowerCase();
+      return `
+        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-category="Stapeliader" data-status="${escapeAttr(plant.status)}" data-plant-id="${escapeAttr(plant.id)}" data-plant-name="${escapeAttr(plant.full_botanical_name || plant.short_name)}" data-plant-identity="${escapeAttr(plant.full_botanical_name)}" data-card-image="${escapeAttr(plant.card_image)}" data-card-crop-x="${escapeAttr(plant.card_crop_x)}" data-card-crop-y="${escapeAttr(plant.card_crop_y)}" data-card-image-updated-at="${escapeAttr(plant.card_image_updated_at)}" data-cuttings-available="${escapeAttr(plant.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(plant.cuttings_updated_at)}" data-page="stapeliader.html" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(plant.logs || []))}">
+          <div class="image-wrap">
+            ${active.file ? `<img class="main-photo" src="${escapeAttr(active.file)}" alt="${escapeAttr(plant.full_botanical_name)}" data-caption="${escapeAttr(`${plant.full_botanical_name} · ${caption}`)}" loading="lazy">` : '<div class="image-empty">Bild saknas</div>'}
+            ${caption ? `<div class="date-ribbon">${escapeText(caption)}</div>` : ""}
+            <div class="plant-card-gallery-slot ${(plant.photos || []).length > 1 ? "has-gallery" : ""}"></div>
+          </div>
+          <div class="card-body">
+            <div class="plant-card-head">
+              <div class="plant-title-block"><h2>${escapeText(plant.full_botanical_name || plant.short_name || plant.id)}</h2></div>
+              <div class="import-actions"><button class="plant-log-btn" type="button" aria-label="Visa stapeliaddata och historik" title="Detaljer och historik">${logBookIcon()}</button></div>
+            </div>
+            <div class="plant-card-chip-slot"><div class="chips"><span class="chip">${escapeText(plant.status || "Status ej angiven")}</span></div></div>
+            <div class="plant-card-info"></div>
+            <div class="plant-card-milestone-slot">${milestoneSummary(latestPlantMilestone(plant.logs))}</div>
+            <div class="plant-card-notes-slot"></div>
+          </div>
+        </article>`;
+    }
+
+    function galleryTemplate(plant) {
+      const active = (plant.photos || []).at(-1) || {};
+      const gallery = (plant.photos || []).map(photo => ({
+        file: photo.file, title: plant.full_botanical_name, caption: photo.label || photo.date || "", alt: plant.full_botanical_name
+      }));
+      return `<article class="plant-card stapeliad-gallery-item" data-category="Stapeliader" data-plant-id="${escapeAttr(plant.id)}" data-plant-name="${escapeAttr(plant.full_botanical_name || plant.short_name)}" data-plant-identity="${escapeAttr(plant.full_botanical_name)}" data-card-image="${escapeAttr(plant.card_image)}" data-card-crop-x="${escapeAttr(plant.card_crop_x)}" data-card-crop-y="${escapeAttr(plant.card_crop_y)}" data-card-image-updated-at="${escapeAttr(plant.card_image_updated_at)}" data-cuttings-available="${escapeAttr(plant.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(plant.cuttings_updated_at)}" data-page="stapeliader.html" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(plant.logs || []))}">
+        <div class="stapeliad-gallery-image">${active.file ? `<img class="main-photo" src="${escapeAttr(active.file)}" alt="${escapeAttr(plant.full_botanical_name)}" loading="lazy">` : '<div class="image-empty">Bild saknas</div>'}</div>
+        <h2>${escapeText(plant.full_botanical_name || plant.short_name || plant.id)}</h2>
+      </article>`;
+    }
+
+    function setViewMode(nextMode) {
+      viewMode = nextMode === "gallery" ? "gallery" : "cards";
+      try { sessionStorage.setItem(stapeliadViewStorageKey, viewMode); } catch (error) {}
+      cardViewButton.setAttribute("aria-pressed", viewMode === "cards" ? "true" : "false");
+      galleryViewButton.setAttribute("aria-pressed", viewMode === "gallery" ? "true" : "false");
+      render();
+    }
+
+    function render() {
+      const query = search.value.trim().toLowerCase();
+      const type = typeFilter.value;
+      const supplier = supplierFilter.value;
+      const status = statusFilter.value;
+      const visible = plants.filter(plant => {
+        const haystack = Object.values(plant).filter(value => typeof value === "string").join(" ").toLowerCase();
+        return (!query || haystack.includes(query))
+          && (!type || plant.acquisition_type === type)
+          && (!supplier || plant.supplier === supplier)
+          && (!status || plant.status === status);
+      });
+      grid.classList.toggle("stapeliad-gallery", viewMode === "gallery");
+      grid.innerHTML = visible.length ? visible.map(viewMode === "gallery" ? galleryTemplate : cardTemplate).join("") : '<div class="empty">Inga stapeliader matchar sökningen just nu.</div>';
+      stats.textContent = `${visible.length} visas av ${plants.length}`;
+      updatePlantFavoriteUI();
+    }
+
+    function showCatalogLoadError() {
+      stats.textContent = "Katalogdata kunde inte hämtas.";
+      grid.innerHTML = '<div class="empty" role="alert">Katalogdata kunde inte hämtas. Kontrollera anslutningen och uppdatera sidan.</div>';
+      document.querySelectorAll(".toolbar input, .toolbar select, .toolbar button").forEach(control => { control.disabled = true; });
+    }
+
+    function validatePublicCatalog(snapshot, version) {
+      const section = snapshot && snapshot.categories && snapshot.categories.Stapeliader;
+      if (!snapshot || snapshot.schemaVersion !== PUBLIC_CATALOG_SCHEMA_VERSION || snapshot.catalogVersion !== version
+        || !section || !Array.isArray(section.plants) || !Array.isArray(section.photos)
+        || !Array.isArray(snapshot.milestones)) {
+        throw new Error("Ogiltig offentlig katalogsnapshot.");
+      }
+      return snapshot;
+    }
+
+    async function loadPublicCatalog() {
+      const versionResponse = await fetch("version.json", {cache:"no-store"});
+      if (!versionResponse.ok) throw new Error("Kunde inte läsa version.json.");
+      const versionPayload = await versionResponse.json();
+      const version = typeof versionPayload.version === "string" ? versionPayload.version.trim() : "";
+      if (!version) throw new Error("version.json saknar versionsnummer.");
+      const response = await fetch(`public-data/catalog.json?v=${encodeURIComponent(version)}`);
+      if (!response.ok) throw new Error("Kunde inte läsa public-data/catalog.json.");
+      return validatePublicCatalog(await response.json(), version);
+    }
+
+    (async function initialise() {
+      try {
+        const snapshot = await loadPublicCatalog();
+        window.publicCatalogSnapshot = snapshot;
+        plants = combinedRows(snapshot).sort((a, b) => sortNatural(a.short_name || a.id, b.short_name || b.id));
+        const setOptions = (element, values, empty) => {
+          element.innerHTML = `<option value="">${empty}</option>` + values.sort((a, b) => a.localeCompare(b, "sv")).map(value => `<option value="${escapeAttr(value)}">${escapeText(value)}</option>`).join("");
+        };
+        setOptions(typeFilter, [...new Set(plants.map(plant => clean(plant.acquisition_type)).filter(Boolean))], "Alla typer");
+        setOptions(supplierFilter, [...new Set(plants.map(plant => clean(plant.supplier)).filter(Boolean))], "Alla butiker");
+        setOptions(statusFilter, [...new Set(plants.map(plant => clean(plant.status)).filter(Boolean))], "Alla statusar");
+        window.stapeliadDetailPanelHtml = id => detailPanel(plants.find(plant => plant.id === id));
+        window.bindStapeliadDetailPanel = (dialog, id) => {
+          const plant = plants.find(item => item.id === id);
+          if (!plant) return;
+          const show = editing => {
+            const root = dialog.querySelector("[data-stapeliad-detail-root]");
+            if (!root) return;
+            root.outerHTML = detailPanel(plant, editing);
+            bind();
+          };
+          const bind = () => {
+            dialog.querySelector("[data-stapeliad-edit]")?.addEventListener("click", () => show(true), {once:true});
+            dialog.querySelector("[data-stapeliad-cancel]")?.addEventListener("click", () => show(false), {once:true});
+            dialog.querySelector("[data-stapeliad-edit-form]")?.addEventListener("submit", async event => {
+              event.preventDefault();
+              const form = event.currentTarget;
+              const status = form.querySelector("[data-stapeliad-edit-status]");
+              const changes = {};
+              form.querySelectorAll("[data-stapeliad-field]").forEach(input => {
+                const field = input.dataset.stapeliadField;
+                const value = input.value.trim();
+                if (field !== "id" && value !== clean(plant[field])) changes[field] = value;
+              });
+              delete changes.id;
+              if (!Object.keys(changes).length) {
+                show(false);
+                return;
+              }
+              if (!window.MINA_VAXTER_ARCHIVE_TOKEN) {
+                status.textContent = "Öppna Mina Växter lokalt på Macen för att spara ändringar.";
+                status.className = "stapeliad-edit-status error";
+                return;
+              }
+              const button = form.querySelector(".stapeliad-save-btn");
+              button.disabled = true;
+              button.textContent = "Sparar…";
+              try {
+                const response = await fetch("https://127.0.0.1:47831/data-view", {
+                  method: "POST",
+                  headers: {"Content-Type":"application/json", "X-Mina-Vaxter-Token":window.MINA_VAXTER_ARCHIVE_TOKEN},
+                  body: JSON.stringify({category:"Stapeliader", id, changes})
+                });
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok || !result.ok) throw new Error(result.error || "Posten kunde inte sparas.");
+                Object.assign(plant, changes);
+                const heading = dialog.querySelector(".plant-log-panel header h2");
+                if (heading) heading.textContent = plant.full_botanical_name || plant.short_name || plant.id;
+                render();
+                show(false);
+              } catch (error) {
+                status.textContent = error.message || "Posten kunde inte sparas.";
+                status.className = "stapeliad-edit-status error";
+                button.disabled = false;
+                button.textContent = "Spara";
+              }
+            }, {once:true});
+          };
+          bind();
+        };
+        ensurePlantPhotoGallery();
+        ensurePlantMilestones();
+        ensurePlantFavorites();
+        grid.addEventListener("click", event => {
+          const galleryItem = event.target.closest(".stapeliad-gallery-item");
+          if (galleryItem && !event.target.closest(".favorite-corner")) {
+            openPlantPanel(galleryItem);
+            return;
+          }
+          const image = event.target.closest(".main-photo");
+          if (image) openPlantPhotoGallery(image);
+        });
+        window.addEventListener("plant-milestone-added", event => {
+          const target = plants.find(plant => plant.id === event.detail.id);
+          if (target) target.logs = combinedPlantMilestones(target.logs, target.id);
+          render();
+        });
+        search.addEventListener("input", render);
+        typeFilter.addEventListener("change", render);
+        supplierFilter.addEventListener("change", render);
+        statusFilter.addEventListener("change", render);
+        cardViewButton.addEventListener("click", () => setViewMode("cards"));
+        galleryViewButton.addEventListener("click", () => setViewMode("gallery"));
+        clearButton.addEventListener("click", () => {
+          search.value = "";
+          typeFilter.value = "";
+          supplierFilter.value = "";
+          statusFilter.value = "";
+          render();
+        });
+        setViewMode(viewMode);
+      } catch (error) {
+        console.error("Kunde inte starta stapeliadkatalogen.", error);
+        showCatalogLoadError();
+      }
+    })();
+  </script>
+</body>
+</html>
