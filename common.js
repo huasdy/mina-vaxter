@@ -3272,17 +3272,16 @@ function ensurePlantImageImport() {
         background: var(--paper, #fffdf8);
       }
       .import-queue-panel {
-        height: 100%; min-height: 0; grid-template-rows: auto minmax(0, 1fr) auto;
+        height: 100%; min-height: 0; grid-template-rows: auto auto minmax(0, 1fr);
         gap: 0; padding: 0;
       }
-      .import-queue-panel > header { padding: 18px 18px 12px; }
+      .import-queue-panel > header { grid-row: 1; padding: 18px 18px 12px; }
       .import-queue-panel .import-list {
-        min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+        grid-row: 3; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
         -webkit-overflow-scrolling: touch; padding: 0 18px 12px;
       }
       .import-queue-panel > .import-buttons {
-        padding: 12px 18px max(18px, env(safe-area-inset-bottom));
-        background: var(--paper, #fffdf8);
+        grid-row: 2; padding: 0 18px 12px; background: var(--paper, #fffdf8);
       }
       .import-queue-button,
       .mobile-view-toggle {
