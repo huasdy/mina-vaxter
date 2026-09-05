@@ -3271,6 +3271,19 @@ function ensurePlantImageImport() {
         padding: 12px 18px max(18px, env(safe-area-inset-bottom));
         background: var(--paper, #fffdf8);
       }
+      .import-queue-panel {
+        height: 100%; min-height: 0; grid-template-rows: auto minmax(0, 1fr) auto;
+        gap: 0; padding: 0;
+      }
+      .import-queue-panel > header { padding: 18px 18px 12px; }
+      .import-queue-panel .import-list {
+        min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch; padding: 0 18px 12px;
+      }
+      .import-queue-panel > .import-buttons {
+        padding: 12px 18px max(18px, env(safe-area-inset-bottom));
+        background: var(--paper, #fffdf8);
+      }
       .import-queue-button,
       .mobile-view-toggle {
         right: 12px; width: 46px; height: 46px;
@@ -3779,7 +3792,7 @@ async function openImageImportQueue() {
     </article>
   `).join("");
   dialog.innerHTML = `
-    <div class="import-panel">
+    <div class="import-panel import-queue-panel">
       <header>
         <div>
           <h2>Synka till Mac</h2>

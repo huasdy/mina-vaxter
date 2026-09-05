@@ -100,7 +100,7 @@
     </div>
     <section class="grid" id="grid"></section>
   </main>
-  <script src="common.js?v=98b4c100a4fd"></script>
+  <script src="common.js?v=13aba5743536"></script>
   <script>
     const PUBLIC_CATALOG_SCHEMA_VERSION = 2;
     const grid = document.querySelector("#grid");
@@ -129,6 +129,13 @@
     function detailSection(heading, rows, extra = "") {
       const content = rows.filter(Boolean).join("");
       return content || extra ? `<div><h3>${escapeText(heading)}</h3>${content ? `<dl class="stapeliad-facts">${content}</dl>` : ""}${extra}</div>` : "";
+    }
+
+    function seedLotSection(seedLots) {
+      return detailSection("Fröpartier", (seedLots || []).map(lot => {
+        const details = [lot.ordernummer && `Order ${lot.ordernummer}`, lot.mängd, lot.status].filter(Boolean).join(" · ");
+        return field(lot.leverantör || "Fröparti", details);
+      }));
     }
 
     function editField(label, key, value, type = "text", wide = false, options = []) {
@@ -185,6 +192,7 @@
         <section class="plant-panel-section stapeliad-panel" data-stapeliad-detail-root aria-label="Stapeliaddata">
           ${detailSection("Botanisk identitet", [field("Fullständigt botaniskt namn", row.full_botanical_name), field("Etikettnamn", row.short_name), field("Växt-ID", row.id), field("Släkte", row.genus), field("Art", row.species), field("Underart/varietet/form", row.infraspecific_taxon), field("Inköpsnamn från leverantören", row.supplier_purchase_name), field("Accession/fältnummer", row.accession_field_number), field("Proveniens/lokalitet", row.provenance_location), field("Accepterat namn/synonym", row.accepted_name_or_synonym)]) }
           ${detailSection("Förvärv och odling", [field("Leverantör", row.supplier), field("Ordernummer", row.order_number), field("Typ", row.acquisition_type), field("Mängd", row.package_quantity), field("Inköpsdatum", row.purchase_date), field("Ankomstdatum", row.arrival_date), field("Sådatum", row.sown_date), field("Grodddatum", row.germination_date), field("Status", row.status)])}
+          ${seedLotSection(row.seed_lots)}
           ${detailSection("Blomdoft", [field("Förväntad doft", row.expected_scent), field("Egen doftobservation", row.own_scent_observation), field("Doftstyrka", clean(row.scent_strength) ? `${row.scent_strength}/5` : ""), field("Doftbeskrivning", row.scent_description), field("Doftavstånd", row.scent_distance), field("☠️-flagga", veto ? "Ja" : "")], veto ? '<p class="scent-veto">☠️ Näsan har lagt in sitt veto.</p>' : "")}
           ${detailSection("Anteckningar", [field("Anteckningar", row.notes)])}
           <div class="stapeliad-edit-actions"><button class="stapeliad-edit-btn" type="button" data-stapeliad-edit>Redigera</button></div>
@@ -199,10 +207,16 @@
         photosByPlant.get(photo.plant_id).push(photo);
       });
       const logsByPlant = combinedMilestonesByPlant(snapshot.milestones || []);
+      const seedLotsByPlant = new Map();
+      (section.seedLots || []).forEach(lot => {
+        if (!seedLotsByPlant.has(lot.plant_id)) seedLotsByPlant.set(lot.plant_id, []);
+        seedLotsByPlant.get(lot.plant_id).push(lot);
+      });
       return (section.plants || []).map(row => ({
         ...row,
         photos: (photosByPlant.get(row.id) || []).sort((a, b) => sortNatural(`${a.date} ${a.type}`, `${b.date} ${b.type}`)),
-        logs: logsByPlant.get(row.id) || []
+        logs: logsByPlant.get(row.id) || [],
+        seed_lots: seedLotsByPlant.get(row.id) || []
       }));
     }
 
@@ -212,7 +226,7 @@
       const gallery = (plant.photos || []).map(photo => ({
         file: photo.file, title: plant.full_botanical_name, caption: photo.label || photo.date || "", alt: plant.full_botanical_name
       }));
-      const searchable = Object.values(plant).filter(value => typeof value === "string").join(" ").toLowerCase();
+      const searchable = [...Object.values(plant).filter(value => typeof value === "string"), ...(plant.seed_lots || []).flatMap(lot => Object.values(lot))].join(" ").toLowerCase();
       return `
         <article class="plant-card" data-search="${escapeAttr(searchable)}" data-category="Stapeliader" data-status="${escapeAttr(plant.status)}" data-plant-id="${escapeAttr(plant.id)}" data-plant-name="${escapeAttr(plant.full_botanical_name || plant.short_name)}" data-plant-identity="${escapeAttr(plant.full_botanical_name)}" data-card-image="${escapeAttr(plant.card_image)}" data-card-crop-x="${escapeAttr(plant.card_crop_x)}" data-card-crop-y="${escapeAttr(plant.card_crop_y)}" data-card-image-updated-at="${escapeAttr(plant.card_image_updated_at)}" data-cuttings-available="${escapeAttr(plant.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(plant.cuttings_updated_at)}" data-page="stapeliader.html" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(plant.logs || []))}">
           <div class="image-wrap">
@@ -240,7 +254,7 @@
       }));
       return `<article class="plant-card stapeliad-gallery-item" data-category="Stapeliader" data-plant-id="${escapeAttr(plant.id)}" data-plant-name="${escapeAttr(plant.full_botanical_name || plant.short_name)}" data-plant-identity="${escapeAttr(plant.full_botanical_name)}" data-card-image="${escapeAttr(plant.card_image)}" data-card-crop-x="${escapeAttr(plant.card_crop_x)}" data-card-crop-y="${escapeAttr(plant.card_crop_y)}" data-card-image-updated-at="${escapeAttr(plant.card_image_updated_at)}" data-cuttings-available="${escapeAttr(plant.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(plant.cuttings_updated_at)}" data-page="stapeliader.html" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(plant.logs || []))}">
         <div class="stapeliad-gallery-image">${active.file ? `<img class="main-photo" src="${escapeAttr(active.file)}" alt="${escapeAttr(plant.full_botanical_name)}" loading="lazy">` : '<div class="image-empty">Bild saknas</div>'}</div>
-        <h2>${escapeText(plant.full_botanical_name || plant.short_name || plant.id)}</h2>
+        <h2>${escapeText(plant.short_name || plant.full_botanical_name || plant.id)}</h2>
       </article>`;
     }
 
@@ -258,10 +272,10 @@
       const supplier = supplierFilter.value;
       const status = statusFilter.value;
       const visible = plants.filter(plant => {
-        const haystack = Object.values(plant).filter(value => typeof value === "string").join(" ").toLowerCase();
+        const haystack = [...Object.values(plant).filter(value => typeof value === "string"), ...(plant.seed_lots || []).flatMap(lot => Object.values(lot))].join(" ").toLowerCase();
         return (!query || haystack.includes(query))
           && (!type || plant.acquisition_type === type)
-          && (!supplier || plant.supplier === supplier)
+          && (!supplier || plant.supplier === supplier || (plant.seed_lots || []).some(lot => lot.leverantör === supplier))
           && (!status || plant.status === status);
       });
       grid.classList.toggle("stapeliad-gallery", viewMode === "gallery");
@@ -306,7 +320,7 @@
           element.innerHTML = `<option value="">${empty}</option>` + values.sort((a, b) => a.localeCompare(b, "sv")).map(value => `<option value="${escapeAttr(value)}">${escapeText(value)}</option>`).join("");
         };
         setOptions(typeFilter, [...new Set(plants.map(plant => clean(plant.acquisition_type)).filter(Boolean))], "Alla typer");
-        setOptions(supplierFilter, [...new Set(plants.map(plant => clean(plant.supplier)).filter(Boolean))], "Alla butiker");
+        setOptions(supplierFilter, [...new Set(plants.flatMap(plant => [clean(plant.supplier), ...(plant.seed_lots || []).map(lot => clean(lot.leverantör))]).filter(Boolean))], "Alla butiker");
         setOptions(statusFilter, [...new Set(plants.map(plant => clean(plant.status)).filter(Boolean))], "Alla statusar");
         window.stapeliadDetailPanelHtml = id => detailPanel(plants.find(plant => plant.id === id));
         window.bindStapeliadDetailPanel = (dialog, id) => {
