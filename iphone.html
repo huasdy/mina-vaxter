@@ -164,7 +164,7 @@ p-creamery,2026-08-27,Överlämnad som gåva,</script>
     const mobileHeading = document.querySelector('#mobileHeading');
     const legacyMigration = document.querySelector('#legacyMigration');
     const legacyMigrationLink = document.querySelector('#legacyMigrationLink');
-    const MOBILE_APP_VERSION = "2026-09-05-synk-2320";
+    const MOBILE_APP_VERSION = "2026-09-05-synk-2325";
     const MOBILE_CATALOG_CACHE_KEY = "mina-vaxter-mobile-catalog-v1";
     const initialParams = new URLSearchParams(window.location.search);
     const requestedCategory = initialParams.get('kategori');
@@ -508,7 +508,7 @@ p-creamery,2026-08-27,Överlämnad som gåva,</script>
     tabs.addEventListener('click', event => {
       const button = event.target.closest('.tab');
       if (button && button.dataset.name === "Galleri") {
-        window.location.href = "galleri.html?v=2026-09-05-synk-2320";
+        window.location.href = "galleri.html?v=2026-09-05-synk-2325";
         return;
       }
       if (button && button.dataset.name === "Växtliv") {

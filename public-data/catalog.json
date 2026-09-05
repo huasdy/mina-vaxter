@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "catalogVersion": "2026-09-05-synk-2320",
+  "catalogVersion": "2026-09-05-synk-2325",
   "categories": {
     "Hibiskus": {
       "titleField": "id",
@@ -1743,7 +1743,7 @@
           "name": "P. ‘Cy’s Sunburst’",
           "parentage": "",
           "type": "Doftpelargon",
-          "specimen_count": "3",
+          "specimen_count": "1",
           "tags": "",
           "status": "Bekräftad",
           "scent": "",
