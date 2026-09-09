@@ -41,6 +41,13 @@
     .chips { display:flex; flex-wrap:wrap; gap:7px; }
     .chip { display:inline-flex; align-items:center; min-height:28px; padding:5px 9px; border-radius:999px; background:#efe6da; color:var(--muted); font-size:.8rem; font-weight:800; }
     .plant-card-info, .plant-card-milestone-slot, .plant-card-notes-slot { min-height:0; }
+    .stapeliad-info-line { display:block; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--muted); font-size:.82rem; line-height:18px; }
+    .stapeliad-info-line--provenance { display:-webkit-box; max-height:36px; white-space:normal; -webkit-box-orient:vertical; -webkit-line-clamp:2; }
+    .stapeliad-info-line--accession, .stapeliad-info-line--provenance { color:var(--ink); font-weight:750; }
+    .stapeliad-info-line--accession::before { content:"Accession · "; color:var(--accent); font-weight:850; }
+    .stapeliad-info-line--provenance::before { content:"Proveniens · "; color:var(--accent); font-weight:850; }
+    .stapeliad-info-line--supplier { font-size:.76rem; }
+    .stapeliad-info-line--supplier::before { content:"Leverantör · "; color:var(--muted); font-weight:700; }
     .stapeliad-gallery { grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
     .stapeliad-gallery-item.plant-card { min-height:0; border-radius:15px; box-shadow:none; cursor:pointer; background:var(--paper); }
     .stapeliad-gallery-image { aspect-ratio:1; overflow:hidden; background:linear-gradient(135deg,rgba(125,79,59,.16),rgba(96,119,97,.14)),#eadfce; }
@@ -100,7 +107,7 @@
     </div>
     <section class="grid" id="grid"></section>
   </main>
-  <script src="common.js?v=a05b6ff12f7d"></script>
+  <script src="common.js?v=4c1d1b28403a"></script>
   <script>
     const PUBLIC_CATALOG_SCHEMA_VERSION = 2;
     const grid = document.querySelector("#grid");
@@ -148,7 +155,7 @@
     }
 
     function detailEditForm(row) {
-      const acquisitionTypes = ["", "Frö", "Levande planta"].map(value => ({value, label: value || "Välj typ"}));
+      const acquisitionTypes = ["", "Frö", "Stickling", "Levande planta"].map(value => ({value, label: value || "Välj typ"}));
       const scentStrength = ["", "0", "1", "2", "3", "4", "5"].map(value => ({value, label: value || "Ej angivet"}));
       const veto = [{value:"nej", label:"Nej"}, {value:"ja", label:"Ja — ☠️ Näsan har lagt in sitt veto."}];
       return `<form class="stapeliad-edit-form" data-stapeliad-edit-form>
@@ -228,8 +235,23 @@
       return status.toLocaleLowerCase("sv") === "beställd" && received ? null : status;
     }
 
+    function stapeliadCardInfo(plant) {
+      const provenance = clean(plant.provenance_location);
+      const parts = provenance.split(" · ");
+      const compactProvenance = provenance.length > 36 && parts.length > 2
+        ? parts.slice(-2).join(" · ") : provenance;
+      return [
+        [clean(plant.accession_field_number), "Accession/fältnummer", "accession"],
+        [compactProvenance, "Proveniens/lokalitet", "provenance"],
+        [clean(plant.supplier), "Leverantör", "supplier"]
+      ].filter(([value]) => value).map(([value, label, role]) =>
+        `<span class="stapeliad-info-line stapeliad-info-line--${role}" aria-label="${escapeAttr(label)}">${escapeText(value)}</span>`
+      ).join("");
+    }
+
     function cardTemplate(plant) {
       const visibleStatus = visiblePlantStatus(plant);
+      const materialType = ["Frö", "Stickling"].includes(clean(plant.acquisition_type)) ? clean(plant.acquisition_type) : "";
       const active = (plant.photos || []).at(-1) || {};
       const caption = active.label || (active.date ? `${active.date} · ${active.type}` : "");
       const gallery = (plant.photos || []).map(photo => ({
@@ -248,10 +270,10 @@
               <div class="plant-title-block"><h2>${escapeText(plant.full_botanical_name || plant.short_name || plant.id)}</h2></div>
               <div class="import-actions"><button class="plant-log-btn" type="button" aria-label="Visa stapeliaddata och historik" title="Detaljer och historik">${logBookIcon()}</button></div>
             </div>
-            <div class="plant-card-chip-slot"><div class="chips">${visibleStatus === null ? "" : `<span class="chip">${escapeText(visibleStatus || "Status ej angiven")}</span>`}</div></div>
-            <div class="plant-card-info"></div>
+            <div class="plant-card-chip-slot"><div class="chips">${materialType ? `<span class="chip" data-material-chip>${escapeText(materialType)}</span>` : ""}${visibleStatus === null ? "" : `<span class="chip">${escapeText(visibleStatus || "Status ej angiven")}</span>`}</div></div>
+            <div class="plant-card-info">${stapeliadCardInfo(plant)}</div>
             <div class="plant-card-milestone-slot">${milestoneSummary(latestPlantMilestone(plant.logs))}</div>
-            <div class="plant-card-notes-slot"></div>
+            <div class="plant-card-notes-slot">${plantCardNoteField(plant.id, plant.card_note, plant.card_note_updated_at, "Stapeliader")}</div>
           </div>
         </article>`;
     }

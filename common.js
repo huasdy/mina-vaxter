@@ -1759,6 +1759,14 @@ function ensurePlantMilestones() {
     .plant-card .plant-card-gallery-slot .photo-strip { height: 40px; padding: 0; }
     .plant-card .date-ribbon { display: none !important; }
     .plant-card .plant-card-info { grid-column: 1; grid-row: 3; min-width: 0; height: 58px; overflow: hidden; }
+    .plant-card .stapeliad-info-line { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted, #6f655b); font-size: .82rem; line-height: 18px; }
+    .plant-card[data-category="Stapeliader"] .plant-card-info { height: 76px; }
+    .plant-card .stapeliad-info-line--accession, .plant-card .stapeliad-info-line--provenance { color: var(--ink, #2b251f); font-weight: 750; }
+    .plant-card .stapeliad-info-line--accession::before { content: "Accession · "; color: var(--accent, #7d4f3b); font-weight: 850; }
+    .plant-card .stapeliad-info-line--provenance { display: -webkit-box; max-height: 36px; white-space: normal; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+    .plant-card .stapeliad-info-line--provenance::before { content: "Proveniens · "; color: var(--accent, #7d4f3b); font-weight: 850; }
+    .plant-card .stapeliad-info-line--supplier { font-size: .76rem; }
+    .plant-card .stapeliad-info-line--supplier::before { content: "Leverantör · "; color: var(--muted, #6f655b); font-weight: 700; }
     .plant-card .pelargon-record-info {
       height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 3px;
       color: var(--muted, #6f655b); font-size: .84rem;

@@ -158,10 +158,10 @@ p-glauciifolium,2026-09-09,Omplanterad,
 p-bowkeri-silver-leaf,2026-09-09,Omplanterad,
 p-dimeierii-selma,2026-09-09,Omplanterad,
 p-gibbosum-anethifolium,2026-09-09,Omplanterad,</script>
-  <script src="common.js?v=a05b6ff12f7d"></script>
+  <script src="common.js?v=4c1d1b28403a"></script>
   <script>
     if ("serviceWorker" in navigator && window.isSecureContext) {
-      window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js?v=7").catch(() => {}), {once: true});
+      window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js?v=8").catch(() => {}), {once: true});
     }
     let data = {};
     let catalogReady = false;
@@ -366,6 +366,19 @@ p-gibbosum-anethifolium,2026-09-09,Omplanterad,</script>
       mobileHeading.dataset.wishlistCategory = category;
       document.dispatchEvent(new CustomEvent('wishlist-category-changed', {detail: {category}}));
     }
+    function stapeliadCardInfo(row) {
+      const provenance = clean(row.provenance_location);
+      const parts = provenance.split(" · ");
+      const compactProvenance = provenance.length > 36 && parts.length > 2
+        ? parts.slice(-2).join(" · ") : provenance;
+      return [
+        [clean(row.accession_field_number), "Accession/fältnummer", "accession"],
+        [compactProvenance, "Proveniens/lokalitet", "provenance"],
+        [clean(row.supplier), "Leverantör", "supplier"]
+      ].filter(([value]) => value).map(([value, label, role]) =>
+        `<span class="stapeliad-info-line stapeliad-info-line--${role}" aria-label="${escapeHtml(label)}">${escapeHtml(value)}</span>`
+      ).join("");
+    }
     function showMobileView(name) {
       if (name !== "Hundöron" && data[name]) lastCatalogCategory = name;
       if (name === active) return;
@@ -405,7 +418,9 @@ p-gibbosum-anethifolium,2026-09-09,Omplanterad,</script>
       const collectionName = ["Pelargon", "Citrus"].includes(categoryName) && row.collection_id
         ? clean(section.rows.find(item => item.id === row.collection_id)?.name)
         : "";
-      const recordInfo = ["Pelargon", "Citrus"].includes(categoryName) ? collectionRecordInfoHtml(row, collectionName) : "";
+      const recordInfo = categoryName === "Stapeliader"
+        ? stapeliadCardInfo(row)
+        : ["Pelargon", "Citrus"].includes(categoryName) ? collectionRecordInfoHtml(row, collectionName) : "";
       const parentCross = categoryName === "Hibiskus" ? hibiscusCrossLabel(row) : "";
       const parentReferences = categoryName === "Hibiskus" ? hibiscusParentReferenceItems(row) : [];
       return `<article class="card plant-card" data-category="${escapeHtml(categoryName)}" data-record-kind="${escapeHtml(row.record_kind)}" data-status="${escapeHtml(row.status)}" data-plant-id="${escapeHtml(row.id)}" data-plant-name="${escapeHtml(title)}" data-plant-identity="${escapeHtml(identity)}" data-plant-nickname="${escapeHtml(nickname)}" data-parent-cross="${escapeHtml(parentCross)}" data-parent-references="${escapeHtml(JSON.stringify(parentReferences))}" data-card-image="${escapeHtml(row.card_image)}" data-card-crop-x="${escapeHtml(row.card_crop_x)}" data-card-crop-y="${escapeHtml(row.card_crop_y)}" data-card-image-updated-at="${escapeHtml(row.card_image_updated_at)}" data-cuttings-available="${escapeHtml(row.cuttings_available)}" data-cuttings-updated-at="${escapeHtml(row.cuttings_updated_at)}" data-page="${escapeHtml(pageForCategory(categoryName))}" data-gallery="${escapeHtml(JSON.stringify(gallery))}" data-milestones="${escapeHtml(JSON.stringify(logs))}">
