@@ -220,7 +220,16 @@
       }));
     }
 
+    function visiblePlantStatus(plant) {
+      const status = clean(plant.status);
+      const received = (plant.logs || []).some(log =>
+        ["sådd", "grodd", "omplanterad"].includes(clean(log.type).toLocaleLowerCase("sv"))
+      );
+      return status.toLocaleLowerCase("sv") === "beställd" && received ? null : status;
+    }
+
     function cardTemplate(plant) {
+      const visibleStatus = visiblePlantStatus(plant);
       const active = (plant.photos || []).at(-1) || {};
       const caption = active.label || (active.date ? `${active.date} · ${active.type}` : "");
       const gallery = (plant.photos || []).map(photo => ({
@@ -228,7 +237,7 @@
       }));
       const searchable = [...Object.values(plant).filter(value => typeof value === "string"), ...(plant.seed_lots || []).flatMap(lot => Object.values(lot))].join(" ").toLowerCase();
       return `
-        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-category="Stapeliader" data-status="${escapeAttr(plant.status)}" data-plant-id="${escapeAttr(plant.id)}" data-plant-name="${escapeAttr(plant.full_botanical_name || plant.short_name)}" data-plant-identity="${escapeAttr(plant.full_botanical_name)}" data-card-image="${escapeAttr(plant.card_image)}" data-card-crop-x="${escapeAttr(plant.card_crop_x)}" data-card-crop-y="${escapeAttr(plant.card_crop_y)}" data-card-image-updated-at="${escapeAttr(plant.card_image_updated_at)}" data-cuttings-available="${escapeAttr(plant.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(plant.cuttings_updated_at)}" data-page="stapeliader.html" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(plant.logs || []))}">
+        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-category="Stapeliader" data-status="${escapeAttr(visibleStatus || "")}" data-plant-id="${escapeAttr(plant.id)}" data-plant-name="${escapeAttr(plant.full_botanical_name || plant.short_name)}" data-plant-identity="${escapeAttr(plant.full_botanical_name)}" data-card-image="${escapeAttr(plant.card_image)}" data-card-crop-x="${escapeAttr(plant.card_crop_x)}" data-card-crop-y="${escapeAttr(plant.card_crop_y)}" data-card-image-updated-at="${escapeAttr(plant.card_image_updated_at)}" data-cuttings-available="${escapeAttr(plant.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(plant.cuttings_updated_at)}" data-page="stapeliader.html" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(plant.logs || []))}">
           <div class="image-wrap">
             ${active.file ? `<img class="main-photo" src="${escapeAttr(active.file)}" alt="${escapeAttr(plant.full_botanical_name)}" data-caption="${escapeAttr(`${plant.full_botanical_name} · ${caption}`)}" loading="lazy">` : '<div class="image-empty">Bild saknas</div>'}
             ${caption ? `<div class="date-ribbon">${escapeText(caption)}</div>` : ""}
@@ -239,7 +248,7 @@
               <div class="plant-title-block"><h2>${escapeText(plant.full_botanical_name || plant.short_name || plant.id)}</h2></div>
               <div class="import-actions"><button class="plant-log-btn" type="button" aria-label="Visa stapeliaddata och historik" title="Detaljer och historik">${logBookIcon()}</button></div>
             </div>
-            <div class="plant-card-chip-slot"><div class="chips"><span class="chip">${escapeText(plant.status || "Status ej angiven")}</span></div></div>
+            <div class="plant-card-chip-slot"><div class="chips">${visibleStatus === null ? "" : `<span class="chip">${escapeText(visibleStatus || "Status ej angiven")}</span>`}</div></div>
             <div class="plant-card-info"></div>
             <div class="plant-card-milestone-slot">${milestoneSummary(latestPlantMilestone(plant.logs))}</div>
             <div class="plant-card-notes-slot"></div>
@@ -267,6 +276,10 @@
     }
 
     function render() {
+      const previousStatus = statusFilter.value;
+      const statuses = [...new Set(plants.map(visiblePlantStatus).filter(Boolean))].sort((a, b) => a.localeCompare(b, "sv"));
+      statusFilter.innerHTML = '<option value="">Alla statusar</option>' + statuses.map(value => `<option value="${escapeAttr(value)}">${escapeText(value)}</option>`).join("");
+      statusFilter.value = statuses.includes(previousStatus) ? previousStatus : "";
       const query = search.value.trim().toLowerCase();
       const type = typeFilter.value;
       const supplier = supplierFilter.value;
@@ -276,7 +289,7 @@
         return (!query || haystack.includes(query))
           && (!type || plant.acquisition_type === type)
           && (!supplier || plant.supplier === supplier || (plant.seed_lots || []).some(lot => lot.leverantör === supplier))
-          && (!status || plant.status === status);
+          && (!status || visiblePlantStatus(plant) === status);
       });
       grid.classList.toggle("stapeliad-gallery", viewMode === "gallery");
       grid.innerHTML = visible.length ? visible.map(viewMode === "gallery" ? galleryTemplate : cardTemplate).join("") : '<div class="empty">Inga stapeliader matchar sökningen just nu.</div>';
@@ -394,8 +407,8 @@
           if (image) openPlantPhotoGallery(image);
         });
         window.addEventListener("plant-milestone-added", event => {
-          const target = plants.find(plant => plant.id === event.detail.id);
-          if (target) target.logs = combinedPlantMilestones(target.logs, target.id);
+          const logsByPlant = combinedMilestonesByPlant(snapshot.milestones || []);
+          plants.forEach(plant => { plant.logs = logsByPlant.get(plant.id) || []; });
           render();
         });
         search.addEventListener("input", render);

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "catalogVersion": "2026-09-05-synk-2325",
+  "catalogVersion": "2026-09-09-synk-1246",
   "categories": {
     "Hibiskus": {
       "titleField": "id",
@@ -1373,8 +1373,8 @@
           "source": "Sune Trygg",
           "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
           "nickname": "",
-          "card_note": "",
-          "card_note_updated_at": "",
+          "card_note": "Doft: amaretto/mandel + tydlig lime. Nattdoftande.",
+          "card_note_updated_at": "2026-09-01T20:00:27.130Z",
           "arrival_type": "Köpt planta",
           "start_date": "",
           "seed_lot_id": "",
@@ -1948,7 +1948,7 @@
           "type": "Doftpelargon",
           "specimen_count": "0",
           "tags": "",
-          "status": "Bekräftad",
+          "status": "Avslutad/död",
           "scent": "Cola / kryddig citrus",
           "source": "Sune Trygg",
           "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
@@ -2070,6 +2070,13 @@
           "label": "2026-09-01 · hel"
         },
         {
+          "plant_id": "p-bowkeri-silver-leaf",
+          "date": "2026-09-05",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-bowkeri-silver-leaf_synk-fd937d7a53_2026-09-05_hel.jpg",
+          "label": "2026-09-05 · hel"
+        },
+        {
           "plant_id": "p-caffrum-diana",
           "date": "2026-06-21",
           "type": "hel",
@@ -2168,6 +2175,13 @@
           "label": "2026-09-01 · hel"
         },
         {
+          "plant_id": "p-dimeierii-selma",
+          "date": "2026-09-05",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-dimeierii-selma_synk-1b74a4c66b_2026-09-05_hel.jpg",
+          "label": "2026-09-05 · hel"
+        },
+        {
           "plant_id": "p-dr-westerlund-1",
           "date": "2026-06-21",
           "type": "hel",
@@ -2194,6 +2208,13 @@
           "type": "detalj",
           "file": "bilder/pelargoner/p-gibbosina-bicolour_synk-9e3623946d_2026-09-04_detalj.jpg",
           "label": "2026-09-04 · detalj"
+        },
+        {
+          "plant_id": "p-gibbosina-bicolour",
+          "date": "2026-09-05",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-gibbosina-bicolour_synk-5eb9bdc152_2026-09-05_hel.jpg",
+          "label": "2026-09-05 · hel"
         },
         {
           "plant_id": "p-gibbosum-1",
@@ -2259,6 +2280,13 @@
           "label": "2026-09-01 · detalj"
         },
         {
+          "plant_id": "p-gibbosum-anethifolium",
+          "date": "2026-09-05",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-gibbosum-anethifolium_synk-f97c950eb7_2026-09-05_hel.jpg",
+          "label": "2026-09-05 · hel"
+        },
+        {
           "plant_id": "p-gibbosum-maroon-1",
           "date": "2026-06-21",
           "type": "hel",
@@ -2292,6 +2320,13 @@
           "type": "hel",
           "file": "bilder/pelargoner/p-glauciifolium_synk-5825ea04d0_2026-09-01_hel.jpg",
           "label": "2026-09-01 · hel"
+        },
+        {
+          "plant_id": "p-glauciifolium",
+          "date": "2026-09-05",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-glauciifolium_synk-7b89b89d5c_2026-09-05_hel.jpg",
+          "label": "2026-09-05 · hel"
         },
         {
           "plant_id": "p-laxum-1",
@@ -2411,6 +2446,13 @@
           "type": "hel",
           "file": "bilder/pelargoner/p-rushmoor-mississippi_synk-f3f8817e93_2026-09-01_hel.jpg",
           "label": "2026-09-01 · hel"
+        },
+        {
+          "plant_id": "p-rushmoor-mississippi",
+          "date": "2026-09-05",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-rushmoor-mississippi_synk-f4ae05bd99_2026-09-05_hel.jpg",
+          "label": "2026-09-05 · hel"
         },
         {
           "plant_id": "p-sidoides",
@@ -3175,7 +3217,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "Sådd",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -3391,7 +3433,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "Sådd",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -3662,6 +3704,42 @@
           "card_image_updated_at": ""
         },
         {
+          "id": "STA-033",
+          "genus": "Orbea",
+          "species": "variegata",
+          "infraspecific_taxon": "",
+          "full_botanical_name": "Orbea variegata",
+          "short_name": "O. variegata",
+          "supplier_purchase_name": "Stapelia variegata",
+          "accession_field_number": "",
+          "provenance_location": "",
+          "accepted_name_or_synonym": "Stapelia variegata",
+          "supplier": "eBay – vendoesvendotutto",
+          "order_number": "26-12251-59065",
+          "acquisition_type": "Frö",
+          "purchase_date": "2024-11-02",
+          "arrival_date": "",
+          "sown_date": "",
+          "germination_date": "",
+          "status": "Sådd",
+          "expected_scent": "",
+          "own_scent_observation": "",
+          "scent_strength": "",
+          "scent_description": "",
+          "scent_distance": "",
+          "scent_veto": "nej",
+          "package_quantity": "200 frön",
+          "notes": "Pris: €8.99. Frakt: €2.00. Totalt: €10.99 / 133.29 SEK. eBay Item ID: 185401812050.",
+          "card_note": "",
+          "card_note_updated_at": "",
+          "cuttings_available": "",
+          "cuttings_updated_at": "",
+          "card_image": "",
+          "card_crop_x": "",
+          "card_crop_y": "",
+          "card_image_updated_at": ""
+        },
+        {
           "id": "STA-032",
           "genus": "Piaranthus",
           "species": "geminatus",
@@ -3679,7 +3757,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "Omplanterad",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -3692,10 +3770,10 @@
           "card_note_updated_at": "",
           "cuttings_available": "",
           "cuttings_updated_at": "",
-          "card_image": "",
-          "card_crop_x": "",
-          "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image": "bilder/stapeliader/STA-032_2026-09-03_hel.jpg",
+          "card_crop_x": "72.4004",
+          "card_crop_y": "49.9509",
+          "card_image_updated_at": "2026-09-09T10:44:21.542Z"
         },
         {
           "id": "STA-002",
@@ -3895,7 +3973,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "Sådd",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -4426,6 +4504,13 @@
           "type": "ref",
           "file": "bilder/stapeliader/STA-032_2026-09-03_hel.jpg",
           "label": "2026-09-03 · ref"
+        },
+        {
+          "plant_id": "STA-033",
+          "date": "2026-09-09",
+          "type": "ref",
+          "file": "bilder/stapeliader/STA-033_ref.png",
+          "label": "2026-09-09 · ref"
         }
       ],
       "seedLots": [
@@ -4782,9 +4867,45 @@
       "note": "Överlämnad som bröllopspresent."
     },
     {
+      "id": "STA-021",
+      "date": "2026-09-09",
+      "type": "Sådd",
+      "note": "5 fröer"
+    },
+    {
+      "id": "STA-029",
+      "date": "2026-09-09",
+      "type": "Sådd",
+      "note": "5 fröer"
+    },
+    {
+      "id": "STA-030",
+      "date": "2026-09-09",
+      "type": "Sådd",
+      "note": "5 fröer"
+    },
+    {
+      "id": "STA-032",
+      "date": "2026-09-07",
+      "type": "Omplanterad",
+      "note": ""
+    },
+    {
+      "id": "STA-033",
+      "date": "2026-09-09",
+      "type": "Sådd",
+      "note": "5 fröer"
+    },
+    {
       "id": "p-bothams-surprise-1",
       "date": "2026-08-27",
       "type": "Överlämnad som gåva",
+      "note": ""
+    },
+    {
+      "id": "p-bowkeri-silver-leaf",
+      "date": "2026-09-09",
+      "type": "Omplanterad",
       "note": ""
     },
     {
@@ -4800,10 +4921,40 @@
       "note": ""
     },
     {
+      "id": "p-dimeierii-selma",
+      "date": "2026-09-09",
+      "type": "Omplanterad",
+      "note": ""
+    },
+    {
+      "id": "p-gibbosina-bicolour",
+      "date": "2026-09-09",
+      "type": "Omplanterad",
+      "note": ""
+    },
+    {
+      "id": "p-gibbosum-anethifolium",
+      "date": "2026-09-09",
+      "type": "Omplanterad",
+      "note": ""
+    },
+    {
+      "id": "p-glauciifolium",
+      "date": "2026-09-09",
+      "type": "Omplanterad",
+      "note": ""
+    },
+    {
       "id": "p-prince-of-orange",
       "date": "2026-07-01",
       "type": "Första blomning",
       "note": "Ny blommbild dokumenterad."
+    },
+    {
+      "id": "p-rushmoor-mississippi",
+      "date": "2026-09-09",
+      "type": "Omplanterad",
+      "note": ""
     },
     {
       "id": "p-torento",
@@ -4847,7 +4998,7 @@
         "category": "Pelargon",
         "mother_id": "p-gibbosum-1",
         "father_id": "p-laxum-1",
-        "status": "Pollinerad",
+        "status": "Frö utvecklas",
         "note": "",
         "seedling_prefix": "G×L 26",
         "hibiscus_batch": "",
@@ -4881,6 +5032,14 @@
         "type": "Pollinerad",
         "note": "",
         "created_at": "2026-08-26T16:24:54.181Z"
+      },
+      {
+        "event_id": "cross-event-d0c9e28795dd4c80aea3194b3b02982a",
+        "crossing_id": "KRS-P-AA9AC1EE9B4F",
+        "date": "2026-09-04",
+        "type": "Frö utvecklas",
+        "note": "",
+        "created_at": "2026-09-04T20:29:12.696Z"
       }
     ]
   },

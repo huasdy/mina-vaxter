@@ -1,4 +1,4 @@
-const CACHE_NAME = "mina-vaxter-offline-v6";
+const CACHE_NAME = "mina-vaxter-offline-v7";
 const CORE_ASSETS = [
   "./iphone.html",
   "./vaxtliv.html",
@@ -45,6 +45,17 @@ self.addEventListener("fetch", event => {
     return response;
   }).catch(() => null);
   event.waitUntil(refresh.then(() => {}));
+  const localMacPreview = ["localhost", "127.0.0.1"].includes(url.hostname);
+  if (localMacPreview) {
+    event.respondWith((async () => {
+      const response = await refresh;
+      if (response) return response;
+      const cached = await cachedResponse(request);
+      if (cached) return cached;
+      throw new Error("Katalogen kunde inte uppdateras.");
+    })());
+    return;
+  }
   if (forceRefresh) {
     event.respondWith((async () => {
       const response = await refresh;
