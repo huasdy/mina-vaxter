@@ -4,6 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Korsningar · Mina Växter</title>
+  <script>
+    (() => {
+      const standalone = window.navigator.standalone === true || window.matchMedia?.("(display-mode: standalone)").matches;
+      if (window.innerWidth <= 700 || standalone) {
+        const mobileUrl = new URL("iphone.html", window.location.href);
+        mobileUrl.searchParams.set("vy", "korsningar");
+        mobileUrl.searchParams.set("v", "2026-09-12-korsningar-1815");
+        window.location.replace(mobileUrl.toString());
+      }
+    })();
+  </script>
   <style>
     :root { --bg:#f5f1ea; --paper:#fffdf8; --ink:#2b251f; --muted:#6f655b; --line:#ded2c2; --accent:#7d4f3b; --chip:#efe6da; --shadow:0 14px 40px rgba(62,43,28,.12); --radius:22px; }
     * { box-sizing:border-box; }

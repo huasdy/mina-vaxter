@@ -224,7 +224,7 @@ STA-033,2026-09-12,Grodd,</script>
     const mobileHeading = document.querySelector('#mobileHeading');
     const legacyMigration = document.querySelector('#legacyMigration');
     const legacyMigrationLink = document.querySelector('#legacyMigrationLink');
-    const MOBILE_APP_VERSION = "2026-09-12-korsningar-1814";
+    const MOBILE_APP_VERSION = "2026-09-12-korsningar-1815";
     const MOBILE_CATALOG_CACHE_KEY = "mina-vaxter-mobile-catalog-v1";
     const initialParams = new URLSearchParams(window.location.search);
     const requestedCategory = initialParams.get('kategori');
@@ -444,7 +444,7 @@ STA-033,2026-09-12,Grodd,</script>
           const offspring = plants.filter(plant => plant.sow_batch_id === batch.sow_batch_id).length;
           return `${lot?.seed_lot_code || "—"}-${batch.sow_code} · ${batch.seeds_sown} sådda · ${germinated} grodda · ${offspring} avkommor`;
         }).join("<br>") || "Ingen såbatch ännu";
-        return `<a class="mobile-crossing-card ${active ? "is-active-sowing" : ""}" href="korsningar.html#${escapeHtml(crossing.crossing_id)}" aria-label="Öppna korsningen ${escapeHtml(mother?.name || crossing.mother_id)} × ${escapeHtml(father?.name || crossing.father_id)}"><div class="mobile-crossing-card-head"><h2>${escapeHtml(mother?.name || crossing.mother_id)} × ${escapeHtml(father?.name || crossing.father_id)}</h2><span class="chip ${active ? "green" : ""}">${escapeHtml(crossing.displayStatus)}</span></div><div class="mobile-crossing-summary">${batchSummary}</div><div class="mobile-crossing-open">Öppna korsning ›</div></a>`;
+        return `<article class="mobile-crossing-card ${active ? "is-active-sowing" : ""}" aria-label="Korsningen ${escapeHtml(mother?.name || crossing.mother_id)} × ${escapeHtml(father?.name || crossing.father_id)}"><div class="mobile-crossing-card-head"><h2>${escapeHtml(mother?.name || crossing.mother_id)} × ${escapeHtml(father?.name || crossing.father_id)}</h2><span class="chip ${active ? "green" : ""}">${escapeHtml(crossing.displayStatus)}</span></div><div class="mobile-crossing-summary">${batchSummary}</div><div class="mobile-crossing-open">Översikt · registrering görs på desktop</div></article>`;
       }).join("") || '<div class="empty">Inga pelargonkorsningar ännu.</div>';
     }
     function mobileStapeliadDetailPanel(id) {
