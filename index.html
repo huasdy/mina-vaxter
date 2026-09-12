@@ -125,7 +125,7 @@
     <div class="version-status" id="versionStatus">Kontrollerar version...</div>
   </main>
   <script>
-    const APP_VERSION = "2026-09-12-korsningar-1814";
+    const APP_VERSION = "2026-09-12-korsningar-1817";
     const versionStatus = document.querySelector("#versionStatus");
     const homeRefresh = document.querySelector("#homeRefresh");
 
@@ -151,7 +151,8 @@
           document.querySelector("#reloadVersion").addEventListener("click", () => {
             const url = new URL(window.location.href);
             url.searchParams.set("v", remote.version);
-            window.location.href = url.toString();
+            url.searchParams.set("uppdaterad", Date.now().toString());
+            window.location.replace(url.toString());
           });
           return;
         }
