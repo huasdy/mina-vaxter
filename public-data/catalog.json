@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "catalogVersion": "2026-09-12-synk-1622",
+  "catalogVersion": "2026-09-12-synk-1721",
   "categories": {
     "Hibiskus": {
       "titleField": "id",
@@ -5371,6 +5371,14 @@
         "type": "Frö skördat",
         "note": "14 frön",
         "created_at": "2026-09-12T10:00:00Z"
+      },
+      {
+        "event_id": "cross-event-53b8d84c4e414a7d8aa0790f4982879c",
+        "crossing_id": "KRS-P-AA9AC1EE9B4F",
+        "date": "2026-09-12",
+        "type": "Sådd",
+        "note": "",
+        "created_at": "2026-09-12T15:16:58.467Z"
       }
     ],
     "seedLots": [

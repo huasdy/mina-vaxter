@@ -55,6 +55,25 @@
     .plant-card[data-category="Stapeliader"] .plant-card-milestone-slot { min-height:82px; }
     .plant-card[data-category="Stapeliader"] .stapeliad-milestone-age { flex-basis:100%; margin-left:24px; white-space:nowrap; }
     .notes { color: var(--muted); border-top: 1px solid var(--line); padding-top: 10px; margin-top: 8px; font-weight: 760; }
+    .plant-card:has(.mobile-crossing-info) .plant-card-info { height: auto; overflow: visible; }
+    .mobile-crossing-info { display: grid; gap: 9px; border-top: 1px solid var(--line); padding-top: 10px; }
+    .mobile-crossing-info h3 { margin: 0; font: 700 1rem Georgia, "Times New Roman", serif; }
+    .mobile-crossing-info dl { display: grid; grid-template-columns: auto minmax(0,1fr); gap: 4px 9px; margin: 0; font-size: .82rem; }
+    .mobile-crossing-info dt { color: var(--muted); font-weight: 800; }
+    .mobile-crossing-info dd { margin: 0; overflow-wrap: anywhere; }
+    .mobile-crossing-parents { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+    .mobile-crossing-parent { display: grid; gap: 5px; min-width: 0; }
+    .mobile-crossing-parent img, .mobile-crossing-parent .placeholder { width: 100%; height: 82px; object-fit: cover; border-radius: 10px; background: var(--chip); }
+    .mobile-crossing-parent .placeholder { display: grid; place-items: center; color: var(--muted); font-size: .72rem; }
+    .mobile-crossing-parent small { color: var(--accent); font-size: .68rem; font-weight: 900; text-transform: uppercase; }
+    .mobile-crossing-parent strong, .mobile-crossing-parent span { overflow-wrap: anywhere; }
+    .mobile-crossing-parent span { color: var(--muted); font-size: .75rem; font-weight: 800; }
+    .mobile-crossing-events { margin: 0; padding-left: 18px; color: var(--muted); font-size: .8rem; }
+    .mobile-crossing-card { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 12px; box-shadow: 0 5px 16px rgba(43,37,31,.08); min-width: 0; }
+    .mobile-crossing-card.is-active-sowing { border-color: #6f936f; box-shadow: 0 0 0 2px rgba(96,119,97,.16), 0 5px 16px rgba(43,37,31,.08); }
+    .mobile-crossing-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 9px; min-width: 0; }
+    .mobile-crossing-card-head h2 { min-width: 0; font-size: 1.08rem; overflow-wrap: anywhere; }
+    .mobile-crossing-summary { margin-top: 9px; color: var(--muted); font-size: .83rem; font-weight: 800; line-height: 1.55; overflow-wrap: anywhere; }
     .empty { background: var(--paper); border: 1px solid var(--line); border-radius: 18px; padding: 22px; color: var(--muted); text-align: center; font-weight: 750; }
     .mobile-view-toggle {
       position: fixed; right: 16px; bottom: max(76px, calc(env(safe-area-inset-bottom) + 76px)); z-index: 20;
@@ -204,7 +223,7 @@ STA-033,2026-09-12,Grodd,</script>
     const mobileHeading = document.querySelector('#mobileHeading');
     const legacyMigration = document.querySelector('#legacyMigration');
     const legacyMigrationLink = document.querySelector('#legacyMigrationLink');
-    const MOBILE_APP_VERSION = "2026-09-12-synk-1622";
+    const MOBILE_APP_VERSION = "2026-09-12-synk-1721";
     const MOBILE_CATALOG_CACHE_KEY = "mina-vaxter-mobile-catalog-v1";
     const initialParams = new URLSearchParams(window.location.search);
     const requestedCategory = initialParams.get('kategori');
@@ -327,7 +346,7 @@ STA-033,2026-09-12,Grodd,</script>
       return labels.map((label, index) => `<span class="chip ${index === 0 ? "green" : ""}"${label === "🌱 Stickling" ? ' data-status-chip="cuttings"' : ""}>${escapeHtml(label)}</span>`).join("");
     }
     function renderTabs() {
-      const names = [...Object.keys(data), "Tidigare", "Växtliv", "Galleri", "Ankomstsamtal"];
+      const names = [...Object.keys(data), "Korsningar", "Tidigare", "Växtliv", "Galleri", "Ankomstsamtal"];
       const tabLabel = name => name === "Stapeliader" ? "Stapelia" : name;
       tabs.innerHTML = names.map(name => `<button class="tab ${name === active ? 'active' : ''}" type="button" data-name="${escapeHtml(name)}">${escapeHtml(tabLabel(name))}</button>`).join('');
       requestAnimationFrame(() => tabs.querySelector('.tab.active')?.scrollIntoView({block: 'nearest', inline: 'nearest'}));
@@ -353,6 +372,63 @@ STA-033,2026-09-12,Grodd,</script>
         return plantHeadingHtml(row, identity, true);
       }
       return plantHeadingHtml(row, identity);
+    }
+
+    function mobileCrossingDate(value) {
+      const date = localDate(value);
+      return date ? date.toLocaleDateString("sv-SE", {day: "numeric", month: "short", year: "numeric"}) : clean(value);
+    }
+
+    function mobileCrossingPhoto(plant) {
+      if (plant?.card_image) return plant.card_image;
+      const photos = window.publicCatalogSnapshot?.categories?.Pelargon?.photos || [];
+      return photos.filter(photo => photo.plant_id === plant?.id).sort((a, b) => String(a.date).localeCompare(String(b.date))).at(-1)?.file || "";
+    }
+
+    function mobileCrossingInfoHtml(crossing, seedLot, sowBatch) {
+      const pelargons = window.publicCatalogSnapshot?.categories?.Pelargon?.plants || [];
+      const mother = pelargons.find(plant => plant.id === crossing.mother_id);
+      const father = pelargons.find(plant => plant.id === crossing.father_id);
+      const events = (window.publicCatalogSnapshot?.crossings?.events || [])
+        .filter(event => event.crossing_id === crossing.crossing_id && (!seedLot.pollinated_date || String(event.date) >= String(seedLot.pollinated_date)))
+        .sort((a, b) => String(a.date).localeCompare(String(b.date)));
+      const harvested = events.find(event => event.type === "Frö skördat");
+      const harvestedCount = harvested?.note?.match(/\d+/)?.[0] || "";
+      const parent = (plant, role) => {
+        const photo = mobileCrossingPhoto(plant);
+        return `<article class="mobile-crossing-parent">${photo ? `<img src="${escapeHtml(photo)}" alt="${escapeHtml(`${role} ${plant?.name || ""}`)}" loading="lazy">` : '<div class="placeholder">Ingen bild</div>'}<small>${escapeHtml(role)}</small><strong>${escapeHtml(plant?.name || "Okänd")}</strong><span>${escapeHtml(plant?.label_number || plant?.id || "—")}</span></article>`;
+      };
+      const eventItems = events.filter(event => event.type !== "Sådd").map(event => `<li>${escapeHtml(event.type)}: ${escapeHtml(mobileCrossingDate(event.date))}</li>`).join("");
+      const germinated = sowBatch.germinated_count == null ? 0 : sowBatch.germinated_count;
+      const offspringCount = (window.publicCatalogSnapshot?.categories?.Pelargon?.plants || []).filter(row => row.sow_batch_id === sowBatch.sow_batch_id).length;
+      return `<section class="mobile-crossing-info" aria-label="Korsningsinformation"><h3>${escapeHtml(mother?.name || crossing.mother_id)} × ${escapeHtml(father?.name || crossing.father_id)}</h3><div class="mobile-crossing-parents">${parent(mother, "♀ Moder")}${parent(father, "♂ Pollen")}</div><h3>Fröomgång ${escapeHtml(seedLot.seed_lot_code)}</h3><ul class="mobile-crossing-events">${eventItems || "<li>Inga händelser ännu.</li>"}</ul>${harvestedCount ? `<div>${escapeHtml(harvestedCount)} frön skördade</div>` : ""}<dl><dt>Status</dt><dd>${escapeHtml(crossing.status === "Sådd" || sowBatch ? "Sådd" : crossing.status)}</dd><dt>Såbatch</dt><dd>${escapeHtml(`${seedLot.seed_lot_code}-${sowBatch.sow_code}`)}</dd><dt>Sådd</dt><dd>${escapeHtml(mobileCrossingDate(sowBatch.sown_date))}</dd><dt>Antal</dt><dd>${escapeHtml(sowBatch.seeds_sown)} sådda · ${escapeHtml(sowBatch.pot_count)} ${Number(sowBatch.pot_count) === 1 ? "kruka" : "krukor"} · ${escapeHtml(germinated)} grodda · ${escapeHtml(offspringCount)} avkommor</dd></dl></section>`;
+    }
+
+    function mobileCrossingOverview() {
+      const source = window.publicCatalogSnapshot?.crossings || {};
+      const plants = window.publicCatalogSnapshot?.categories?.Pelargon?.plants || [];
+      const seedLots = source.seedLots || [];
+      const batches = source.sowBatches || [];
+      const events = source.events || [];
+      const rows = (source.items || []).filter(crossing => crossing.category === "Pelargon").map(crossing => {
+        const lots = seedLots.filter(lot => lot.crossing_id === crossing.crossing_id);
+        const crossingBatches = batches.filter(batch => lots.some(lot => lot.seed_lot_id === batch.seed_lot_id));
+        const crossingEvents = events.filter(event => event.crossing_id === crossing.crossing_id).sort((a, b) => String(b.date).localeCompare(String(a.date)));
+        const displayStatus = crossingBatches.length ? "Sådd" : crossing.status;
+        return {...crossing, displayStatus, latestDate: crossingEvents[0]?.date, lots, crossingBatches, crossingEvents};
+      });
+      return sortCrossingOverviewRows(rows).map(crossing => {
+        const mother = plants.find(plant => plant.id === crossing.mother_id);
+        const father = plants.find(plant => plant.id === crossing.father_id);
+        const active = crossing.displayStatus === "Sådd";
+        const batchSummary = crossing.crossingBatches.map(batch => {
+          const lot = crossing.lots.find(item => item.seed_lot_id === batch.seed_lot_id);
+          const germinated = batch.germinated_count == null ? 0 : batch.germinated_count;
+          const offspring = plants.filter(plant => plant.sow_batch_id === batch.sow_batch_id).length;
+          return `${lot?.seed_lot_code || "—"}-${batch.sow_code} · ${batch.seeds_sown} sådda · ${germinated} grodda · ${offspring} avkommor`;
+        }).join("<br>") || "Ingen såbatch ännu";
+        return `<article class="mobile-crossing-card ${active ? "is-active-sowing" : ""}"><div class="mobile-crossing-card-head"><h2>${escapeHtml(mother?.name || crossing.mother_id)} × ${escapeHtml(father?.name || crossing.father_id)}</h2><span class="chip ${active ? "green" : ""}">${escapeHtml(crossing.displayStatus)}</span></div><div class="mobile-crossing-summary">${batchSummary}</div></article>`;
+      }).join("") || '<div class="empty">Inga pelargonkorsningar ännu.</div>';
     }
     function mobileStapeliadDetailPanel(id) {
       const row = data?.Stapeliader?.rows?.find(plant => plant.id === id);
@@ -504,7 +580,7 @@ STA-033,2026-09-12,Grodd,</script>
         const mother = pelargons.find(plant => plant.id === crossing.mother_id);
         const father = pelargons.find(plant => plant.id === crossing.father_id);
         const lineage = `${seedLot.seed_lot_code}-${sowBatch.sow_code}-${String(row.batch_individual_number).padStart(2, "0")}`;
-        recordInfo += `<dl><dt>Korsning</dt><dd>${escapeHtml(`${mother?.name || crossing.mother_id} × ${father?.name || crossing.father_id}`)}</dd><dt>Moder</dt><dd>${escapeHtml(`${mother?.name || crossing.mother_id} · ${mother?.label_number || crossing.mother_id}`)}</dd><dt>Pollen</dt><dd>${escapeHtml(`${father?.name || crossing.father_id} · ${father?.label_number || crossing.father_id}`)}</dd><dt>Batch</dt><dd>${escapeHtml(`${seedLot.seed_lot_code}-${sowBatch.sow_code}`)}</dd><dt>Sådatum</dt><dd>${escapeHtml(sowBatch.sown_date)}</dd><dt>Härkomst</dt><dd>${escapeHtml(lineage)}</dd></dl>`;
+        recordInfo += mobileCrossingInfoHtml(crossing, seedLot, sowBatch);
       }
       const parentCross = categoryName === "Hibiskus" ? hibiscusCrossLabel(row) : (crossing ? `${crossing.mother_id} × ${crossing.father_id}` : "");
       const parentReferences = categoryName === "Hibiskus" ? hibiscusParentReferenceItems(row) : [];
@@ -570,6 +646,11 @@ STA-033,2026-09-12,Grodd,</script>
         updatePlantFavoriteUI();
         return;
       }
+      if (active === "Korsningar") {
+        stats.textContent = "Pelargonkorsningar";
+        grid.innerHTML = mobileCrossingOverview();
+        return;
+      }
       if (active === "Sticklingar") {
         const q = search.value.trim().toLowerCase();
         const rows = Object.entries(data).flatMap(([categoryName, section]) =>
@@ -619,7 +700,7 @@ STA-033,2026-09-12,Grodd,</script>
     tabs.addEventListener('click', event => {
       const button = event.target.closest('.tab');
       if (button && button.dataset.name === "Galleri") {
-        window.location.href = "galleri.html?v=2026-09-12-synk-1622";
+        window.location.href = "galleri.html?v=2026-09-12-synk-1721";
         return;
       }
       if (button && button.dataset.name === "Växtliv") {

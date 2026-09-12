@@ -77,6 +77,16 @@ function clean(value) {
   return (value || "").toString().trim();
 }
 
+function crossingStatusRank(status) {
+  return {"Sådd": 0, "Groddar": 0, "Frö skördat": 1, "Frö utvecklas": 1, "Pollinerad": 2, "Avslutad": 3}[clean(status)] ?? 4;
+}
+
+function sortCrossingOverviewRows(rows) {
+  return [...rows].sort((a, b) => crossingStatusRank(a.displayStatus) - crossingStatusRank(b.displayStatus)
+    || String(b.latestDate || b.created_at || "").localeCompare(String(a.latestDate || a.created_at || ""))
+    || String(a.crossing_id).localeCompare(String(b.crossing_id)));
+}
+
 function photoAgeText(photoDate, logs = []) {
   const validDate = value => /^\d{4}-\d{2}-\d{2}$/.test(clean(value));
   const daysSince = anchorDate => {

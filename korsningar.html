@@ -39,6 +39,7 @@
     .notice.error { color:#8a4a3c; }
     .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); align-items:start; gap:18px; min-width:0; }
     .crossing-card { padding:15px; display:grid; gap:10px; }
+    .crossing-card.is-active-sowing { border-color:#6f936f; box-shadow:0 0 0 2px rgba(96,119,97,.16), var(--shadow); }
     .new-crossing, .crossing-card, .crossing-head, .crossing-details, .details-content, .event-form, .offspring-form, .dialog-panel { min-width:0; max-width:100%; }
     .crossing-head h2 { min-width:0; display:grid; gap:2px; overflow-wrap:anywhere; }
     .crossing-parent-pair { display:grid; grid-template-columns:auto minmax(0,1fr); align-items:baseline; gap:7px; }
@@ -341,8 +342,7 @@
 
     function render() {
       const model = localModel();
-      const cards = model.crossings
-        .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)) || String(a.crossing_id).localeCompare(String(b.crossing_id)))
+      const cards = sortCrossingOverviewRows(model.crossings.map(crossing => ({...crossing, displayStatus: displayCrossingStatus(crossing, batchesForCrossing(crossing.crossing_id)), latestDate: eventsFor(crossing.crossing_id)[0]?.date})))
         .map(crossing => {
           const events = eventsFor(crossing.crossing_id);
           const batches = batchesForCrossing(crossing.crossing_id);
@@ -353,11 +353,11 @@
           const parentReferences = `<section class="parent-references" aria-label="Föräldrareferenser"><div class="card-label">Föräldrareferenser</div><div class="parent-reference-grid">${parentReferenceHtml(crossing, "♀ Moder", crossing.mother_id)}${parentReferenceHtml(crossing, "♂ Pollen", crossing.father_id)}</div></section>`;
           const batchHtml = batch => {
             const batchChildren = childrenForBatch(batch.sow_batch_id);
-            const germinated = Number(batch.germinated_count || 0);
+            const germinated = batch.germinated_count == null ? 0 : Number(batch.germinated_count);
             return `<article class="sow-batch"><div class="sow-batch-head"><strong>${esc(batch.sow_code)}</strong><small>${esc(sowBatchCode(batch))}</small></div><div class="sow-batch-meta">Sådd: ${esc(displayDate(batch.sown_date))} · ${esc(batch.seeds_sown)} sådda · ${esc(batch.pot_count)} ${Number(batch.pot_count) === 1 ? "kruka" : "krukor"} · ${esc(germinated)} grodda · ${esc(batchChildren.length)} avkommor</div><div class="card-actions"><button type="button" class="secondary" data-create-offspring="${esc(batch.sow_batch_id)}">Skapa avkomma</button><button type="button" class="secondary" data-edit-sow-batch="${esc(batch.sow_batch_id)}">Uppdatera</button></div></article>`;
           };
           const seedLots = seedLotsForCrossing(crossing.crossing_id);
-          const sowBatchSection = crossing.category === "Pelargon" ? `<details class="sow-batches"><summary><span>Fröomgångar / Såbatcher</span><span>${seedLots.length}</span></summary><div class="sow-batches-content"><div class="sow-batch-head"><div class="card-label">Fröomgångar</div><button type="button" class="secondary" data-create-sow-batch="${esc(crossing.crossing_id)}">Registrera såbatch</button></div>${seedLots.length ? seedLots.map(seedLot => { const lotEvents = eventsForSeedLot(seedLot, seedLots, events); const lotBatches = batches.filter(batch => batch.seed_lot_id === seedLot.seed_lot_id); const harvested = lotEvents.find(event => event.type === "Frö skördat"); const harvestedCount = harvested?.note?.match(/\d+/)?.[0]; const eventRows = lotEvents.filter(event => event.type !== "Sådd").map(event => `<li>${esc(event.type)}: ${esc(displayDate(event.date))}</li>`).join(""); return `<section class="seed-lot"><h3>Fröomgång ${esc(seedLot.seed_lot_code)}</h3><ul class="seed-lot-events">${eventRows || "<li>Inga händelser ännu.</li>"}</ul>${harvestedCount ? `<div class="sow-batch-meta">${esc(harvestedCount)} frön skördade</div>` : ""}<div class="sow-batch-list">${lotBatches.map(batchHtml).join("") || '<div class="event"><small>Inga såbatcher ännu.</small></div>'}</div></section>`; }).join("") : '<div class="event"><small>Ingen fröomgång ännu.</small></div>'}</div></details>` : "";
+          const sowBatchSection = crossing.category === "Pelargon" ? `<details class="sow-batches"><summary><span>Fröomgångar / Såbatcher</span><span>· ${seedLots.length}</span></summary><div class="sow-batches-content"><div class="sow-batch-head"><div class="card-label">Fröomgångar</div><button type="button" class="secondary" data-create-sow-batch="${esc(crossing.crossing_id)}">Registrera såbatch</button></div>${seedLots.length ? seedLots.map(seedLot => { const lotEvents = eventsForSeedLot(seedLot, seedLots, events); const lotBatches = batches.filter(batch => batch.seed_lot_id === seedLot.seed_lot_id); const harvested = lotEvents.find(event => event.type === "Frö skördat"); const harvestedCount = harvested?.note?.match(/\d+/)?.[0]; const eventRows = lotEvents.filter(event => event.type !== "Sådd").map(event => `<li>${esc(event.type)}: ${esc(displayDate(event.date))}</li>`).join(""); return `<section class="seed-lot"><h3>Fröomgång ${esc(seedLot.seed_lot_code)}</h3><ul class="seed-lot-events">${eventRows || "<li>Inga händelser ännu.</li>"}</ul>${harvestedCount ? `<div class="sow-batch-meta">${esc(harvestedCount)} frön skördade</div>` : ""}<div class="sow-batch-list">${lotBatches.map(batchHtml).join("") || '<div class="event"><small>Inga såbatcher ännu.</small></div>'}</div></section>`; }).join("") : '<div class="event"><small>Ingen fröomgång ännu.</small></div>'}</div></details>` : "";
           const offspringHtml = children.length ? children.map(child => {
             const label = crossing.category === "Pelargon" ? (child.seedling_label || child.name || child.id) : child.id;
             const labelUrl = `verktyg.html?label=${encodeURIComponent(`${crossing.category}|${child.id}`)}#etiketter`;
@@ -365,7 +365,7 @@
             return `<article class="offspring"><strong><a href="${esc(plantUrl)}">${esc(label)}</a></strong><br><small>${esc([child.label_number, child.status || "Avkomma"].filter(Boolean).join(" · "))}</small><div class="card-actions"><a href="${esc(labelUrl)}">Etikett</a></div></article>`;
           }).join("") : '<div class="offspring"><small>Inga avkommor ännu.</small></div>';
           return `
-            <article class="crossing-card" id="${esc(crossing.crossing_id)}" data-crossing-id="${esc(crossing.crossing_id)}">
+            <article class="crossing-card ${displayStatus === "Sådd" ? "is-active-sowing" : ""}" id="${esc(crossing.crossing_id)}" data-crossing-id="${esc(crossing.crossing_id)}">
               <div class="crossing-head"><h2><span>${esc(plantLabel(crossing.category, crossing.mother_id))}</span><span class="crossing-parent-pair"><span class="cross-symbol">×</span><span>${esc(plantLabel(crossing.category, crossing.father_id))}</span></span></h2></div>
               <details class="crossing-details"><summary><span>Detaljer ›</span><span class="status ${statusClass(displayStatus)}">${esc(displayStatus)}</span></summary><div class="details-content">
                 ${parentReferences}
