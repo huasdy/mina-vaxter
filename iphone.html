@@ -210,7 +210,7 @@ STA-033,2026-09-12,Grodd,</script>
   <script src="common.js?v=crossing-sort-1811"></script>
   <script>
     if ("serviceWorker" in navigator && window.isSecureContext) {
-      window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js?v=9").catch(() => {}), {once: true});
+      window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js?v=11").catch(() => {}), {once: true});
     }
     let data = {};
     let catalogReady = false;
@@ -224,7 +224,7 @@ STA-033,2026-09-12,Grodd,</script>
     const mobileHeading = document.querySelector('#mobileHeading');
     const legacyMigration = document.querySelector('#legacyMigration');
     const legacyMigrationLink = document.querySelector('#legacyMigrationLink');
-    const MOBILE_APP_VERSION = "2026-09-12-korsningar-1812";
+    const MOBILE_APP_VERSION = "2026-09-12-korsningar-1813";
     const MOBILE_CATALOG_CACHE_KEY = "mina-vaxter-mobile-catalog-v1";
     const initialParams = new URLSearchParams(window.location.search);
     const requestedCategory = initialParams.get('kategori');
@@ -327,12 +327,19 @@ STA-033,2026-09-12,Grodd,</script>
       else if (active === "Sticklingar") url.searchParams.set("vy", "sticklingar");
       else if (data[active]) url.searchParams.set("kategori", active);
     }
-    function forceMobileRefresh() {
+    async function forceMobileRefresh() {
       const url = new URL(window.location.href);
       url.searchParams.set('v', MOBILE_APP_VERSION);
       url.searchParams.set('uppdaterad', Date.now().toString());
       preserveMobileView(url);
-      window.location.replace(url.toString());
+      try {
+        if (navigator.serviceWorker?.controller) {
+          await navigator.serviceWorker.ready;
+          await navigator.serviceWorker.getRegistration()?.update();
+        }
+        await fetch(`version.json?force=${Date.now()}`, {cache: 'no-store'});
+      } catch (error) {}
+      window.location.assign(url.toString());
     }
     function pageForCategory(category) {
       return {
