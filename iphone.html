@@ -69,11 +69,12 @@
     .mobile-crossing-parent strong, .mobile-crossing-parent span { overflow-wrap: anywhere; }
     .mobile-crossing-parent span { color: var(--muted); font-size: .75rem; font-weight: 800; }
     .mobile-crossing-events { margin: 0; padding-left: 18px; color: var(--muted); font-size: .8rem; }
-    .mobile-crossing-card { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 12px; box-shadow: 0 5px 16px rgba(43,37,31,.08); min-width: 0; }
+    .mobile-crossing-card { display:block; color:inherit; text-decoration:none; background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 12px; box-shadow: 0 5px 16px rgba(43,37,31,.08); min-width: 0; }
     .mobile-crossing-card.is-active-sowing { border-color: #6f936f; box-shadow: 0 0 0 2px rgba(96,119,97,.16), 0 5px 16px rgba(43,37,31,.08); }
     .mobile-crossing-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 9px; min-width: 0; }
     .mobile-crossing-card-head h2 { min-width: 0; font-size: 1.08rem; overflow-wrap: anywhere; }
     .mobile-crossing-summary { margin-top: 9px; color: var(--muted); font-size: .83rem; font-weight: 800; line-height: 1.55; overflow-wrap: anywhere; }
+    .mobile-crossing-open { margin-top: 8px; color: var(--accent); font-size: .78rem; font-weight: 900; }
     .empty { background: var(--paper); border: 1px solid var(--line); border-radius: 18px; padding: 22px; color: var(--muted); text-align: center; font-weight: 750; }
     .mobile-view-toggle {
       position: fixed; right: 16px; bottom: max(76px, calc(env(safe-area-inset-bottom) + 76px)); z-index: 20;
@@ -223,7 +224,7 @@ STA-033,2026-09-12,Grodd,</script>
     const mobileHeading = document.querySelector('#mobileHeading');
     const legacyMigration = document.querySelector('#legacyMigration');
     const legacyMigrationLink = document.querySelector('#legacyMigrationLink');
-    const MOBILE_APP_VERSION = "2026-09-12-korsningar-1800";
+    const MOBILE_APP_VERSION = "2026-09-12-korsningar-1810";
     const MOBILE_CATALOG_CACHE_KEY = "mina-vaxter-mobile-catalog-v1";
     const initialParams = new URLSearchParams(window.location.search);
     const requestedCategory = initialParams.get('kategori');
@@ -427,7 +428,7 @@ STA-033,2026-09-12,Grodd,</script>
           const offspring = plants.filter(plant => plant.sow_batch_id === batch.sow_batch_id).length;
           return `${lot?.seed_lot_code || "—"}-${batch.sow_code} · ${batch.seeds_sown} sådda · ${germinated} grodda · ${offspring} avkommor`;
         }).join("<br>") || "Ingen såbatch ännu";
-        return `<article class="mobile-crossing-card ${active ? "is-active-sowing" : ""}"><div class="mobile-crossing-card-head"><h2>${escapeHtml(mother?.name || crossing.mother_id)} × ${escapeHtml(father?.name || crossing.father_id)}</h2><span class="chip ${active ? "green" : ""}">${escapeHtml(crossing.displayStatus)}</span></div><div class="mobile-crossing-summary">${batchSummary}</div></article>`;
+        return `<a class="mobile-crossing-card ${active ? "is-active-sowing" : ""}" href="korsningar.html#${escapeHtml(crossing.crossing_id)}" aria-label="Öppna korsningen ${escapeHtml(mother?.name || crossing.mother_id)} × ${escapeHtml(father?.name || crossing.father_id)}"><div class="mobile-crossing-card-head"><h2>${escapeHtml(mother?.name || crossing.mother_id)} × ${escapeHtml(father?.name || crossing.father_id)}</h2><span class="chip ${active ? "green" : ""}">${escapeHtml(crossing.displayStatus)}</span></div><div class="mobile-crossing-summary">${batchSummary}</div><div class="mobile-crossing-open">Öppna korsning ›</div></a>`;
       }).join("") || '<div class="empty">Inga pelargonkorsningar ännu.</div>';
     }
     function mobileStapeliadDetailPanel(id) {
