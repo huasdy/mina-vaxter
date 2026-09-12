@@ -247,7 +247,7 @@ function collectionChips(category, row) {
   if (pelargonIndividual) add("Individ");
   if (getPlantCuttingsStatus(row && row.id, row && row.cuttings_available, row && row.cuttings_updated_at)) add("🌱 Stickling");
   if (category === "Pelargon") {
-    const seedGrown = ["frö", "egen korsning"].includes(clean(row && row.arrival_type).toLocaleLowerCase("sv")) || Boolean(clean(row && row.seed_lot_id)) || Boolean(clean(row && row.crossing_id));
+    const seedGrown = ["frö", "egen korsning"].includes(clean(row && row.arrival_type).toLocaleLowerCase("sv")) || Boolean(clean(row && row.seed_lot_id)) || Boolean(clean(row && row.crossing_id)) || Boolean(clean(row && row.sow_batch_id));
     if (pelargonIndividual && seedGrown) add("Frösådd");
   } else if (hasSownMilestone) {
     add("Frö");
@@ -542,6 +542,7 @@ function milestoneIcon(type) {
     "sådd": "🌱",
     "grodd": "🌿",
     "förökning": "↟",
+    "planterad": "🪴",
     "omplanterad": "🪴",
     "omplantering": "🪴",
     "beskuren": "✂️",
@@ -559,6 +560,7 @@ const plantMilestoneTypes = [
   "Sådd",
   "Grodd",
   "Förökning",
+  "Planterad",
   "Omplanterad",
   "Beskuren",
   "Första knopp",
@@ -3772,12 +3774,16 @@ async function openImageImportQueue() {
     `;
   }).join("");
   const crossingRows = crossingItems.map(item => {
-    const data = item.kind === "crossing" ? item.crossing : item.kind === "event" ? item.event : item.offspring;
+    const data = item.kind === "crossing" ? item.crossing : item.kind === "event" ? item.event : item.kind === "seed_lot" ? item.seed_lot : item.kind === "sow_batch" ? item.sow_batch : item.offspring;
     const title = item.kind === "crossing"
       ? `${data?.mother_id || ""} × ${data?.father_id || ""}`
       : item.kind === "event"
         ? `${data?.type || "Korsningshändelse"} · ${data?.date || ""}`
-        : `Avkomma · ${data?.date || ""}`;
+        : item.kind === "seed_lot"
+          ? `Fröparti · ${data?.seed_lot_code || ""}`
+        : item.kind === "sow_batch"
+          ? `Såbatch · ${data?.sow_code || ""}`
+          : `Avkomma · ${data?.date || ""}`;
     return `
       <article class="import-item">
         <div class="import-item-icon" aria-hidden="true">✿</div>

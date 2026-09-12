@@ -48,6 +48,10 @@
     .stapeliad-info-line--provenance::before { content:"Proveniens · "; color:var(--accent); font-weight:850; }
     .stapeliad-info-line--supplier { font-size:.76rem; }
     .stapeliad-info-line--supplier::before { content:"Leverantör · "; color:var(--muted); font-weight:700; }
+    .stapeliad-milestone-age { color:var(--accent); font-size:.8rem; font-weight:800; }
+    .plant-card[data-category="Stapeliader"] .card-body { grid-template-rows: var(--plant-heading-height) var(--plant-chip-height) 58px 82px 108px; }
+    .plant-card[data-category="Stapeliader"] .plant-card-milestone-slot { height:82px; min-height:82px; }
+    .plant-card[data-category="Stapeliader"] .stapeliad-milestone-age { flex-basis:100%; margin-left:24px; white-space:nowrap; }
     .stapeliad-gallery { grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
     .stapeliad-gallery-item.plant-card { min-height:0; border-radius:15px; box-shadow:none; cursor:pointer; background:var(--paper); }
     .stapeliad-gallery-image { aspect-ratio:1; overflow:hidden; background:linear-gradient(135deg,rgba(125,79,59,.16),rgba(96,119,97,.14)),#eadfce; }
@@ -73,7 +77,7 @@
     .stapeliad-edit-status.error { color:#9a3d31; }
     .stapeliad-edit-actions-row { display:flex; flex-wrap:wrap; align-items:center; gap:9px; }
     @media (max-width:520px) { .stapeliad-edit-grid { grid-template-columns:1fr; } .stapeliad-edit-field.wide { grid-column:auto; } }
-    @media (max-width:700px) { header { padding-top:28px; } .toolbar { align-items:stretch; flex-direction:column; } .toolbar input, .toolbar select, .toolbar > button { width:100%; } .view-toggle { width:100%; } .toolbar .view-toggle button { width:50%; } .stats { margin-left:0; text-align:center; } .stapeliad-gallery { grid-template-columns:repeat(auto-fill,minmax(132px,1fr)); gap:9px; } }
+    @media (max-width:700px) { header { padding-top:28px; } .toolbar { align-items:stretch; flex-direction:column; } .toolbar input { flex:0 0 auto; } .toolbar input, .toolbar select, .toolbar > button { width:100%; } .view-toggle { width:100%; } .toolbar .view-toggle button { width:50%; } .stats { margin-left:0; text-align:center; } .stapeliad-gallery { grid-template-columns:repeat(auto-fill,minmax(132px,1fr)); gap:9px; } .plant-card[data-category="Stapeliader"] .card-body { grid-template-rows:auto auto auto auto auto; } }
   </style>
 </head>
 <body>
@@ -107,7 +111,7 @@
     </div>
     <section class="grid" id="grid"></section>
   </main>
-  <script src="common.js?v=4c1d1b28403a"></script>
+  <script src="common.js?v=924db9dbbc15"></script>
   <script>
     const PUBLIC_CATALOG_SCHEMA_VERSION = 2;
     const grid = document.querySelector("#grid");
@@ -241,12 +245,46 @@
       const compactProvenance = provenance.length > 36 && parts.length > 2
         ? parts.slice(-2).join(" · ") : provenance;
       return [
+        [clean(plant.supplier), "Leverantör", "supplier"],
         [clean(plant.accession_field_number), "Accession/fältnummer", "accession"],
-        [compactProvenance, "Proveniens/lokalitet", "provenance"],
-        [clean(plant.supplier), "Leverantör", "supplier"]
+        [compactProvenance, "Proveniens/lokalitet", "provenance"]
       ].filter(([value]) => value).map(([value, label, role]) =>
         `<span class="stapeliad-info-line stapeliad-info-line--${role}" aria-label="${escapeAttr(label)}">${escapeText(value)}</span>`
       ).join("");
+    }
+
+    function localDate(value) {
+      const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(clean(value));
+      if (!match) return null;
+      const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+      return date.getFullYear() === Number(match[1])
+        && date.getMonth() === Number(match[2]) - 1
+        && date.getDate() === Number(match[3]) ? date : null;
+    }
+
+    function daysSinceGermination(logs) {
+      const germination = (logs || [])
+        .filter(log => clean(log.type).toLocaleLowerCase("sv") === "grodd")
+        .sort((a, b) => sortNatural(a.date, b.date))
+        .at(-1);
+      const germinationDate = localDate(germination?.date);
+      if (!germinationDate) return "";
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const days = Math.max(0, Math.floor((today - germinationDate) / 86400000));
+      return `${days} ${days === 1 ? "dag" : "dagar"} sedan grodd`;
+    }
+
+    function stapeliadMilestoneSummary(logs) {
+      const latest = latestPlantMilestone(logs);
+      if (!latest) return "";
+      const age = daysSinceGermination(logs);
+      return `
+        <div class="milestone">
+          <div class="milestone-label">Senaste milstolpe</div>
+          <div class="milestone-value"><span>${escapeText(milestoneIcon(latest.type))}</span><strong>${escapeText(latest.type)}</strong><span>${escapeText(latest.date)}</span>${age ? `<span class="stapeliad-milestone-age">${escapeText(age)}</span>` : ""}</div>
+        </div>
+      `;
     }
 
     function cardTemplate(plant) {
@@ -268,11 +306,11 @@
           <div class="card-body">
             <div class="plant-card-head">
               <div class="plant-title-block"><h2>${escapeText(plant.full_botanical_name || plant.short_name || plant.id)}</h2></div>
-              <div class="import-actions"><button class="plant-log-btn" type="button" aria-label="Visa stapeliaddata och historik" title="Detaljer och historik">${logBookIcon()}</button></div>
+              <div class="import-actions"><button class="plant-log-btn" type="button" aria-label="Visa stapeliaddata och historik" title="Detaljer och historik">${logBookIcon()}</button><button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button><span class="import-badge" data-import-badge hidden></span></div>
             </div>
-            <div class="plant-card-chip-slot"><div class="chips">${materialType ? `<span class="chip" data-material-chip>${escapeText(materialType)}</span>` : ""}${visibleStatus === null ? "" : `<span class="chip">${escapeText(visibleStatus || "Status ej angiven")}</span>`}</div></div>
+            <div class="plant-card-chip-slot"><div class="chips">${materialType ? `<span class="chip" data-material-chip>${escapeText(materialType)}</span>` : ""}</div></div>
             <div class="plant-card-info">${stapeliadCardInfo(plant)}</div>
-            <div class="plant-card-milestone-slot">${milestoneSummary(latestPlantMilestone(plant.logs))}</div>
+            <div class="plant-card-milestone-slot">${stapeliadMilestoneSummary(plant.logs)}</div>
             <div class="plant-card-notes-slot">${plantCardNoteField(plant.id, plant.card_note, plant.card_note_updated_at, "Stapeliader")}</div>
           </div>
         </article>`;
@@ -418,6 +456,7 @@
         };
         ensurePlantPhotoGallery();
         ensurePlantMilestones();
+        ensurePlantImageImport();
         ensurePlantFavorites();
         grid.addEventListener("click", event => {
           const galleryItem = event.target.closest(".stapeliad-gallery-item");

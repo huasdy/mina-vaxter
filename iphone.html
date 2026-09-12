@@ -51,6 +51,9 @@
     .plant-nickname { margin-top: 3px; color: var(--muted); font-style: italic; font-weight: 700; }
     .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 2px; }
     .chip { background: var(--chip); color: var(--muted); border-radius: 999px; padding: 5px 8px; font-size: .8rem; font-weight: 750; }
+    .stapeliad-milestone-age { color: var(--accent); font-size: .8rem; font-weight: 800; }
+    .plant-card[data-category="Stapeliader"] .plant-card-milestone-slot { min-height:82px; }
+    .plant-card[data-category="Stapeliader"] .stapeliad-milestone-age { flex-basis:100%; margin-left:24px; white-space:nowrap; }
     .notes { color: var(--muted); border-top: 1px solid var(--line); padding-top: 10px; margin-top: 8px; font-weight: 760; }
     .empty { background: var(--paper); border: 1px solid var(--line); border-radius: 18px; padding: 22px; color: var(--muted); text-align: center; font-weight: 750; }
     .mobile-view-toggle {
@@ -157,11 +160,37 @@ p-gibbosina-bicolour,2026-09-09,Omplanterad,
 p-glauciifolium,2026-09-09,Omplanterad,
 p-bowkeri-silver-leaf,2026-09-09,Omplanterad,
 p-dimeierii-selma,2026-09-09,Omplanterad,
-p-gibbosum-anethifolium,2026-09-09,Omplanterad,</script>
-  <script src="common.js?v=4c1d1b28403a"></script>
+p-gibbosum-anethifolium,2026-09-09,Omplanterad,
+STA-005,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
+STA-011,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
+STA-017,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
+STA-007,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
+STA-012,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
+STA-035,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
+STA-001,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
+STA-006,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
+STA-034,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
+STA-016,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
+STA-009,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
+STA-010,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
+STA-020,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
+STA-019,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
+STA-015,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
+STA-002,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
+STA-018,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
+STA-004,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
+STA-008,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
+STA-003,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
+STA-013,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
+STA-014,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
+STA-029,2026-09-12,Grodd,
+STA-030,2026-09-12,Grodd,
+STA-021,2026-09-12,Grodd,
+STA-033,2026-09-12,Grodd,</script>
+  <script src="common.js?v=924db9dbbc15"></script>
   <script>
     if ("serviceWorker" in navigator && window.isSecureContext) {
-      window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js?v=8").catch(() => {}), {once: true});
+      window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js?v=9").catch(() => {}), {once: true});
     }
     let data = {};
     let catalogReady = false;
@@ -175,7 +204,7 @@ p-gibbosum-anethifolium,2026-09-09,Omplanterad,</script>
     const mobileHeading = document.querySelector('#mobileHeading');
     const legacyMigration = document.querySelector('#legacyMigration');
     const legacyMigrationLink = document.querySelector('#legacyMigrationLink');
-    const MOBILE_APP_VERSION = "2026-09-09-synk-1246";
+    const MOBILE_APP_VERSION = "2026-09-12-synk-1622";
     const MOBILE_CATALOG_CACHE_KEY = "mina-vaxter-mobile-catalog-v1";
     const initialParams = new URLSearchParams(window.location.search);
     const requestedCategory = initialParams.get('kategori');
@@ -288,7 +317,8 @@ p-gibbosum-anethifolium,2026-09-09,Omplanterad,</script>
     }
     function mobileChips(categoryName, row, logs) {
       if (categoryName === "Stapeliader") {
-        return `<span class="chip green">${escapeHtml(clean(row.status) || "Status ej angiven")}</span>`;
+        const origin = ["Frö", "Stickling"].includes(clean(row.acquisition_type)) ? clean(row.acquisition_type) : "";
+        return origin ? `<span class="chip green">${escapeHtml(origin)}</span>` : "";
       }
       const useful = new Set(["Frö", "Frösådd", "Individ", "🏷 Utvald", "Doft", "Unik", "Inne", "🌱 Stickling"]);
       const labels = collectionChips(categoryName, {...row, logs})
@@ -309,6 +339,15 @@ p-gibbosum-anethifolium,2026-09-09,Omplanterad,</script>
       }
       if (categoryName === "Hibiskus" && nickname && /^HIB-/i.test(clean(row.id))) {
         return `<div class="plant-mobile-id">${escapeHtml(row.id)}</div><h2>${escapeHtml(nickname)}</h2>`;
+      }
+      if (categoryName === "Pelargon" && row.sow_batch_id) {
+        const sowBatch = (window.publicCatalogSnapshot?.crossings?.sowBatches || []).find(batch => batch.sow_batch_id === row.sow_batch_id);
+        const seedLot = sowBatch && (window.publicCatalogSnapshot?.crossings?.seedLots || []).find(lot => lot.seed_lot_id === sowBatch.seed_lot_id);
+        const lineage = sowBatch && seedLot && row.batch_individual_number ? `${seedLot.seed_lot_code}-${sowBatch.sow_code}-${String(row.batch_individual_number).padStart(2, "0")}` : clean(row.seedling_label);
+        const chosenName = nickname || (clean(row.name) !== "Pelargonfröplanta" ? clean(row.name) : "");
+        const title = chosenName || clean(row.label_number) || clean(row.id);
+        const subline = [clean(row.label_number) !== title ? clean(row.label_number) : "", lineage].filter(Boolean).join(" · ");
+        return `<h2>${escapeHtml(title)}</h2>${subline ? `<div class="plant-nickname">${escapeHtml(subline)}</div>` : ""}`;
       }
       if (["Pelargon", "Citrus"].includes(categoryName) && clean(row.record_kind).toUpperCase() === "INDIVIDUAL") {
         return plantHeadingHtml(row, identity, true);
@@ -372,12 +411,46 @@ p-gibbosum-anethifolium,2026-09-09,Omplanterad,</script>
       const compactProvenance = provenance.length > 36 && parts.length > 2
         ? parts.slice(-2).join(" · ") : provenance;
       return [
+        [clean(row.supplier), "Leverantör", "supplier"],
         [clean(row.accession_field_number), "Accession/fältnummer", "accession"],
-        [compactProvenance, "Proveniens/lokalitet", "provenance"],
-        [clean(row.supplier), "Leverantör", "supplier"]
+        [compactProvenance, "Proveniens/lokalitet", "provenance"]
       ].filter(([value]) => value).map(([value, label, role]) =>
         `<span class="stapeliad-info-line stapeliad-info-line--${role}" aria-label="${escapeHtml(label)}">${escapeHtml(value)}</span>`
       ).join("");
+    }
+
+    function localDate(value) {
+      const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(clean(value));
+      if (!match) return null;
+      const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+      return date.getFullYear() === Number(match[1])
+        && date.getMonth() === Number(match[2]) - 1
+        && date.getDate() === Number(match[3]) ? date : null;
+    }
+
+    function daysSinceGermination(logs) {
+      const germination = (logs || [])
+        .filter(log => clean(log.type).toLocaleLowerCase("sv") === "grodd")
+        .sort((a, b) => sortNatural(a.date, b.date))
+        .at(-1);
+      const germinationDate = localDate(germination?.date);
+      if (!germinationDate) return "";
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const days = Math.max(0, Math.floor((today - germinationDate) / 86400000));
+      return `${days} ${days === 1 ? "dag" : "dagar"} sedan grodd`;
+    }
+
+    function stapeliadMilestoneSummary(logs) {
+      const latest = latestPlantMilestone(logs);
+      if (!latest) return "";
+      const age = daysSinceGermination(logs);
+      return `
+        <div class="milestone">
+          <div class="milestone-label">Senaste milstolpe</div>
+          <div class="milestone-value"><span>${escapeHtml(milestoneIcon(latest.type))}</span><strong>${escapeHtml(latest.type)}</strong><span>${escapeHtml(latest.date)}</span>${age ? `<span class="stapeliad-milestone-age">${escapeHtml(age)}</span>` : ""}</div>
+        </div>
+      `;
     }
     function showMobileView(name) {
       if (name !== "Hundöron" && data[name]) lastCatalogCategory = name;
@@ -391,7 +464,9 @@ p-gibbosum-anethifolium,2026-09-09,Omplanterad,</script>
       const photos = row.photos || [];
       const identity = categoryName === "Stapeliader"
         ? (clean(row.full_botanical_name) || clean(row.short_name) || clean(row.id))
-        : (clean(row[section.titleKey]) || clean(row.id));
+        : (categoryName === "Pelargon" && row.sow_batch_id && clean(row.name) === "Pelargonfröplanta"
+          ? (clean(row.label_number) || clean(row.id))
+          : (clean(row[section.titleKey]) || clean(row.id)));
       const nickname = clean(row.nickname);
       const title = identity || nickname;
       const displayLabel = nickname ? `${identity} · ${nickname}` : identity;
@@ -418,10 +493,20 @@ p-gibbosum-anethifolium,2026-09-09,Omplanterad,</script>
       const collectionName = ["Pelargon", "Citrus"].includes(categoryName) && row.collection_id
         ? clean(section.rows.find(item => item.id === row.collection_id)?.name)
         : "";
-      const recordInfo = categoryName === "Stapeliader"
+      let recordInfo = categoryName === "Stapeliader"
         ? stapeliadCardInfo(row)
         : ["Pelargon", "Citrus"].includes(categoryName) ? collectionRecordInfoHtml(row, collectionName) : "";
-      const parentCross = categoryName === "Hibiskus" ? hibiscusCrossLabel(row) : "";
+      const sowBatch = categoryName === "Pelargon" ? (window.publicCatalogSnapshot?.crossings?.sowBatches || []).find(batch => batch.sow_batch_id === row.sow_batch_id) : null;
+      const seedLot = sowBatch ? (window.publicCatalogSnapshot?.crossings?.seedLots || []).find(lot => lot.seed_lot_id === sowBatch.seed_lot_id) : null;
+      const crossing = seedLot ? (window.publicCatalogSnapshot?.crossings?.items || []).find(item => item.crossing_id === seedLot.crossing_id) : null;
+      if (sowBatch && seedLot && crossing) {
+        const pelargons = window.publicCatalogSnapshot?.categories?.Pelargon?.plants || [];
+        const mother = pelargons.find(plant => plant.id === crossing.mother_id);
+        const father = pelargons.find(plant => plant.id === crossing.father_id);
+        const lineage = `${seedLot.seed_lot_code}-${sowBatch.sow_code}-${String(row.batch_individual_number).padStart(2, "0")}`;
+        recordInfo += `<dl><dt>Korsning</dt><dd>${escapeHtml(`${mother?.name || crossing.mother_id} × ${father?.name || crossing.father_id}`)}</dd><dt>Moder</dt><dd>${escapeHtml(`${mother?.name || crossing.mother_id} · ${mother?.label_number || crossing.mother_id}`)}</dd><dt>Pollen</dt><dd>${escapeHtml(`${father?.name || crossing.father_id} · ${father?.label_number || crossing.father_id}`)}</dd><dt>Batch</dt><dd>${escapeHtml(`${seedLot.seed_lot_code}-${sowBatch.sow_code}`)}</dd><dt>Sådatum</dt><dd>${escapeHtml(sowBatch.sown_date)}</dd><dt>Härkomst</dt><dd>${escapeHtml(lineage)}</dd></dl>`;
+      }
+      const parentCross = categoryName === "Hibiskus" ? hibiscusCrossLabel(row) : (crossing ? `${crossing.mother_id} × ${crossing.father_id}` : "");
       const parentReferences = categoryName === "Hibiskus" ? hibiscusParentReferenceItems(row) : [];
       return `<article class="card plant-card" data-category="${escapeHtml(categoryName)}" data-record-kind="${escapeHtml(row.record_kind)}" data-status="${escapeHtml(row.status)}" data-plant-id="${escapeHtml(row.id)}" data-plant-name="${escapeHtml(title)}" data-plant-identity="${escapeHtml(identity)}" data-plant-nickname="${escapeHtml(nickname)}" data-parent-cross="${escapeHtml(parentCross)}" data-parent-references="${escapeHtml(JSON.stringify(parentReferences))}" data-card-image="${escapeHtml(row.card_image)}" data-card-crop-x="${escapeHtml(row.card_crop_x)}" data-card-crop-y="${escapeHtml(row.card_crop_y)}" data-card-image-updated-at="${escapeHtml(row.card_image_updated_at)}" data-cuttings-available="${escapeHtml(row.cuttings_available)}" data-cuttings-updated-at="${escapeHtml(row.cuttings_updated_at)}" data-page="${escapeHtml(pageForCategory(categoryName))}" data-gallery="${escapeHtml(JSON.stringify(gallery))}" data-milestones="${escapeHtml(JSON.stringify(logs))}">
         ${image}
@@ -436,7 +521,7 @@ p-gibbosum-anethifolium,2026-09-09,Omplanterad,</script>
           </div>
           <div class="plant-card-chip-slot"><div class="chips">${chips}</div></div>
           <div class="plant-card-info">${recordInfo}</div>
-          <div class="plant-card-milestone-slot">${milestoneSummary(latestMilestone)}</div>
+          <div class="plant-card-milestone-slot">${categoryName === "Stapeliader" ? stapeliadMilestoneSummary(logs) : milestoneSummary(latestMilestone)}</div>
           <div class="plant-card-notes-slot">${cardNote}</div>
         </div>
       </article>`;
@@ -534,7 +619,7 @@ p-gibbosum-anethifolium,2026-09-09,Omplanterad,</script>
     tabs.addEventListener('click', event => {
       const button = event.target.closest('.tab');
       if (button && button.dataset.name === "Galleri") {
-        window.location.href = "galleri.html?v=2026-09-09-synk-1246";
+        window.location.href = "galleri.html?v=2026-09-12-synk-1622";
         return;
       }
       if (button && button.dataset.name === "Växtliv") {
