@@ -224,7 +224,7 @@ STA-033,2026-09-12,Grodd,</script>
     const mobileHeading = document.querySelector('#mobileHeading');
     const legacyMigration = document.querySelector('#legacyMigration');
     const legacyMigrationLink = document.querySelector('#legacyMigrationLink');
-    const MOBILE_APP_VERSION = "2026-09-12-korsningar-1813";
+    const MOBILE_APP_VERSION = "2026-09-12-korsningar-1814";
     const MOBILE_CATALOG_CACHE_KEY = "mina-vaxter-mobile-catalog-v1";
     const initialParams = new URLSearchParams(window.location.search);
     const requestedCategory = initialParams.get('kategori');
@@ -333,10 +333,11 @@ STA-033,2026-09-12,Grodd,</script>
       url.searchParams.set('uppdaterad', Date.now().toString());
       preserveMobileView(url);
       try {
-        if (navigator.serviceWorker?.controller) {
-          await navigator.serviceWorker.ready;
-          await navigator.serviceWorker.getRegistration()?.update();
-        }
+        const registrations = await navigator.serviceWorker?.getRegistrations?.() || [];
+        await Promise.all(registrations.map(registration => registration.unregister()));
+        const cacheNames = await caches?.keys?.() || [];
+        await Promise.all(cacheNames.map(name => caches.delete(name)));
+        localStorage.removeItem(MOBILE_CATALOG_CACHE_KEY);
         await fetch(`version.json?force=${Date.now()}`, {cache: 'no-store'});
       } catch (error) {}
       window.location.assign(url.toString());
