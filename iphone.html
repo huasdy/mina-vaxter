@@ -224,7 +224,7 @@ STA-033,2026-09-12,Grodd,</script>
     const mobileHeading = document.querySelector('#mobileHeading');
     const legacyMigration = document.querySelector('#legacyMigration');
     const legacyMigrationLink = document.querySelector('#legacyMigrationLink');
-    const MOBILE_APP_VERSION = "2026-09-12-korsningar-1811";
+    const MOBILE_APP_VERSION = "2026-09-12-korsningar-1812";
     const MOBILE_CATALOG_CACHE_KEY = "mina-vaxter-mobile-catalog-v1";
     const initialParams = new URLSearchParams(window.location.search);
     const requestedCategory = initialParams.get('kategori');
@@ -317,13 +317,21 @@ STA-033,2026-09-12,Grodd,</script>
         const url = new URL(window.location.href);
         url.searchParams.set('v', remote.version);
         url.searchParams.set('uppdaterad', Date.now().toString());
+        preserveMobileView(url);
         window.location.replace(url.toString());
       } catch (error) {}
+    }
+    function preserveMobileView(url) {
+      if (active === "Korsningar") url.searchParams.set("vy", "korsningar");
+      else if (active === "Hundöron") url.searchParams.set("vy", "hundoron");
+      else if (active === "Sticklingar") url.searchParams.set("vy", "sticklingar");
+      else if (data[active]) url.searchParams.set("kategori", active);
     }
     function forceMobileRefresh() {
       const url = new URL(window.location.href);
       url.searchParams.set('v', MOBILE_APP_VERSION);
       url.searchParams.set('uppdaterad', Date.now().toString());
+      preserveMobileView(url);
       window.location.replace(url.toString());
     }
     function pageForCategory(category) {
@@ -765,7 +773,7 @@ STA-033,2026-09-12,Grodd,</script>
         data = await loadPublicCatalog();
         window.stapeliadDetailPanelHtml = mobileStapeliadDetailPanel;
         const initialCategory = requestedCategory && data[requestedCategory] ? requestedCategory : 'Hibiskus';
-        active = initialParams.get('vy') === 'hundoron' ? 'Hundöron' : (initialParams.get('vy') === 'sticklingar' ? 'Sticklingar' : initialCategory);
+        active = initialParams.get('vy') === 'korsningar' ? 'Korsningar' : (initialParams.get('vy') === 'hundoron' ? 'Hundöron' : (initialParams.get('vy') === 'sticklingar' ? 'Sticklingar' : initialCategory));
         lastCatalogCategory = initialCategory;
         catalogReady = true;
         mobileViewToggle.hidden = false;
