@@ -34,6 +34,7 @@
     .card-body { display:flex; flex:1; flex-direction:column; gap:10px; padding:16px 18px 18px; }
     .plant-card-head { display:flex; justify-content:space-between; gap:10px; align-items:start; }
     .plant-title-block { min-width:0; }
+    .stapeliad-material-identity { margin-top:2px; color:var(--accent); font-size:.82rem; font-weight:800; line-height:18px; }
     h2 { margin:0; font-family:Georgia,"Times New Roman",serif; font-size:1.55rem; font-weight:650; line-height:1.08; }
     .plant-id { margin-top:5px; color:var(--muted); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.82rem; font-weight:800; letter-spacing:.07em; }
     .import-actions { display:flex; flex:none; gap:7px; }
@@ -154,7 +155,8 @@
 
     function seedLotSection(seedLots) {
       return detailSection("Fröpartier", (seedLots || []).map(lot => {
-        const details = [lot.ordernummer && `Order ${lot.ordernummer}`, lot.mängd, lot.status].filter(Boolean).join(" · ");
+        const price = lot.inköpspris ? `${lot.inköpspris} ${lot.valuta || ""}`.trim() : "";
+        const details = [lot.ordernummer && `Order ${lot.ordernummer}`, lot.mängd, price, lot.förvärvstyp, lot.status].filter(Boolean).join(" · ");
         return field(lot.leverantör || "Fröparti", details);
       }));
     }
@@ -169,7 +171,7 @@
     }
 
     function detailEditForm(row) {
-      const acquisitionTypes = ["", "Frö", "Stickling", "Levande planta"].map(value => ({value, label: value || "Välj typ"}));
+      const acquisitionTypes = ["", "Frö", "Stickling", "Levande planta", "Gåva"].map(value => ({value, label: value || "Välj typ"}));
       const scentStrength = ["", "0", "1", "2", "3", "4", "5"].map(value => ({value, label: value || "Ej angivet"}));
       const veto = [{value:"nej", label:"Nej"}, {value:"ja", label:"Ja — ☠️ Näsan har lagt in sitt veto."}];
       return `<form class="stapeliad-edit-form" data-stapeliad-edit-form>
@@ -212,7 +214,7 @@
       return `
         <section class="plant-panel-section stapeliad-panel" data-stapeliad-detail-root aria-label="Stapeliaddata">
           ${detailSection("Botanisk identitet", [field("Fullständigt botaniskt namn", row.full_botanical_name), field("Etikettnamn", row.short_name), field("Växt-ID", row.id), field("Släkte", row.genus), field("Art", row.species), field("Underart/varietet/form", row.infraspecific_taxon), field("Inköpsnamn från leverantören", row.supplier_purchase_name), field("Accession/fältnummer", row.accession_field_number), field("Proveniens/lokalitet", row.provenance_location), field("Accepterat namn/synonym", row.accepted_name_or_synonym)]) }
-          ${detailSection("Förvärv och odling", [field("Leverantör", row.supplier), field("Ordernummer", row.order_number), field("Typ", row.acquisition_type), field("Mängd", row.package_quantity), field("Inköpsdatum", row.purchase_date), field("Ankomstdatum", row.arrival_date), field("Sådatum", row.sown_date), field("Grodddatum", row.germination_date), field("Status", row.status)])}
+          ${detailSection("Förvärv och odling", [field("Leverantör", row.supplier), field("Ordernummer", row.order_number), field("Typ", row.acquisition_type), field("Inköpspris", row.purchase_price ? `${row.purchase_price} ${row.purchase_currency || ""}`.trim() : ""), field("Inköpsantal", row.purchase_quantity), field("Ursprungligt fröantal", row.original_seed_count), field("Mängd", row.package_quantity), field("Inköpsdatum", row.purchase_date), field("Ankomstdatum", row.arrival_date), field("Sådatum", row.sown_date), field("Grodddatum", row.germination_date), field("Status", row.status)])}
           ${seedLotSection(row.seed_lots)}
           ${detailSection("Blomdoft", [field("Förväntad doft", row.expected_scent), field("Egen doftobservation", row.own_scent_observation), field("Doftstyrka", clean(row.scent_strength) ? `${row.scent_strength}/5` : ""), field("Doftbeskrivning", row.scent_description), field("Doftavstånd", row.scent_distance), field("☠️-flagga", veto ? "Ja" : "")], veto ? '<p class="scent-veto">☠️ Näsan har lagt in sitt veto.</p>' : "")}
           ${detailSection("Anteckningar", [field("Anteckningar", row.notes)])}
@@ -264,6 +266,19 @@
       ].filter(([value]) => value).map(([value, label, role]) =>
         `<span class="stapeliad-info-line stapeliad-info-line--${role}" aria-label="${escapeAttr(label)}">${escapeText(value)}</span>`
       ).join("");
+    }
+
+    function stapeliadMaterialIdentity(plant) {
+      const shortName = clean(plant.short_name);
+      const fullName = clean(plant.full_botanical_name);
+      const suffix = shortName.includes(" — ") ? shortName.split(" — ").slice(1).join(" — ") : "";
+      const material = suffix && suffix !== fullName && suffix !== clean(plant.accession_field_number)
+        ? suffix : clean(plant.accession_field_number);
+      if (!material) return "";
+      const provenance = clean(plant.provenance_location);
+      const compactProvenance = provenance && !material.toLocaleLowerCase("sv").includes(provenance.toLocaleLowerCase("sv")) && material !== clean(plant.accession_field_number)
+        ? ` · ${provenance.split(" · ").slice(-1)[0] === provenance ? provenance : provenance}` : "";
+      return `${material}${compactProvenance}`;
     }
 
     function localDate(value) {
@@ -318,7 +333,7 @@
           </div>
           <div class="card-body">
             <div class="plant-card-head">
-              <div class="plant-title-block"><h2>${escapeText(plant.full_botanical_name || plant.short_name || plant.id)}</h2></div>
+              <div class="plant-title-block"><h2>${escapeText(plant.full_botanical_name || plant.short_name || plant.id)}</h2>${stapeliadMaterialIdentity(plant) ? `<div class="stapeliad-material-identity">${escapeText(stapeliadMaterialIdentity(plant))}</div>` : ""}</div>
               <div class="import-actions"><button class="plant-log-btn" type="button" aria-label="Visa stapeliaddata och historik" title="Detaljer och historik">${logBookIcon()}</button><button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button><span class="import-badge" data-import-badge hidden></span></div>
             </div>
             <div class="plant-card-chip-slot"><div class="chips">${materialType ? `<span class="chip" data-material-chip>${escapeText(materialType)}</span>` : ""}</div></div>
