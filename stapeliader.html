@@ -70,6 +70,17 @@
     .empty { grid-column:1 / -1; border:1px dashed var(--line); border-radius:20px; padding:34px; background:rgba(255,253,248,.7); color:var(--muted); text-align:center; font-weight:750; }
     .stapeliad-panel { display:grid; gap:16px; }
     .stapeliad-panel h3 { margin:0 0 7px; color:var(--accent); font-size:.78rem; font-weight:850; letter-spacing:.09em; text-transform:uppercase; }
+    .stapelia-rarity { border-top:1px solid var(--line); padding-top:14px; }
+    .stapelia-rarity-toggle { display:flex; width:100%; align-items:baseline; justify-content:space-between; gap:12px; border:0; padding:0; background:none; color:var(--ink); text-align:left; font:inherit; cursor:pointer; }
+    .stapelia-rarity-toggle:hover { color:var(--accent); }
+    .stapelia-rarity-summary { font-weight:850; }
+    .stapelia-rarity-summary-stars { letter-spacing:.08em; white-space:nowrap; }
+    .stapelia-rarity-details { display:grid; gap:11px; margin-top:12px; }
+    .stapelia-rarity-factor { padding:10px 12px; border-radius:13px; background:rgba(125,79,59,.07); }
+    .stapelia-rarity-factor strong { display:block; }
+    .stapelia-rarity-reason { margin:4px 0 0; color:var(--muted); overflow-wrap:anywhere; }
+    .stapelia-rarity-meta { color:var(--muted); font-size:.84rem; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
     .stapeliad-facts { display:grid; grid-template-columns:minmax(0,auto) minmax(0,1fr); gap:6px 12px; margin:0; font-size:.91rem; }
     .stapeliad-facts dt { color:var(--muted); font-weight:800; }
     .stapeliad-facts dd { margin:0; overflow-wrap:anywhere; }
@@ -161,6 +172,38 @@
       }));
     }
 
+    function latestStapeliaRarity(assessments, plantId) {
+      return (assessments || []).filter(item => clean(item.plant_id) === plantId)
+        .sort((a, b) => sortNatural(`${a.assessed_date} ${a.assessment_id}`, `${b.assessed_date} ${b.assessment_id}`)).at(-1) || null;
+    }
+
+    function rarityStars(stars) {
+      const count = Math.max(0, Math.min(5, Number(stars) || 0));
+      return `${"★".repeat(count)}${"☆".repeat(5 - count)}`;
+    }
+
+    function rarityNumber(value) {
+      return Number(value).toFixed(2).replace(".", ",");
+    }
+
+    function rarityPercent(value) {
+      return Number(value * 100).toFixed(0);
+    }
+
+    function raritySection(rarity, plantId) {
+      if (!rarity) return "";
+      const controlId = `stapelia-rarity-${plantId}`;
+      const stars = rarityStars(rarity.stars);
+      const starCount = Number(rarity.stars) || 0;
+      const preliminary = clean(rarity.preliminary).toLowerCase() === "true";
+      const preliminaryText = preliminary ? " · Preliminär" : "";
+      const factors = [
+        ["Odlingssällsynthet", "cultivation"], ["Proveniens/accession", "provenance"],
+        ["Naturlig/geografisk sällsynthet", "natural"], ["Taxonomiskt/samlarhistoriskt intresse", "taxonomic"],
+      ].map(([label, key]) => `<div class="stapelia-rarity-factor"><strong>${escapeText(label)}: ${escapeText(rarity[`${key}_score`])}/5 · ${escapeText(rarityPercent(Number(rarity[`${key}_weight`] || 0)))} % → ${escapeText(rarityNumber(Number(rarity[`${key}_score`]) * Number(rarity[`${key}_weight`])))} </strong><p class="stapelia-rarity-reason">${escapeText(rarity[`${key}_reason`])}</p></div>`).join("");
+      return `<section class="stapelia-rarity" aria-labelledby="${escapeAttr(controlId)}-heading"><button type="button" class="stapelia-rarity-toggle" id="${escapeAttr(controlId)}-heading" aria-expanded="false" aria-controls="${escapeAttr(controlId)}"><span class="stapelia-rarity-summary"><span class="stapelia-rarity-summary-stars" aria-hidden="true">${stars}</span> ${escapeText(rarity.label)} · ${escapeText(rarityNumber(rarity.weighted_total))}/5${escapeText(preliminaryText)}</span><span aria-hidden="true">⌄</span><span class="sr-only">Samlarraritet: ${starCount} av fem stjärnor, ${escapeText(rarity.label)}${preliminary ? ", preliminär" : ""}</span></button><div class="stapelia-rarity-details" id="${escapeAttr(controlId)}" hidden>${factors}<div class="stapelia-rarity-meta">${escapeText(rarity.standard_name)} v${escapeText(rarity.standard_version)} · Bedömd ${escapeText(rarity.assessed_date)}</div></div></section>`;
+    }
+
     function editField(label, key, value, type = "text", wide = false, options = []) {
       const control = type === "textarea"
         ? `<textarea data-stapeliad-field="${escapeAttr(key)}">${escapeText(value)}</textarea>`
@@ -217,6 +260,7 @@
           ${detailSection("Förvärv och odling", [field("Leverantör", row.supplier), field("Ordernummer", row.order_number), field("Typ", row.acquisition_type), field("Inköpspris", row.purchase_price ? `${row.purchase_price} ${row.purchase_currency || ""}`.trim() : ""), field("Inköpsantal", row.purchase_quantity), field("Ursprungligt fröantal", row.original_seed_count), field("Mängd", row.package_quantity), field("Inköpsdatum", row.purchase_date), field("Ankomstdatum", row.arrival_date), field("Sådatum", row.sown_date), field("Grodddatum", row.germination_date), field("Status", row.status)])}
           ${seedLotSection(row.seed_lots)}
           ${detailSection("Blomdoft", [field("Förväntad doft", row.expected_scent), field("Egen doftobservation", row.own_scent_observation), field("Doftstyrka", clean(row.scent_strength) ? `${row.scent_strength}/5` : ""), field("Doftbeskrivning", row.scent_description), field("Doftavstånd", row.scent_distance), field("☠️-flagga", veto ? "Ja" : "")], veto ? '<p class="scent-veto">☠️ Näsan har lagt in sitt veto.</p>' : "")}
+          ${raritySection(row.rarity, row.id)}
           ${detailSection("Anteckningar", [field("Anteckningar", row.notes)])}
           <div class="stapeliad-edit-actions"><button class="stapeliad-edit-btn" type="button" data-stapeliad-edit>Redigera</button></div>
         </section>`;
@@ -224,6 +268,11 @@
 
     function combinedRows(snapshot) {
       const section = snapshot.categories.Stapeliader;
+      const rarityByPlant = new Map();
+      (section.stapeliaRarity || []).forEach(item => {
+        const current = rarityByPlant.get(item.plant_id);
+        if (!current || sortNatural(`${current.assessed_date} ${current.assessment_id}`, `${item.assessed_date} ${item.assessment_id}`) < 0) rarityByPlant.set(item.plant_id, item);
+      });
       const photosByPlant = new Map();
       (section.photos || []).forEach(photo => {
         if (!photosByPlant.has(photo.plant_id)) photosByPlant.set(photo.plant_id, []);
@@ -239,7 +288,8 @@
         ...row,
         photos: (photosByPlant.get(row.id) || []).sort((a, b) => sortNatural(`${a.date} ${a.type}`, `${b.date} ${b.type}`)),
         logs: logsByPlant.get(row.id) || [],
-        seed_lots: seedLotsByPlant.get(row.id) || []
+        seed_lots: seedLotsByPlant.get(row.id) || [],
+        rarity: rarityByPlant.get(row.id) || null
       }));
     }
 
@@ -434,6 +484,14 @@
             bind();
           };
           const bind = () => {
+            dialog.querySelector(".stapelia-rarity-toggle")?.addEventListener("click", event => {
+              const button = event.currentTarget;
+              const details = dialog.querySelector(`#${button.getAttribute("aria-controls")}`);
+              if (!details) return;
+              const expanded = button.getAttribute("aria-expanded") === "true";
+              button.setAttribute("aria-expanded", expanded ? "false" : "true");
+              details.hidden = expanded;
+            }, {once:true});
             dialog.querySelector("[data-stapeliad-edit]")?.addEventListener("click", () => show(true), {once:true});
             dialog.querySelector("[data-stapeliad-cancel]")?.addEventListener("click", () => show(false), {once:true});
             dialog.querySelector("[data-stapeliad-edit-form]")?.addEventListener("submit", async event => {
