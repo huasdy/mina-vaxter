@@ -4,17 +4,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Korsningar · Mina Växter</title>
-  <script>
-    (() => {
-      const standalone = window.navigator.standalone === true || window.matchMedia?.("(display-mode: standalone)").matches;
-      if (window.innerWidth <= 700 || standalone) {
-        const mobileUrl = new URL("iphone.html", window.location.href);
-        mobileUrl.searchParams.set("vy", "korsningar");
-        mobileUrl.searchParams.set("v", "2026-09-12-korsningar-1815");
-        window.location.replace(mobileUrl.toString());
-      }
-    })();
-  </script>
   <style>
     :root { --bg:#f5f1ea; --paper:#fffdf8; --ink:#2b251f; --muted:#6f655b; --line:#ded2c2; --accent:#7d4f3b; --chip:#efe6da; --shadow:0 14px 40px rgba(62,43,28,.12); --radius:22px; }
     * { box-sizing:border-box; }
@@ -25,11 +14,16 @@
     nav a.current { color:var(--ink); }
     main { max-width:1060px; margin:0 auto; padding:0 18px 72px; }
     .eyebrow { color:var(--accent); letter-spacing:.18em; text-transform:uppercase; font-size:.78rem; font-weight:800; }
+    .title-row { max-width:1060px; margin:0 auto; display:flex; align-items:flex-end; justify-content:space-between; gap:20px; text-align:left; }
+    .title-copy { min-width:0; }
     h1 { margin:8px 0; font-family:Georgia,"Times New Roman",serif; font-size:clamp(2.7rem,8vw,5.5rem); line-height:.92; font-weight:500; }
     .subtitle { max-width:650px; margin:0 auto; color:var(--muted); font-size:1.05rem; }
-    .new-crossing, .crossing-card { background:rgba(255,253,248,.88); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); }
-    .new-crossing { margin-bottom:24px; overflow:hidden; }
+    .header-action { flex:0 0 auto; width:auto; padding:11px 16px; border-radius:999px; white-space:nowrap; }
+    .new-crossing, .crossing-card, .detail-panel { background:rgba(255,253,248,.88); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); }
+    .new-crossing { max-width:1060px; margin:18px auto 0; overflow:hidden; background:transparent; border:0; box-shadow:none; }
+    .new-crossing > details[open] { background:rgba(255,253,248,.88); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); }
     .new-crossing > details { padding:18px; }
+    .new-crossing > details > summary { display:none; }
     .new-crossing > details > summary { color:var(--ink); font-family:Georgia,"Times New Roman",serif; font-size:1.55rem; letter-spacing:0; text-transform:none; }
     .crossing-card h2 { margin:0; font-family:Georgia,"Times New Roman",serif; font-size:1.16rem; font-weight:500; line-height:1.24; }
     .new-crossing p, .crossing-card p { color:var(--muted); }
@@ -48,10 +42,16 @@
     .notice { min-height:1.3em; margin:10px 0 0; color:var(--muted); font-weight:700; }
     .notice.success { color:#435943; }
     .notice.error { color:#8a4a3c; }
-    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); align-items:start; gap:18px; min-width:0; }
-    .crossing-card { padding:15px; display:grid; gap:10px; }
+    .overview-heading, .detail-heading { display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin:0 0 12px; }
+    .overview-heading h2, .detail-heading h2 { margin:0; font-family:Georgia,"Times New Roman",serif; font-size:1.45rem; font-weight:500; }
+    .overview-heading span, .detail-heading span { color:var(--muted); font-size:.85rem; font-weight:750; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); align-items:stretch; gap:12px; min-width:0; }
+    .crossing-card { width:100%; padding:14px; display:grid; align-content:start; gap:8px; text-align:left; color:var(--ink); cursor:pointer; }
+    .crossing-card:hover { border-color:rgba(125,79,59,.55); }
+    .crossing-card.is-selected { border-color:var(--accent); background:var(--paper); box-shadow:0 0 0 2px rgba(125,79,59,.14),var(--shadow); }
     .crossing-card.is-active-sowing { border-color:#6f936f; box-shadow:0 0 0 2px rgba(96,119,97,.16), var(--shadow); }
-    .new-crossing, .crossing-card, .crossing-head, .crossing-details, .details-content, .event-form, .offspring-form, .dialog-panel { min-width:0; max-width:100%; }
+    .crossing-card.is-active-sowing.is-selected { border-color:#6f936f; }
+    .new-crossing, .crossing-card, .crossing-head, .crossing-details, .details-content, .event-form, .offspring-form, .dialog-panel, .detail-panel { min-width:0; max-width:100%; }
     .crossing-head h2 { min-width:0; display:grid; gap:2px; overflow-wrap:anywhere; }
     .crossing-parent-pair { display:grid; grid-template-columns:auto minmax(0,1fr); align-items:baseline; gap:7px; }
     .crossing-parent-pair .cross-symbol { font-size:1.05em; }
@@ -81,18 +81,52 @@
     .crossing-details { position:relative; }
     .crossing-details > summary { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:2px 0; overflow-wrap:anywhere; color:var(--muted); font-size:.82rem; font-weight:600; letter-spacing:0; text-transform:none; }
     .crossing-details > summary .status { flex:0 0 auto; }
+    .detail-panel { margin-top:28px; padding:20px; }
+    .detail-panel.empty-detail { padding:28px; color:var(--muted); text-align:center; font-weight:750; }
+    .detail-panel .detail-heading { align-items:flex-start; border-bottom:1px solid var(--line); padding-bottom:14px; }
+    .detail-panel .detail-heading h2 { font-size:clamp(1.55rem,3vw,2.15rem); }
+    .detail-panel .detail-heading .status { margin-top:3px; }
+    .detail-content { display:grid; gap:22px; }
+    .detail-section { display:grid; gap:10px; }
+    .detail-section-title { color:var(--muted); font-size:.75rem; font-weight:900; letter-spacing:.1em; text-transform:uppercase; }
+    .detail-parents { display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:center; gap:16px; }
+    .detail-parent { min-width:0; display:grid; grid-template-columns:112px minmax(0,1fr); align-items:center; gap:12px; padding:10px; border:1px solid var(--line); border-radius:16px; background:rgba(255,255,255,.42); text-decoration:none; color:inherit; }
+    .detail-parent img, .detail-parent .parent-reference-placeholder { width:112px; height:92px; border-radius:11px; object-fit:cover; background:linear-gradient(135deg,rgba(125,79,59,.14),rgba(96,119,97,.13)); }
+    .detail-parent .parent-reference-copy { display:grid; gap:2px; min-width:0; }
+    .detail-parent .parent-reference-copy strong { font-size:1rem; }
+    .detail-parent .parent-reference-copy span { color:var(--muted); font-size:.82rem; font-weight:850; }
+    .detail-parent-cross { color:var(--accent); font-size:1.7rem; font-weight:900; }
+    .seed-lots { display:grid; gap:12px; }
+    .seed-lot { position:relative; display:grid; gap:12px; padding:15px; border:1px solid var(--line); border-radius:17px; background:rgba(255,255,255,.35); }
+    .seed-lot > summary { padding-right:190px; color:var(--ink); font-family:Georgia,"Times New Roman",serif; font-size:1.05rem; font-weight:800; letter-spacing:.08em; }
+    .seed-lot > summary::marker { color:var(--accent); }
+    .seed-lot-register { position:absolute; top:14px; right:14px; width:auto; padding:5px 9px; border-color:rgba(125,79,59,.25); font-size:.72rem; font-weight:750; opacity:.82; }
+    .seed-lot-register:hover { opacity:1; }
+    .seed-lot-body { display:grid; gap:12px; }
+    .seed-lot-head h3 { margin:0; font-family:Georgia,"Times New Roman",serif; font-size:1.05rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+    .seed-lot-head button { width:auto; padding:7px 11px; font-size:.78rem; }
+    .seed-lot-events { display:grid; grid-template-columns:repeat(3,minmax(150px,1fr)); gap:14px; margin:0; padding:0; list-style:none; color:var(--ink); font-size:.88rem; font-weight:850; }
+    .seed-lot-events li { position:relative; display:grid; gap:1px; min-width:0; }
+    .seed-lot-events li:not(:last-child)::after { content:"→"; position:absolute; right:-10px; top:0; color:var(--accent); font-size:1.1rem; }
+    .seed-lot-events li strong { line-height:1.25; }
+    .seed-lot-events li small { color:var(--muted); font-size:.76rem; font-weight:700; }
+    .seed-lot-harvest { color:var(--ink); font-weight:850; }
+    .sow-batches-content { display:grid; gap:12px; }
+    .sow-batch-list { display:grid; gap:8px; }
+    .sow-batch { display:grid; gap:6px; border:1px solid var(--line); border-radius:13px; padding:10px 12px; background:var(--paper); }
+    .sow-batch-head { display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
+    .sow-batch-head strong { color:var(--accent); font-size:1.05rem; }
+    .sow-batch-head small { color:var(--muted); font-weight:800; }
+    .sow-batch-meta { color:var(--muted); font-size:.86rem; font-weight:700; line-height:1.35; }
+    .sow-batch-row { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; }
+    .batch-actions { display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; flex:0 0 auto; }
+    .batch-actions button { width:auto; }
     .details-content { display:grid; gap:12px; padding-top:12px; }
     .events, .offspring-list { display:grid; gap:8px; margin-top:10px; }
     .event, .offspring { border:1px solid var(--line); border-radius:13px; padding:9px 10px; background:rgba(255,255,255,.42); }
     .event strong, .offspring strong { font-size:.9rem; }
     .event small, .offspring small { color:var(--muted); }
     .event p { margin:4px 0 0; font-size:.88rem; }
-    .sow-batches { display:grid; gap:8px; }
-    .sow-batch-list { display:grid; gap:8px; }
-    .sow-batch { display:grid; gap:7px; border:1px solid var(--line); border-radius:13px; padding:10px; background:rgba(255,255,255,.42); }
-    .sow-batch-head { display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
-    .sow-batch-head strong { color:var(--accent); }
-    .sow-batch-meta { color:var(--muted); font-size:.86rem; font-weight:700; }
     .card-actions { display:flex; gap:8px; flex-wrap:wrap; }
     .card-actions button, .card-actions a { width:auto; display:inline-flex; align-items:center; justify-content:center; padding:9px 12px; border:1px solid rgba(125,79,59,.35); border-radius:999px; background:var(--paper); color:var(--accent); text-decoration:none; font-weight:850; }
     .empty { grid-column:1 / -1; padding:24px; text-align:center; color:var(--muted); border:1px dashed var(--line); border-radius:18px; font-weight:750; }
@@ -104,7 +138,15 @@
     .dialog-head button { width:38px; height:38px; padding:0; background:transparent; color:var(--ink); border-color:var(--line); font-size:1.25rem; }
     .dialog-actions { display:flex; justify-content:flex-end; gap:8px; }
     .dialog-actions button { width:auto; }
-    @media (max-width:650px) { header { padding-top:28px; } .crossing-form { grid-template-columns:1fr; } .form-actions { grid-column:auto; } .parents { gap:5px; } .parent-reference-card { grid-template-rows:96px auto; } .parent-reference-card img, .parent-reference-placeholder { height:96px; } }
+    @media (max-width:650px) {
+      .seed-lot-events { display:grid; gap:7px; }
+      .seed-lot-events li { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:baseline; }
+      .seed-lot-events li:not(:last-child)::after { content:"→"; grid-column:2; grid-row:1; padding:0; }
+      .sow-batch-row { align-items:flex-start; flex-direction:column; gap:8px; }
+      .batch-actions { justify-content:flex-start; }
+    }
+    @media (max-width:650px) { header { padding:28px 14px 20px; } .title-row { display:block; } .header-action { margin-top:12px; width:100%; } main { padding-inline:12px; } .crossing-form { grid-template-columns:1fr; } .form-actions { grid-column:auto; } .parents { gap:5px; } .parent-reference-card { grid-template-rows:96px auto; } .parent-reference-card img, .parent-reference-placeholder { height:96px; } .detail-panel { padding:15px; } .detail-parents { grid-template-columns:1fr; gap:8px; } .detail-parent { grid-template-columns:88px minmax(0,1fr); } .detail-parent img, .detail-parent .parent-reference-placeholder { width:88px; height:74px; } .detail-parent-cross { justify-self:center; transform:rotate(90deg); } .seed-lot-head { align-items:flex-start; } .seed-lot-events { display:block; } .seed-lot-events li { display:inline; } .seed-lot-events li:not(:last-child)::after { padding:0 4px; } }
+    @media (max-width:650px) { .seed-lot > summary { padding-right:145px; } .seed-lot-register { top:12px; right:12px; padding:5px 7px; font-size:.68rem; } .seed-lot-events { grid-template-columns:1fr; gap:12px; } .seed-lot-events li { padding:0 0 11px; } .seed-lot-events li:not(:last-child)::after { content:"↓"; right:auto; left:0; top:auto; bottom:-5px; font-size:1rem; } .sow-batch-row { align-items:flex-start; flex-direction:column; gap:8px; } .batch-actions { justify-content:flex-start; } }
     @media (max-width:350px) { .grid { grid-template-columns:1fr; } }
   </style>
 </head>
@@ -122,41 +164,47 @@
       <a href="galleri.html">Galleri</a>
       <a href="verktyg.html">Verktyg</a>
     </nav>
-    <div class="eyebrow">Växtliv</div>
-    <h1>Korsningar</h1>
-    <p class="subtitle">Pollineringar, frösättning och avkommor med sin historik.</p>
-  </header>
+      <div class="title-row">
+        <div class="title-copy"><div class="eyebrow">Växtliv</div><h1>Korsningar</h1><p class="subtitle">Pollineringar, frösättning och avkommor med sin historik.</p></div>
+        <button id="openNewCrossing" class="header-action" type="button">Registrera ny korsning</button>
+      </div>
+      <section class="new-crossing" aria-labelledby="newCrossingTitle">
+        <details id="newCrossingDetails">
+          <summary id="newCrossingTitle">Registrera ny korsning</summary>
+          <p>Moderplantan kommer från kortet du öppnade. Välj pollenförälder och registrera första pollineringen.</p>
+          <form id="crossingForm" class="crossing-form">
+            <label>Kategori
+              <select name="category" required><option value="Pelargon">Pelargon</option><option value="Hibiskus">Hibiskus</option></select>
+            </label>
+            <label>Datum för pollinering
+              <span class="crossing-date-field"><input name="date" type="date" required></span>
+            </label>
+            <label>Moder / fröförälder
+              <select name="mother" required></select>
+            </label>
+            <label>Pollenförälder
+              <select name="father" required></select>
+            </label>
+            <label class="full">Kort anteckning, frivilligt
+              <textarea name="note" maxlength="240" placeholder="T.ex. blomma nummer två, kapsel märkt…"></textarea>
+            </label>
+            <div class="form-actions"><button type="submit">Spara pollinering</button></div>
+          </form>
+          <p id="notice" class="notice" role="status"></p>
+        </details>
+      </section>
+    </header>
   <main>
-    <section class="new-crossing" aria-labelledby="newCrossingTitle">
-      <details id="newCrossingDetails">
-        <summary id="newCrossingTitle">Registrera ny</summary>
-        <p>Moderplantan kommer från kortet du öppnade. Välj pollenförälder och registrera första pollineringen.</p>
-        <form id="crossingForm" class="crossing-form">
-          <label>Kategori
-            <select name="category" required><option value="Pelargon">Pelargon</option><option value="Hibiskus">Hibiskus</option></select>
-          </label>
-          <label>Datum för pollinering
-            <span class="crossing-date-field"><input name="date" type="date" required></span>
-          </label>
-          <label>Moder / fröförälder
-            <select name="mother" required></select>
-          </label>
-          <label>Pollenförälder
-            <select name="father" required></select>
-          </label>
-          <label class="full">Kort anteckning, frivilligt
-            <textarea name="note" maxlength="240" placeholder="T.ex. blomma nummer två, kapsel märkt…"></textarea>
-          </label>
-          <div class="form-actions"><button type="submit">Spara pollinering</button></div>
-        </form>
-        <p id="notice" class="notice" role="status"></p>
-      </details>
+    <section class="overview" aria-labelledby="overviewTitle">
+      <div class="overview-heading"><h2 id="overviewTitle">Översikt</h2><span id="overviewCount"></span></div>
+      <section id="grid" class="grid" aria-live="polite"></section>
     </section>
-    <section id="grid" class="grid" aria-live="polite"></section>
+    <section id="detailPanel" class="detail-panel empty-detail" aria-live="polite">Välj en korsning för att se detaljer.</section>
   </main>
   <dialog id="offspringDialog"></dialog>
   <dialog id="sowBatchDialog"></dialog>
-  <script src="common.js?v=crossing-sort-1811"></script>
+  <script src="common.js?v=76b35c8229e1"></script>
+  <script src="crossings-common.js"></script>
   <script>
     const PUBLIC_CATALOG_SCHEMA_VERSION = 2;
     const parameters = new URLSearchParams(window.location.search);
@@ -165,6 +213,9 @@
     const form = document.querySelector("#crossingForm");
     const newCrossingDetails = document.querySelector("#newCrossingDetails");
     const grid = document.querySelector("#grid");
+    const overviewCount = document.querySelector("#overviewCount");
+    const detailPanel = document.querySelector("#detailPanel");
+    const openNewCrossing = document.querySelector("#openNewCrossing");
     const notice = document.querySelector("#notice");
     const offspringDialog = document.querySelector("#offspringDialog");
     const sowBatchDialog = document.querySelector("#sowBatchDialog");
@@ -173,7 +224,7 @@
     if (requestedCategory && requestedMother) newCrossingDetails.open = true;
 
     function esc(value) {
-      return String(value || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+      return String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
     }
 
     function today() { return localDateString(); }
@@ -200,11 +251,6 @@
       return row.name || row.id;
     }
 
-    function plantVisibleId(category, id) {
-      const row = plant(category, id);
-      return category === "Pelargon" ? (row?.label_number || id || "—") : (row?.id || id || "—");
-    }
-
     function plantMainPhoto(category, id) {
       const row = plant(category, id);
       if (!row) return "";
@@ -215,12 +261,25 @@
         .at(-1)?.file || "";
     }
 
-    function parentReferenceHtml(crossing, role, id) {
+    function parentReferenceHtml(crossing, role, parentDisplay) {
+      const id = parentDisplay.id;
+      if (crossing.category === "Hibiskus" && typeof hibiscusParentReferenceItems === "function") {
+        const parent = hibiscusParentReferenceItems({
+          mother: role.includes("Moder") ? id : "",
+          father: role.includes("Pollen") ? id : ""
+        })[0] || {};
+        const primary = parent.name || (String(parent.reference || id).toLowerCase() === "okänd" ? "Okänd" : (parent.reference || id || "Okänd"));
+        const secondary = parent.name ? (parent.reference || "") : "";
+        const photo = parent.file || "";
+        return `<a class="parent-reference-card" href="${esc(pageFor(crossing.category))}#${esc(id)}">
+          ${photo ? `<img src="${esc(photo)}" alt="${esc(`${role} ${primary}`)}" loading="lazy">` : '<div class="parent-reference-placeholder">Ingen bild</div>'}
+          <span class="parent-reference-copy"><small>${esc(role)}</small><strong>${esc(primary)}</strong>${secondary ? `<span>${esc(secondary)}</span>` : ""}</span>
+        </a>`;
+      }
       const photo = plantMainPhoto(crossing.category, id);
-      const visibleId = plantVisibleId(crossing.category, id);
       return `<a class="parent-reference-card" href="${esc(pageFor(crossing.category))}#${esc(id)}">
-        ${photo ? `<img src="${esc(photo)}" alt="${esc(`${role} ${plantLabel(crossing.category, id)}`)}" loading="lazy">` : '<div class="parent-reference-placeholder">Ingen bild</div>'}
-        <span class="parent-reference-copy"><small>${esc(role)}</small><strong>${esc(plantLabel(crossing.category, id))}</strong><span>${esc(visibleId)}</span></span>
+        ${photo ? `<img src="${esc(photo)}" alt="${esc(`${role} ${parentDisplay.primary}`)}" loading="lazy">` : '<div class="parent-reference-placeholder">Ingen bild</div>'}
+        <span class="parent-reference-copy"><small>${esc(role)}</small><strong>${esc(parentDisplay.primary)}</strong>${parentDisplay.secondary ? `<span class="parent-reference-secondary">${esc(parentDisplay.secondary)}</span>` : ""}<span>${esc(parentDisplay.visibleId)}</span></span>
       </a>`;
     }
 
@@ -249,49 +308,10 @@
           sowBatchById.set(operation.sow_batch.sow_batch_id, {...existing, ...operation.sow_batch});
         }
       });
-      return {crossings:[...byId.values()], events, seedLots:[...seedLotById.values()], sowBatches:[...sowBatchById.values()]};
-    }
-
-    function eventsFor(crossingId) {
-      return localModel().events.filter(event => event.crossing_id === crossingId)
-        .sort((a, b) => String(b.date).localeCompare(String(a.date)) || String(b.created_at).localeCompare(String(a.created_at)));
-    }
-
-    function childrenFor(crossing) {
-      const category = crossing.category;
-      const batchIds = new Set(batchesForCrossing(crossing.crossing_id).map(batch => batch.sow_batch_id));
-      return (snapshot?.categories?.[category]?.plants || []).filter(row => row.crossing_id === crossing.crossing_id || batchIds.has(row.sow_batch_id));
-    }
-
-    function batchesForCrossing(crossingId) {
-      const model = localModel();
-      const seedLotIds = new Set(model.seedLots.filter(lot => lot.crossing_id === crossingId).map(lot => lot.seed_lot_id));
-      return model.sowBatches.filter(batch => seedLotIds.has(batch.seed_lot_id))
-        .sort((a, b) => sowBatchCode(a, model).localeCompare(sowBatchCode(b, model)));
-    }
-
-    function seedLotsForCrossing(crossingId) {
-      return localModel().seedLots.filter(lot => lot.crossing_id === crossingId)
-        .sort((a, b) => String(a.seed_lot_code).localeCompare(String(b.seed_lot_code)));
-    }
-
-    function eventsForSeedLot(seedLot, seedLots, events) {
-      const index = seedLots.findIndex(lot => lot.seed_lot_id === seedLot.seed_lot_id);
-      const nextLot = seedLots[index + 1];
-      return events.filter(event => {
-        if (seedLot.pollinated_date && String(event.date) < String(seedLot.pollinated_date)) return false;
-        if (nextLot?.pollinated_date && String(event.date) >= String(nextLot.pollinated_date)) return false;
-        return true;
+      return CrossingsCommon.createModel({
+        ...snapshot,
+        crossings:{items:[...byId.values()], events, seedLots:[...seedLotById.values()], sowBatches:[...sowBatchById.values()]}
       });
-    }
-
-    function childrenForBatch(batchId) {
-      return (snapshot?.categories?.Pelargon?.plants || []).filter(row => row.sow_batch_id === batchId);
-    }
-
-    function sowBatchCode(batch, model = localModel()) {
-      const seedLot = model.seedLots.find(lot => lot.seed_lot_id === batch.seed_lot_id);
-      return `${seedLot?.seed_lot_code || ""}-${batch.sow_code}`.replace(/^-/, "");
     }
 
     function crossingPrefix(motherId, fatherId) {
@@ -347,49 +367,63 @@
 
     function statusClass(status) { return status === "Avslutad" ? "ended" : "active"; }
 
-    function displayCrossingStatus(crossing, batches) {
-      return batches.length ? "Sådd" : crossing.status;
+    let selectedCrossingId = parameters.get("crossing") || window.location.hash.slice(1) || "";
+
+    function renderDetail(view, model) {
+      if (!view) {
+        detailPanel.className = "detail-panel empty-detail";
+        detailPanel.textContent = "Välj en korsning för att se detaljer.";
+        return;
+      }
+      const crossing = view.crossing;
+      const events = view.events;
+      const children = view.offspring;
+      const eventsHtml = events.length ? events.map(event => `<article class="event"><strong>${esc(displayDate(event.date))} · ${esc(event.type)}</strong>${event.note ? `<p>${esc(event.note)}</p>` : ""}</article>`).join("") : '<div class="event"><small>Ingen händelse ännu.</small></div>';
+      const batchHtml = batchView => {
+        const batch = batchView.batch;
+        const counts = batchView.counts;
+        return `<article class="sow-batch"><div class="sow-batch-head"><strong>${esc(batch.sow_code)}</strong><small>${esc(batchView.code)}</small></div><div class="sow-batch-row"><div class="sow-batch-meta">Sådd ${esc(displayDate(batch.sown_date))}<br>${esc(counts.seedsSown)} sådda · ${esc(counts.potCount)} ${counts.potCount === 1 ? "kruka" : "krukor"} · ${esc(counts.germinated)} grodda · ${esc(counts.offspring)} avkommor</div><div class="batch-actions"><button type="button" class="secondary" data-edit-sow-batch="${esc(batch.sow_batch_id)}">Uppdatera</button>${counts.germinated > 0 ? `<button type="button" class="secondary" data-create-offspring="${esc(batch.sow_batch_id)}">Skapa avkomma</button>` : ""}</div></div></article>`;
+      };
+      const parentHtml = (role, parent) => parentReferenceHtml(crossing, role, parent).replace('parent-reference-card', 'detail-parent');
+      const seedLotHtml = lotView => {
+        const eventRows = lotView.events.filter(event => event.type !== "Sådd").map(event => {
+          const eventLabel = event.type === "Frö utvecklas" ? "Frö utvecklades" : event.type;
+          return `<li><strong>${esc(eventLabel)}</strong><small>${esc(displayDate(event.date))}</small></li>`;
+        }).join("");
+        const latest = lotView.seedLot.seed_lot_id === view.seedLots.at(-1)?.seedLot.seed_lot_id;
+        const newBatchAction = model.canCreateSowBatch(lotView.seedLot)
+          ? `<button type="button" class="secondary seed-lot-register" data-create-sow-batch="${esc(crossing.crossing_id)}">+ Ny såbatch</button>`
+          : "";
+        return `<details class="seed-lot"${latest ? " open" : ""}><summary>FRÖOMGÅNG ${esc(lotView.seedLot.seed_lot_code)}</summary>${newBatchAction}<div class="seed-lot-body"><ul class="seed-lot-events">${eventRows || "<li>Inga händelser ännu.</li>"}</ul>${lotView.harvestedCount ? `<div class="seed-lot-harvest">${esc(lotView.harvestedCount)} frön skördade</div>` : ""}<div class="sow-batch-list">${lotView.batches.map(batchHtml).join("") || '<div class="event"><small>Inga såbatcher ännu.</small></div>'}</div></div></details>`;
+      };
+      const offspringHtml = children.length ? children.map(child => {
+        const display = model.offspringDisplay(child, crossing.category);
+        const labelUrl = `verktyg.html?label=${encodeURIComponent(`${crossing.category}|${child.id}`)}#etiketter`;
+        const plantUrl = `${pageFor(crossing.category)}#${encodeURIComponent(child.id)}`;
+        const secondary = [display.visibleId !== display.title ? display.visibleId : "", display.lineageCode, child.status || "Avkomma"].filter(Boolean).join(" · ");
+        return `<article class="offspring"><strong><a href="${esc(plantUrl)}">${esc(display.title)}</a></strong><br><small>${esc(secondary)}</small><div class="card-actions"><a href="${esc(labelUrl)}">Etikett</a></div></article>`;
+      }).join("") : '<div class="offspring"><small>Inga avkommor ännu.</small></div>';
+      detailPanel.className = "detail-panel";
+      const seedLotContent = crossing.category === "Pelargon"
+        ? (view.seedLots.map(seedLotHtml).join("") || `<div class="event"><small>Ingen fröomgång ännu.</small><button type="button" class="secondary" data-create-sow-batch="${esc(crossing.crossing_id)}">+ Ny såbatch</button></div>`)
+        : '<div class="event"><small>Fröomgångar registreras för pelargonkorsningar.</small></div>';
+      const hibiscusOffspringAction = crossing.category === "Hibiskus" && view.firstSownDate
+        ? `<div class="card-actions"><button type="button" class="secondary" data-create-hibiscus-offspring="${esc(crossing.crossing_id)}">Registrera grodd planta</button></div>`
+        : "";
+      detailPanel.innerHTML = `<div class="detail-heading"><div><div class="detail-section-title">Vald korsning · ${esc(crossing.category)}</div><h2>${esc(view.parentName)}</h2></div><span class="status ${statusClass(view.displayStatus)}">${esc(view.displayStatus)}</span></div><div class="detail-content"><section class="detail-section"><div class="detail-section-title">Föräldrar</div><div class="detail-parents">${parentHtml("♀ Moder", view.mother)}<div class="detail-parent-cross">×</div>${parentHtml("♂ Pollen", view.father)}</div></section><section class="detail-section"><div class="detail-section-title">Fröomgångar</div><div class="seed-lots">${seedLotContent}</div></section><section class="detail-section"><details class="event-form-details"><summary>Ny händelse</summary><form class="event-form" data-event-form="${esc(crossing.crossing_id)}"><select name="type"><option>Pollinerad</option><option>Frö utvecklas</option><option>Frö skördat</option><option>Sådd</option><option>Avslutad</option></select><div class="crossing-date-field"><input name="date" type="date" value="${esc(today())}" required></div><textarea name="note" maxlength="240" placeholder="Kort anteckning, frivilligt"></textarea><button type="submit">Spara händelse</button></form></details></section><section class="detail-section"><details><summary>Historik · ${events.length}</summary><div class="events">${eventsHtml}</div></details><details><summary>Avkommor · ${children.length}</summary>${hibiscusOffspringAction}<div class="offspring-list">${offspringHtml}</div></details></section></div>`;
     }
 
     function render() {
       const model = localModel();
-      const cards = sortCrossingOverviewRows(model.crossings.map(crossing => ({...crossing, displayStatus: displayCrossingStatus(crossing, batchesForCrossing(crossing.crossing_id)), latestDate: eventsFor(crossing.crossing_id)[0]?.date})))
-        .map(crossing => {
-          const events = eventsFor(crossing.crossing_id);
-          const batches = batchesForCrossing(crossing.crossing_id);
-          const displayStatus = displayCrossingStatus(crossing, batches);
-          const children = childrenFor(crossing);
-          const suffix = `${crossing.hibiscus_batch || "—"}-${crossing.hibiscus_cross_code || "—"}`;
-          const eventsHtml = events.length ? events.map(event => `<article class="event"><strong>${esc(displayDate(event.date))} · ${esc(event.type)}</strong>${event.note ? `<p>${esc(event.note)}</p>` : ""}</article>`).join("") : '<div class="event"><small>Ingen händelse ännu.</small></div>';
-          const parentReferences = `<section class="parent-references" aria-label="Föräldrareferenser"><div class="card-label">Föräldrareferenser</div><div class="parent-reference-grid">${parentReferenceHtml(crossing, "♀ Moder", crossing.mother_id)}${parentReferenceHtml(crossing, "♂ Pollen", crossing.father_id)}</div></section>`;
-          const batchHtml = batch => {
-            const batchChildren = childrenForBatch(batch.sow_batch_id);
-            const germinated = batch.germinated_count == null ? 0 : Number(batch.germinated_count);
-            return `<article class="sow-batch"><div class="sow-batch-head"><strong>${esc(batch.sow_code)}</strong><small>${esc(sowBatchCode(batch))}</small></div><div class="sow-batch-meta">Sådd: ${esc(displayDate(batch.sown_date))} · ${esc(batch.seeds_sown)} sådda · ${esc(batch.pot_count)} ${Number(batch.pot_count) === 1 ? "kruka" : "krukor"} · ${esc(germinated)} grodda · ${esc(batchChildren.length)} avkommor</div><div class="card-actions"><button type="button" class="secondary" data-create-offspring="${esc(batch.sow_batch_id)}">Skapa avkomma</button><button type="button" class="secondary" data-edit-sow-batch="${esc(batch.sow_batch_id)}">Uppdatera</button></div></article>`;
-          };
-          const seedLots = seedLotsForCrossing(crossing.crossing_id);
-          const sowBatchSection = crossing.category === "Pelargon" ? `<details class="sow-batches"><summary><span>Fröomgångar / Såbatcher</span><span>· ${seedLots.length}</span></summary><div class="sow-batches-content"><div class="sow-batch-head"><div class="card-label">Fröomgångar</div><button type="button" class="secondary" data-create-sow-batch="${esc(crossing.crossing_id)}">Registrera såbatch</button></div>${seedLots.length ? seedLots.map(seedLot => { const lotEvents = eventsForSeedLot(seedLot, seedLots, events); const lotBatches = batches.filter(batch => batch.seed_lot_id === seedLot.seed_lot_id); const harvested = lotEvents.find(event => event.type === "Frö skördat"); const harvestedCount = harvested?.note?.match(/\d+/)?.[0]; const eventRows = lotEvents.filter(event => event.type !== "Sådd").map(event => `<li>${esc(event.type)}: ${esc(displayDate(event.date))}</li>`).join(""); return `<section class="seed-lot"><h3>Fröomgång ${esc(seedLot.seed_lot_code)}</h3><ul class="seed-lot-events">${eventRows || "<li>Inga händelser ännu.</li>"}</ul>${harvestedCount ? `<div class="sow-batch-meta">${esc(harvestedCount)} frön skördade</div>` : ""}<div class="sow-batch-list">${lotBatches.map(batchHtml).join("") || '<div class="event"><small>Inga såbatcher ännu.</small></div>'}</div></section>`; }).join("") : '<div class="event"><small>Ingen fröomgång ännu.</small></div>'}</div></details>` : "";
-          const offspringHtml = children.length ? children.map(child => {
-            const label = crossing.category === "Pelargon" ? (child.seedling_label || child.name || child.id) : child.id;
-            const labelUrl = `verktyg.html?label=${encodeURIComponent(`${crossing.category}|${child.id}`)}#etiketter`;
-            const plantUrl = `${pageFor(crossing.category)}#${encodeURIComponent(child.id)}`;
-            return `<article class="offspring"><strong><a href="${esc(plantUrl)}">${esc(label)}</a></strong><br><small>${esc([child.label_number, child.status || "Avkomma"].filter(Boolean).join(" · "))}</small><div class="card-actions"><a href="${esc(labelUrl)}">Etikett</a></div></article>`;
-          }).join("") : '<div class="offspring"><small>Inga avkommor ännu.</small></div>';
-          return `
-            <article class="crossing-card ${displayStatus === "Sådd" ? "is-active-sowing" : ""}" id="${esc(crossing.crossing_id)}" data-crossing-id="${esc(crossing.crossing_id)}">
-              <div class="crossing-head"><h2><span>${esc(plantLabel(crossing.category, crossing.mother_id))}</span><span class="crossing-parent-pair"><span class="cross-symbol">×</span><span>${esc(plantLabel(crossing.category, crossing.father_id))}</span></span></h2></div>
-              <details class="crossing-details"><summary><span>Detaljer ›</span><span class="status ${statusClass(displayStatus)}">${esc(displayStatus)}</span></summary><div class="details-content">
-                ${parentReferences}
-                <dl class="facts">${crossing.category === "Hibiskus" ? `<dt>Första pollinering</dt><dd>${esc(displayDate(events.filter(event => event.type === "Pollinerad").map(event => event.date).sort()[0] || "—"))}</dd><dt>Hibiskuskod</dt><dd>${esc(suffix)}</dd>` : ""}${crossing.note ? `<dt>Anteckning</dt><dd>${esc(crossing.note)}</dd>` : ""}${crossing.closed_note ? `<dt>Avslutning</dt><dd>${esc(crossing.closed_note)}</dd>` : ""}</dl>
-                <details class="event-form-details"><summary>Ny händelse</summary><form class="event-form" data-event-form="${esc(crossing.crossing_id)}"><select name="type"><option>Pollinerad</option><option>Frö utvecklas</option><option>Frö skördat</option><option>Sådd</option><option>Avslutad</option></select><div class="crossing-date-field"><input name="date" type="date" value="${esc(today())}" required></div><textarea name="note" maxlength="240" placeholder="Kort anteckning, frivilligt"></textarea><button type="submit">Spara händelse</button></form></details>
-                ${sowBatchSection}
-                ${crossing.category === "Hibiskus" ? `<div class="card-actions"><button type="button" class="secondary" data-create-hibiscus-offspring="${esc(crossing.crossing_id)}">Skapa avkomma</button></div>` : ""}
-                <details><summary>Historik · ${events.length}</summary><div class="events">${eventsHtml}</div></details>
-                <details><summary>Avkommor · ${children.length}</summary><div class="offspring-list">${offspringHtml}</div></details>
-              </div></details>
-            </article>`;
-        }).join("");
-      grid.innerHTML = cards || '<div class="empty">Inga korsningar registrerade ännu.</div>';
+      const rows = model.overviewRows();
+      const selected = rows.find(row => row.crossing.crossing_id === selectedCrossingId) || rows[0];
+      selectedCrossingId = selected?.crossing.crossing_id || "";
+      overviewCount.textContent = `${rows.length} ${rows.length === 1 ? "korsning" : "korsningar"}`;
+      grid.innerHTML = rows.map(view => {
+        const crossing = view.crossing;
+        return `<button type="button" class="crossing-card ${view.displayStatus === "Sådd" ? "is-active-sowing" : ""} ${crossing.crossing_id === selectedCrossingId ? "is-selected" : ""}" data-select-crossing="${esc(crossing.crossing_id)}"><span class="crossing-head"><h2>${esc(view.mother.primary)} <span class="cross-symbol">×</span> ${esc(view.father.primary)}</h2><span class="status ${statusClass(view.displayStatus)}">${esc(view.displayStatus)}</span></span><span class="crossing-summary">${view.seedLots.length} ${view.seedLots.length === 1 ? "fröomgång" : "fröomgångar"} · ${view.batches.length} ${view.batches.length === 1 ? "såbatch" : "såbatcher"}</span></button>`;
+      }).join("") || '<div class="empty">Inga korsningar registrerade ännu.</div>';
+      renderDetail(selected, model);
     }
 
     function queuePollination(crossing, date, note) {
@@ -401,15 +435,32 @@
     }
 
     function queueOffspringDialog({crossing, sowBatch = null}) {
-      const subtitle = sowBatch ? `${sowBatchCode(sowBatch)} · sådd ${displayDate(sowBatch.sown_date)}` : `${plantLabel(crossing.category, crossing.mother_id)} × ${plantLabel(crossing.category, crossing.father_id)}`;
+      const model = localModel();
+      if (!sowBatch && !model.firstSownDate(crossing)) {
+        showNotice("Registrera en Sådd-händelse innan du registrerar en grodd planta.", "error");
+        return;
+      }
+      const subtitle = sowBatch ? `${model.sowBatchCode(sowBatch)} · sådd ${displayDate(sowBatch.sown_date)}` : model.crossingView(crossing)?.parentName || "";
       const dateLabel = sowBatch ? "Datum då plantan fick egen kruka" : "Datum för grodd";
-      offspringDialog.innerHTML = `<form method="dialog" class="dialog-panel offspring-form"><div class="dialog-head"><div><h2>Skapa avkomma</h2><p>${esc(subtitle)}</p></div><button value="cancel" type="submit" formnovalidate aria-label="Stäng">×</button></div><label>${esc(dateLabel)}<span class="crossing-date-field"><input name="date" type="date" value="${esc(today())}" required></span></label><label>Kort anteckning, frivilligt<textarea name="note" maxlength="240" placeholder="${sowBatch ? "T.ex. stark planta i egen kruka" : "T.ex. första grodden"}"></textarea></label><div class="dialog-actions"><button class="secondary" value="cancel" type="submit" formnovalidate>Avbryt</button><button value="save" type="submit">Skapa avkomma</button></div></form>`;
-      offspringDialog.querySelector("form").addEventListener("submit", event => {
+      const actionLabel = sowBatch ? "Skapa avkomma" : "Registrera grodd planta";
+      offspringDialog.innerHTML = `<form method="dialog" class="dialog-panel offspring-form"><div class="dialog-head"><div><h2>${esc(actionLabel)}</h2><p>${esc(subtitle)}</p></div><button value="cancel" type="submit" formnovalidate aria-label="Stäng">×</button></div><label>${esc(dateLabel)}<span class="crossing-date-field"><input name="date" type="date" value="${esc(today())}" required></span></label><label>Kort anteckning, frivilligt<textarea name="note" maxlength="240" placeholder="${sowBatch ? "T.ex. stark planta i egen kruka" : "T.ex. första grodden"}"></textarea></label><div class="dialog-actions"><button class="secondary" value="cancel" type="submit" formnovalidate>Avbryt</button><button value="save" type="submit">${esc(actionLabel)}</button></div></form>`;
+      const dialogForm = offspringDialog.querySelector("form");
+      const dateInput = dialogForm.elements.date;
+      dateInput.addEventListener("input", () => dateInput.setCustomValidity(""));
+      dialogForm.addEventListener("submit", event => {
         if (event.submitter?.value !== "save") return;
         event.preventDefault();
         const values = new FormData(event.currentTarget);
-        const relation = sowBatch ? {sow_batch_id:sowBatch.sow_batch_id} : {crossing_id:crossing.crossing_id};
-        queueCrossingChange("offspring", {...relation, date:values.get("date"), note:String(values.get("note") || "").trim()});
+        const date = String(values.get("date") || "");
+        const note = String(values.get("note") || "").trim();
+        const draft = sowBatch ? null : model.hibiscusOffspringDraft(crossing, date, note);
+        if (draft && !draft.ok) {
+          dateInput.setCustomValidity(draft.error);
+          dateInput.reportValidity();
+          return;
+        }
+        const payload = sowBatch ? {sow_batch_id:sowBatch.sow_batch_id, date, note} : draft.payload;
+        queueCrossingChange("offspring", payload);
         offspringDialog.close();
         showNotice("Avkomman ligger i synkkön och skapas vid nästa Mac-synk.", "success");
         render();
@@ -419,49 +470,35 @@
 
     function openOffspringDialog(batchId) {
       const model = localModel();
-      const sowBatch = model.sowBatches.find(item => item.sow_batch_id === batchId);
-      const seedLot = sowBatch && model.seedLots.find(item => item.seed_lot_id === sowBatch.seed_lot_id);
-      const crossing = seedLot && model.crossings.find(item => item.crossing_id === seedLot.crossing_id);
+      const sowBatch = model.sowBatchById(batchId);
+      const seedLot = sowBatch && model.seedLotById(sowBatch.seed_lot_id);
+      const crossing = seedLot && model.crossingById(seedLot.crossing_id);
       if (crossing && sowBatch) queueOffspringDialog({crossing, sowBatch});
     }
 
     function openHibiscusOffspringDialog(crossingId) {
-      const crossing = localModel().crossings.find(item => item.crossing_id === crossingId);
+      const crossing = localModel().crossingById(crossingId);
       if (crossing) queueOffspringDialog({crossing});
     }
 
-    function nextSeedLotCode(crossingId) {
-      const year = String(new Date().getFullYear()).slice(-2);
-      const letters = seedLotsForCrossing(crossingId)
-        .map(lot => lot.seed_lot_code.match(new RegExp(`^${year}([A-Z])$`)))
-        .filter(Boolean).map(match => match[1].charCodeAt(0));
-      return `${year}${String.fromCharCode(Math.max(64, ...letters) + 1)}`;
-    }
-
-    function nextSowCode(seedLotId) {
-      const numbers = localModel().sowBatches
-        .filter(batch => batch.seed_lot_id === seedLotId)
-        .map(batch => Number((batch.sow_code.match(/^B(\d{2})$/) || [])[1] || 0));
-      return `B${String(Math.max(0, ...numbers) + 1).padStart(2, "0")}`;
-    }
-
     function openSowBatchDialog(crossingId, batchId = "") {
-      const crossing = localModel().crossings.find(item => item.crossing_id === crossingId);
+      const model = localModel();
+      const crossing = model.crossingById(crossingId);
       if (!crossing || crossing.category !== "Pelargon") return;
-      const existingBatch = batchId ? localModel().sowBatches.find(item => item.sow_batch_id === batchId) : null;
-      const seedLots = seedLotsForCrossing(crossingId);
-      const newSeedLotCode = nextSeedLotCode(crossingId);
+      const existingBatch = batchId ? model.sowBatchById(batchId) : null;
+      const seedLots = model.seedLotsForCrossing(crossingId);
+      const newSeedLotCode = model.nextSeedLotCode(crossingId);
       const newSeedLotValue = `new:${newSeedLotCode}`;
       const defaultSeedLotId = existingBatch?.seed_lot_id || seedLots.at(-1)?.seed_lot_id || newSeedLotValue;
       const defaultSeedLotCode = existingBatch ? (seedLots.find(lot => lot.seed_lot_id === existingBatch.seed_lot_id)?.seed_lot_code || "") : (seedLots.at(-1)?.seed_lot_code || newSeedLotCode);
-      const defaultSowCode = existingBatch?.sow_code || nextSowCode(defaultSeedLotId);
+      const defaultSowCode = existingBatch?.sow_code || model.nextSowCode(defaultSeedLotId);
       const seedLotField = existingBatch
         ? `<input value="${esc(defaultSeedLotCode)}" readonly><input name="seed_lot" type="hidden" value="${esc(defaultSeedLotId)}">`
         : `<select name="seed_lot">${seedLots.map(lot => `<option value="${esc(lot.seed_lot_id)}"${lot.seed_lot_id === defaultSeedLotId ? " selected" : ""}>${esc(lot.seed_lot_code)} · befintlig omgång</option>`).join("")}<option value="${esc(newSeedLotValue)}"${seedLots.length ? "" : " selected"}>${esc(newSeedLotCode)} · ny omgång</option></select>`;
-      sowBatchDialog.innerHTML = `<form method="dialog" class="dialog-panel sow-batch-form"><div class="dialog-head"><div><h2>${existingBatch ? "Uppdatera såbatch" : "Registrera såbatch"}</h2><p>${esc(plantLabel("Pelargon", crossing.mother_id))} × ${esc(plantLabel("Pelargon", crossing.father_id))}</p></div><button value="cancel" type="submit" formnovalidate aria-label="Stäng">×</button></div><label>Fröomgång${seedLotField}</label><label>Såbatch<input name="sow_code" value="${esc(defaultSowCode)}" readonly></label><label>Sådatum<span class="crossing-date-field"><input name="date" type="date" value="${esc(existingBatch?.sown_date || today())}" ${existingBatch ? "readonly" : "required"}></span></label><label>Antal sådda<input name="seeds" type="number" min="1" inputmode="numeric" value="${esc(existingBatch?.seeds_sown || "")}" required></label><label>Antal krukor<input name="pots" type="number" min="1" inputmode="numeric" value="${esc(existingBatch?.pot_count || "")}" required></label><label>Antal grodda<input name="germinated" type="number" min="0" inputmode="numeric" value="${esc(existingBatch?.germinated_count || "0")}" required></label><div class="dialog-actions"><button class="secondary" value="cancel" type="submit" formnovalidate>Avbryt</button><button value="save" type="submit">Spara såbatch</button></div></form>`;
+      sowBatchDialog.innerHTML = `<form method="dialog" class="dialog-panel sow-batch-form"><div class="dialog-head"><div><h2>${existingBatch ? "Uppdatera såbatch" : "+ Ny såbatch"}</h2><p>${esc(plantLabel("Pelargon", crossing.mother_id))} × ${esc(plantLabel("Pelargon", crossing.father_id))}</p></div><button value="cancel" type="submit" formnovalidate aria-label="Stäng">×</button></div><label>Fröomgång${seedLotField}</label><label>Såbatch<input name="sow_code" value="${esc(defaultSowCode)}" readonly></label><label>Sådatum<span class="crossing-date-field"><input name="date" type="date" value="${esc(existingBatch?.sown_date || today())}" ${existingBatch ? "readonly" : "required"}></span></label><label>Antal sådda<input name="seeds" type="number" min="1" inputmode="numeric" value="${esc(existingBatch?.seeds_sown || "")}" required></label><label>Antal krukor<input name="pots" type="number" min="1" inputmode="numeric" value="${esc(existingBatch?.pot_count || "")}" required></label><label>Antal grodda<input name="germinated" type="number" min="0" inputmode="numeric" value="${esc(existingBatch?.germinated_count || "0")}" required></label><div class="dialog-actions"><button class="secondary" value="cancel" type="submit" formnovalidate>Avbryt</button><button value="save" type="submit">Spara såbatch</button></div></form>`;
       const batchForm = sowBatchDialog.querySelector("form");
       if (!existingBatch) batchForm.elements.seed_lot.addEventListener("change", () => {
-        batchForm.elements.sow_code.value = String(batchForm.elements.seed_lot.value).startsWith("new:") ? "B01" : nextSowCode(batchForm.elements.seed_lot.value);
+        batchForm.elements.sow_code.value = String(batchForm.elements.seed_lot.value).startsWith("new:") ? "B01" : model.nextSowCode(batchForm.elements.seed_lot.value);
       });
       batchForm.addEventListener("submit", event => {
         if (event.submitter?.value !== "save") return;
@@ -490,11 +527,11 @@
       sowBatchDialog.showModal();
     }
 
-    grid.addEventListener("submit", event => {
+    detailPanel.addEventListener("submit", event => {
       const eventForm = event.target.closest("[data-event-form]");
       if (!eventForm) return;
       event.preventDefault();
-      const crossing = localModel().crossings.find(item => item.crossing_id === eventForm.dataset.eventForm);
+      const crossing = localModel().crossingById(eventForm.dataset.eventForm);
       if (!crossing) return;
       const values = new FormData(eventForm);
       const type = String(values.get("type") || "");
@@ -508,6 +545,17 @@
     });
 
     grid.addEventListener("click", event => {
+      const crossingButton = event.target.closest("[data-select-crossing]");
+      if (crossingButton) {
+        selectedCrossingId = crossingButton.dataset.selectCrossing;
+        history.replaceState(null, "", `#${encodeURIComponent(selectedCrossingId)}`);
+        render();
+        detailPanel.scrollIntoView({behavior:"smooth", block:"start"});
+        return;
+      }
+    });
+
+    detailPanel.addEventListener("click", event => {
       const offspringButton = event.target.closest("[data-create-offspring]");
       const hibiscusButton = event.target.closest("[data-create-hibiscus-offspring]");
       const batchButton = event.target.closest("[data-create-sow-batch]");
@@ -517,10 +565,15 @@
       if (batchButton) openSowBatchDialog(batchButton.dataset.createSowBatch);
       if (editBatchButton) {
         const model = localModel();
-        const batch = model.sowBatches.find(item => item.sow_batch_id === editBatchButton.dataset.editSowBatch);
-        const seedLot = batch && model.seedLots.find(item => item.seed_lot_id === batch.seed_lot_id);
+        const batch = model.sowBatchById(editBatchButton.dataset.editSowBatch);
+        const seedLot = batch && model.seedLotById(batch.seed_lot_id);
         if (batch && seedLot) openSowBatchDialog(seedLot.crossing_id, batch.sow_batch_id);
       }
+    });
+
+    openNewCrossing.addEventListener("click", () => {
+      newCrossingDetails.open = !newCrossingDetails.open;
+      if (newCrossingDetails.open) newCrossingDetails.scrollIntoView({behavior:"smooth", block:"start"});
     });
 
     form.elements.category.addEventListener("change", fillParentChoices);

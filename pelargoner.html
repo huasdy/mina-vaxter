@@ -142,7 +142,8 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script src="common.js?v=924db9dbbc15"></script>
+  <script src="common.js?v=76b35c8229e1"></script>
+  <script src="crossings-common.js"></script>
   <script>
     function startPelargonPage(snapshot) {
     let plants = [];
@@ -162,9 +163,7 @@
     const dialog = document.querySelector("#photoDialog");
     const modalImg = document.querySelector("#modalImg");
     const modalCaption = document.querySelector("#modalCaption");
-    const crossingsById = new Map((snapshot.crossings?.items || []).map(row => [row.crossing_id, row]));
-    const seedLotsById = new Map((snapshot.crossings?.seedLots || []).map(row => [row.seed_lot_id, row]));
-    const sowBatchesById = new Map((snapshot.crossings?.sowBatches || []).map(row => [row.sow_batch_id, row]));
+    const crossingModel = CrossingsCommon.createModel(snapshot);
 
     function rebuild() {
       const rows = plantRows;
@@ -256,30 +255,6 @@
       return collectionChipHtml("Pelargon", p, escapeAttr);
     }
 
-    function crossingLabel(crossing) {
-      if (!crossing) return "";
-      const mother = plantRows.find(row => row.id === crossing.mother_id)?.name || crossing.mother_id;
-      const father = plantRows.find(row => row.id === crossing.father_id)?.name || crossing.father_id;
-      return `${mother} × ${father}`;
-    }
-
-    function crossingForPlant(p) {
-      const batch = sowBatchesById.get(p.sow_batch_id);
-      const seedLot = seedLotsById.get(batch?.seed_lot_id);
-      return crossingsById.get(seedLot?.crossing_id || p.crossing_id);
-    }
-
-    function sowBatchCode(batch) {
-      const seedLot = seedLotsById.get(batch?.seed_lot_id);
-      return batch && seedLot ? `${seedLot.seed_lot_code}-${batch.sow_code}` : "";
-    }
-
-    function lineageCode(p) {
-      const batch = sowBatchesById.get(p.sow_batch_id);
-      const number = Number(p.batch_individual_number || 0);
-      return batch && number ? `${sowBatchCode(batch)}-${String(number).padStart(2, "0")}` : clean(p.seedling_label);
-    }
-
     function displaySownDate(value) {
       const match = clean(value).match(/^(\d{4})-(\d{2})-(\d{2})$/);
       if (!match) return value || "—";
@@ -287,13 +262,10 @@
       return `${Number(match[3])} ${months[Number(match[2]) - 1]} ${match[1]}`;
     }
 
-    function crossingPlantHeading(p) {
-      const lineage = lineageCode(p);
-      if (!lineage) return plantHeadingHtml(p, "", clean(p.record_kind).toUpperCase() === "INDIVIDUAL");
-      const chosenName = clean(p.nickname) || (clean(p.name) !== "Pelargonfröplanta" ? clean(p.name) : "");
-      const title = chosenName || clean(p.label_number) || clean(p.id);
-      const identity = [clean(p.label_number) !== title ? clean(p.label_number) : "", lineage].filter(Boolean).join(" · ");
-      return `<h2>${escapeText(title)}</h2>${identity ? `<div class="plant-nickname">${escapeText(identity)}</div>` : ""}`;
+    function crossingPlantHeading(p, crossingDisplay) {
+      const display = crossingDisplay || crossingModel.offspringDisplay(p);
+      if (!display.lineageCode) return plantHeadingHtml(p, "", clean(p.record_kind).toUpperCase() === "INDIVIDUAL");
+      return `<h2>${escapeText(display.title)}</h2>${display.subline ? `<div class="plant-nickname">${escapeText(display.subline)}</div>` : ""}`;
     }
 
     function cardTemplate(p) {
@@ -301,11 +273,11 @@
       const identity = plantIdentityName(p);
       const displayLabel = plantDisplayLabel(p);
       const collectionName = p.collection_id ? clean(plants.find(row => row.id === p.collection_id)?.name) : "";
-      const sowBatch = sowBatchesById.get(p.sow_batch_id);
-      const crossing = crossingForPlant(p);
-      const mother = crossing && plantRows.find(row => row.id === crossing.mother_id);
-      const father = crossing && plantRows.find(row => row.id === crossing.father_id);
-      const crossingInfo = crossing ? `<dl><dt>Korsning</dt><dd><a href="korsningar.html#${escapeAttr(crossing.crossing_id)}">${escapeText(crossingLabel(crossing))}</a></dd>${mother ? `<dt>Moder</dt><dd><a href="#${escapeAttr(mother.id)}">${escapeText(`${mother.name} · ${mother.label_number || mother.id}`)}</a></dd>` : ""}${father ? `<dt>Pollen</dt><dd><a href="#${escapeAttr(father.id)}">${escapeText(`${father.name} · ${father.label_number || father.id}`)}</a></dd>` : ""}${sowBatch ? `<dt>Batch</dt><dd>${escapeText(sowBatchCode(sowBatch))}</dd><dt>Sådatum</dt><dd>${escapeText(displaySownDate(sowBatch.sown_date))}</dd><dt>Härkomst</dt><dd>${escapeText(lineageCode(p))}</dd>` : ""}</dl>` : "";
+      const crossingData = crossingModel.plantCrossingView(p);
+      const sowBatch = crossingData?.batch;
+      const crossing = crossingData?.crossing;
+      const parentLink = parent => parent.plant ? `<a href="#${escapeAttr(parent.id)}">${escapeText(`${parent.primary} · ${parent.visibleId}`)}</a>` : "";
+      const crossingInfo = crossingData ? `<dl><dt>Korsning</dt><dd><a href="korsningar.html#${escapeAttr(crossing.crossing_id)}">${escapeText(crossingData.parentName)}</a></dd>${crossingData.mother.plant ? `<dt>Moder</dt><dd>${parentLink(crossingData.mother)}</dd>` : ""}${crossingData.father.plant ? `<dt>Pollen</dt><dd>${parentLink(crossingData.father)}</dd>` : ""}${sowBatch ? `<dt>Batch</dt><dd>${escapeText(crossingData.batchCode)}</dd><dt>Sådatum</dt><dd>${escapeText(displaySownDate(sowBatch.sown_date))}</dd><dt>Härkomst</dt><dd>${escapeText(crossingData.offspringCode)}</dd>` : ""}</dl>` : "";
       const photos = p.photos || [];
       const matchingPhotos = photosMatchingSelectedType(p);
       const active = matchingPhotos[matchingPhotos.length - 1] || photos[photos.length - 1] || {};
@@ -319,7 +291,7 @@
         return {file: photo.file, title: displayName, caption: label, alt: displayLabel};
       });
       const searchable = [
-        p.id, p.label_number, p.name, p.parentage, p.nickname, p.type, p.tags, p.status, p.scent, p.source, p.notes, lineageCode(p), sowBatch?.sown_date, crossing ? crossingLabel(crossing) : "", getPlantCardNote(p.id, p.card_note, p.card_note_updated_at),
+        p.id, p.label_number, p.name, p.parentage, p.nickname, p.type, p.tags, p.status, p.scent, p.source, p.notes, crossingData?.offspringCode, sowBatch?.sown_date, crossingData?.parentName, getPlantCardNote(p.id, p.card_note, p.card_note_updated_at),
         ...photos.map(x => `${x.date} ${x.type} ${x.file}`),
         ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
       ].join(" ").toLowerCase();
@@ -333,7 +305,7 @@
           </div>
           <div class="card-body">
             <div class="plant-card-head">
-              <div class="plant-title-block">${crossingPlantHeading(p)}</div>
+              <div class="plant-title-block">${crossingPlantHeading(p, crossingData?.offspringDisplay)}</div>
               <div class="import-actions">
                 <button class="plant-log-btn" type="button" aria-label="Växtpanel" title="Växtpanel">${logBookIcon()}</button>
                 <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
@@ -378,7 +350,7 @@
       const selectedPhotoType = normalizedPhotoType(photoTypeFilter.value);
       const filtered = plants.filter(p => {
         const combined = [
-          p.id, p.label_number, p.name, p.parentage, p.nickname, p.type, p.tags, p.status, p.scent, p.source, p.notes, lineageCode(p), getPlantCardNote(p.id, p.card_note, p.card_note_updated_at),
+          p.id, p.label_number, p.name, p.parentage, p.nickname, p.type, p.tags, p.status, p.scent, p.source, p.notes, crossingModel.lineageCode(p), getPlantCardNote(p.id, p.card_note, p.card_note_updated_at),
           ...(p.photos || []).map(x => `${x.date} ${x.type} ${x.file}`),
           ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
         ].join(" ").toLowerCase();

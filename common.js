@@ -1,3 +1,4 @@
+// Sticklingar-väljaren använder samma aktiva katalogunderlag för lista och räknare.
 
 function redirectStandaloneMobileCatalog() {
   const displayStandalone = typeof window.matchMedia === "function"
@@ -126,7 +127,8 @@ const hibiscusParentReferenceCatalog = Object.freeze({
   },
   "okänd": {
     file: "bilder/referenser/rareplants-eu/rareplants-eu_okand-hibiscus_referens.jpg",
-    imageSource: "Rareplants.eu"
+    imageSource: "Rareplants.eu",
+    sourceVisibleInImage: true
   }
 });
 
@@ -293,10 +295,6 @@ function collectionRecordInfoHtml(row, collectionName = "") {
   const count = Number.parseInt(clean(row && row.specimen_count), 10);
   if (!Number.isFinite(count)) return "";
   return `<div class="pelargon-record-info"><strong>${count === 0 ? "Tidigare i samlingen" : `${count} exemplar`}</strong><span>Sort-/artkort</span></div>`;
-}
-
-function bildText(n) {
-  return Number(n) === 1 ? "1 bild" : `${n} bilder`;
 }
 
 const plantStatusesStorageKey = "mina-vaxter-plant-statuses-v1";
@@ -766,12 +764,13 @@ function clearPendingArrivalItems() {
 }
 
 const crossingChangeStorageKey = "mina-vaxter-crossing-changes-v1";
+const crossingChangeKinds = Object.freeze(["crossing", "event", "seed_lot", "sow_batch", "offspring"]);
 
 function getPendingCrossingItems() {
   try {
     const items = JSON.parse(localStorage.getItem(crossingChangeStorageKey) || "[]");
     return Array.isArray(items)
-      ? items.filter(item => item && typeof item === "object" && clean(item.operation_id) && ["crossing", "event", "offspring"].includes(clean(item.kind)))
+      ? items.filter(item => item && typeof item === "object" && clean(item.operation_id) && crossingChangeKinds.includes(clean(item.kind)))
       : [];
   } catch (error) {
     return [];
@@ -785,12 +784,12 @@ function savePendingCrossingItems(items) {
 
 function queueCrossingChange(kind, payload = {}, operationId = "") {
   const normalizedKind = clean(kind);
-  if (!["crossing", "event", "offspring"].includes(normalizedKind)) return null;
+  if (!crossingChangeKinds.includes(normalizedKind)) return null;
   const item = {
     operation_id: clean(operationId) || localQueueId("crossing"),
     kind: normalizedKind,
     created_at: new Date().toISOString(),
-    ...(normalizedKind === "crossing" ? {crossing: payload} : normalizedKind === "event" ? {event: payload} : {offspring: payload})
+    [normalizedKind]: payload
   };
   const items = getPendingCrossingItems().filter(row => clean(row.operation_id) !== item.operation_id);
   items.push(item);
@@ -811,12 +810,15 @@ function buildCrossingExport(items = getPendingCrossingItems()) {
   return {
     version: 1,
     exportedAt: new Date().toISOString(),
-    items: (items || []).map(item => ({
-      operation_id: clean(item.operation_id),
-      kind: clean(item.kind),
-      created_at: clean(item.created_at),
-      ...(item.kind === "crossing" ? {crossing: item.crossing || {}} : item.kind === "event" ? {event: item.event || {}} : {offspring: item.offspring || {}})
-    })).filter(item => item.operation_id && ["crossing", "event", "offspring"].includes(item.kind))
+    items: (items || []).map(item => {
+      const kind = clean(item.kind);
+      return {
+        operation_id: clean(item.operation_id),
+        kind,
+        created_at: clean(item.created_at),
+        ...(crossingChangeKinds.includes(kind) ? {[kind]: item[kind] || {}} : {})
+      };
+    }).filter(item => item.operation_id && crossingChangeKinds.includes(item.kind))
   };
 }
 
@@ -913,9 +915,14 @@ function isConcludedPlantMilestone(log) {
   return type.startsWith("avslutad") || type === "död" || type === "avliden" || type === "överlämnad som gåva";
 }
 
+function plantStatusRemovesFromActiveCollection(value) {
+  const status = clean(value).toLocaleLowerCase("sv");
+  return status === "bortgiven" || status.startsWith("avslutad") || status === "död" || status === "avliden";
+}
+
 function plantCardIsConcluded(card) {
   const status = clean(card.dataset.status).toLocaleLowerCase("sv");
-  if (status === "bortgiven" || status.startsWith("avslutad") || status === "död") return true;
+  if (plantStatusRemovesFromActiveCollection(status)) return true;
   let milestones = [];
   try { milestones = JSON.parse(card.dataset.milestones || "[]"); } catch (e) { milestones = []; }
   return isConcludedPlantMilestone(latestPlantMilestone(milestones));
@@ -962,17 +969,6 @@ function ensurePlantLifeNavigation() {
 
 function sortNatural(a, b) {
   return String(a).localeCompare(String(b), "sv", {numeric: true, sensitivity: "base"});
-}
-
-function downloadBlob(filename, blob) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
 }
 
 const plantCardImagesStorageKey = "mina-vaxter-card-images-v1";
@@ -1940,16 +1936,6 @@ function ensurePlantMilestones() {
       background: white; box-shadow: 0 6px 22px rgba(43,37,31,.18);
     }
     .plant-document-page:last-child { margin-bottom: 0; }
-    .plant-parent-summary {
-      color: var(--ink, #2b251f); font-size: 1rem; font-weight: 850;
-    }
-    .plant-parent-reference-grid {
-      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;
-    }
-    .plant-parent-reference-item {
-      min-width: 0; border: 1px solid var(--line, #ded2c2); border-radius: 16px;
-      padding: 9px; background: rgba(255,255,255,.48); display: grid; gap: 7px;
-    }
     .plant-parent-reference-button,
     .plant-parent-reference-placeholder {
       width: 100%; aspect-ratio: 4 / 3; border: 1px solid var(--line, #ded2c2);
@@ -1961,34 +1947,63 @@ function ensurePlantMilestones() {
       display: grid; place-items: center; color: var(--muted, #6f655b); font-weight: 850;
       background: var(--chip, #efe6da);
     }
-    .plant-parent-reference-caption { display: grid; gap: 2px; min-width: 0; }
-    .plant-parent-reference-caption strong { color: var(--ink, #2b251f); font-size: .88rem; }
-    .plant-parent-reference-caption span,
-    .plant-parent-reference-caption small { color: var(--muted, #6f655b); line-height: 1.3; }
-    .plant-parent-reference-caption span { font-size: .8rem; font-weight: 750; }
-    .plant-parent-reference-caption small { font-size: .72rem; font-weight: 700; }
     .plant-parent-reference-source { color: var(--muted, #6f655b); font-size: .78rem; line-height: 1.4; }
     .plant-parent-reference-source a { color: var(--accent, #7d4f3b); font-weight: 850; }
-    .plant-status-row {
-      border: 1px solid var(--line, #ded2c2); border-radius: 16px; padding: 12px 13px;
-      background: rgba(255,255,255,.48); display: flex; align-items: center; justify-content: space-between;
-      gap: 16px; cursor: pointer;
+    .hibiscus-page .plant-parent-crossing {
+      display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px;
+      color: var(--muted, #6f655b); text-transform: uppercase; letter-spacing: .14em;
+      font-size: .72rem; font-weight: 900;
     }
-    .plant-status-copy { display: grid; gap: 3px; }
-    .plant-status-copy strong { color: var(--ink, #2b251f); }
-    .plant-status-copy small { color: var(--muted, #6f655b); font-weight: 700; line-height: 1.3; }
-    .plant-status-switch { position: relative; flex: 0 0 auto; width: 48px; height: 28px; }
-    .plant-status-switch input { position: absolute; opacity: 0; pointer-events: none; }
-    .plant-status-switch span {
-      position: absolute; inset: 0; border-radius: 999px; background: var(--line, #ded2c2); transition: .16s ease;
+    .hibiscus-page .plant-parent-crossing strong {
+      color: var(--ink, #2b251f); font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.3rem; font-weight: 650; letter-spacing: 0; text-transform: none;
     }
-    .plant-status-switch span::after {
-      content: ""; position: absolute; width: 22px; height: 22px; left: 3px; top: 3px;
-      border-radius: 50%; background: var(--paper, #fffdf8); box-shadow: 0 1px 4px rgba(0,0,0,.18); transition: .16s ease;
+    .hibiscus-page .plant-crossing-action {
+      min-height: 36px; padding: 8px 12px; border: 1px solid rgba(125,79,59,.35);
+      background: var(--paper, #fffdf8); color: var(--accent, #7d4f3b); font-size: .88rem;
     }
-    .plant-status-switch input:checked + span { background: #607761; }
-    .plant-status-switch input:checked + span::after { transform: translateX(20px); }
-    .plant-status-switch input:focus-visible + span { outline: 3px solid rgba(125,79,59,.26); outline-offset: 2px; }
+    .hibiscus-page .plant-panel-section-title {
+      color: var(--muted, #6f655b); letter-spacing: .14em; font-size: .72rem;
+    }
+    .hibiscus-page .plant-log-panel { gap: 14px; }
+    .hibiscus-page .plant-log-form { padding: 12px; border-radius: 16px; }
+    .hibiscus-page .plant-log-form-details { display: grid; gap: 10px; }
+    .hibiscus-page .plant-log-form-details > summary { color: var(--accent, #7d4f3b); }
+    .hibiscus-page .plant-log-form-details[open] > .plant-log-history-title::after { transform: rotate(180deg); }
+    .hibiscus-page .plant-log-submit { background: var(--paper, #fffdf8); color: var(--accent, #7d4f3b); border: 1px solid rgba(125,79,59,.35); }
+    .plant-log-dialog .detail-parents {
+      display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: center; gap: 16px;
+    }
+    .plant-log-dialog .detail-parent {
+      min-width: 0; display: grid; grid-template-columns: 112px minmax(0, 1fr);
+      align-items: center; gap: 12px; padding: 10px; border: 1px solid var(--line, #ded2c2);
+      border-radius: 16px; background: rgba(255,255,255,.42); color: inherit;
+    }
+    .plant-log-dialog .detail-parent .plant-parent-reference-button,
+    .plant-log-dialog .detail-parent .plant-parent-reference-placeholder {
+      width: 112px; height: 92px; aspect-ratio: auto; border-radius: 11px;
+      border: 1px solid var(--line, #ded2c2); padding: 0; overflow: hidden;
+    }
+    .plant-log-dialog .detail-parent .plant-parent-reference-button img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .plant-log-dialog .detail-parent .parent-reference-copy { display: grid; gap: 2px; min-width: 0; }
+    .plant-log-dialog .detail-parent .parent-reference-copy small {
+      color: var(--accent, #7d4f3b); font-size: .82rem; font-weight: 900;
+      letter-spacing: .07em; text-transform: uppercase;
+    }
+    .plant-log-dialog .detail-parent .parent-reference-copy strong,
+    .plant-log-dialog .detail-parent .parent-reference-copy span { overflow-wrap: anywhere; }
+    .plant-log-dialog .detail-parent .parent-reference-copy strong { font-size: 1rem; }
+    .plant-log-dialog .detail-parent .parent-reference-copy span { color: var(--muted, #6f655b); font-size: .82rem; font-weight: 850; }
+    .plant-log-dialog .detail-parent-cross { color: var(--accent, #7d4f3b); font-size: 1.7rem; font-weight: 900; }
+    .hibiscus-page dialog.plant-log-dialog { width: min(94vw, 1000px); }
+    @media (max-width: 650px) {
+      .plant-log-dialog .detail-parents { grid-template-columns: 1fr; gap: 8px; }
+      .plant-log-dialog .detail-parent { grid-template-columns: 88px minmax(0, 1fr); }
+      .plant-log-dialog .detail-parent .plant-parent-reference-button,
+      .plant-log-dialog .detail-parent .plant-parent-reference-placeholder { width: 88px; height: 74px; }
+      .plant-log-dialog .detail-parent-cross { justify-self: center; transform: rotate(90deg); }
+    }
     .plant-crossing-action {
       display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 14px;
       border-radius: 999px; background: var(--accent, #7d4f3b); color: white; text-decoration: none;
@@ -2055,10 +2070,6 @@ function ensurePlantMilestones() {
       color: var(--muted, #6f655b); border: 1px dashed var(--line, #ded2c2);
       border-radius: 16px; padding: 18px; text-align: center; font-weight: 800;
     }
-    .plant-arrival-list { display: grid; gap: 7px; }
-    .plant-arrival-row { display: grid; gap: 2px; color: var(--muted, #6f655b); line-height: 1.4; }
-    .plant-arrival-row strong { color: var(--ink, #2b251f); }
-    .plant-arrival-note { margin: 2px 0 0; color: var(--muted, #6f655b); line-height: 1.45; }
     @media (max-width: 700px) {
       nav a[href="verktyg.html"],
       #printBtn,
@@ -2101,7 +2112,6 @@ function openPlantPanel(card) {
   const title = card.dataset.plantName || card.dataset.plantId || "Växt";
   const id = card.dataset.plantId || "";
   const category = card.dataset.category || "Pelargon";
-  const cuttingsAvailable = getPlantCuttingsStatus(id, card.dataset.cuttingsAvailable, card.dataset.cuttingsUpdatedAt);
   const concluded = plantCardIsConcluded(card);
   const canRegisterCrossing = !concluded && (category === "Hibiskus" || (category === "Pelargon" && clean(card.dataset.recordKind).toUpperCase() === "COLLECTION"));
   const crossingPanel = canRegisterCrossing ? `
@@ -2109,14 +2119,6 @@ function openPlantPanel(card) {
         <div class="plant-panel-section-title">Korsningar</div>
         <a class="plant-crossing-action" href="korsningar.html?category=${encodeURIComponent(category)}&mother=${encodeURIComponent(id)}">Registrera korsning</a>
       </section>` : "";
-  const statusPanel = concluded ? "" : `
-      <section class="plant-panel-section" aria-labelledby="plantStatusTitle">
-        <div class="plant-panel-section-title" id="plantStatusTitle">Status</div>
-        <label class="plant-status-row">
-          <span class="plant-status-copy"><strong>Sticklingar</strong><small>Visar att sticklingsmaterial finns tillgängligt.</small></span>
-          <span class="plant-status-switch"><input name="cuttings" type="checkbox" ${cuttingsAvailable ? "checked" : ""}><span aria-hidden="true"></span></span>
-        </label>
-      </section>`;
   const categoryPanel = category === "Hibiskus" && typeof window.hibiscusFlowerPanelHtml === "function"
     ? window.hibiscusFlowerPanelHtml(id)
     : category === "Stapeliader" && typeof window.stapeliadDetailPanelHtml === "function"
@@ -2143,31 +2145,30 @@ function openPlantPanel(card) {
       <header>
         <div>
           <h2>${htmlEscape(title)}</h2>
-          <p>${htmlEscape(id)}</p>
+          ${title !== id ? `<p>${htmlEscape(id)}</p>` : ""}
         </div>
         <button class="plant-log-close" type="button" aria-label="Stäng">×</button>
       </header>
-      ${statusPanel}
       ${crossingPanel}
       ${parentPanel}
       ${documentsPanel}
       ${categoryPanel}
-      <section class="plant-panel-section" data-plant-arrival hidden></section>
       <section class="plant-panel-section" aria-labelledby="plantHistoryTitle">
-        <div class="plant-panel-section-title" id="plantHistoryTitle">Historik</div>
         <details class="plant-log-history">
-          <summary class="plant-log-history-title">Tidigare milstolpar <span class="plant-log-history-count">${milestones.length}</span></summary>
+          <summary class="plant-log-history-title" id="plantHistoryTitle">Historik <span class="plant-log-history-count">${milestones.length}</span></summary>
           <div class="plant-log-list">${rows || '<div class="plant-log-empty">Inga milstolpar ännu.</div>'}</div>
         </details>
-        <form class="plant-log-form" method="dialog">
-          <div class="plant-log-form-title">Ny milstolpe</div>
-          <div class="plant-log-fields">
-            <div class="plant-log-date-field"><input name="date" type="date" value="${htmlEscape(localDateString())}" aria-label="Datum" required></div>
-            <select name="type" aria-label="Typ av milstolpe" required>${options}</select>
-          </div>
-          <textarea name="note" maxlength="160" placeholder="Kort anteckning, frivilligt"></textarea>
-          <button class="plant-log-submit" type="submit">Spara milstolpe</button>
-        </form>
+        <details class="plant-log-form-details">
+          <summary class="plant-log-history-title">Ny milstolpe</summary>
+          <form class="plant-log-form" method="dialog">
+            <div class="plant-log-fields">
+              <div class="plant-log-date-field"><input name="date" type="date" value="${htmlEscape(localDateString())}" aria-label="Datum" required></div>
+              <select name="type" aria-label="Typ av milstolpe" required>${options}</select>
+            </div>
+            <textarea name="note" maxlength="160" placeholder="Kort anteckning, frivilligt"></textarea>
+            <button class="plant-log-submit" type="submit">Spara milstolpe</button>
+          </form>
+        </details>
       </section>
     </div>
   `;
@@ -2191,16 +2192,6 @@ function openPlantPanel(card) {
       openPlantDocument(link.dataset.documentFile, link.dataset.documentTitle, link.dataset.documentKind, link.dataset.documentPages);
     });
   });
-  dialog.querySelector('[name="cuttings"]')?.addEventListener("change", event => {
-    setPlantCuttingsStatus(id, category, event.currentTarget.checked);
-  });
-  loadPrivatePlantArrival(category, id).then(arrival => {
-    if (!dialog.open || !arrival) return;
-    const panel = dialog.querySelector("[data-plant-arrival]");
-    if (!panel) return;
-    panel.innerHTML = plantArrivalPanelHtml(arrival, category, id);
-    panel.hidden = false;
-  });
   if (category === "Hibiskus" && typeof window.bindHibiscusFlowerPanel === "function") {
     window.bindHibiscusFlowerPanel(dialog, id);
   }
@@ -2222,42 +2213,6 @@ function openPlantPanel(card) {
     }
   });
   dialog.showModal();
-}
-
-function localPlantArrivalEndpoint() {
-  const host = clean(window.location.hostname).toLocaleLowerCase("sv");
-  if (window.location.protocol === "file:") return "https://127.0.0.1:47831/plant-arrival";
-  if (["localhost", "127.0.0.1"].includes(host) && ["http:", "https:"].includes(window.location.protocol)) {
-    return "https://127.0.0.1:47831/plant-arrival";
-  }
-  return "";
-}
-
-async function loadPrivatePlantArrival(category, id) {
-  const endpoint = localPlantArrivalEndpoint();
-  if (!endpoint || !clean(id)) return null;
-  const headers = {};
-  if (window.location.protocol === "file:") {
-    const token = await loadLocalArrivalToken();
-    if (!token) return null;
-    headers["X-Mina-Vaxter-Token"] = token;
-  }
-  try {
-    const response = await fetch(`${endpoint}?category=${encodeURIComponent(category)}&id=${encodeURIComponent(id)}`, {
-      headers,
-      cache: "no-store"
-    });
-    const payload = await response.json().catch(() => null);
-    return response.ok && payload?.ok && payload.arrival ? payload.arrival : null;
-  } catch (error) {
-    return null;
-  }
-}
-
-function plantArrivalPanelHtml(arrival, category, id) {
-  if (!Object.values(arrival).some(value => clean(value))) return "";
-  const href = `verktyg.html?arrivalCategory=${encodeURIComponent(category)}&arrivalId=${encodeURIComponent(id)}#ankomstsamtal`;
-  return `<div class="plant-panel-section-title">Ankomst</div><a class="plant-crossing-action" href="${escapeAttr(href)}">Visa Ankomstsamtal</a>`;
 }
 
 function publishedPlantDocuments() {
@@ -2366,25 +2321,34 @@ function plantParentReferencePanelHtml(card) {
   let references = [];
   try { references = JSON.parse(card.dataset.parentReferences || "[]"); } catch (e) { references = []; }
   if (!cross || !references.length) return "";
+  const showCrossingName = !/^okänd\s+×\s+okänd$/i.test(cross);
   const cards = references.map(reference => {
+    const roleLabel = reference.role === "Moder" ? "♀ MODER" : "♂ POLLEN";
     const caption = `${reference.role} ${reference.reference}${reference.name ? ` · ${reference.name}` : ""}${reference.imageSource ? ` · Referensbild, ${reference.imageSource}` : ""}`;
     const visual = reference.file
       ? `<button class="plant-parent-reference-button" type="button" data-file="${htmlEscape(reference.file)}" data-caption="${htmlEscape(caption)}" aria-label="Visa referensbild för ${htmlEscape(reference.role.toLowerCase() + " " + reference.reference)}"><img src="${htmlEscape(reference.file)}" alt="${htmlEscape(caption)}" loading="lazy"></button>`
       : `<div class="plant-parent-reference-placeholder">Okänd</div>`;
-    return `<article class="plant-parent-reference-item">
+    return `<article class="detail-parent">
       ${visual}
-      <div class="plant-parent-reference-caption">
-        <strong>${htmlEscape(reference.role)} · ${htmlEscape(reference.reference)}</strong>
-        ${reference.name ? `<span>${htmlEscape(reference.name)}</span>` : ""}
-        ${reference.imageSource ? `<small>Bildkälla: ${htmlEscape(reference.imageSource)}</small>` : ""}
-      </div>
+      <span class="parent-reference-copy">
+        <small>${htmlEscape(roleLabel)}</small>
+        <strong>${htmlEscape(reference.name || (reference.reference === "okänd" ? "Okänd" : reference.reference))}</strong>
+        ${reference.imageSource && reference.sourceVisibleInImage !== true ? `<span>Bildkälla: ${htmlEscape(reference.imageSource)}</span>` : ""}
+      </span>
     </article>`;
-  }).join("");
+  });
+  const sourceLabels = [...new Set(references
+    .filter(reference => reference.imageSource && reference.sourceVisibleInImage !== true)
+    .map(reference => clean(reference.imageSource))
+    .filter(Boolean))];
+  const sourceNote = sourceLabels.length
+    ? `<div class="plant-parent-reference-source">Källa: ${sourceLabels.map(source => htmlEscape(source)).join(" · ")}</div>`
+    : "";
   return `<section class="plant-panel-section" aria-labelledby="plantParentTitle">
-    <div class="plant-panel-section-title" id="plantParentTitle">Föräldrareferenser</div>
-    <div class="plant-parent-summary">Korsning ${htmlEscape(cross)}</div>
-    <div class="plant-parent-reference-grid">${cards}</div>
-    <div class="plant-parent-reference-source">Referensbilder från frökällan <a href="https://rareplants.eu" target="_blank" rel="noopener">Rareplants.eu</a> · inte egna foton.</div>
+    <div class="plant-panel-section-title" id="plantParentTitle">Föräldrar</div>
+    ${showCrossingName ? `<div class="plant-parent-crossing"><span>Korsning</span><strong>${htmlEscape(cross)}</strong></div>` : ""}
+    <div class="detail-parents">${cards[0] || ""}<div class="detail-parent-cross" aria-hidden="true">×</div>${cards[1] || ""}</div>
+    ${sourceNote}
   </section>`;
 }
 
@@ -3995,23 +3959,6 @@ function buildImageImportManifest(items) {
       };
     })
   };
-}
-
-async function createImageImportPackage(items) {
-  const manifest = buildImageImportManifest(items);
-  const entries = [
-    {
-      name: "manifest.json",
-      blob: new Blob([JSON.stringify(manifest, null, 2)], {type: "application/json;charset=utf-8"})
-    }
-  ];
-  manifest.items.forEach((manifestItem, index) => {
-    entries.push({
-      name: manifestItem.packagePath,
-      blob: imageImportBlob(items[index])
-    });
-  });
-  return createZipBlob(entries);
 }
 
 async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRows = [], plantStatusRows = [], flowerAssessmentExport = {version: 1, traits: [], items: []}, cardImageExport = {version: 1, items: []}, arrivalItems = [], crossingItems = [], wishlistItems = [], packageId = "") {

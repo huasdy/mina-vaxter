@@ -891,7 +891,7 @@
   style.textContent = `
     .breeding-marker { background: #e7efe5 !important; color: #36573d !important; border: 1px solid #b9ccb8; }
     .flower-panel-intro, .flower-help { margin: 0 0 12px; color: var(--muted, #6f655b); font-size: .9rem; }
-    .flower-primary-button { border: 0; border-radius: 999px; background: var(--accent, #7d4f3b); color: white; padding: 10px 16px; font-weight: 800; cursor: pointer; }
+    .flower-primary-button { border: 1px solid rgba(125,79,59,.35); border-radius: 999px; background: var(--paper, #fffdf8); color: var(--accent, #7d4f3b); padding: 9px 13px; font-weight: 800; cursor: pointer; }
     .flower-history-list { display: grid; gap: 8px; margin-top: 10px; }
     .flower-history-item { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; border: 1px solid var(--line, #ded2c2); border-radius: 13px; padding: 10px; }
     .flower-history-item div { display: grid; } .flower-history-item small { color: var(--muted, #6f655b); }

@@ -49,9 +49,18 @@
     .stapeliad-info-line--supplier { font-size:.76rem; }
     .stapeliad-info-line--supplier::before { content:"Leverantör · "; color:var(--muted); font-weight:700; }
     .stapeliad-milestone-age { color:var(--accent); font-size:.8rem; font-weight:800; }
+    .plant-card[data-category="Stapeliader"] .milestone-value { display:grid; grid-template-columns:minmax(0,1fr) max-content; align-items:baseline; column-gap:8px; row-gap:2px; flex-wrap:nowrap; }
+    .plant-card[data-category="Stapeliader"] .stapeliad-milestone-main { display:flex; align-items:baseline; min-width:0; gap:7px; }
+    .plant-card[data-category="Stapeliader"] .stapeliad-milestone-main > span { flex:0 0 auto; }
+    .plant-card[data-category="Stapeliader"] .stapeliad-milestone-main strong { min-width:0; flex:1 1 auto; white-space:normal; word-break:normal; overflow-wrap:normal; hyphens:none; }
+    .plant-card[data-category="Stapeliader"] .stapeliad-milestone-date { justify-self:end; white-space:nowrap; }
     .plant-card[data-category="Stapeliader"] .card-body { grid-template-rows: var(--plant-heading-height) var(--plant-chip-height) 58px 82px 108px; }
+    .plant-card[data-category="Stapeliader"] .plant-card-info,
+    .plant-card[data-category="Stapeliader"] .plant-card-milestone-slot,
+    .plant-card[data-category="Stapeliader"] .plant-card-notes-slot { grid-column:1 / -1; min-width:0; }
     .plant-card[data-category="Stapeliader"] .plant-card-milestone-slot { height:82px; min-height:82px; }
-    .plant-card[data-category="Stapeliader"] .stapeliad-milestone-age { flex-basis:100%; margin-left:24px; white-space:nowrap; }
+    .plant-card[data-category="Stapeliader"] .stapeliad-milestone-age { margin-left:24px; white-space:nowrap; }
+    .plant-card[data-category="Stapeliader"] .stapeliad-milestone-age { grid-column:1 / -1; margin-left:24px; }
     .stapeliad-gallery { grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
     .stapeliad-gallery-item.plant-card { min-height:0; border-radius:15px; box-shadow:none; cursor:pointer; background:var(--paper); }
     .stapeliad-gallery-image { aspect-ratio:1; overflow:hidden; background:linear-gradient(135deg,rgba(125,79,59,.16),rgba(96,119,97,.14)),#eadfce; }
@@ -77,6 +86,7 @@
     .stapeliad-edit-status.error { color:#9a3d31; }
     .stapeliad-edit-actions-row { display:flex; flex-wrap:wrap; align-items:center; gap:9px; }
     @media (max-width:520px) { .stapeliad-edit-grid { grid-template-columns:1fr; } .stapeliad-edit-field.wide { grid-column:auto; } }
+    @media (max-width:350px) { .plant-card[data-category="Stapeliader"] .milestone-value { grid-template-columns:1fr; } .plant-card[data-category="Stapeliader"] .stapeliad-milestone-date { justify-self:start; } }
     @media (max-width:700px) { header { padding-top:28px; } .toolbar { align-items:stretch; flex-direction:column; } .toolbar input { flex:0 0 auto; } .toolbar input, .toolbar select, .toolbar > button { width:100%; } .view-toggle { width:100%; } .toolbar .view-toggle button { width:50%; } .stats { margin-left:0; text-align:center; } .stapeliad-gallery { grid-template-columns:repeat(auto-fill,minmax(132px,1fr)); gap:9px; } .plant-card[data-category="Stapeliader"] .card-body { grid-template-rows:auto auto auto auto auto; } }
   </style>
 </head>
@@ -111,7 +121,7 @@
     </div>
     <section class="grid" id="grid"></section>
   </main>
-  <script src="common.js?v=924db9dbbc15"></script>
+  <script src="common.js?v=76b35c8229e1"></script>
   <script>
     const PUBLIC_CATALOG_SCHEMA_VERSION = 2;
     const grid = document.querySelector("#grid");
@@ -233,6 +243,9 @@
 
     function visiblePlantStatus(plant) {
       const status = clean(plant.status);
+      const latestType = clean(latestPlantMilestone(plant.logs)?.type);
+      const milestoneStatus = ["planterad", "omplanterad", "sådd", "grodd"].includes(latestType.toLocaleLowerCase("sv"));
+      if (milestoneStatus) return latestType;
       const received = (plant.logs || []).some(log =>
         ["sådd", "grodd", "omplanterad"].includes(clean(log.type).toLocaleLowerCase("sv"))
       );
@@ -282,7 +295,7 @@
       return `
         <div class="milestone">
           <div class="milestone-label">Senaste milstolpe</div>
-          <div class="milestone-value"><span>${escapeText(milestoneIcon(latest.type))}</span><strong>${escapeText(latest.type)}</strong><span>${escapeText(latest.date)}</span>${age ? `<span class="stapeliad-milestone-age">${escapeText(age)}</span>` : ""}</div>
+          <div class="milestone-value"><span class="stapeliad-milestone-main"><span>${escapeText(milestoneIcon(latest.type))}</span><strong>${escapeText(latest.type)}</strong></span><span class="stapeliad-milestone-date">${escapeText(latest.date)}</span>${age ? `<span class="stapeliad-milestone-age">${escapeText(age)}</span>` : ""}</div>
         </div>
       `;
     }
@@ -394,7 +407,7 @@
         };
         setOptions(typeFilter, [...new Set(plants.map(plant => clean(plant.acquisition_type)).filter(Boolean))], "Alla typer");
         setOptions(supplierFilter, [...new Set(plants.flatMap(plant => [clean(plant.supplier), ...(plant.seed_lots || []).map(lot => clean(lot.leverantör))]).filter(Boolean))], "Alla butiker");
-        setOptions(statusFilter, [...new Set(plants.map(plant => clean(plant.status)).filter(Boolean))], "Alla statusar");
+        setOptions(statusFilter, [...new Set(plants.map(visiblePlantStatus).filter(Boolean))], "Alla statusar");
         window.stapeliadDetailPanelHtml = id => detailPanel(plants.find(plant => plant.id === id));
         window.bindStapeliadDetailPanel = (dialog, id) => {
           const plant = plants.find(item => item.id === id);

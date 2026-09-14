@@ -31,15 +31,43 @@
       background: var(--paper); color: var(--ink); font: inherit;
     }
     .stats { color: var(--muted); font-weight: 750; margin-left: auto; white-space: nowrap; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(285px, 1fr)); gap: 18px; align-items: start; }
-    .plant-card { background: var(--paper); border: 1px solid rgba(222,210,194,.95); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column; }
-    .image-wrap { position: relative; aspect-ratio: 4 / 5; background: linear-gradient(135deg, rgba(125,79,59,.16), rgba(96,119,97,.14)), #eadfce; overflow: hidden; }
+    .manager { margin: 0; }
+    .add-parent-btn { border: 1px solid var(--line); border-radius: 999px; padding: 9px 13px; background: var(--paper); color: var(--accent); font: inherit; font-weight: 800; cursor: pointer; }
+    .add-parent-dialog { width: min(750px, 90vw); height: min(760px, calc(100vh - 32px)); max-height: calc(100vh - 32px); padding: 0; border: 1px solid var(--line); border-radius: 22px; background: var(--paper); color: var(--ink); box-shadow: 0 24px 80px rgba(43,37,31,.28); }
+    .add-parent-dialog::backdrop { background: rgba(43,37,31,.34); backdrop-filter: blur(2px); }
+    .chooser-dialog-content { display: flex; height: 100%; max-height: min(760px, calc(100vh - 32px)); flex-direction: column; }
+    .chooser-dialog-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 20px 14px; border-bottom: 1px solid var(--line); }
+    .chooser-dialog-header h2 { margin: 0; color: var(--accent); font: 800 1.2rem/1.1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .chooser-close { width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--accent); font: 700 1.25rem/1 sans-serif; cursor: pointer; }
+    .chooser { display: flex; min-height: 0; flex-direction: column; padding: 16px 20px 20px; overflow: hidden; }
+    .chooser-categories { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin; }
+    .chooser-category { flex: 0 0 auto; border: 1px solid var(--line); border-radius: 999px; padding: 7px 11px; background: var(--paper); color: var(--accent); font: inherit; font-size: .88rem; font-weight: 800; cursor: pointer; }
+    .chooser-category.active { background: var(--accent); border-color: var(--accent); color: white; }
+    .chooser input { width: 100%; border: 1px solid var(--line); border-radius: 999px; padding: 10px 14px; background: var(--paper); color: var(--ink); font: inherit; }
+    .chooser-list { display: grid; min-height: 0; flex: 1; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 12px; overflow: auto; padding: 1px; }
+    .chooser-item { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 10px; align-items: center; text-align: left; border: 1px solid var(--line); border-radius: 12px; padding: 7px; background: var(--paper); color: var(--ink); cursor: pointer; font: inherit; }
+    .chooser-item img, .chooser-empty-image { width: 48px; height: 48px; border-radius: 9px; object-fit: cover; background: var(--chip); }
+    .chooser-item strong, .chooser-item small { display: block; overflow-wrap: anywhere; }
+    .chooser-item small { color: var(--muted); font-size: .78rem; }
+    .chooser-empty { color: var(--muted); padding: 12px 2px 2px; }
+    .manage-btn { border: 1px solid var(--line); border-radius: 999px; padding: 9px 13px; background: var(--paper); color: var(--accent); font: inherit; font-weight: 800; cursor: pointer; }
+    .cuttings-page .plant-card { height: auto !important; min-height: 0 !important; position: relative; }
+    .cuttings-page .plant-card > .image-wrap { height: auto !important; min-height: 0 !important; flex: 0 0 auto !important; aspect-ratio: 4 / 3 !important; }
+    .cuttings-page .plant-card .card-body { height: auto !important; min-height: 0 !important; display: block !important; flex: 0 0 auto !important; grid-template-rows: none !important; align-content: initial !important; gap: 0 !important; }
+    .cuttings-remove { display: none; border: 1px solid rgba(255,255,255,.8); border-radius: 999px; width: 30px; height: 30px; padding: 0; background: rgba(43,37,31,.78); color: white; font: inherit; font-size: 0; font-weight: 900; cursor: pointer; }
+    .cuttings-remove::before { content: "−"; font-size: 1.15rem; line-height: 1; }
+    body.manage-mode .cuttings-remove { display: grid; place-items: center; position: absolute; top: 10px; right: 10px; z-index: 2; }
+    .plant-card .favorite-corner { display: none !important; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; align-items: start; }
+    .cuttings-page .grid { align-items: start; grid-auto-rows: max-content; }
+    .cuttings-page .plant-card { background: var(--paper); border: 1px solid rgba(222,210,194,.95); border-radius: 18px; overflow: hidden; box-shadow: var(--shadow); display: flex; flex: 0 0 auto; flex-direction: column; align-self: start; cursor: pointer; }
+    .image-wrap { position: relative; aspect-ratio: 4 / 3; background: linear-gradient(135deg, rgba(125,79,59,.16), rgba(96,119,97,.14)), #eadfce; overflow: hidden; }
     .image-wrap > img { width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in; }
     .image-empty { height: 100%; display: grid; place-items: center; color: var(--muted); font-weight: 800; }
     .date-ribbon { position: absolute; left: 12px; bottom: 12px; background: rgba(43,37,31,.76); color: white; border-radius: 999px; padding: 6px 10px; font-size: .8rem; font-weight: 750; }
-    .card-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 12px; position: relative; }
-    h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 1.55rem; line-height: 1.08; font-weight: 650; }
-    .latin, .plant-nickname { margin-top: 4px; color: var(--muted); font-style: italic; }
+    .card-body { padding: 12px 14px 14px; display: block; }
+    h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 1.25rem; line-height: 1.08; font-weight: 650; }
+    .latin, .plant-nickname { margin-top: 4px; color: var(--muted); font-style: italic; font-size: .92rem; }
     dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; margin: 0; font-size: .94rem; }
     dt { color: var(--muted); font-weight: 800; }
     dd { margin: 0; }
@@ -48,10 +76,12 @@
       header { padding-top: 28px; }
       .toolbar { align-items: stretch; flex-direction: column; }
       .stats { margin-left: 0; }
+      .grid { grid-template-columns: 1fr; }
+      .image-wrap { aspect-ratio: 4 / 3; }
     }
   </style>
 </head>
-<body>
+<body class="cuttings-page">
   <header>
     <nav>
       <a href="index.html">← Mina Växter</a>
@@ -73,12 +103,26 @@
   <main>
     <div class="toolbar">
       <input id="search" type="search" placeholder="Sök bland sticklingar" aria-label="Sök bland sticklingar">
+      <div class="manager">
+        <button class="add-parent-btn" id="addParentBtn" type="button">＋ Lägg till moderplanta</button>
+      </div>
+      <button class="manage-btn" id="manageBtn" type="button">Hantera</button>
       <div class="stats" id="stats"></div>
     </div>
     <section class="grid" id="grid"></section>
   </main>
+  <dialog class="add-parent-dialog" id="addParentDialog" aria-labelledby="addParentDialogTitle">
+    <div class="chooser-dialog-content">
+      <div class="chooser-dialog-header"><h2 id="addParentDialogTitle">Lägg till moderplanta</h2><button class="chooser-close" id="closeParentDialog" type="button" aria-label="Stäng">×</button></div>
+      <div class="chooser">
+        <div class="chooser-categories" id="chooserCategories" aria-label="Filtrera på kategori"></div>
+        <input id="chooserSearch" type="search" placeholder="Sök växt, ID eller kategori" aria-label="Sök växt att lägga till">
+        <div class="chooser-list" id="chooserList"></div>
+      </div>
+    </div>
+  </dialog>
 
-  <script src="common.js?v=924db9dbbc15"></script>
+  <script src="common.js?v=76b35c8229e1"></script>
 
   <script type="text/plain" id="defaultDocumentsCSV">id,date,type,title,file,pages
 SP-009,2026-08-13,Växtkort,Presentkort för pillerfikus,dokument/udda/SP-009_pillerfikus_2026-08-13_vaxtkort.png,
@@ -147,17 +191,17 @@ PL-H01-R,2026-08-17,Beskuren,
 SP-009,2026-08-23,Överlämnad som gåva,
 p-bothams-surprise-1,2026-08-27,Överlämnad som gåva,
 p-creamery,2026-08-27,Överlämnad som gåva,
-STA-032,2026-09-07,Omplanterad,
+STA-032,2026-09-07,Planterad,
 STA-029,2026-09-09,Sådd,5 fröer
 STA-030,2026-09-09,Sådd,5 fröer
 STA-021,2026-09-09,Sådd,5 fröer
 STA-033,2026-09-09,Sådd,5 fröer
-p-rushmoor-mississippi,2026-09-09,Omplanterad,
-p-gibbosina-bicolour,2026-09-09,Omplanterad,
-p-glauciifolium,2026-09-09,Omplanterad,
-p-bowkeri-silver-leaf,2026-09-09,Omplanterad,
-p-dimeierii-selma,2026-09-09,Omplanterad,
-p-gibbosum-anethifolium,2026-09-09,Omplanterad,
+p-rushmoor-mississippi,2026-09-09,Planterad,
+p-gibbosina-bicolour,2026-09-09,Planterad,
+p-glauciifolium,2026-09-09,Planterad,
+p-bowkeri-silver-leaf,2026-09-09,Planterad,
+p-dimeierii-selma,2026-09-09,Planterad,
+p-gibbosum-anethifolium,2026-09-09,Planterad,
 STA-005,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
 STA-011,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
 STA-017,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
@@ -191,6 +235,16 @@ STA-033,2026-09-12,Grodd,</script>
     const grid = document.querySelector("#grid");
     const stats = document.querySelector("#stats");
     const search = document.querySelector("#search");
+    const chooserSearch = document.querySelector("#chooserSearch");
+    const chooserList = document.querySelector("#chooserList");
+    const chooserCategories = document.querySelector("#chooserCategories");
+    const addParentBtn = document.querySelector("#addParentBtn");
+    const addParentDialog = document.querySelector("#addParentDialog");
+    const closeParentDialog = document.querySelector("#closeParentDialog");
+    const manageBtn = document.querySelector("#manageBtn");
+    let manageMode = false;
+    const chooserCategoryNames = ["Alla", "Hibiskus", "Pelargon", "Citrus", "Udda", "Stapeliader"];
+    let chooserCategory = "Alla";
 
     function showCatalogLoadError() {
       stats.textContent = "Katalogen kunde inte laddas";
@@ -263,22 +317,10 @@ STA-033,2026-09-12,Grodd,</script>
         <article class="plant-card" data-category="${escapeAttr(category)}" data-plant-id="${escapeAttr(row.id)}" data-plant-name="${escapeAttr(identity)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(nickname)}" data-card-image="${escapeAttr(row.card_image)}" data-card-crop-x="${escapeAttr(row.card_crop_x)}" data-card-crop-y="${escapeAttr(row.card_crop_y)}" data-card-image-updated-at="${escapeAttr(row.card_image_updated_at)}" data-cuttings-available="${escapeAttr(row.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(row.cuttings_updated_at)}" data-page="${escapeAttr(pageForCategory(category))}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(logs))}">
           <div class="image-wrap">
             ${active.file ? `<img class="main-photo" src="${escapeAttr(active.file)}" alt="${escapeAttr(displayLabel)}" data-caption="${escapeAttr(displayLabel + " · " + (active.label || active.date || ""))}">` : '<div class="image-empty">Bild saknas</div>'}
-            ${active.label || active.date ? `<div class="date-ribbon">${htmlEscape(active.label || active.date)}</div>` : ""}
-            <div class="plant-card-gallery-slot ${photos.length > 1 ? "has-gallery" : ""}">${thumbs}</div>
           </div>
           <div class="card-body">
-            <div class="plant-card-head">
-              <div class="plant-title-block">${plantHeadingHtml(row, identity)}</div>
-              <div class="import-actions">
-                <button class="plant-log-btn" type="button" aria-label="Växtpanel" title="Växtpanel">${logBookIcon()}</button>
-                <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
-                <span class="import-badge" data-import-badge hidden></span>
-              </div>
-            </div>
-            <div class="plant-card-chip-slot"><div class="chips">${collectionChipHtml(category, row)}</div></div>
-            <div class="plant-card-info"><dl><dt>ID</dt><dd>${htmlEscape(row.id)}</dd><dt>Kategori</dt><dd>${htmlEscape(category)}</dd></dl></div>
-            <div class="plant-card-milestone-slot">${milestoneSummary(latestPlantMilestone(logs))}</div>
-            <div class="plant-card-notes-slot">${plantCardNoteField(row.id, row.card_note, row.card_note_updated_at, category)}</div>
+            ${plantHeadingHtml(row, identity, category === "Pelargon")}
+            <button class="cuttings-remove" type="button" data-remove-cuttings="${escapeAttr(row.id)}" data-remove-category="${escapeAttr(category)}">Ta bort</button>
           </div>
         </article>`;
     }
@@ -288,18 +330,68 @@ STA-033,2026-09-12,Grodd,</script>
       const query = search.value.trim().toLocaleLowerCase("sv");
       const rows = Object.entries(catalog).flatMap(([category, section]) =>
         section.rows
-          .filter(row => getPlantCuttingsStatus(row.id, row.cuttings_available, row.cuttings_updated_at))
+          .filter(row => getPlantCuttingsStatus(row.id, row.cuttings_available, row.cuttings_updated_at)
+            && !plantStatusRemovesFromActiveCollection(row.status)
+            && !isConcludedPlantMilestone(latestPlantMilestone(logMap.get(row.id) || [])))
           .map(row => ({category, section, row}))
       ).filter(item => !query || JSON.stringify(item.row).toLocaleLowerCase("sv").includes(query));
       stats.textContent = `${rows.length} ${rows.length === 1 ? "växt" : "växter"}`;
       grid.innerHTML = rows.length
         ? rows.map(item => cuttingsCard(item.category, item.section, item.row)).join("")
-        : '<div class="empty">Inga sticklingar markerade ännu. Slå på Sticklingar i växtpanelen.</div>';
+        : '<div class="empty">Inga moderplantor är markerade ännu. Lägg till en moderplanta ovan.</div>';
       updatePlantFavoriteUI();
+      grid.querySelectorAll(".favorite-corner").forEach(button => button.remove());
       updatePlantImageImportUI();
     }
 
+    function chooserLabel(category, section, row) {
+      const identity = clean(row[section.titleKey]) || clean(row.id);
+      const nickname = clean(row.nickname);
+      const primary = category === "Pelargon" && nickname ? nickname : identity;
+      const identifier = clean(row.label_number) || clean(row.id);
+      return { identity, display: primary, identifier };
+    }
+
+    function renderChooserCategories() {
+      chooserCategories.innerHTML = chooserCategoryNames.map(category =>
+        `<button class="chooser-category ${chooserCategory === category ? "active" : ""}" type="button" data-chooser-category="${escapeAttr(category)}" aria-pressed="${chooserCategory === category}">${htmlEscape(category === "Stapeliader" ? "Stapelia" : category)}</button>`
+      ).join("");
+    }
+
+    function renderChooser() {
+      if (!catalogReady) return;
+      const query = chooserSearch.value.trim().toLocaleLowerCase("sv");
+      renderChooserCategories();
+      if (chooserCategory === "Alla" && !query) {
+        chooserList.innerHTML = '<div class="chooser-empty">Välj en kategori eller börja skriva för att söka.</div>';
+        return;
+      }
+      const candidates = Object.entries(catalog).flatMap(([category, section]) => section.rows
+        .filter(row => (chooserCategory === "Alla" || category === chooserCategory)
+          && !getPlantCuttingsStatus(row.id, row.cuttings_available, row.cuttings_updated_at)
+          && !plantStatusRemovesFromActiveCollection(row.status)
+          && !isConcludedPlantMilestone(latestPlantMilestone(logMap.get(row.id) || [])))
+        .map(row => ({category, section, row, label: chooserLabel(category, section, row)})))
+        .filter(item => !query || `${item.category} ${item.label.display} ${item.label.identifier} ${JSON.stringify(item.row)}`.toLocaleLowerCase("sv").includes(query));
+      chooserList.innerHTML = candidates.length ? candidates.map(item => {
+        const image = (item.row.photos || []).at(-1)?.file || item.row.card_image;
+        return `<button class="chooser-item" type="button" data-add-cuttings="${escapeAttr(item.row.id)}" data-add-category="${escapeAttr(item.category)}">
+          ${image ? `<img src="${escapeAttr(image)}" alt="">` : '<span class="chooser-empty-image" aria-hidden="true"></span>'}
+          <span><strong>${htmlEscape(item.label.display)}</strong><small>${htmlEscape(item.label.identifier)}</small></span>
+        </button>`;
+      }).join("") : '<div class="chooser-empty">Ingen omarkerad växt matchar sökningen.</div>';
+    }
+
+    function handleCuttingsChooserClick(event) {
+      const add = event.target.closest("[data-add-cuttings]");
+      if (add) {
+        setPlantCuttingsStatus(add.dataset.addCuttings, add.dataset.addCategory, true);
+        addParentDialog.close();
+      }
+    }
+
     grid.addEventListener("click", event => {
+      const card = event.target.closest(".plant-card");
       const thumb = event.target.closest(".thumb");
       const main = event.target.closest(".main-photo");
       if (thumb) {
@@ -311,10 +403,29 @@ STA-033,2026-09-12,Grodd,</script>
           card.querySelectorAll(".thumb").forEach(item => item.classList.toggle("active", item === thumb));
         }
       }
-      if (main) openPlantPhotoGallery(main);
+      const remove = event.target.closest("[data-remove-cuttings]");
+      if (remove) setPlantCuttingsStatus(remove.dataset.removeCuttings, remove.dataset.removeCategory, false);
+      if (card && !event.target.closest("button, input, a") && !manageMode) openPlantPanel(card);
+    });
+    chooserList.addEventListener("click", handleCuttingsChooserClick);
+    chooserCategories.addEventListener("click", event => {
+      const category = event.target.closest("[data-chooser-category]");
+      if (!category) return;
+      chooserCategory = category.dataset.chooserCategory;
+      renderChooser();
     });
     search.addEventListener("input", render);
+    chooserSearch.addEventListener("input", renderChooser);
+    addParentBtn.addEventListener("click", () => { renderChooser(); addParentDialog.showModal(); });
+    closeParentDialog.addEventListener("click", () => addParentDialog.close());
+    addParentDialog.addEventListener("click", event => { if (event.target === addParentDialog) addParentDialog.close(); });
+    manageBtn.addEventListener("click", () => {
+      manageMode = !manageMode;
+      document.body.classList.toggle("manage-mode", manageMode);
+      manageBtn.textContent = manageMode ? "Klar" : "Hantera";
+    });
     window.addEventListener("plant-status-changed", render);
+    window.addEventListener("plant-status-changed", renderChooser);
     window.addEventListener("plant-milestone-added", () => {
       logMap = combinedMilestonesByPlant(parseCSV(document.querySelector("#defaultMilestonesCSV").textContent));
       render();
@@ -328,6 +439,7 @@ STA-033,2026-09-12,Grodd,</script>
         ensurePlantImageImport();
         ensurePlantFavorites();
         render();
+        renderChooser();
       } catch (error) {
         console.error("Kunde inte ladda katalogdata.", error);
         showCatalogLoadError();

@@ -1,4 +1,4 @@
-const CACHE_NAME = "mina-vaxter-offline-v12";
+const CACHE_NAME = "mina-vaxter-offline-v13";
 const CORE_ASSETS = [
   "./iphone.html",
   "./vaxtliv.html",
@@ -7,6 +7,7 @@ const CORE_ASSETS = [
   "./verktyg.html",
   "./stapeliader.html",
   "./common.js",
+  "./crossings-common.js",
   "./hibiskus-blombedomning.js",
   "./version.json",
   "./public-data/catalog.json"

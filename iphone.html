@@ -28,6 +28,43 @@
     .tab.active { background: var(--accent); color: white; border-color: var(--accent); }
     main { padding: 12px 10px 72px; }
     .search { width: 100%; border: 1px solid var(--line); background: var(--paper); border-radius: 999px; padding: 11px 14px; font: inherit; margin-bottom: 10px; }
+    .cuttings-manager { margin-bottom: 10px; }
+    .cuttings-manager[hidden] { display: none; }
+    .cuttings-manager details { border: 1px solid var(--line); border-radius: 14px; background: var(--paper); overflow: hidden; }
+    .cuttings-manager summary { list-style: none; padding: 11px 13px; color: var(--accent); font-weight: 850; cursor: pointer; }
+    .cuttings-manager summary::-webkit-details-marker { display: none; }
+    .cuttings-manager summary::before { content: "＋"; margin-right: 5px; }
+    .cuttings-manager details[open] summary::before { content: "−"; }
+    .cuttings-manager-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 7px; }
+    .cuttings-manage-btn { border: 1px solid var(--line); border-radius: 14px; padding: 0 13px; background: var(--paper); color: var(--accent); font: inherit; font-weight: 800; }
+    .mobile-chooser { padding: 14px 16px 16px; overflow: auto; }
+    .mobile-add-parent-btn { border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; background: var(--paper); color: var(--accent); font: inherit; font-weight: 800; cursor: pointer; }
+    .mobile-add-parent-dialog { width: min(620px, calc(100vw - 24px)); max-height: calc(100vh - 24px); padding: 0; border: 1px solid var(--line); border-radius: 20px; background: var(--paper); color: var(--ink); box-shadow: 0 24px 80px rgba(43,37,31,.3); }
+    .mobile-add-parent-dialog::backdrop { background: rgba(43,37,31,.4); backdrop-filter: blur(2px); }
+    .mobile-chooser-dialog-content { display: flex; max-height: calc(100vh - 24px); flex-direction: column; }
+    .mobile-chooser-dialog-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px; border-bottom: 1px solid var(--line); }
+    .mobile-chooser-dialog-header h2 { margin: 0; color: var(--accent); font-size: 1.1rem; }
+    .mobile-chooser-close { width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--accent); font: 700 1.2rem/1 sans-serif; }
+    .mobile-chooser-categories { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: thin; }
+    .mobile-chooser-category { flex: 0 0 auto; border: 1px solid var(--line); border-radius: 999px; padding: 6px 10px; background: var(--paper); color: var(--accent); font: inherit; font-size: .82rem; font-weight: 800; cursor: pointer; }
+    .mobile-chooser-category.active { background: var(--accent); border-color: var(--accent); color: white; }
+    .mobile-chooser input { width: 100%; border: 1px solid var(--line); background: var(--paper); border-radius: 999px; padding: 10px 12px; font: inherit; }
+    .mobile-chooser-list { display: grid; gap: 7px; max-height: min(58vh, 520px); margin-top: 9px; overflow: auto; }
+    .mobile-chooser-item { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 9px; align-items: center; border: 1px solid var(--line); border-radius: 11px; padding: 6px; background: var(--paper); color: var(--ink); text-align: left; font: inherit; }
+    .mobile-chooser-item img, .mobile-chooser-empty-image { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; background: var(--chip); }
+    .mobile-chooser-item strong, .mobile-chooser-item small { display: block; overflow-wrap: anywhere; }
+    .mobile-chooser-item small { color: var(--muted); font-size: .76rem; }
+    .mobile-chooser-empty { color: var(--muted); padding-top: 9px; font-size: .86rem; }
+    .cuttings-remove { margin-top: 10px; border: 1px solid rgba(125,79,59,.32); border-radius: 999px; padding: 7px 10px; background: transparent; color: var(--accent); font: inherit; font-size: .78rem; font-weight: 800; }
+    .cuttings-remove { display: none; }
+    .cuttings-card { position: relative; height: auto !important; min-height: 0 !important; }
+    .cuttings-card { align-self: start; flex: 0 0 auto; }
+    .cuttings-card.plant-card .image { height: auto !important; min-height: 0 !important; flex: 0 0 auto !important; aspect-ratio: 4 / 3 !important; }
+    .cuttings-card.plant-card .body { height: auto !important; min-height: 0 !important; display: block !important; flex: 0 0 auto !important; grid-template-rows: none !important; align-content: initial !important; gap: 0 !important; padding: 10px 12px 12px; }
+    .cuttings-card .cuttings-remove { position: absolute; top: 10px; right: 10px; margin: 0; width: 30px; height: 30px; padding: 0; border-color: rgba(255,255,255,.8); background: rgba(43,37,31,.78); color: white; font-size: 0; }
+    .cuttings-card .cuttings-remove::before { content: "−"; font-size: 1.15rem; line-height: 1; }
+    body.manage-mode .cuttings-card .cuttings-remove { display: grid; place-items: center; }
+    .cuttings-card .favorite-corner { display: none !important; }
     .catalog-status-row { display: flex; align-items: center; gap: 8px; margin: 2px 0 10px; min-width: 0; }
     .catalog-status-row .stats { flex: 1 1 auto; min-width: 0; margin: 0; }
     #mobileWishlistAnchor { position: relative; flex: 0 0 auto; }
@@ -69,12 +106,6 @@
     .mobile-crossing-parent strong, .mobile-crossing-parent span { overflow-wrap: anywhere; }
     .mobile-crossing-parent span { color: var(--muted); font-size: .75rem; font-weight: 800; }
     .mobile-crossing-events { margin: 0; padding-left: 18px; color: var(--muted); font-size: .8rem; }
-    .mobile-crossing-card { display:block; color:inherit; text-decoration:none; background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 12px; box-shadow: 0 5px 16px rgba(43,37,31,.08); min-width: 0; }
-    .mobile-crossing-card.is-active-sowing { border-color: #6f936f; box-shadow: 0 0 0 2px rgba(96,119,97,.16), 0 5px 16px rgba(43,37,31,.08); }
-    .mobile-crossing-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 9px; min-width: 0; }
-    .mobile-crossing-card-head h2 { min-width: 0; font-size: 1.08rem; overflow-wrap: anywhere; }
-    .mobile-crossing-summary { margin-top: 9px; color: var(--muted); font-size: .83rem; font-weight: 800; line-height: 1.55; overflow-wrap: anywhere; }
-    .mobile-crossing-open { margin-top: 8px; color: var(--accent); font-size: .78rem; font-weight: 900; }
     .empty { background: var(--paper); border: 1px solid var(--line); border-radius: 18px; padding: 22px; color: var(--muted); text-align: center; font-weight: 750; }
     .mobile-view-toggle {
       position: fixed; right: 16px; bottom: max(76px, calc(env(safe-area-inset-bottom) + 76px)); z-index: 20;
@@ -97,10 +128,26 @@
   <main>
     <div class="legacy-migration" id="legacyMigration" hidden>Det här är den äldre lokala adressen. Använd den bara för att synka en befintlig kö, och öppna sedan <a id="legacyMigrationLink" href="#">den säkra HTTPS-appen</a>.</div>
     <input class="search" id="search" type="search" placeholder="Sök i vald kategori">
+    <div class="cuttings-manager" id="cuttingsManager" hidden>
+      <div class="cuttings-manager-head">
+        <button class="mobile-add-parent-btn" id="mobileAddParentBtn" type="button">＋ Lägg till moderplanta</button>
+        <button class="cuttings-manage-btn" id="mobileManageBtn" type="button">Hantera</button>
+      </div>
+    </div>
     <div class="catalog-status-row"><div class="stats" id="stats"></div><div id="mobileWishlistAnchor"></div></div>
     <section class="grid" id="grid"></section>
   </main>
   <dialog id="photoDialog"></dialog>
+  <dialog class="mobile-add-parent-dialog" id="mobileAddParentDialog" aria-labelledby="mobileAddParentDialogTitle">
+    <div class="mobile-chooser-dialog-content">
+      <div class="mobile-chooser-dialog-header"><h2 id="mobileAddParentDialogTitle">Lägg till moderplanta</h2><button class="mobile-chooser-close" id="mobileCloseParentDialog" type="button" aria-label="Stäng">×</button></div>
+      <div class="mobile-chooser">
+        <div class="mobile-chooser-categories" id="mobileChooserCategories" aria-label="Filtrera på kategori"></div>
+        <input id="mobileChooserSearch" type="search" placeholder="Sök växt, ID eller kategori" aria-label="Sök växt att lägga till">
+        <div class="mobile-chooser-list" id="mobileChooserList"></div>
+      </div>
+    </div>
+  </dialog>
   <button class="mobile-view-toggle" id="mobileViewToggle" type="button" hidden></button>
 
   <script type="text/plain" id="defaultDocumentsCSV">id,date,type,title,file,pages
@@ -170,17 +217,17 @@ PL-H01-R,2026-08-17,Beskuren,
 SP-009,2026-08-23,Överlämnad som gåva,
 p-bothams-surprise-1,2026-08-27,Överlämnad som gåva,
 p-creamery,2026-08-27,Överlämnad som gåva,
-STA-032,2026-09-07,Omplanterad,
+STA-032,2026-09-07,Planterad,
 STA-029,2026-09-09,Sådd,5 fröer
 STA-030,2026-09-09,Sådd,5 fröer
 STA-021,2026-09-09,Sådd,5 fröer
 STA-033,2026-09-09,Sådd,5 fröer
-p-rushmoor-mississippi,2026-09-09,Omplanterad,
-p-gibbosina-bicolour,2026-09-09,Omplanterad,
-p-glauciifolium,2026-09-09,Omplanterad,
-p-bowkeri-silver-leaf,2026-09-09,Omplanterad,
-p-dimeierii-selma,2026-09-09,Omplanterad,
-p-gibbosum-anethifolium,2026-09-09,Omplanterad,
+p-rushmoor-mississippi,2026-09-09,Planterad,
+p-gibbosina-bicolour,2026-09-09,Planterad,
+p-glauciifolium,2026-09-09,Planterad,
+p-bowkeri-silver-leaf,2026-09-09,Planterad,
+p-dimeierii-selma,2026-09-09,Planterad,
+p-gibbosum-anethifolium,2026-09-09,Planterad,
 STA-005,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
 STA-011,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
 STA-017,2026-09-11,Planterad,planterad i enbart LECHUZA CactusPon
@@ -207,16 +254,29 @@ STA-029,2026-09-12,Grodd,
 STA-030,2026-09-12,Grodd,
 STA-021,2026-09-12,Grodd,
 STA-033,2026-09-12,Grodd,</script>
-  <script src="common.js?v=crossing-sort-1811"></script>
+  <script src="common.js?v=76b35c8229e1"></script>
+  <script src="crossings-common.js"></script>
   <script>
     if ("serviceWorker" in navigator && window.isSecureContext) {
       window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js?v=11").catch(() => {}), {once: true});
     }
     let data = {};
+    let crossingModel = null;
     let catalogReady = false;
     let logMap = combinedMilestonesByPlant(parseCSV(document.querySelector('#defaultMilestonesCSV').textContent));
     const tabs = document.querySelector('#tabs');
     const grid = document.querySelector('#grid');
+    const cuttingsManager = document.querySelector('#cuttingsManager');
+    const mobileChooserSearch = document.querySelector('#mobileChooserSearch');
+    const mobileChooserList = document.querySelector('#mobileChooserList');
+    const mobileChooserCategories = document.querySelector('#mobileChooserCategories');
+    const mobileAddParentBtn = document.querySelector('#mobileAddParentBtn');
+    const mobileAddParentDialog = document.querySelector('#mobileAddParentDialog');
+    const mobileCloseParentDialog = document.querySelector('#mobileCloseParentDialog');
+    const mobileManageBtn = document.querySelector('#mobileManageBtn');
+    let manageMode = false;
+    const mobileChooserCategoryNames = ['Alla', 'Hibiskus', 'Pelargon', 'Citrus', 'Udda', 'Stapeliader'];
+    let mobileChooserCategory = 'Alla';
     const stats = document.querySelector('#stats');
     const search = document.querySelector('#search');
     const mobileViewToggle = document.querySelector('#mobileViewToggle');
@@ -224,7 +284,7 @@ STA-033,2026-09-12,Grodd,</script>
     const mobileHeading = document.querySelector('#mobileHeading');
     const legacyMigration = document.querySelector('#legacyMigration');
     const legacyMigrationLink = document.querySelector('#legacyMigrationLink');
-    const MOBILE_APP_VERSION = "2026-09-12-korsningar-1816";
+    const MOBILE_APP_VERSION = "2026-09-13-synk-0859";
     const MOBILE_CATALOG_CACHE_KEY = "mina-vaxter-mobile-catalog-v1";
     const initialParams = new URLSearchParams(window.location.search);
     const requestedCategory = initialParams.get('kategori');
@@ -275,6 +335,7 @@ STA-033,2026-09-12,Grodd,</script>
       try {
         const snapshot = JSON.parse(localStorage.getItem(MOBILE_CATALOG_CACHE_KEY) || "");
         window.publicCatalogSnapshot = snapshot;
+        crossingModel = CrossingsCommon.createModel(snapshot);
         return snapshotToCatalog(snapshot);
       } catch (error) {
         return null;
@@ -295,6 +356,7 @@ STA-033,2026-09-12,Grodd,</script>
         const snapshot = await catalogResponse.json();
         if (clean(snapshot?.catalogVersion) !== version) throw new Error('Katalogversionerna stämmer inte överens.');
         window.publicCatalogSnapshot = snapshot;
+        crossingModel = CrossingsCommon.createModel(snapshot);
         saveCachedMobileCatalog(snapshot);
         return snapshotToCatalog(snapshot);
       } catch (error) {
@@ -322,8 +384,7 @@ STA-033,2026-09-12,Grodd,</script>
       } catch (error) {}
     }
     function preserveMobileView(url) {
-      if (active === "Korsningar") url.searchParams.set("vy", "korsningar");
-      else if (active === "Hundöron") url.searchParams.set("vy", "hundoron");
+      if (active === "Hundöron") url.searchParams.set("vy", "hundoron");
       else if (active === "Sticklingar") url.searchParams.set("vy", "sticklingar");
       else if (data[active]) url.searchParams.set("kategori", active);
     }
@@ -364,12 +425,12 @@ STA-033,2026-09-12,Grodd,</script>
       return labels.map((label, index) => `<span class="chip ${index === 0 ? "green" : ""}"${label === "🌱 Stickling" ? ' data-status-chip="cuttings"' : ""}>${escapeHtml(label)}</span>`).join("");
     }
     function renderTabs() {
-      const names = [...Object.keys(data), "Korsningar", "Tidigare", "Växtliv", "Galleri", "Ankomstsamtal"];
+      const names = [...Object.keys(data), "Tidigare", "Växtliv", "Galleri", "Ankomstsamtal"];
       const tabLabel = name => name === "Stapeliader" ? "Stapelia" : name;
       tabs.innerHTML = names.map(name => `<button class="tab ${name === active ? 'active' : ''}" type="button" data-name="${escapeHtml(name)}">${escapeHtml(tabLabel(name))}</button>`).join('');
       requestAnimationFrame(() => tabs.querySelector('.tab.active')?.scrollIntoView({block: 'nearest', inline: 'nearest'}));
     }
-    function mobilePlantHeadingHtml(row, identity, categoryName) {
+    function mobilePlantHeadingHtml(row, identity, categoryName, crossingDisplay = null) {
       const nickname = clean(row.nickname);
       if (categoryName === "Stapeliader") {
         return `<h2>${escapeHtml(identity)}</h2><div class="plant-mobile-id">${escapeHtml(row.id)}</div>`;
@@ -378,13 +439,8 @@ STA-033,2026-09-12,Grodd,</script>
         return `<div class="plant-mobile-id">${escapeHtml(row.id)}</div><h2>${escapeHtml(nickname)}</h2>`;
       }
       if (categoryName === "Pelargon" && row.sow_batch_id) {
-        const sowBatch = (window.publicCatalogSnapshot?.crossings?.sowBatches || []).find(batch => batch.sow_batch_id === row.sow_batch_id);
-        const seedLot = sowBatch && (window.publicCatalogSnapshot?.crossings?.seedLots || []).find(lot => lot.seed_lot_id === sowBatch.seed_lot_id);
-        const lineage = sowBatch && seedLot && row.batch_individual_number ? `${seedLot.seed_lot_code}-${sowBatch.sow_code}-${String(row.batch_individual_number).padStart(2, "0")}` : clean(row.seedling_label);
-        const chosenName = nickname || (clean(row.name) !== "Pelargonfröplanta" ? clean(row.name) : "");
-        const title = chosenName || clean(row.label_number) || clean(row.id);
-        const subline = [clean(row.label_number) !== title ? clean(row.label_number) : "", lineage].filter(Boolean).join(" · ");
-        return `<h2>${escapeHtml(title)}</h2>${subline ? `<div class="plant-nickname">${escapeHtml(subline)}</div>` : ""}`;
+        const display = crossingDisplay || crossingModel.offspringDisplay(row);
+        return `<h2>${escapeHtml(display.title)}</h2>${display.subline ? `<div class="plant-nickname">${escapeHtml(display.subline)}</div>` : ""}`;
       }
       if (["Pelargon", "Citrus"].includes(categoryName) && clean(row.record_kind).toUpperCase() === "INDIVIDUAL") {
         return plantHeadingHtml(row, identity, true);
@@ -403,51 +459,16 @@ STA-033,2026-09-12,Grodd,</script>
       return photos.filter(photo => photo.plant_id === plant?.id).sort((a, b) => String(a.date).localeCompare(String(b.date))).at(-1)?.file || "";
     }
 
-    function mobileCrossingInfoHtml(crossing, seedLot, sowBatch) {
-      const pelargons = window.publicCatalogSnapshot?.categories?.Pelargon?.plants || [];
-      const mother = pelargons.find(plant => plant.id === crossing.mother_id);
-      const father = pelargons.find(plant => plant.id === crossing.father_id);
-      const events = (window.publicCatalogSnapshot?.crossings?.events || [])
-        .filter(event => event.crossing_id === crossing.crossing_id && (!seedLot.pollinated_date || String(event.date) >= String(seedLot.pollinated_date)))
-        .sort((a, b) => String(a.date).localeCompare(String(b.date)));
-      const harvested = events.find(event => event.type === "Frö skördat");
-      const harvestedCount = harvested?.note?.match(/\d+/)?.[0] || "";
-      const parent = (plant, role) => {
-        const photo = mobileCrossingPhoto(plant);
-        return `<article class="mobile-crossing-parent">${photo ? `<img src="${escapeHtml(photo)}" alt="${escapeHtml(`${role} ${plant?.name || ""}`)}" loading="lazy">` : '<div class="placeholder">Ingen bild</div>'}<small>${escapeHtml(role)}</small><strong>${escapeHtml(plant?.name || "Okänd")}</strong><span>${escapeHtml(plant?.label_number || plant?.id || "—")}</span></article>`;
+    function mobileCrossingInfoHtml(crossingData) {
+      const parent = (display, role) => {
+        const photo = mobileCrossingPhoto(display.plant);
+        return `<article class="mobile-crossing-parent">${photo ? `<img src="${escapeHtml(photo)}" alt="${escapeHtml(`${role} ${display.primary}`)}" loading="lazy">` : '<div class="placeholder">Ingen bild</div>'}<small>${escapeHtml(role)}</small><strong>${escapeHtml(display.primary)}</strong><span>${escapeHtml(display.visibleId)}</span></article>`;
       };
-      const eventItems = events.filter(event => event.type !== "Sådd").map(event => `<li>${escapeHtml(event.type)}: ${escapeHtml(mobileCrossingDate(event.date))}</li>`).join("");
-      const germinated = sowBatch.germinated_count == null ? 0 : sowBatch.germinated_count;
-      const offspringCount = (window.publicCatalogSnapshot?.categories?.Pelargon?.plants || []).filter(row => row.sow_batch_id === sowBatch.sow_batch_id).length;
-      return `<section class="mobile-crossing-info" aria-label="Korsningsinformation"><h3>${escapeHtml(mother?.name || crossing.mother_id)} × ${escapeHtml(father?.name || crossing.father_id)}</h3><div class="mobile-crossing-parents">${parent(mother, "♀ Moder")}${parent(father, "♂ Pollen")}</div><h3>Fröomgång ${escapeHtml(seedLot.seed_lot_code)}</h3><ul class="mobile-crossing-events">${eventItems || "<li>Inga händelser ännu.</li>"}</ul>${harvestedCount ? `<div>${escapeHtml(harvestedCount)} frön skördade</div>` : ""}<dl><dt>Status</dt><dd>${escapeHtml(crossing.status === "Sådd" || sowBatch ? "Sådd" : crossing.status)}</dd><dt>Såbatch</dt><dd>${escapeHtml(`${seedLot.seed_lot_code}-${sowBatch.sow_code}`)}</dd><dt>Sådd</dt><dd>${escapeHtml(mobileCrossingDate(sowBatch.sown_date))}</dd><dt>Antal</dt><dd>${escapeHtml(sowBatch.seeds_sown)} sådda · ${escapeHtml(sowBatch.pot_count)} ${Number(sowBatch.pot_count) === 1 ? "kruka" : "krukor"} · ${escapeHtml(germinated)} grodda · ${escapeHtml(offspringCount)} avkommor</dd></dl></section>`;
+      const eventItems = crossingData.events.filter(event => event.type !== "Sådd").map(event => `<li>${escapeHtml(event.type)}: ${escapeHtml(mobileCrossingDate(event.date))}</li>`).join("");
+      const counts = crossingData.counts;
+      return `<section class="mobile-crossing-info" aria-label="Korsningsinformation"><h3>${escapeHtml(crossingData.parentName)}</h3><div class="mobile-crossing-parents">${parent(crossingData.mother, "♀ Moder")}${parent(crossingData.father, "♂ Pollen")}</div><h3>Fröomgång ${escapeHtml(crossingData.seedLot.seed_lot_code)}</h3><ul class="mobile-crossing-events">${eventItems || "<li>Inga händelser ännu.</li>"}</ul>${crossingData.seedLotView.harvestedCount ? `<div>${escapeHtml(crossingData.seedLotView.harvestedCount)} frön skördade</div>` : ""}<dl><dt>Status</dt><dd>${escapeHtml(crossingData.displayStatus)}</dd><dt>Såbatch</dt><dd>${escapeHtml(crossingData.batchCode)}</dd><dt>Sådd</dt><dd>${escapeHtml(mobileCrossingDate(crossingData.batch.sown_date))}</dd><dt>Antal</dt><dd>${escapeHtml(counts.seedsSown)} sådda · ${escapeHtml(counts.potCount)} ${counts.potCount === 1 ? "kruka" : "krukor"} · ${escapeHtml(counts.germinated)} grodda · ${escapeHtml(counts.offspring)} avkommor</dd></dl></section>`;
     }
 
-    function mobileCrossingOverview() {
-      const source = window.publicCatalogSnapshot?.crossings || {};
-      const plants = window.publicCatalogSnapshot?.categories?.Pelargon?.plants || [];
-      const seedLots = source.seedLots || [];
-      const batches = source.sowBatches || [];
-      const events = source.events || [];
-      const rows = (source.items || []).filter(crossing => crossing.category === "Pelargon").map(crossing => {
-        const lots = seedLots.filter(lot => lot.crossing_id === crossing.crossing_id);
-        const crossingBatches = batches.filter(batch => lots.some(lot => lot.seed_lot_id === batch.seed_lot_id));
-        const crossingEvents = events.filter(event => event.crossing_id === crossing.crossing_id).sort((a, b) => String(b.date).localeCompare(String(a.date)));
-        const displayStatus = crossingBatches.length ? "Sådd" : crossing.status;
-        return {...crossing, displayStatus, latestDate: crossingEvents[0]?.date, lots, crossingBatches, crossingEvents};
-      });
-      return sortCrossingOverviewRows(rows).map(crossing => {
-        const mother = plants.find(plant => plant.id === crossing.mother_id);
-        const father = plants.find(plant => plant.id === crossing.father_id);
-        const active = crossing.displayStatus === "Sådd";
-        const batchSummary = crossing.crossingBatches.map(batch => {
-          const lot = crossing.lots.find(item => item.seed_lot_id === batch.seed_lot_id);
-          const germinated = batch.germinated_count == null ? 0 : batch.germinated_count;
-          const offspring = plants.filter(plant => plant.sow_batch_id === batch.sow_batch_id).length;
-          return `${lot?.seed_lot_code || "—"}-${batch.sow_code} · ${batch.seeds_sown} sådda · ${germinated} grodda · ${offspring} avkommor`;
-        }).join("<br>") || "Ingen såbatch ännu";
-        return `<article class="mobile-crossing-card ${active ? "is-active-sowing" : ""}" aria-label="Korsningen ${escapeHtml(mother?.name || crossing.mother_id)} × ${escapeHtml(father?.name || crossing.father_id)}"><div class="mobile-crossing-card-head"><h2>${escapeHtml(mother?.name || crossing.mother_id)} × ${escapeHtml(father?.name || crossing.father_id)}</h2><span class="chip ${active ? "green" : ""}">${escapeHtml(crossing.displayStatus)}</span></div><div class="mobile-crossing-summary">${batchSummary}</div><div class="mobile-crossing-open">Översikt · registrering görs på desktop</div></article>`;
-      }).join("") || '<div class="empty">Inga pelargonkorsningar ännu.</div>';
-    }
     function mobileStapeliadDetailPanel(id) {
       const row = data?.Stapeliader?.rows?.find(plant => plant.id === id);
       if (!row) return "";
@@ -555,15 +576,18 @@ STA-033,2026-09-12,Grodd,</script>
       render();
     }
     function card(section, row, categoryName) {
+      if (active === "Sticklingar") return mobileCuttingsCard(section, row, categoryName);
       const photos = row.photos || [];
+      const crossingData = categoryName === "Pelargon" ? crossingModel.plantCrossingView(row) : null;
+      const crossingDisplay = crossingData?.offspringDisplay || null;
       const identity = categoryName === "Stapeliader"
         ? (clean(row.full_botanical_name) || clean(row.short_name) || clean(row.id))
-        : (categoryName === "Pelargon" && row.sow_batch_id && clean(row.name) === "Pelargonfröplanta"
-          ? (clean(row.label_number) || clean(row.id))
+        : (crossingDisplay
+          ? crossingDisplay.catalogIdentity
           : (clean(row[section.titleKey]) || clean(row.id)));
       const nickname = clean(row.nickname);
-      const title = identity || nickname;
-      const displayLabel = nickname ? `${identity} · ${nickname}` : identity;
+      const title = crossingDisplay?.catalogTitle || identity || nickname;
+      const displayLabel = crossingDisplay?.catalogLabel || (nickname ? `${identity} · ${nickname}` : identity);
       const flowerPhotos = categoryName === "Hibiskus"
         ? photos.filter(photo => clean(photo.type).toLowerCase() === "blomma")
         : [];
@@ -590,23 +614,14 @@ STA-033,2026-09-12,Grodd,</script>
       let recordInfo = categoryName === "Stapeliader"
         ? stapeliadCardInfo(row)
         : ["Pelargon", "Citrus"].includes(categoryName) ? collectionRecordInfoHtml(row, collectionName) : "";
-      const sowBatch = categoryName === "Pelargon" ? (window.publicCatalogSnapshot?.crossings?.sowBatches || []).find(batch => batch.sow_batch_id === row.sow_batch_id) : null;
-      const seedLot = sowBatch ? (window.publicCatalogSnapshot?.crossings?.seedLots || []).find(lot => lot.seed_lot_id === sowBatch.seed_lot_id) : null;
-      const crossing = seedLot ? (window.publicCatalogSnapshot?.crossings?.items || []).find(item => item.crossing_id === seedLot.crossing_id) : null;
-      if (sowBatch && seedLot && crossing) {
-        const pelargons = window.publicCatalogSnapshot?.categories?.Pelargon?.plants || [];
-        const mother = pelargons.find(plant => plant.id === crossing.mother_id);
-        const father = pelargons.find(plant => plant.id === crossing.father_id);
-        const lineage = `${seedLot.seed_lot_code}-${sowBatch.sow_code}-${String(row.batch_individual_number).padStart(2, "0")}`;
-        recordInfo += mobileCrossingInfoHtml(crossing, seedLot, sowBatch);
-      }
-      const parentCross = categoryName === "Hibiskus" ? hibiscusCrossLabel(row) : (crossing ? `${crossing.mother_id} × ${crossing.father_id}` : "");
+      if (crossingData?.batch && crossingData.seedLot) recordInfo += mobileCrossingInfoHtml(crossingData);
+      const parentCross = categoryName === "Hibiskus" ? hibiscusCrossLabel(row) : (crossingData ? `${crossingData.crossing.mother_id} × ${crossingData.crossing.father_id}` : "");
       const parentReferences = categoryName === "Hibiskus" ? hibiscusParentReferenceItems(row) : [];
       return `<article class="card plant-card" data-category="${escapeHtml(categoryName)}" data-record-kind="${escapeHtml(row.record_kind)}" data-status="${escapeHtml(row.status)}" data-plant-id="${escapeHtml(row.id)}" data-plant-name="${escapeHtml(title)}" data-plant-identity="${escapeHtml(identity)}" data-plant-nickname="${escapeHtml(nickname)}" data-parent-cross="${escapeHtml(parentCross)}" data-parent-references="${escapeHtml(JSON.stringify(parentReferences))}" data-card-image="${escapeHtml(row.card_image)}" data-card-crop-x="${escapeHtml(row.card_crop_x)}" data-card-crop-y="${escapeHtml(row.card_crop_y)}" data-card-image-updated-at="${escapeHtml(row.card_image_updated_at)}" data-cuttings-available="${escapeHtml(row.cuttings_available)}" data-cuttings-updated-at="${escapeHtml(row.cuttings_updated_at)}" data-page="${escapeHtml(pageForCategory(categoryName))}" data-gallery="${escapeHtml(JSON.stringify(gallery))}" data-milestones="${escapeHtml(JSON.stringify(logs))}">
         ${image}
         <div class="body card-body">
           <div class="plant-card-head">
-            <div class="plant-title-block">${mobilePlantHeadingHtml(row, identity, categoryName)}</div>
+            <div class="plant-title-block">${mobilePlantHeadingHtml(row, identity, categoryName, crossingDisplay)}</div>
             <div class="import-actions">
               <button class="plant-log-btn" type="button" aria-label="Växtpanel" title="Växtpanel">${logBookIcon()}</button>
               ${categoryName === "Stapeliader" ? "" : `<button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>`}
@@ -617,7 +632,23 @@ STA-033,2026-09-12,Grodd,</script>
           <div class="plant-card-info">${recordInfo}</div>
           <div class="plant-card-milestone-slot">${categoryName === "Stapeliader" ? stapeliadMilestoneSummary(logs) : milestoneSummary(latestMilestone)}</div>
           <div class="plant-card-notes-slot">${cardNote}</div>
+          ${active === "Sticklingar" ? `<button class="cuttings-remove" type="button" data-remove-cuttings="${escapeHtml(row.id)}" data-remove-category="${escapeHtml(categoryName)}">Ta bort från Sticklingar</button>` : ""}
         </div>
+      </article>`;
+    }
+    function mobileCuttingsCard(section, row, categoryName) {
+      const identity = clean(row[section.titleKey]) || clean(row.id);
+      const nickname = clean(row.nickname);
+      const displayName = categoryName === "Pelargon" && nickname ? nickname : identity;
+      const secondary = categoryName === "Pelargon" && nickname ? identity : clean(row.latin);
+      const photos = row.photos || [];
+      const photo = photos.at(-1);
+      const logs = logMap.get(row.id) || [];
+      const parentCross = categoryName === "Hibiskus" ? hibiscusCrossLabel(row) : "";
+      const parentReferences = categoryName === "Hibiskus" ? hibiscusParentReferenceItems(row) : [];
+      return `<article class="card plant-card cuttings-card" data-category="${escapeHtml(categoryName)}" data-plant-id="${escapeHtml(row.id)}" data-plant-name="${escapeHtml(identity)}" data-plant-identity="${escapeHtml(identity)}" data-plant-nickname="${escapeHtml(nickname)}" data-parent-cross="${escapeHtml(parentCross)}" data-parent-references="${escapeHtml(JSON.stringify(parentReferences))}" data-card-image="${escapeHtml(row.card_image)}" data-card-image-updated-at="${escapeHtml(row.card_image_updated_at)}" data-cuttings-available="ja" data-page="${escapeHtml(pageForCategory(categoryName))}" data-gallery="[]" data-milestones="${escapeHtml(JSON.stringify(logs))}">
+        <div class="image">${photo?.file ? `<img src="${escapeHtml(photo.file)}" alt="${escapeHtml(displayName)}" loading="lazy">` : '<div class="image-empty">Bild saknas</div>'}</div>
+        <div class="body"><h2>${escapeHtml(displayName)}</h2>${secondary && secondary !== displayName ? `<div class="latin">${escapeHtml(secondary)}</div>` : ""}<button class="cuttings-remove" type="button" data-remove-cuttings="${escapeHtml(row.id)}" data-remove-category="${escapeHtml(categoryName)}">Ta bort</button></div>
       </article>`;
     }
     function favoriteCard(item) {
@@ -653,6 +684,10 @@ STA-033,2026-09-12,Grodd,</script>
     function render() {
       if (!catalogReady) return;
       document.body.dataset.concludedPlantArchive = active === "Tidigare" ? "true" : "false";
+      cuttingsManager.hidden = active !== "Sticklingar";
+      document.body.classList.toggle("manage-mode", manageMode && active === "Sticklingar");
+      grid.style.alignItems = active === "Sticklingar" ? "start" : "";
+      grid.style.gridAutoRows = active === "Sticklingar" ? "max-content" : "";
       renderTabs();
       updateMobileViewToggle();
       if (active === "Hundöron") {
@@ -664,32 +699,29 @@ STA-033,2026-09-12,Grodd,</script>
         updatePlantFavoriteUI();
         return;
       }
-      if (active === "Korsningar") {
-        stats.textContent = "Pelargonkorsningar";
-        grid.innerHTML = mobileCrossingOverview();
-        return;
-      }
       if (active === "Sticklingar") {
         const q = search.value.trim().toLowerCase();
         const rows = Object.entries(data).flatMap(([categoryName, section]) =>
           section.rows
-            .filter(row => getPlantCuttingsStatus(row.id, row.cuttings_available, row.cuttings_updated_at))
+            .filter(row => getPlantCuttingsStatus(row.id, row.cuttings_available, row.cuttings_updated_at)
+              && !plantStatusRemovesFromActiveCollection(row.status)
+              && !isConcludedPlantMilestone(latestPlantMilestone(logMap.get(row.id) || [])))
             .map(row => ({categoryName, section, row}))
         ).filter(item => !q || JSON.stringify(item.row).toLowerCase().includes(q));
         stats.textContent = `${rows.length} ${rows.length === 1 ? "växt" : "växter"} med sticklingar`;
         grid.innerHTML = rows.length
           ? rows.map(item => card(item.section, item.row, item.categoryName)).join('')
-          : '<div class="empty">Inga sticklingar markerade ännu. Slå på Sticklingar i växtpanelen.</div>';
+          : '<div class="empty">Inga moderplantor är markerade ännu. Lägg till en moderplanta ovan.</div>';
         updatePlantFavoriteUI();
+        renderMobileChooser();
         return;
       }
       if (active === "Tidigare") {
         const q = search.value.trim().toLowerCase();
         const rows = Object.entries(data).flatMap(([categoryName, section]) =>
-          section.rows.filter(row => {
-            const status = clean(row.status).toLocaleLowerCase("sv");
-            return status === "bortgiven" || status.startsWith("avslutad") || status === "död" || isConcludedPlantMilestone(latestPlantMilestone(logMap.get(row.id) || []));
-          }).map(row => ({categoryName, section, row}))
+          section.rows.filter(row => plantStatusRemovesFromActiveCollection(row.status)
+            || isConcludedPlantMilestone(latestPlantMilestone(logMap.get(row.id) || [])))
+            .map(row => ({categoryName, section, row}))
         ).filter(item => !q || JSON.stringify(item.row).toLowerCase().includes(q));
         rows.sort((a, b) => sortNatural(`${a.categoryName} ${a.row.name || a.row.nickname || a.row.id}`, `${b.categoryName} ${b.row.name || b.row.nickname || b.row.id}`));
         stats.textContent = `${rows.length} ${rows.length === 1 ? "tidigare växt" : "tidigare växter"}`;
@@ -715,10 +747,39 @@ STA-033,2026-09-12,Grodd,</script>
       grid.innerHTML = rows.length ? rows.map(row => card(section, row, active)).join('') : '<div class="empty">Inga växter matchar sökningen.</div>';
       updatePlantFavoriteUI();
     }
+    function renderMobileChooser() {
+      if (!catalogReady) return;
+      const query = mobileChooserSearch.value.trim().toLocaleLowerCase("sv");
+      mobileChooserCategories.innerHTML = mobileChooserCategoryNames.map(category =>
+        `<button class="mobile-chooser-category ${mobileChooserCategory === category ? 'active' : ''}" type="button" data-mobile-chooser-category="${escapeHtml(category)}" aria-pressed="${mobileChooserCategory === category}">${escapeHtml(category === 'Stapeliader' ? 'Stapelia' : category)}</button>`
+      ).join('');
+      if (mobileChooserCategory === 'Alla' && !query) {
+        mobileChooserList.innerHTML = '<div class="mobile-chooser-empty">Välj en kategori eller börja skriva för att söka.</div>';
+        return;
+      }
+      const candidates = Object.entries(data).flatMap(([categoryName, section]) => section.rows
+        .filter(row => (mobileChooserCategory === 'Alla' || categoryName === mobileChooserCategory)
+          && !getPlantCuttingsStatus(row.id, row.cuttings_available, row.cuttings_updated_at)
+          && !plantStatusRemovesFromActiveCollection(row.status)
+          && !isConcludedPlantMilestone(latestPlantMilestone(logMap.get(row.id) || [])))
+        .map(row => ({categoryName, section, row})))
+        .filter(item => !query || `${item.categoryName} ${item.row.name || ''} ${item.row.nickname || ''} ${item.row.latin || ''} ${item.row.type || ''} ${JSON.stringify(item.row)}`.toLocaleLowerCase("sv").includes(query));
+      mobileChooserList.innerHTML = candidates.length ? candidates.map(item => {
+        const identity = clean(item.row[item.section.titleKey]) || clean(item.row.id);
+        const nickname = clean(item.row.nickname);
+        const label = item.categoryName === 'Pelargon' && nickname ? nickname : identity;
+        const identifier = clean(item.row.label_number) || clean(item.row.id);
+        const image = (item.row.photos || []).at(-1)?.file || item.row.card_image;
+        return `<button class="mobile-chooser-item" type="button" data-add-cuttings="${escapeHtml(item.row.id)}" data-add-category="${escapeHtml(item.categoryName)}">
+          ${image ? `<img src="${escapeHtml(image)}" alt="">` : '<span class="mobile-chooser-empty-image" aria-hidden="true"></span>'}
+          <span><strong>${escapeHtml(label)}</strong><small>${escapeHtml(identifier)}</small></span>
+        </button>`;
+      }).join("") : '<div class="mobile-chooser-empty">Ingen omarkerad växt matchar sökningen.</div>';
+    }
     tabs.addEventListener('click', event => {
       const button = event.target.closest('.tab');
       if (button && button.dataset.name === "Galleri") {
-        window.location.href = "galleri.html?v=2026-09-12-synk-1721";
+        window.location.href = "galleri.html?v=2026-09-13-synk-0859";
         return;
       }
       if (button && button.dataset.name === "Växtliv") {
@@ -743,6 +804,7 @@ STA-033,2026-09-12,Grodd,</script>
     grid.addEventListener('click', event => {
       const button = event.target.closest('.photo-button');
       const main = event.target.closest('.main-photo');
+      const cuttingsCard = event.target.closest('.cuttings-card');
       if (button) {
         const card = button.closest('.card');
         const image = card.querySelector('.main-photo');
@@ -754,6 +816,9 @@ STA-033,2026-09-12,Grodd,</script>
         button.classList.add('active');
       }
       if (main) openPlantPhotoGallery(main);
+      const remove = event.target.closest("[data-remove-cuttings]");
+      if (remove) setPlantCuttingsStatus(remove.dataset.removeCuttings, remove.dataset.removeCategory, false);
+      if (cuttingsCard && !event.target.closest("button, input, a") && !manageMode) openPlantPanel(cuttingsCard);
     });
     document.addEventListener('click', event => {
       if (active === "Hundöron" && event.target.closest('.favorite-corner')) {
@@ -761,6 +826,28 @@ STA-033,2026-09-12,Grodd,</script>
       }
     });
     search.addEventListener('input', render);
+    mobileChooserSearch.addEventListener('input', renderMobileChooser);
+    mobileChooserList.addEventListener('click', event => {
+      const add = event.target.closest('[data-add-cuttings]');
+      if (!add) return;
+      setPlantCuttingsStatus(add.dataset.addCuttings, add.dataset.addCategory, true);
+      mobileAddParentDialog.close();
+    });
+    mobileAddParentBtn.addEventListener('click', () => { renderMobileChooser(); mobileAddParentDialog.showModal(); });
+    mobileCloseParentDialog.addEventListener('click', () => mobileAddParentDialog.close());
+    mobileAddParentDialog.addEventListener('click', event => { if (event.target === mobileAddParentDialog) mobileAddParentDialog.close(); });
+    mobileChooserCategories.addEventListener('click', event => {
+      const category = event.target.closest('[data-mobile-chooser-category]');
+      if (!category) return;
+      mobileChooserCategory = category.dataset.mobileChooserCategory;
+      renderMobileChooser();
+    });
+    mobileManageBtn.addEventListener('click', () => {
+      manageMode = !manageMode;
+      document.body.classList.toggle('manage-mode', manageMode && active === 'Sticklingar');
+      mobileManageBtn.textContent = manageMode ? 'Klar' : 'Hantera';
+      render();
+    });
     document.addEventListener('plant-concluded-filter-applied', event => {
       if (!catalogReady || active === "Hundöron" || !data[active]) return;
       const visibleCount = [...grid.querySelectorAll('.plant-card')]
@@ -777,12 +864,17 @@ STA-033,2026-09-12,Grodd,</script>
       render();
     });
     window.addEventListener('plant-status-changed', render);
+    window.addEventListener('plant-status-changed', renderMobileChooser);
     async function initialiseCatalog() {
       try {
         data = await loadPublicCatalog();
         window.stapeliadDetailPanelHtml = mobileStapeliadDetailPanel;
         const initialCategory = requestedCategory && data[requestedCategory] ? requestedCategory : 'Hibiskus';
-        active = initialParams.get('vy') === 'korsningar' ? 'Korsningar' : (initialParams.get('vy') === 'hundoron' ? 'Hundöron' : (initialParams.get('vy') === 'sticklingar' ? 'Sticklingar' : initialCategory));
+        if (initialParams.get('vy') === 'korsningar') {
+          window.location.replace('korsningar.html');
+          return;
+        }
+        active = initialParams.get('vy') === 'hundoron' ? 'Hundöron' : (initialParams.get('vy') === 'sticklingar' ? 'Sticklingar' : initialCategory);
         lastCatalogCategory = initialCategory;
         catalogReady = true;
         mobileViewToggle.hidden = false;
@@ -793,6 +885,7 @@ STA-033,2026-09-12,Grodd,</script>
         ensurePrivateWishlists();
         ensurePlantFavorites();
         render();
+        renderMobileChooser();
         checkMobileVersion();
       } catch (error) {
         console.error('Kunde inte ladda katalogdata.', error);

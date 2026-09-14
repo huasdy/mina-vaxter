@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "catalogVersion": "2026-09-12-korsningar-1817",
+  "catalogVersion": "2026-09-13-synk-0859",
   "categories": {
     "Hibiskus": {
       "titleField": "id",
@@ -1751,8 +1751,8 @@
           "seedling_label": "",
           "label_number": "PEL-004",
           "breeding_selected": "nej",
-          "cuttings_available": "ja",
-          "cuttings_updated_at": "2026-08-13T15:37:55.878Z",
+          "cuttings_available": "nej",
+          "cuttings_updated_at": "2026-09-13T08:59:50+02:00",
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
@@ -1783,8 +1783,8 @@
           "seedling_label": "",
           "label_number": "PEL-008",
           "breeding_selected": "nej",
-          "cuttings_available": "ja",
-          "cuttings_updated_at": "2026-08-13T15:37:39.639Z",
+          "cuttings_available": "nej",
+          "cuttings_updated_at": "2026-09-13T08:59:50+02:00",
           "card_image": "bilder/pelargoner/p-creamery_2026-07-04_blomma.jpg",
           "card_crop_x": "51.8465",
           "card_crop_y": "2.19705",
@@ -3910,7 +3910,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Omplanterad",
+          "status": "Planterad",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -5192,7 +5192,7 @@
     {
       "id": "STA-032",
       "date": "2026-09-07",
-      "type": "Omplanterad",
+      "type": "Planterad",
       "note": ""
     },
     {
@@ -5228,7 +5228,7 @@
     {
       "id": "p-bowkeri-silver-leaf",
       "date": "2026-09-09",
-      "type": "Omplanterad",
+      "type": "Planterad",
       "note": ""
     },
     {
@@ -5246,25 +5246,25 @@
     {
       "id": "p-dimeierii-selma",
       "date": "2026-09-09",
-      "type": "Omplanterad",
+      "type": "Planterad",
       "note": ""
     },
     {
       "id": "p-gibbosina-bicolour",
       "date": "2026-09-09",
-      "type": "Omplanterad",
+      "type": "Planterad",
       "note": ""
     },
     {
       "id": "p-gibbosum-anethifolium",
       "date": "2026-09-09",
-      "type": "Omplanterad",
+      "type": "Planterad",
       "note": ""
     },
     {
       "id": "p-glauciifolium",
       "date": "2026-09-09",
-      "type": "Omplanterad",
+      "type": "Planterad",
       "note": ""
     },
     {
@@ -5276,7 +5276,7 @@
     {
       "id": "p-rushmoor-mississippi",
       "date": "2026-09-09",
-      "type": "Omplanterad",
+      "type": "Planterad",
       "note": ""
     },
     {
