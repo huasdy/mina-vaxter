@@ -625,17 +625,10 @@
   function batchProgress(batch) {
     const parts = [];
     if (batch.seedsSown !== null) parts.push(`${batch.seedsSown} sådda`);
-    if (batch.germinatedExact) parts.push(`${batch.germinated} grodda`);
+    if (batch.germinatedExact) parts.push(`${batch.germinated} ${batch.germinated === 1 ? "grodd" : "grodda"}`);
     else if (batch.germinated) parts.push(`grodd registrerad`);
     if (batch.registered) parts.push(`${batch.registered} individualiserad${batch.registered === 1 ? "" : "e"}`);
     return parts.join(" · ") || "Sådd registrerad";
-  }
-
-  function batchNextStep(batch) {
-    if (batch.registered > 0) return "Nästa: följ LAB-plantor och urval";
-    if (batch.germinated === 0) return "Nästa: följ groningen";
-    if (["Stapelia", "Pelargon"].includes(batch.species)) return "Nästa: följ gemensam uppdragning";
-    return "Nästa: följ uppdragning eller individualisera vid behov";
   }
 
   function batchCard(batch) {
@@ -645,7 +638,6 @@
       <h3>${esc(batch.name)}</h3>
       <span class="batch-code">${esc(batch.fullCode)} · sådd ${esc(displayDate(batch.sownDate))}</span>
       <span class="batch-progress">${esc(batchProgress(batch))}</span>
-      <span class="batch-next">${esc(batchNextStep(batch))} →</span>
     </button>`;
   }
 
@@ -700,15 +692,17 @@
   }
 
   function renderBatches(species, sowSection) {
-    const tabs = `<div class="subview-tabs" role="group" aria-label="Innehåll i Sådder"><button type="button" data-sow-section="material" class="${sowSection === "material" ? "active" : ""}">Frömaterial</button><button type="button" data-sow-section="batcher" class="${sowSection === "batcher" ? "active" : ""}">Såbatcher</button></div>`;
+    const sectionLink = sowSection === "material"
+      ? '<button type="button" class="text-link secondary-view-link" data-sow-section="batcher">← Sådder</button>'
+      : '<button type="button" class="text-link secondary-view-link" data-sow-section="material">Frömaterial →</button>';
     if (sowSection === "material") {
       const rows = model.materials.filter(row => matchesSpecies(row, species));
       const cards = rows.length ? `<div class="material-grid">${rows.map(materialCard).join("")}</div>` : emptyState("Inga fröskördar eller fröpartier i Labbet ännu.");
-      return `<div class="view-intro"><div><h2>Frömaterial</h2><p>Fröskördar och externa fröpartier hålls åtskilda och kan ge flera såbatcher.</p></div>${tabs}</div>${cards}`;
+      return `<div class="view-intro"><div><h2>Frömaterial</h2><p>Fröskördar och externa fröpartier hålls åtskilda och kan ge flera såbatcher.</p></div>${sectionLink}</div>${cards}`;
     }
     const rows = model.batches.filter(row => matchesSpecies(row, species));
     const cards = rows.length ? `<div class="batch-grid">${rows.map(batchCard).join("")}</div>` : emptyState("Inga såbatcher i valt artfilter.");
-    return `<div class="view-intro"><div><h2>Sådder</h2><p>Batcher samlar sådatum, groddantal, eventuell individualisering och härkomst utan att flytta eller skriva om befintlig data.</p></div>${tabs}</div>${cards}`;
+    return `<div class="view-intro"><div><h2>Sådder</h2></div>${sectionLink}</div>${cards}`;
   }
 
   function seedlingAge(seedling) {
