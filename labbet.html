@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Labbet · Mina Växter</title>
+  <meta name="theme-color" content="#f5f1ea">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="labbet.css">
+</head>
+<body>
+  <header class="page-header">
+    <nav aria-label="Huvudnavigation">
+      <a href="index.html">← Mina Växter</a>
+      <a href="hibiskusar.html">Hibiskus</a>
+      <a href="pelargoner.html">Pelargon</a>
+      <a href="stapeliader.html">Stapelia</a>
+      <a class="current" href="labbet.html" aria-current="page">Labbet</a>
+      <a href="vaxtliv.html">Växtliv</a>
+      <a href="galleri.html">Galleri</a>
+      <a href="verktyg.html">Verktyg</a>
+    </nav>
+    <div class="eyebrow">Förädling och frösådd</div>
+    <h1>Labbet</h1>
+    <p class="subtitle">Arbetsytan från korsning och frö till bedömd planta.</p>
+  </header>
+
+  <main>
+    <section class="lab-controls" aria-label="Filtrera Labbet">
+      <div class="control-row">
+        <span class="control-label">Art</span>
+        <div class="pill-group" id="speciesFilters" role="group" aria-label="Artfilter">
+          <button type="button" data-species="Alla" class="active" aria-pressed="true">Alla</button>
+          <button type="button" data-species="Hibiskus" aria-pressed="false">Hibiskus</button>
+          <button type="button" data-species="Pelargon" aria-pressed="false">Pelargon</button>
+          <button type="button" data-species="Stapelia" aria-pressed="false">Stapelia</button>
+        </div>
+      </div>
+      <div class="view-tabs" id="viewTabs" role="tablist" aria-label="Vyer i Labbet">
+        <button type="button" data-view="aktivt" class="active" role="tab" aria-selected="true">Aktivt</button>
+        <button type="button" data-view="korsningar" role="tab" aria-selected="false">Korsningar</button>
+        <button type="button" data-view="sadder" role="tab" aria-selected="false">Sådder</button>
+        <button type="button" data-view="uppdragning" role="tab" aria-selected="false">Uppdragning</button>
+      </div>
+    </section>
+
+    <div id="labContent" class="lab-content" aria-live="polite">
+      <div class="loading-card">Laddar Labbet…</div>
+    </div>
+  </main>
+
+  <dialog id="infoDialog" class="info-dialog">
+    <form method="dialog" class="dialog-panel">
+      <button class="dialog-close" value="close" aria-label="Stäng">×</button>
+      <div id="infoDialogContent"></div>
+      <button class="secondary-action" value="close">Stäng</button>
+    </form>
+  </dialog>
+
+  <script src="labbet.js"></script>
+</body>
+</html>

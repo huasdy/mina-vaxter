@@ -258,7 +258,7 @@ STA-021,2026-09-12,Grodd,,,STA-021|2026-09-09|Sådd|5 fröer|STA-021-F02</script
   <script src="crossings-common.js"></script>
   <script>
     if ("serviceWorker" in navigator && window.isSecureContext) {
-    window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js?v=15").catch(() => {}), {once: true});
+    window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js?v=16").catch(() => {}), {once: true});
     }
     let data = {};
     let crossingModel = null;
@@ -425,7 +425,7 @@ STA-021,2026-09-12,Grodd,,,STA-021|2026-09-09|Sådd|5 fröer|STA-021-F02</script
       return labels.map((label, index) => `<span class="chip ${index === 0 ? "green" : ""}"${label === "🌱 Stickling" ? ' data-status-chip="cuttings"' : ""}>${escapeHtml(label)}</span>`).join("");
     }
     function renderTabs() {
-      const names = [...Object.keys(data), "Tidigare", "Växtliv", "Galleri", "Ankomstsamtal"];
+      const names = [...Object.keys(data), "Labbet", "Tidigare", "Växtliv", "Galleri", "Ankomstsamtal"];
       const tabLabel = name => name === "Stapeliader" ? "Stapelia" : name;
       tabs.innerHTML = names.map(name => `<button class="tab ${name === active ? 'active' : ''}" type="button" data-name="${escapeHtml(name)}">${escapeHtml(tabLabel(name))}</button>`).join('');
       requestAnimationFrame(() => tabs.querySelector('.tab.active')?.scrollIntoView({block: 'nearest', inline: 'nearest'}));
@@ -784,6 +784,10 @@ STA-021,2026-09-12,Grodd,,,STA-021|2026-09-09|Sådd|5 fröer|STA-021-F02</script
       }
       if (button && button.dataset.name === "Växtliv") {
         window.location.href = "vaxtliv.html";
+        return;
+      }
+      if (button && button.dataset.name === "Labbet") {
+        window.location.href = "labbet.html";
         return;
       }
       if (button && button.dataset.name === "Ankomstsamtal") {
