@@ -484,7 +484,9 @@
         code: clean(row.code),
         species: clean(row.species_group),
         taxon: clean(row.taxon),
+        purchaseName: clean(row.purchase_name),
         sourceName: clean(row.supplier) || "Okänd källa",
+        seller: clean(row.seller),
         date: clean(row.acquired_date),
         original: clean(row.seeds_original) === "" ? null : number(row.seeds_original),
         remaining: clean(row.seeds_remaining) === "" ? null : number(row.seeds_remaining),
@@ -724,7 +726,7 @@
     return `<button type="button" class="material-card" data-open-material="${esc(material.id)}">
       <span class="chip-row"><span class="chip green">${esc(material.species)}</span><span class="chip">${esc(material.label)}</span></span>
       <h3>${esc(material.type === "seed_harvest" ? material.sourceName : material.taxon)}</h3>
-      <p><strong>${esc(material.code)}</strong> · ${esc(material.type === "seed_harvest" ? displayDate(material.date) : material.sourceName)}</p>
+      <p><strong>${esc(material.code)}</strong> · ${esc(material.type === "seed_harvest" ? displayDate(material.date) : material.sourceName)}${material.seller ? ` · Säljare: ${esc(material.seller)}` : ""}</p>
       <span class="batch-progress">${esc(remaining)}</span>
       <span class="batch-next">${material.batches.length} såbatcher · öppna →</span>
     </button>`;
@@ -798,6 +800,7 @@
             <div class="fact"><dt>Frön kvar</dt><dd>${esc(material.remaining === null ? "Ej räknat" : material.remaining)}</dd></div>
             <div class="fact"><dt>${material.type === "seed_harvest" ? "Skördedatum" : "Mottaget/inköpt"}</dt><dd>${esc(material.date ? displayDate(material.date, true) : "Ej registrerat")}</dd></div>
             <div class="fact"><dt>${material.type === "seed_harvest" ? "Pollineringsdatum" : "Pris"}</dt><dd>${esc(material.type === "seed_harvest" ? displayDate(material.pollinatedDate, true) : price)}</dd></div>
+            ${material.type === "seed_lot" ? `<div class="fact"><dt>Butik/källa</dt><dd>${esc(material.sourceName)}</dd></div><div class="fact"><dt>Säljare</dt><dd>${esc(material.seller || "Ej registrerad")}</dd></div>${material.purchaseName ? `<div class="fact"><dt>Inköpsnamn</dt><dd>${esc(material.purchaseName)}</dd></div>` : ""}` : ""}
           </dl>
           ${material.type === "seed_harvest" ? `<section class="detail-section"><h3>Härkomst</h3><button type="button" class="origin-link" data-open-crossing="${esc(material.crossing.crossing_id)}"><span>Egen korsning<strong>${esc(material.sourceName)}</strong></span><b>→</b></button></section>` : `<section class="detail-section"><h3>Härkomst</h3><p>${esc(material.sourceCross ? `${material.sourceName} · uppgiven korsning: ${material.sourceCross}` : material.sourceName)}</p></section>`}
           <section class="detail-section"><h3>Anteckningar</h3><p>${esc(material.notes || "Ingen anteckning ännu.")}</p></section>
@@ -1083,7 +1086,9 @@
       <label>Artgrupp<select name="species_group"><option>Stapelia</option><option>Hibiskus</option><option>Pelargon</option></select></label>
       <label>Fröpartikod<input name="code" value="${esc(nextSeedLotCode())}" maxlength="24" required></label>
       <label class="wide">Art/taxon<input name="taxon" required></label>
+      <label class="wide">Inköpsnamn från säljaren<input name="purchase_name"></label>
       <label>Leverantör/källa<input name="supplier"></label>
+      <label>Säljare<input name="seller" placeholder="T.ex. marknadsplatssäljare"></label>
       <label>Mottaget eller inköpt<input name="acquired_date" type="date" max="${today()}"></label>
       <label>Ursprungligt antal<input name="seeds_original" type="number" min="0" inputmode="numeric"></label>
       <label>Antal kvar<input name="seeds_remaining" type="number" min="0" inputmode="numeric" placeholder="Samma som ursprungligt"></label>
@@ -1097,7 +1102,7 @@
       const lotId = uniqueId("LABL");
       queueLabChange("seed_lot", {
         seed_lot_id: lotId, species_group: clean(data.get("species_group")), taxon: clean(data.get("taxon")),
-        code: clean(data.get("code")), supplier: clean(data.get("supplier")), acquired_date: isoDate(data.get("acquired_date")),
+        purchase_name: clean(data.get("purchase_name")), code: clean(data.get("code")), supplier: clean(data.get("supplier")), seller: clean(data.get("seller")), acquired_date: isoDate(data.get("acquired_date")),
         seeds_original: original, seeds_remaining: clean(data.get("seeds_remaining")) || original,
         price: clean(data.get("price")), currency: clean(data.get("currency")).toUpperCase(),
         source_cross: clean(data.get("source_cross")), notes: clean(data.get("notes")), created_at: new Date().toISOString()

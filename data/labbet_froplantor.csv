@@ -1,1 +1,10 @@
 seedling_id,sow_batch_id,batch_code,individual_number,provisional_id,origin_code,species_group,taxon,status,germinated_date,notes,created_at,collection_category,collection_id
+LAB-sta029-hystrix-01-20260916,LABB-sta029-hystrix-20260916,B01,1,B01-01,F01-B01-01,Stapelia,Huernia hystrix,Under uppdragning,2026-09-12,,2026-09-16T23:50:00+02:00,,
+LAB-sta029-hystrix-02-20260916,LABB-sta029-hystrix-20260916,B01,2,B01-02,F01-B01-02,Stapelia,Huernia hystrix,Under uppdragning,2026-09-12,,2026-09-16T23:50:00+02:00,,
+LAB-sta030-zebrina-01-20260916,LABB-sta030-zebrina-20260916,B01,1,B01-01,F02-B01-01,Stapelia,Huernia zebrina,Under uppdragning,2026-09-12,,2026-09-16T23:50:00+02:00,,
+LAB-sta030-zebrina-02-20260916,LABB-sta030-zebrina-20260916,B01,2,B01-02,F02-B01-02,Stapelia,Huernia zebrina,Under uppdragning,2026-09-12,,2026-09-16T23:50:00+02:00,,
+LAB-sta030-zebrina-03-20260916,LABB-sta030-zebrina-20260916,B01,3,B01-03,F02-B01-03,Stapelia,Huernia zebrina,Under uppdragning,2026-09-12,,2026-09-16T23:50:00+02:00,,
+LAB-sta030-zebrina-04-20260916,LABB-sta030-zebrina-20260916,B01,4,B01-04,F02-B01-04,Stapelia,Huernia zebrina,Under uppdragning,2026-09-12,,2026-09-16T23:50:00+02:00,,
+LAB-sta033-variegata-01-20260916,LABB-sta033-variegata-20260916,B01,1,B01-01,F03-B01-01,Stapelia,Orbea variegata,Under uppdragning,2026-09-12,,2026-09-16T23:50:00+02:00,,
+LAB-sta021-gigantea-01-20260916,LABB-sta021-gigantea-20260916,B01,1,B01-01,F04-B01-01,Stapelia,Stapelia gigantea,Under uppdragning,2026-09-12,,2026-09-16T23:50:00+02:00,,
+LAB-sta021-gigantea-02-20260916,LABB-sta021-gigantea-20260916,B01,2,B01-02,F04-B01-02,Stapelia,Stapelia gigantea,Under uppdragning,2026-09-12,,2026-09-16T23:50:00+02:00,,

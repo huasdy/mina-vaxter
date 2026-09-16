@@ -1,1 +1,5 @@
 sow_batch_id,source_type,source_id,source_label,batch_number,batch_code,full_code,species_group,taxon,sown_date,seeds_sown,container_count,germinated_count,germinated_date,notes,created_at
+LABB-sta021-gigantea-20260916,seed_lot,LABL-sta021-gigantea-20260916,,1,B01,F04-B01,Stapelia,Stapelia gigantea,2026-09-09,5,,2,2026-09-12,Första grodd registrerad 2026-09-12.,2026-09-16T23:50:00+02:00
+LABB-sta029-hystrix-20260916,seed_lot,LABL-sta029-hystrix-20260916,,1,B01,F01-B01,Stapelia,Huernia hystrix,2026-09-09,5,,2,2026-09-12,Första grodd registrerad 2026-09-12.,2026-09-16T23:50:00+02:00
+LABB-sta030-zebrina-20260916,seed_lot,LABL-sta030-zebrina-20260916,,1,B01,F02-B01,Stapelia,Huernia zebrina,2026-09-09,5,,4,2026-09-12,Första grodd registrerad 2026-09-12.,2026-09-16T23:50:00+02:00
+LABB-sta033-variegata-20260916,seed_lot,LABL-sta033-variegata-20260916,,1,B01,F03-B01,Stapelia,Orbea variegata,2026-09-09,5,,1,2026-09-12,Första grodd registrerad 2026-09-12.,2026-09-16T23:50:00+02:00

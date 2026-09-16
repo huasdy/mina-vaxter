@@ -1,1 +1,5 @@
-seed_lot_id,species_group,taxon,code,supplier,acquired_date,seeds_original,seeds_remaining,price,currency,source_cross,notes,created_at
+seed_lot_id,species_group,taxon,code,supplier,acquired_date,seeds_original,seeds_remaining,price,currency,source_cross,notes,created_at,purchase_name,seller
+LABL-sta029-hystrix-20260916,Stapelia,Huernia hystrix,F01,SuccSeed,,20,15,36,SEK,,Historisk referens: STA-029. Ordernummer: 278352062. Leverantörens artikelnummer: 6867. Köpta paket: 2. Frön per paket: 10.,2026-09-16T23:50:00+02:00,,
+LABL-sta030-zebrina-20260916,Stapelia,Huernia zebrina,F02,SuccSeed,,10,5,18,SEK,,Historisk referens: STA-030. Ordernummer: 278352062. Leverantörens artikelnummer: 11354. Köpta paket: 1. Frön per paket: 10.,2026-09-16T23:50:00+02:00,,
+LABL-sta033-variegata-20260916,Stapelia,Orbea variegata,F03,eBay,2024-11-02,200,195,8.99,EUR,,Historisk referens: STA-033. Ordernummer: 26-12251-59065. eBay Item ID: 185401812050.,2026-09-16T23:50:00+02:00,Stapelia variegata,vendoesvendotutto
+LABL-sta021-gigantea-20260916,Stapelia,Stapelia gigantea,F04,SuccSeed,,40,35,36,SEK,,Historisk referens: STA-021. Ordernummer: 278352062. Leverantörens artikelnummer: 10172. Köpta paket: 2. Frön per paket: 20. Endast SuccSeed-fröpartiet migreras; Exotic Plants-partiet ska inte skapas.,2026-09-16T23:50:00+02:00,,
