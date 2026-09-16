@@ -6567,6 +6567,10 @@
     ]
   },
   "lab": {
+    "crossings": [],
+    "seedHarvests": [],
+    "seedLots": [],
+    "sowBatches": [],
     "seedlings": [],
     "photos": [],
     "milestones": []

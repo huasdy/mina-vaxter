@@ -831,7 +831,7 @@ function buildCrossingExport(items = getPendingCrossingItems()) {
 }
 
 const labChangeStorageKey = "mina-vaxter-lab-changes-v1";
-const labChangeKinds = Object.freeze(["seedling", "milestone", "update"]);
+const labChangeKinds = Object.freeze(["crossing", "seed_harvest", "seed_lot", "sow_batch", "batch_update", "material_update", "seedling", "milestone", "update"]);
 
 function getPendingLabItems() {
   try {
@@ -869,12 +869,32 @@ function deletePendingLabItem(operationId) {
   const id = clean(operationId);
   const items = getPendingLabItems();
   const target = items.find(item => clean(item.operation_id) === id);
-  const seedlingId = target?.kind === "seedling" ? clean(target.seedling?.seedling_id) : "";
+  const crossingIds = new Set(target?.kind === "crossing" ? [clean(target.crossing?.crossing_id)] : []);
+  const harvestIds = new Set(target?.kind === "seed_harvest" ? [clean(target.seed_harvest?.seed_harvest_id)] : []);
+  const lotIds = new Set(target?.kind === "seed_lot" ? [clean(target.seed_lot?.seed_lot_id)] : []);
+  const batchIds = new Set(target?.kind === "sow_batch" ? [clean(target.sow_batch?.sow_batch_id)] : []);
+  const seedlingIds = new Set(target?.kind === "seedling" ? [clean(target.seedling?.seedling_id)] : []);
+  items.forEach(item => {
+    if (item.kind === "seed_harvest" && crossingIds.has(clean(item.seed_harvest?.crossing_id))) harvestIds.add(clean(item.seed_harvest?.seed_harvest_id));
+  });
+  items.forEach(item => {
+    if (item.kind !== "sow_batch") return;
+    const sourceType = clean(item.sow_batch?.source_type);
+    const sourceId = clean(item.sow_batch?.source_id);
+    if (sourceType === "seed_harvest" && harvestIds.has(sourceId) || sourceType === "seed_lot" && lotIds.has(sourceId)) batchIds.add(clean(item.sow_batch?.sow_batch_id));
+  });
+  items.forEach(item => {
+    if (item.kind === "seedling" && batchIds.has(clean(item.seedling?.sow_batch_id))) seedlingIds.add(clean(item.seedling?.seedling_id));
+  });
   savePendingLabItems(items.filter(item => {
     if (clean(item.operation_id) === id) return false;
-    if (!seedlingId) return true;
+    if (item.kind === "seed_harvest" && crossingIds.has(clean(item.seed_harvest?.crossing_id))) return false;
+    if (item.kind === "sow_batch" && batchIds.has(clean(item.sow_batch?.sow_batch_id))) return false;
+    if (item.kind === "batch_update" && batchIds.has(clean(item.batch_update?.sow_batch_id))) return false;
+    if (item.kind === "material_update" && (harvestIds.has(clean(item.material_update?.source_id)) || lotIds.has(clean(item.material_update?.source_id)))) return false;
+    if (item.kind === "seedling" && seedlingIds.has(clean(item.seedling?.seedling_id))) return false;
     const linkedId = clean(item.milestone?.seedling_id || item.update?.seedling_id);
-    return linkedId !== seedlingId;
+    return !seedlingIds.has(linkedId);
   }));
   window.dispatchEvent(new CustomEvent("lab-data-changed", {detail: {deleted: true}}));
 }
@@ -886,7 +906,7 @@ function clearPendingLabItems() {
 
 function buildLabExport(items = getPendingLabItems()) {
   return {
-    version: 1,
+    version: 2,
     exportedAt: new Date().toISOString(),
     items: (items || []).map(item => {
       const kind = clean(item.kind);
@@ -3917,11 +3937,23 @@ async function openImageImportQueue() {
   `).join("");
   const labRows = labItems.map(item => {
     const data = item[item.kind] || {};
-    const title = item.kind === "seedling"
-      ? `Ny fröplanta · ${data.provisional_id || ""}`
-      : item.kind === "milestone"
-        ? `${data.type || "Milstolpe"} · ${data.date || ""}`
-        : `Uppdatera · ${data.seedling_id || ""}`;
+    const title = item.kind === "crossing"
+      ? `Ny korsning · ${data.mother_name || ""} × ${data.father_name || ""}`
+      : item.kind === "seed_harvest"
+        ? `Ny fröskörd · ${data.code || ""}`
+        : item.kind === "seed_lot"
+          ? `Nytt fröparti · ${data.code || ""}`
+          : item.kind === "sow_batch"
+            ? `Ny såbatch · ${data.full_code || data.batch_code || ""}`
+            : item.kind === "batch_update"
+              ? `Uppdaterad såbatch · ${data.sow_batch_id || ""}`
+              : item.kind === "material_update"
+                ? `Justerat frölager · ${data.seeds_remaining || "0"} kvar`
+                : item.kind === "seedling"
+                  ? `Ny fröplanta · ${data.provisional_id || ""}`
+                  : item.kind === "milestone"
+                    ? `${data.type || "Milstolpe"} · ${data.date || ""}`
+                    : `Uppdatera · ${data.seedling_id || ""}`;
     return `
       <article class="import-item">
         <div class="import-item-icon" aria-hidden="true">🌱</div>

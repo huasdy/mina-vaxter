@@ -7,12 +7,14 @@
   const VALID_SPECIES = new Set(["Alla", "Hibiskus", "Pelargon", "Stapelia"]);
   const ACTIVE_SEEDLING_STATUSES = new Set(["Under uppdragning", "Redo för bedömning"]);
   const CONCLUDED_STATUSES = new Set(["I samlingen", "Gallrad", "Död", "Bortskänkt"]);
+  const ACTIVE_CROSSING_STATUSES = new Set(["Pollinerad", "Frö utvecklas", "Frö skördat"]);
 
   const content = document.querySelector("#labContent");
   const speciesFilters = document.querySelector("#speciesFilters");
   const viewTabs = document.querySelector("#viewTabs");
   const infoDialog = document.querySelector("#infoDialog");
   const infoDialogContent = document.querySelector("#infoDialogContent");
+  const newLabItem = document.querySelector("#newLabItem");
 
   let snapshot = null;
   let model = null;
@@ -44,15 +46,66 @@
 
   function combinedLabData() {
     const data = {
+      crossings: (snapshot.lab?.crossings || []).map(row => ({...row})),
+      seedHarvests: (snapshot.lab?.seedHarvests || []).map(row => ({...row})),
+      seedLots: (snapshot.lab?.seedLots || []).map(row => ({...row})),
+      sowBatches: (snapshot.lab?.sowBatches || []).map(row => ({...row})),
       seedlings: (snapshot.lab?.seedlings || []).map(row => ({...row})),
       photos: (snapshot.lab?.photos || []).map(row => ({...row})),
       milestones: (snapshot.lab?.milestones || []).map(row => ({...row}))
     };
+    const crossingsById = new Map(data.crossings.map(row => [clean(row.crossing_id), row]));
+    const harvestsById = new Map(data.seedHarvests.map(row => [clean(row.seed_harvest_id), row]));
+    const lotsById = new Map(data.seedLots.map(row => [clean(row.seed_lot_id), row]));
+    const batchesById = new Map(data.sowBatches.map(row => [clean(row.sow_batch_id), row]));
     const seedlingsById = new Map(data.seedlings.map(row => [clean(row.seedling_id), row]));
     const milestoneIds = new Set(data.milestones.map(row => clean(row.milestone_id)));
     const operations = typeof getPendingLabItems === "function" ? getPendingLabItems() : [];
     operations.forEach(operation => {
-      if (operation.kind === "seedling") {
+      if (operation.kind === "crossing") {
+        const row = {...(operation.crossing || {})};
+        if (clean(row.crossing_id) && !crossingsById.has(clean(row.crossing_id))) {
+          data.crossings.push(row);
+          crossingsById.set(clean(row.crossing_id), row);
+        }
+      } else if (operation.kind === "seed_harvest") {
+        const row = {...(operation.seed_harvest || {})};
+        if (clean(row.seed_harvest_id) && !harvestsById.has(clean(row.seed_harvest_id))) {
+          data.seedHarvests.push(row);
+          harvestsById.set(clean(row.seed_harvest_id), row);
+          const crossing = crossingsById.get(clean(row.crossing_id));
+          if (crossing && !["Avslutad", "Misslyckad"].includes(clean(crossing.status))) crossing.status = "Frö skördat";
+        }
+      } else if (operation.kind === "seed_lot") {
+        const row = {...(operation.seed_lot || {})};
+        if (clean(row.seed_lot_id) && !lotsById.has(clean(row.seed_lot_id))) {
+          data.seedLots.push(row);
+          lotsById.set(clean(row.seed_lot_id), row);
+        }
+      } else if (operation.kind === "sow_batch") {
+        const row = {...(operation.sow_batch || {})};
+        if (clean(row.sow_batch_id) && !batchesById.has(clean(row.sow_batch_id))) {
+          data.sowBatches.push(row);
+          batchesById.set(clean(row.sow_batch_id), row);
+          const material = clean(row.source_type) === "seed_harvest" ? harvestsById.get(clean(row.source_id)) : lotsById.get(clean(row.source_id));
+          if (material && clean(material.seeds_remaining) !== "") material.seeds_remaining = String(Math.max(0, number(material.seeds_remaining) - number(row.seeds_sown)));
+        }
+      } else if (operation.kind === "batch_update") {
+        const update = operation.batch_update || {};
+        const batch = batchesById.get(clean(update.sow_batch_id));
+        if (batch) {
+          if (clean(update.germinated_count) !== "") batch.germinated_count = clean(update.germinated_count);
+          if (Object.hasOwn(update, "germinated_date")) batch.germinated_date = clean(update.germinated_date);
+          if (Object.hasOwn(update, "notes")) batch.notes = clean(update.notes);
+        }
+      } else if (operation.kind === "material_update") {
+        const update = operation.material_update || {};
+        const material = clean(update.source_type) === "seed_harvest" ? harvestsById.get(clean(update.source_id)) : lotsById.get(clean(update.source_id));
+        if (material) {
+          material.seeds_remaining = clean(update.seeds_remaining);
+          if (Object.hasOwn(update, "notes")) material.notes = clean(update.notes);
+        }
+      } else if (operation.kind === "seedling") {
         const row = {...(operation.seedling || {})};
         if (clean(row.seedling_id) && !seedlingsById.has(clean(row.seedling_id))) {
           data.seedlings.push(row);
@@ -125,7 +178,14 @@
     const view = VALID_VIEWS.has(params.get("vy")) ? params.get("vy") : "aktivt";
     const species = VALID_SPECIES.has(params.get("art")) ? params.get("art") : "Alla";
     const status = ["Alla", "Under uppdragning", "Redo för bedömning"].includes(params.get("status")) ? params.get("status") : "Alla";
-    return {view, species, status, batch: params.get("batch") || "", seedling: params.get("planta") || ""};
+    const sowSection = params.get("del") === "material" ? "material" : "batcher";
+    return {
+      view, species, status, sowSection,
+      batch: params.get("batch") || "",
+      seedling: params.get("planta") || "",
+      crossing: params.get("korsning") || "",
+      material: params.get("material") || ""
+    };
   }
 
   function updateRoute(changes, push = true) {
@@ -177,10 +237,11 @@
         species: crossing.category === "Hibiskus" ? "Hibiskus" : "Pelargon",
         name: `${parent(crossing.mother_id)} ♀ × ${parent(crossing.father_id)} ♂`,
         active: clean(crossing.status) !== "Avslutad",
-        href: `korsningar.html#${encodeURIComponent(crossing.crossing_id)}`
+        href: `korsningar.html#${encodeURIComponent(crossing.crossing_id)}`,
+        adapter: true
       };
     });
-    const crossingById = new Map(crossings.map(row => [row.crossing_id, row]));
+    const legacyCrossingById = new Map(crossings.map(row => [row.crossing_id, row]));
     const seedLotById = new Map((snapshot.crossings?.seedLots || []).map(row => [row.seed_lot_id, row]));
 
     const seedlings = [];
@@ -238,7 +299,7 @@
     const pelargonPlants = plants("Pelargon");
     (snapshot.crossings?.sowBatches || []).forEach(batch => {
       const lot = seedLotById.get(batch.seed_lot_id) || {};
-      const crossing = crossingById.get(lot.crossing_id) || {};
+      const crossing = legacyCrossingById.get(lot.crossing_id) || {};
       const children = pelargonPlants.filter(row => clean(row.sow_batch_id) === batch.sow_batch_id);
       const fullCode = [lot.seed_lot_code, batch.sow_code].filter(Boolean).join("-") || batch.sow_code || batch.sow_batch_id;
       batches.push({
@@ -363,6 +424,118 @@
     });
 
     const lab = combinedLabData();
+    const labCrossingById = new Map();
+    lab.crossings.forEach(row => {
+      const crossing = {
+        crossing_id: clean(row.crossing_id),
+        species: clean(row.species_group),
+        motherId: clean(row.mother_id),
+        motherName: clean(row.mother_name),
+        fatherId: clean(row.father_id),
+        fatherName: clean(row.father_name),
+        name: `${clean(row.mother_name)} ♀ × ${clean(row.father_name)} ♂`,
+        pollinatedDate: clean(row.pollinated_date),
+        status: clean(row.status) || "Pollinerad",
+        note: clean(row.notes),
+        createdAt: clean(row.created_at),
+        active: ACTIVE_CROSSING_STATUSES.has(clean(row.status)),
+        adapter: false,
+        harvests: []
+      };
+      crossings.push(crossing);
+      labCrossingById.set(crossing.crossing_id, crossing);
+    });
+
+    const materials = [];
+    const materialById = new Map();
+    lab.seedHarvests.forEach(row => {
+      const crossing = labCrossingById.get(clean(row.crossing_id));
+      if (!crossing) return;
+      const material = {
+        id: clean(row.seed_harvest_id),
+        type: "seed_harvest",
+        label: "Fröskörd",
+        code: clean(row.code),
+        species: crossing.species,
+        taxon: crossing.name,
+        sourceName: crossing.name,
+        date: clean(row.harvested_date),
+        pollinatedDate: clean(row.pollinated_date),
+        developmentDate: clean(row.seed_development_date),
+        original: clean(row.seeds_harvested) === "" ? null : number(row.seeds_harvested),
+        remaining: clean(row.seeds_remaining) === "" ? null : number(row.seeds_remaining),
+        notes: clean(row.notes),
+        crossing,
+        raw: row,
+        batches: []
+      };
+      materials.push(material);
+      materialById.set(material.id, material);
+      crossing.harvests.push(material);
+    });
+    lab.seedLots.forEach(row => {
+      const material = {
+        id: clean(row.seed_lot_id),
+        type: "seed_lot",
+        label: "Fröparti",
+        code: clean(row.code),
+        species: clean(row.species_group),
+        taxon: clean(row.taxon),
+        sourceName: clean(row.supplier) || "Okänd källa",
+        date: clean(row.acquired_date),
+        original: clean(row.seeds_original) === "" ? null : number(row.seeds_original),
+        remaining: clean(row.seeds_remaining) === "" ? null : number(row.seeds_remaining),
+        price: clean(row.price),
+        currency: clean(row.currency),
+        sourceCross: clean(row.source_cross),
+        notes: clean(row.notes),
+        raw: row,
+        batches: []
+      };
+      materials.push(material);
+      materialById.set(material.id, material);
+    });
+    lab.sowBatches.forEach(row => {
+      const material = materialById.get(clean(row.source_id)) || null;
+      const seedsSown = number(row.seeds_sown);
+      const germinated = number(row.germinated_count);
+      const batch = {
+        id: clean(row.sow_batch_id),
+        species: clean(row.species_group),
+        name: clean(row.taxon) || material?.taxon || clean(row.source_label) || "Sådd",
+        fullCode: clean(row.full_code),
+        shortCode: clean(row.batch_code),
+        sownDate: clean(row.sown_date),
+        seedsSown,
+        germinated,
+        germinatedExact: true,
+        germinatedDate: clean(row.germinated_date),
+        registered: 0,
+        legacyRegistered: 0,
+        raising: 0,
+        ready: 0,
+        remaining: Math.max(0, seedsSown - germinated),
+        remainingExact: true,
+        kept: 0,
+        concluded: 0,
+        active: true,
+        activeSowing: true,
+        originLabel: material ? `${material.label} ${material.code}` : clean(row.source_label) || "Äldre/okänt ursprung",
+        originDetail: material ? material.sourceName : clean(row.source_label),
+        originHref: "",
+        actionHref: "",
+        history: [],
+        materialId: material?.id || "",
+        sourceType: clean(row.source_type),
+        sourceLabel: clean(row.source_label),
+        containerCount: clean(row.container_count) === "" ? null : number(row.container_count),
+        notes: clean(row.notes),
+        adapter: false,
+        seedlings: []
+      };
+      batches.push(batch);
+      if (material) material.batches.push(batch);
+    });
     const labPhotosBySeedling = new Map();
     lab.photos.forEach(photo => {
       const rows = labPhotosBySeedling.get(clean(photo.seedling_id)) || [];
@@ -425,11 +598,15 @@
       batch.ready = number(batch.ready) + realSeedlings.filter(row => row.status === "Redo för bedömning").length;
       batch.kept = number(batch.legacyKept ?? batch.kept) + realSeedlings.filter(row => row.status === "I samlingen").length;
       batch.concluded = number(batch.legacyConcluded ?? batch.concluded) + realSeedlings.filter(row => ["Gallrad", "Död", "Bortskänkt"].includes(row.status)).length;
+      if (realSeedlings.some(row => ACTIVE_SEEDLING_STATUSES.has(row.status))) batch.active = true;
     });
+    const crossingById = new Map(crossings.map(row => [row.crossing_id, row]));
     const seedlingById = new Map(seedlings.map(row => [row.id, row]));
     batches.sort((a, b) => clean(b.sownDate).localeCompare(clean(a.sownDate)) || clean(a.fullCode).localeCompare(clean(b.fullCode), "sv"));
     seedlings.sort((a, b) => clean(b.germinatedDate || b.sownDate).localeCompare(clean(a.germinatedDate || a.sownDate)) || clean(a.shortId).localeCompare(clean(b.shortId), "sv", {numeric: true}));
-    return {crossings, batches, seedlings, batchById, seedlingById};
+    materials.sort((a, b) => clean(b.date).localeCompare(clean(a.date)) || clean(a.code).localeCompare(clean(b.code), "sv", {numeric: true}));
+    crossings.sort((a, b) => clean(b.pollinatedDate || b.created_at).localeCompare(clean(a.pollinatedDate || a.created_at)) || clean(a.name).localeCompare(clean(b.name), "sv"));
+    return {crossings, crossingById, materials, materialById, batches, seedlings, batchById, seedlingById};
   }
 
   function matchesSpecies(row, species) {
@@ -524,20 +701,41 @@
 
   function renderCrossings(species) {
     const rows = model.crossings.filter(row => matchesSpecies(row, species));
-    const cards = rows.length ? `<div class="crossing-grid">${rows.map(row => `<a class="crossing-card" href="${esc(row.href)}">
+    const cards = rows.length ? `<div class="crossing-grid">${rows.map(row => row.adapter === false ? `<button type="button" class="crossing-card" data-open-crossing="${esc(row.crossing_id)}">
       <span class="chip-row"><span class="chip green">${esc(row.species)}</span><span class="chip ${row.active ? "" : "ended"}">${esc(row.status)}</span></span>
       <h3>${esc(row.name)}</h3>
-      <span class="crossing-meta">${esc(row.crossing_id)}</span>
+      <span class="crossing-meta">Pollinerad ${esc(displayDate(row.pollinatedDate))}</span>
       ${row.note ? `<p>${esc(row.note)}</p>` : ""}
-      <span class="batch-next">Fortsätt i korsningsflödet →</span>
+      <span class="batch-next">${row.harvests.length} fröskördar · öppna →</span>
+    </button>` : `<a class="crossing-card" href="${esc(row.href)}">
+      <span class="chip-row"><span class="chip green">${esc(row.species)}</span><span class="chip">Legacy</span><span class="chip ${row.active ? "" : "ended"}">${esc(row.status)}</span></span>
+      <h3>${esc(row.name)}</h3><span class="crossing-meta">${esc(row.crossing_id)}</span>
+      ${row.note ? `<p>${esc(row.note)}</p>` : ""}<span class="batch-next">Öppna äldre korsningsflöde →</span>
     </a>`).join("")}</div>` : emptyState("Inga registrerade korsningar i valt artfilter.");
-    return `<div class="view-intro"><div><h2>Korsningar</h2><p>Pågående och avslutade korsningar. Registrering fortsätter tills vidare i det befintliga, validerade korsningsflödet.</p></div><a class="text-link" href="korsningar.html">Ny korsning →</a></div>${cards}`;
+    return `<div class="view-intro"><div><h2>Korsningar</h2><p>Nya korsningar skapas och följs direkt i Labbet. Äldre poster ligger kvar oförändrade.</p></div><button type="button" class="primary-action" data-new-crossing>Ny korsning</button></div>${cards}`;
   }
 
-  function renderBatches(species) {
+  function materialCard(material) {
+    const remaining = material.remaining === null ? "Antal kvar ej registrerat" : `${material.remaining} frön kvar`;
+    return `<button type="button" class="material-card" data-open-material="${esc(material.id)}">
+      <span class="chip-row"><span class="chip green">${esc(material.species)}</span><span class="chip">${esc(material.label)}</span></span>
+      <h3>${esc(material.type === "seed_harvest" ? material.sourceName : material.taxon)}</h3>
+      <p><strong>${esc(material.code)}</strong> · ${esc(material.type === "seed_harvest" ? displayDate(material.date) : material.sourceName)}</p>
+      <span class="batch-progress">${esc(remaining)}</span>
+      <span class="batch-next">${material.batches.length} såbatcher · öppna →</span>
+    </button>`;
+  }
+
+  function renderBatches(species, sowSection) {
+    const tabs = `<div class="subview-tabs" role="group" aria-label="Innehåll i Sådder"><button type="button" data-sow-section="material" class="${sowSection === "material" ? "active" : ""}">Frömaterial</button><button type="button" data-sow-section="batcher" class="${sowSection === "batcher" ? "active" : ""}">Såbatcher</button></div>`;
+    if (sowSection === "material") {
+      const rows = model.materials.filter(row => matchesSpecies(row, species));
+      const cards = rows.length ? `<div class="material-grid">${rows.map(materialCard).join("")}</div>` : emptyState("Inga fröskördar eller fröpartier i Labbet ännu.");
+      return `<div class="view-intro"><div><h2>Frömaterial</h2><p>Fröskördar och externa fröpartier hålls åtskilda och kan ge flera såbatcher.</p></div>${tabs}</div>${cards}`;
+    }
     const rows = model.batches.filter(row => matchesSpecies(row, species));
     const cards = rows.length ? `<div class="batch-grid">${rows.map(batchCard).join("")}</div>` : emptyState("Inga såbatcher i valt artfilter.");
-    return `<div class="view-intro"><div><h2>Sådder</h2><p>Batcher samlar sådatum, groning, individualisering och härkomst utan att flytta eller skriva om befintlig data.</p></div><span class="section-count">${rows.length} batcher</span></div>${cards}`;
+    return `<div class="view-intro"><div><h2>Sådder</h2><p>Batcher samlar sådatum, groning, individualisering och härkomst utan att flytta eller skriva om befintlig data.</p></div>${tabs}</div>${cards}`;
   }
 
   function seedlingAge(seedling) {
@@ -569,11 +767,50 @@
     return sorted.length ? `<div class="history-list">${sorted.map(row => `<div class="history-item"><span>${esc(displayDate(row.date, true))}</span><span><strong>${esc(row.type)}</strong>${row.note ? `<br>${esc(row.note)}` : ""}</span></div>`).join("")}</div>` : '<p>Ingen historik registrerad.</p>';
   }
 
+  function renderCrossingDetail(crossing) {
+    return `<section class="detail-shell">
+      <button type="button" class="back-button" data-close-detail>← Till korsningar</button>
+      <article class="detail-card">
+        <div class="detail-hero"><div><div class="detail-kicker">Egen korsning · ${esc(crossing.species)}</div><h2>${esc(crossing.name)}</h2><div class="detail-code">Pollinerad ${esc(displayDate(crossing.pollinatedDate, true))}</div></div><div class="detail-actions"><button type="button" class="primary-action" data-register-harvest="${esc(crossing.crossing_id)}">Registrera fröskörd</button><p class="action-note">En korsning kan ge flera separata fröskördar.</p></div></div>
+        <div class="detail-body">
+          <dl class="fact-grid"><div class="fact"><dt>Status</dt><dd>${esc(crossing.status)}</dd></div><div class="fact"><dt>Pollineringsdatum</dt><dd>${esc(displayDate(crossing.pollinatedDate, true))}</dd></div><div class="fact"><dt>Fröskördar</dt><dd>${crossing.harvests.length}</dd></div><div class="fact"><dt>Såbatcher</dt><dd>${crossing.harvests.reduce((sum, row) => sum + row.batches.length, 0)}</dd></div></dl>
+          <section class="detail-section"><h3>Anteckningar</h3><p>${esc(crossing.note || "Ingen anteckning ännu.")}</p></section>
+          <section class="detail-section"><h3>Fröskördar</h3>${crossing.harvests.length ? `<div class="material-grid">${crossing.harvests.map(materialCard).join("")}</div>` : emptyState("Ingen fröskörd registrerad ännu.")}</section>
+        </div>
+      </article>
+    </section>`;
+  }
+
+  function renderMaterialDetail(material) {
+    const price = material.type === "seed_lot" && material.price ? `${material.price} ${material.currency}`.trim() : "—";
+    const origin = material.type === "seed_harvest" ? material.sourceName : material.sourceName;
+    return `<section class="detail-shell">
+      <button type="button" class="back-button" data-close-detail>← Till frömaterial</button>
+      <article class="detail-card">
+        <div class="detail-hero"><div><div class="detail-kicker">${esc(material.label)} · ${esc(material.species)}</div><h2>${esc(material.type === "seed_harvest" ? material.sourceName : material.taxon)}</h2><div class="detail-code">${esc(material.code)} · ${esc(origin)}</div></div><div class="detail-actions"><button type="button" class="primary-action" data-sow-material="${esc(material.id)}">Så frön</button><button type="button" class="secondary-action" data-adjust-material="${esc(material.id)}">Justera frölager</button><p class="action-note">Varje ny sådd får nästa lediga B-kod inom detta frömaterial.</p></div></div>
+        <div class="detail-body">
+          <dl class="fact-grid">
+            <div class="fact"><dt>${material.type === "seed_harvest" ? "Skördade frön" : "Ursprungligt antal"}</dt><dd>${esc(material.original === null ? "Ej räknat" : material.original)}</dd></div>
+            <div class="fact"><dt>Frön kvar</dt><dd>${esc(material.remaining === null ? "Ej räknat" : material.remaining)}</dd></div>
+            <div class="fact"><dt>${material.type === "seed_harvest" ? "Skördedatum" : "Mottaget/inköpt"}</dt><dd>${esc(material.date ? displayDate(material.date, true) : "Ej registrerat")}</dd></div>
+            <div class="fact"><dt>${material.type === "seed_harvest" ? "Pollineringsdatum" : "Pris"}</dt><dd>${esc(material.type === "seed_harvest" ? displayDate(material.pollinatedDate, true) : price)}</dd></div>
+          </dl>
+          ${material.type === "seed_harvest" ? `<section class="detail-section"><h3>Härkomst</h3><button type="button" class="origin-link" data-open-crossing="${esc(material.crossing.crossing_id)}"><span>Egen korsning<strong>${esc(material.sourceName)}</strong></span><b>→</b></button></section>` : `<section class="detail-section"><h3>Härkomst</h3><p>${esc(material.sourceCross ? `${material.sourceName} · uppgiven korsning: ${material.sourceCross}` : material.sourceName)}</p></section>`}
+          <section class="detail-section"><h3>Anteckningar</h3><p>${esc(material.notes || "Ingen anteckning ännu.")}</p></section>
+          <section class="detail-section"><h3>Såbatcher</h3>${material.batches.length ? `<div class="batch-grid">${material.batches.map(batchCard).join("")}</div>` : emptyState("Inga såbatcher ännu.")}</section>
+        </div>
+      </article>
+    </section>`;
+  }
+
   function renderBatchDetail(batch) {
     const shouldRegisterGermination = batch.germinated === 0;
+    const germinationAction = batch.adapter === false
+      ? `<button type="button" class="primary-action" data-edit-batch="${esc(batch.id)}">Registrera grodd</button>`
+      : `<a class="primary-action" href="${esc(batch.actionHref)}">Registrera grodd</a>`;
     const action = shouldRegisterGermination
-      ? `<a class="primary-action" href="${esc(batch.actionHref)}">Registrera grodd</a><button type="button" class="secondary-action" data-register-seedling="${esc(batch.id)}">Registrera fröplanta</button>`
-      : `<button type="button" class="primary-action" data-register-seedling="${esc(batch.id)}">Registrera fröplanta</button>`;
+      ? `${germinationAction}<button type="button" class="secondary-action" data-register-seedling="${esc(batch.id)}">Registrera fröplanta</button>`
+      : `<button type="button" class="primary-action" data-register-seedling="${esc(batch.id)}">Registrera fröplanta</button>${batch.adapter === false ? `<button type="button" class="secondary-action" data-edit-batch="${esc(batch.id)}">Uppdatera groning</button>` : ""}`;
     return `<section class="detail-shell">
       <button type="button" class="back-button" data-close-detail>← Till sådder</button>
       <article class="detail-card">
@@ -590,7 +827,7 @@
             <div class="fact"><dt>Behållna i samlingen</dt><dd>${batch.kept}</dd></div>
             <div class="fact"><dt>Avslutade</dt><dd>${batch.concluded}</dd></div>
           </dl>
-          <section class="detail-section"><h3>Ursprung</h3><a class="origin-link" href="${esc(batch.originHref)}"><span>Härkomst<strong>${esc(batch.originLabel)} → ${esc(batch.originDetail)}</strong></span><b>→</b></a></section>
+          <section class="detail-section"><h3>Ursprung</h3>${batch.materialId ? `<button type="button" class="origin-link" data-open-material="${esc(batch.materialId)}"><span>Härkomst<strong>${esc(batch.originLabel)} → ${esc(batch.originDetail)}</strong></span><b>→</b></button>` : `<a class="origin-link" href="${esc(batch.originHref || "#")}"><span>Härkomst<strong>${esc(batch.originLabel)} → ${esc(batch.originDetail)}</strong></span><b>→</b></a>`}</section>
           ${batch.seedlings?.length ? `<section class="detail-section"><h3>Fröplantor</h3><div class="seedling-grid">${batch.seedlings.filter(row => row.id && model.seedlingById.has(row.id)).map(row => seedlingCard(model.seedlingById.get(row.id))).join("")}</div></section>` : ""}
           <details><summary>Historik och övriga detaljer</summary>${historyHtml(batch.history)}</details>
         </div>
@@ -614,9 +851,13 @@
       {title: `Såbatch ${batch?.shortCode || seedling.groupCode}`, sub: batch?.sownDate ? `Sådd ${displayDate(batch.sownDate, true)}` : ""}
     ];
     if (seedling.adapter === false && batch) {
+      const material = model.materialById.get(batch.materialId);
       lineage.push({title: batch.originLabel, sub: ""});
-      if (batch.originDetail) lineage.push({title: batch.originDetail, sub: batch.species === "Stapelia" ? "Leverantör" : "Korsning"});
-      if (batch.species === "Stapelia" && seedling.taxon && seedling.taxon !== batch.originDetail) lineage.push({title: seedling.taxon, sub: "Taxon"});
+      if (material?.type === "seed_harvest") lineage.push({title: material.sourceName, sub: "Egen korsning"});
+      else if (material?.type === "seed_lot") {
+        if (material.sourceName) lineage.push({title: material.sourceName, sub: "Leverantör/källa"});
+        if (material.taxon) lineage.push({title: material.taxon, sub: "Taxon"});
+      } else if (batch.originDetail) lineage.push({title: batch.originDetail, sub: "Äldre/okänt ursprung"});
     } else {
       lineage.push({title: batch?.originLabel || `Fröparti ${seedling.groupCode}`, sub: batch?.originDetail || seedling.source});
       if (seedling.parentage) lineage.push({title: seedling.parentage, sub: "Registrerad härkomst"});
@@ -670,6 +911,16 @@
     if (!model) return;
     const current = route();
     syncControls(current);
+    if (current.crossing) {
+      const crossing = model.crossingById.get(current.crossing);
+      content.innerHTML = crossing?.adapter === false ? renderCrossingDetail(crossing) : emptyState("Korsningen kunde inte hittas.");
+      return;
+    }
+    if (current.material) {
+      const material = model.materialById.get(current.material);
+      content.innerHTML = material ? renderMaterialDetail(material) : emptyState("Frömaterialet kunde inte hittas.");
+      return;
+    }
     if (current.batch) {
       const batch = model.batchById.get(current.batch);
       content.innerHTML = batch ? renderBatchDetail(batch) : emptyState("Såbatchen kunde inte hittas.");
@@ -681,7 +932,7 @@
       return;
     }
     if (current.view === "korsningar") content.innerHTML = renderCrossings(current.species);
-    else if (current.view === "sadder") content.innerHTML = renderBatches(current.species);
+    else if (current.view === "sadder") content.innerHTML = renderBatches(current.species, current.sowSection);
     else if (current.view === "uppdragning") content.innerHTML = renderSeedlings(current.species, current.status);
     else content.innerHTML = renderActive(current.species);
   }
@@ -700,11 +951,228 @@
       try {
         await submit(new FormData(form));
         closeInfoDialog();
+      } catch (error) {
+        alert(error?.message || "Kunde inte spara ändringen.");
       } finally {
         if (button) button.disabled = false;
       }
     });
-    if (typeof infoDialog.showModal === "function") infoDialog.showModal();
+    if (typeof infoDialog.showModal === "function" && !infoDialog.open) infoDialog.showModal();
+  }
+
+  function closeDialogButton() {
+    return '<button type="button" class="secondary-action" data-dialog-close>Avbryt</button>';
+  }
+
+  function collectionParents(species) {
+    const category = species === "Stapelia" ? "Stapeliader" : species;
+    return plants(category)
+      .filter(row => species !== "Hibiskus" || !/^PL-H/.test(clean(row.id)))
+      .map(row => ({
+        id: clean(row.id),
+        name: clean(row.nickname) || clean(row.full_botanical_name) || clean(row.name) || clean(row.short_name) || clean(row.id)
+      }))
+      .filter(row => row.id && row.name)
+      .sort((a, b) => a.name.localeCompare(b.name, "sv"));
+  }
+
+  function openNewMenu() {
+    infoDialogContent.innerHTML = `<h2>+ Nytt i Labbet</h2><p>Välj var arbetsflödet ska börja.</p><div class="choice-grid">
+      <button type="button" data-choice="crossing"><strong>Ny korsning</strong><small>Moder ♀ × pollen ♂ med pollineringsdatum</small></button>
+      <button type="button" data-choice="seed-lot"><strong>Nytt fröparti</strong><small>Externt frömaterial med taxon och källa</small></button>
+      <button type="button" data-choice="sowing"><strong>Ny sådd</strong><small>Utgå från en fröskörd eller ett fröparti</small></button>
+    </div>`;
+    infoDialogContent.querySelectorAll("[data-choice]").forEach(button => button.addEventListener("click", () => {
+      if (button.dataset.choice === "crossing") openCrossingRegistration();
+      else if (button.dataset.choice === "seed-lot") openSeedLotRegistration();
+      else openSowBatchRegistration();
+    }));
+    if (typeof infoDialog.showModal === "function" && !infoDialog.open) infoDialog.showModal();
+  }
+
+  function openCrossingRegistration() {
+    showFormDialog(`<h2>Ny korsning</h2><p>Föräldranamnen sparas tillsammans med ID:n så historiken består även om en planta senare lämnar samlingen.</p>
+      <form class="lab-form">
+        <label>Artgrupp<select name="species_group"><option>Pelargon</option><option>Hibiskus</option><option>Stapelia</option></select></label>
+        <label>Pollineringsdatum<input name="pollinated_date" type="date" value="${today()}" max="${today()}" required></label>
+        <label>Moderplanta ♀<select name="mother_id"></select></label>
+        <label>Annat namn för moder<input name="mother_manual" placeholder="Används vid Annan/okänd"></label>
+        <label>Pollenplanta ♂<select name="father_id"></select></label>
+        <label>Annat namn för pollen<input name="father_manual" placeholder="Används vid Annan/okänd"></label>
+        <label>Status<select name="status"><option>Pollinerad</option><option>Frö utvecklas</option><option>Frö skördat</option><option>Avslutad</option><option>Misslyckad</option></select></label>
+        <label class="wide">Anteckning<textarea name="notes" rows="3"></textarea></label>
+        <div class="dialog-actions">${closeDialogButton()}<button type="submit" class="primary-action">Skapa korsning</button></div>
+      </form>`, async data => {
+      const species = clean(data.get("species_group"));
+      const parentRows = collectionParents(species);
+      const parent = (role) => {
+        const id = clean(data.get(`${role}_id`));
+        const manual = clean(data.get(`${role}_manual`));
+        const row = parentRows.find(item => item.id === id);
+        return {id: id === "__manual" ? "" : id, name: id === "__manual" ? manual : row?.name || manual};
+      };
+      const mother = parent("mother");
+      const father = parent("father");
+      if (!mother.name || !father.name) throw new Error("Både moder- och pollenplanta måste anges.");
+      const crossingId = uniqueId("LABC");
+      queueLabChange("crossing", {
+        crossing_id: crossingId, species_group: species,
+        mother_id: mother.id, mother_name: mother.name, father_id: father.id, father_name: father.name,
+        pollinated_date: isoDate(data.get("pollinated_date")), status: clean(data.get("status")),
+        notes: clean(data.get("notes")), created_at: new Date().toISOString()
+      });
+      await refreshModel();
+      updateRoute({vy: "korsningar", korsning: crossingId, material: null, batch: null, planta: null});
+    });
+    const form = infoDialogContent.querySelector("form");
+    const refreshParents = () => {
+      const species = form.elements.species_group.value;
+      const options = collectionParents(species).map(row => `<option value="${esc(row.id)}">${esc(row.name)} · ${esc(row.id)}</option>`).join("");
+      [form.elements.mother_id, form.elements.father_id].forEach(select => {
+        select.innerHTML = `${options}<option value="__manual">Annan/okänd…</option>`;
+      });
+    };
+    form.elements.species_group.addEventListener("change", refreshParents);
+    refreshParents();
+  }
+
+  function openSeedHarvestRegistration(crossing) {
+    const sequence = crossing.harvests.length;
+    const code = `${String(new Date().getFullYear()).slice(-2)}${String.fromCharCode(65 + Math.min(sequence, 25))}`;
+    showFormDialog(`<h2>Registrera fröskörd</h2><p>${esc(crossing.name)}</p><form class="lab-form">
+      <label>Kod<input name="code" value="${esc(code)}" maxlength="24" required></label>
+      <label>Pollineringsdatum<input name="pollinated_date" type="date" value="${esc(crossing.pollinatedDate)}" max="${today()}"></label>
+      <label>Frö började utvecklas<input name="seed_development_date" type="date" max="${today()}"></label>
+      <label>Skördedatum<input name="harvested_date" type="date" value="${today()}" max="${today()}" required></label>
+      <label>Antal skördade<input name="seeds_harvested" type="number" min="0" inputmode="numeric"></label>
+      <label>Antal kvar<input name="seeds_remaining" type="number" min="0" inputmode="numeric" placeholder="Samma som skördade"></label>
+      <label class="wide">Anteckning<textarea name="notes" rows="3"></textarea></label>
+      <div class="dialog-actions">${closeDialogButton()}<button type="submit" class="primary-action">Spara fröskörd</button></div>
+    </form>`, async data => {
+      const harvested = clean(data.get("seeds_harvested"));
+      const harvestId = uniqueId("LABH");
+      queueLabChange("seed_harvest", {
+        seed_harvest_id: harvestId, crossing_id: crossing.crossing_id, code: clean(data.get("code")),
+        pollinated_date: isoDate(data.get("pollinated_date")), seed_development_date: isoDate(data.get("seed_development_date")),
+        harvested_date: isoDate(data.get("harvested_date")), seeds_harvested: harvested,
+        seeds_remaining: clean(data.get("seeds_remaining")) || harvested, notes: clean(data.get("notes")),
+        created_at: new Date().toISOString()
+      });
+      await refreshModel();
+      updateRoute({vy: "sadder", del: "material", material: harvestId, korsning: null});
+    });
+  }
+
+  function nextSeedLotCode() {
+    const numbers = model.materials.filter(row => row.type === "seed_lot").map(row => clean(row.code).match(/^F(\d+)$/i)).filter(Boolean).map(match => number(match[1]));
+    return `F${String(Math.max(0, ...numbers) + 1).padStart(2, "0")}`;
+  }
+
+  function openSeedLotRegistration() {
+    showFormDialog(`<h2>Nytt fröparti</h2><p>Externt frömaterial hålls separat från egna korsningar och från den permanenta samlingen.</p><form class="lab-form">
+      <label>Artgrupp<select name="species_group"><option>Stapelia</option><option>Hibiskus</option><option>Pelargon</option></select></label>
+      <label>Fröpartikod<input name="code" value="${esc(nextSeedLotCode())}" maxlength="24" required></label>
+      <label class="wide">Art/taxon<input name="taxon" required></label>
+      <label>Leverantör/källa<input name="supplier"></label>
+      <label>Mottaget eller inköpt<input name="acquired_date" type="date" max="${today()}"></label>
+      <label>Ursprungligt antal<input name="seeds_original" type="number" min="0" inputmode="numeric"></label>
+      <label>Antal kvar<input name="seeds_remaining" type="number" min="0" inputmode="numeric" placeholder="Samma som ursprungligt"></label>
+      <label>Inköpspris<input name="price" type="number" min="0" step="0.01" inputmode="decimal"></label>
+      <label>Valuta<input name="currency" maxlength="3" placeholder="SEK"></label>
+      <label class="wide">Korsningsinformation från säljaren<input name="source_cross" placeholder="Uppgift från källan – skapar ingen egen korsning"></label>
+      <label class="wide">Anteckning<textarea name="notes" rows="3"></textarea></label>
+      <div class="dialog-actions">${closeDialogButton()}<button type="submit" class="primary-action">Spara fröparti</button></div>
+    </form>`, async data => {
+      const original = clean(data.get("seeds_original"));
+      const lotId = uniqueId("LABL");
+      queueLabChange("seed_lot", {
+        seed_lot_id: lotId, species_group: clean(data.get("species_group")), taxon: clean(data.get("taxon")),
+        code: clean(data.get("code")), supplier: clean(data.get("supplier")), acquired_date: isoDate(data.get("acquired_date")),
+        seeds_original: original, seeds_remaining: clean(data.get("seeds_remaining")) || original,
+        price: clean(data.get("price")), currency: clean(data.get("currency")).toUpperCase(),
+        source_cross: clean(data.get("source_cross")), notes: clean(data.get("notes")), created_at: new Date().toISOString()
+      });
+      await refreshModel();
+      updateRoute({vy: "sadder", del: "material", material: lotId, korsning: null});
+    });
+  }
+
+  function nextBatchNumber(materialId) {
+    return Math.max(0, ...model.batches.filter(row => row.adapter === false && row.materialId === materialId).map(row => number(clean(row.shortCode).replace(/^B/, "")))) + 1;
+  }
+
+  function openSowBatchRegistration(selectedMaterial = null) {
+    const materialOptions = model.materials.map(row => `<option value="${esc(row.id)}"${selectedMaterial?.id === row.id ? " selected" : ""}>${esc(row.label)} ${esc(row.code)} · ${esc(row.taxon)} · ${row.remaining === null ? "antal okänt" : `${row.remaining} kvar`}</option>`).join("");
+    showFormDialog(`<h2>Ny sådd</h2><p>En såbatch måste ha en fröskörd, ett fröparti eller ett uttryckligt äldre/okänt ursprung.</p><form class="lab-form">
+      <label class="wide">Ursprung<select name="source_id">${materialOptions}<option value="__legacy">Äldre/okänt ursprung…</option></select></label>
+      <label data-legacy-field>Artgrupp vid äldre ursprung<select name="legacy_species"><option>Hibiskus</option><option>Pelargon</option><option>Stapelia</option></select></label>
+      <label data-legacy-field>Taxon/arbetsnamn<input name="legacy_taxon"></label>
+      <label class="wide" data-legacy-field>Beskriv ursprunget<input name="source_label" placeholder="T.ex. äldre fröpåse utan känt parti"></label>
+      <label>Sådatum<input name="sown_date" type="date" value="${today()}" max="${today()}" required></label>
+      <label>Antal sådda<input name="seeds_sown" type="number" min="1" inputmode="numeric" required></label>
+      <label>Antal krukor/behållare<input name="container_count" type="number" min="1" inputmode="numeric"></label>
+      <label>Batchkod<input name="batch_preview" disabled></label>
+      <label class="wide">Anteckning<textarea name="notes" rows="3"></textarea></label>
+      <div class="dialog-actions">${closeDialogButton()}<button type="submit" class="primary-action">Skapa såbatch</button></div>
+    </form>`, async data => {
+      const sourceIdValue = clean(data.get("source_id"));
+      const material = model.materialById.get(sourceIdValue) || null;
+      const legacy = sourceIdValue === "__legacy";
+      const sourceLabel = clean(data.get("source_label"));
+      if (legacy && !sourceLabel) throw new Error("Beskriv det äldre eller okända ursprunget.");
+      const seedsSown = number(data.get("seeds_sown"));
+      if (material?.remaining !== null && seedsSown > material.remaining) throw new Error(`Det finns bara ${material.remaining} frön kvar.`);
+      const batchNumber = material ? nextBatchNumber(material.id) : 1;
+      const batchCode = `B${String(batchNumber).padStart(2, "0")}`;
+      const batchId = uniqueId("LABB");
+      const sourceRoot = material?.code || "ÄLDRE";
+      queueLabChange("sow_batch", {
+        sow_batch_id: batchId, source_type: material?.type || "legacy", source_id: material?.id || uniqueId("LABO"),
+        source_label: legacy ? sourceLabel : "", batch_number: String(batchNumber), batch_code: batchCode,
+        full_code: `${sourceRoot}-${batchCode}`, species_group: material?.species || clean(data.get("legacy_species")),
+        taxon: material?.taxon || clean(data.get("legacy_taxon")) || sourceLabel, sown_date: isoDate(data.get("sown_date")),
+        seeds_sown: String(seedsSown), container_count: clean(data.get("container_count")), germinated_count: "0",
+        germinated_date: "", notes: clean(data.get("notes")), created_at: new Date().toISOString()
+      });
+      await refreshModel();
+      updateRoute({vy: "sadder", del: "batcher", batch: batchId, material: null, korsning: null});
+    });
+    const form = infoDialogContent.querySelector("form");
+    const refreshSource = () => {
+      const material = model.materialById.get(form.elements.source_id.value);
+      const legacy = form.elements.source_id.value === "__legacy";
+      form.querySelectorAll("[data-legacy-field]").forEach(label => { label.hidden = !legacy; });
+      const next = material ? nextBatchNumber(material.id) : 1;
+      form.elements.batch_preview.value = `B${String(next).padStart(2, "0")}`;
+    };
+    form.elements.source_id.addEventListener("change", refreshSource);
+    refreshSource();
+  }
+
+  function openMaterialAdjustment(material) {
+    showFormDialog(`<h2>Justera frölager</h2><p>${esc(material.label)} ${esc(material.code)} · justeringen sparar ett nytt faktiskt saldo.</p><form class="lab-form">
+      <label>Antal frön kvar<input name="seeds_remaining" type="number" min="0" value="${esc(material.remaining ?? "")}" inputmode="numeric" required></label>
+      <label class="wide">Anteckning<textarea name="notes" rows="3">${esc(material.notes)}</textarea></label>
+      <div class="dialog-actions">${closeDialogButton()}<button type="submit" class="primary-action">Spara saldo</button></div>
+    </form>`, async data => {
+      queueLabChange("material_update", {source_type: material.type, source_id: material.id, seeds_remaining: clean(data.get("seeds_remaining")), notes: clean(data.get("notes")), updated_at: new Date().toISOString()});
+      await refreshModel();
+      updateRoute({material: material.id});
+    });
+  }
+
+  function openBatchUpdate(batch) {
+    showFormDialog(`<h2>Registrera grodd</h2><p>${esc(batch.fullCode)} · groddantal och individuella fröplantor hålls separata.</p><form class="lab-form">
+      <label>Antal grodda<input name="germinated_count" type="number" min="0" max="${batch.seedsSown}" value="${batch.germinated}" inputmode="numeric" required></label>
+      <label>Första grodddatum<input name="germinated_date" type="date" value="${esc(batch.germinatedDate || today())}" max="${today()}"></label>
+      <label class="wide">Anteckning<textarea name="notes" rows="3">${esc(batch.notes || "")}</textarea></label>
+      <div class="dialog-actions">${closeDialogButton()}<button type="submit" class="primary-action">Spara groning</button></div>
+    </form>`, async data => {
+      const count = number(data.get("germinated_count"));
+      queueLabChange("batch_update", {sow_batch_id: batch.id, germinated_count: String(count), germinated_date: count ? isoDate(data.get("germinated_date")) : "", notes: clean(data.get("notes")), updated_at: new Date().toISOString()});
+      await refreshModel();
+      updateRoute({batch: batch.id});
+    });
   }
 
   function openSeedlingRegistration(batch) {
@@ -806,30 +1274,60 @@
   speciesFilters.addEventListener("click", event => {
     const button = event.target.closest("[data-species]");
     if (!button) return;
-    updateRoute({art: button.dataset.species, batch: null, planta: null});
+    updateRoute({art: button.dataset.species, batch: null, planta: null, korsning: null, material: null});
   });
 
   viewTabs.addEventListener("click", event => {
     const button = event.target.closest("[data-view]");
     if (!button) return;
-    updateRoute({vy: button.dataset.view, batch: null, planta: null});
+    updateRoute({vy: button.dataset.view, batch: null, planta: null, korsning: null, material: null});
   });
+
+  newLabItem.addEventListener("click", openNewMenu);
 
   content.addEventListener("click", event => {
     const batch = event.target.closest("[data-open-batch]");
     const seedling = event.target.closest("[data-open-seedling]");
+    const crossing = event.target.closest("[data-open-crossing]");
+    const material = event.target.closest("[data-open-material]");
     const group = event.target.closest("[data-open-group]");
     const status = event.target.closest("[data-status]");
+    const sowSection = event.target.closest("[data-sow-section]");
     const back = event.target.closest("[data-close-detail]");
+    const newCrossing = event.target.closest("[data-new-crossing]");
+    const registerHarvest = event.target.closest("[data-register-harvest]");
+    const sowMaterial = event.target.closest("[data-sow-material]");
+    const adjustMaterial = event.target.closest("[data-adjust-material]");
+    const editBatch = event.target.closest("[data-edit-batch]");
     const registerSeedling = event.target.closest("[data-register-seedling]");
     const addMilestone = event.target.closest("[data-add-seedling-milestone]");
     const editSeedling = event.target.closest("[data-edit-seedling]");
     const galleryPhoto = event.target.closest("[data-gallery-photo]");
-    if (batch) updateRoute({batch: batch.dataset.openBatch, planta: null});
-    else if (seedling) updateRoute({planta: seedling.dataset.openSeedling, batch: null});
+    if (batch) updateRoute({vy: "sadder", del: "batcher", batch: batch.dataset.openBatch, planta: null, korsning: null, material: null});
+    else if (seedling) updateRoute({vy: "uppdragning", planta: seedling.dataset.openSeedling, batch: null, korsning: null, material: null});
+    else if (crossing) updateRoute({vy: "korsningar", korsning: crossing.dataset.openCrossing, batch: null, planta: null, material: null});
+    else if (material) updateRoute({vy: "sadder", del: "material", material: material.dataset.openMaterial, batch: null, planta: null, korsning: null});
     else if (group) updateRoute({vy: "uppdragning", art: group.dataset.openGroup, status: "Alla", batch: null, planta: null});
     else if (status) updateRoute({status: status.dataset.status});
-    else if (back) updateRoute({batch: null, planta: null});
+    else if (sowSection) updateRoute({del: sowSection.dataset.sowSection, batch: null, planta: null, korsning: null, material: null});
+    else if (back) updateRoute({batch: null, planta: null, korsning: null, material: null});
+    else if (newCrossing) openCrossingRegistration();
+    else if (registerHarvest) {
+      const selectedCrossing = model.crossingById.get(registerHarvest.dataset.registerHarvest);
+      if (selectedCrossing?.adapter === false) openSeedHarvestRegistration(selectedCrossing);
+    }
+    else if (sowMaterial) {
+      const selectedMaterial = model.materialById.get(sowMaterial.dataset.sowMaterial);
+      if (selectedMaterial) openSowBatchRegistration(selectedMaterial);
+    }
+    else if (adjustMaterial) {
+      const selectedMaterial = model.materialById.get(adjustMaterial.dataset.adjustMaterial);
+      if (selectedMaterial) openMaterialAdjustment(selectedMaterial);
+    }
+    else if (editBatch) {
+      const selectedBatch = model.batchById.get(editBatch.dataset.editBatch);
+      if (selectedBatch?.adapter === false) openBatchUpdate(selectedBatch);
+    }
     else if (registerSeedling) {
       const selectedBatch = model.batchById.get(registerSeedling.dataset.registerSeedling);
       if (selectedBatch) openSeedlingRegistration(selectedBatch);
@@ -923,7 +1421,7 @@
       if (typeof ensurePlantImageImport === "function") ensurePlantImageImport();
       await refreshModel();
       if ("serviceWorker" in navigator && window.isSecureContext) {
-        navigator.serviceWorker.register("service-worker.js?v=17").catch(() => {});
+        navigator.serviceWorker.register("service-worker.js?v=18").catch(() => {});
       }
     } catch (error) {
       console.error("Labbet kunde inte starta.", error);
