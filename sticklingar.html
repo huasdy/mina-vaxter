@@ -253,7 +253,7 @@ STA-021,2026-09-12,Grodd,,,STA-021|2026-09-09|Sådd|5 fröer|STA-021-F02</script
 
     function snapshotToCatalog(snapshot) {
       const titleKeys = {Hibiskus: "id", Pelargon: "name", Citrus: "name", Udda: "name", Stapeliader: "short_name"};
-      if (!snapshot || snapshot.schemaVersion !== 2 || !snapshot.categories || typeof snapshot.categories !== "object") {
+      if (!snapshot || snapshot.schemaVersion !== 4 || !snapshot.categories || typeof snapshot.categories !== "object") {
         throw new Error("Katalogens format stöds inte.");
       }
       const result = {};

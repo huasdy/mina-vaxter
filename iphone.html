@@ -258,7 +258,7 @@ STA-021,2026-09-12,Grodd,,,STA-021|2026-09-09|Sådd|5 fröer|STA-021-F02</script
   <script src="crossings-common.js"></script>
   <script>
     if ("serviceWorker" in navigator && window.isSecureContext) {
-    window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js?v=12").catch(() => {}), {once: true});
+    window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js?v=15").catch(() => {}), {once: true});
     }
     let data = {};
     let crossingModel = null;
@@ -284,7 +284,7 @@ STA-021,2026-09-12,Grodd,,,STA-021|2026-09-09|Sådd|5 fröer|STA-021-F02</script
     const mobileHeading = document.querySelector('#mobileHeading');
     const legacyMigration = document.querySelector('#legacyMigration');
     const legacyMigrationLink = document.querySelector('#legacyMigrationLink');
-    const MOBILE_APP_VERSION = "2026-09-15-synk-1440";
+    const MOBILE_APP_VERSION = "2026-09-16-synk-0903";
     const MOBILE_CATALOG_CACHE_KEY = "mina-vaxter-mobile-catalog-v1";
     const initialParams = new URLSearchParams(window.location.search);
     const requestedCategory = initialParams.get('kategori');
@@ -779,7 +779,7 @@ STA-021,2026-09-12,Grodd,,,STA-021|2026-09-09|Sådd|5 fröer|STA-021-F02</script
     tabs.addEventListener('click', event => {
       const button = event.target.closest('.tab');
       if (button && button.dataset.name === "Galleri") {
-        window.location.href = "galleri.html?v=2026-09-15-synk-1440";
+        window.location.href = "galleri.html?v=2026-09-16-synk-0903";
         return;
       }
       if (button && button.dataset.name === "Växtliv") {
