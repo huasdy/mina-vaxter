@@ -328,6 +328,7 @@
         history: (snapshot.crossings?.events || []).filter(row => row.crossing_id === lot.crossing_id),
         seedLotCode: lot.seed_lot_code || "",
         crossingId: lot.crossing_id || "",
+        adapter: true,
         seedlings: children
       });
     });
@@ -367,6 +368,7 @@
         history: [...new Map(group.flatMap(row => row.milestones).map(row => [`${row.date}|${row.type}|${row.note}`, row])).values()],
         source,
         parentage,
+        adapter: true,
         seedlings: group
       });
     });
@@ -418,6 +420,7 @@
           actionHref: `stapeliader.html#${encodeURIComponent(plant.id)}`,
           history: rows.filter(row => !clean(row.seed_lot_id) || clean(row.seed_lot_id) === clean(sowing.seed_lot_id)),
           plantId: plant.id,
+          adapter: true,
           seedlings: []
         });
       });
@@ -634,8 +637,9 @@
   }
 
   function batchCard(batch) {
+    const legacyChip = batch.adapter !== false ? '<span class="chip">Legacy</span>' : '';
     return `<button type="button" class="batch-card" data-open-batch="${esc(batch.id)}">
-      <span class="chip-row"><span class="chip green">${esc(batch.species)}</span></span>
+      <span class="chip-row"><span class="chip green">${esc(batch.species)}</span>${legacyChip}</span>
       <h3>${esc(batch.name)}</h3>
       <span class="batch-code">${esc(batch.fullCode)} · sådd ${esc(displayDate(batch.sownDate))}</span>
       <span class="batch-progress">${esc(batchProgress(batch))}</span>
@@ -804,17 +808,23 @@
   }
 
   function renderBatchDetail(batch) {
+    const isLegacy = batch.adapter !== false;
     const shouldRegisterGermination = batch.germinated === 0;
-    const germinationAction = batch.adapter === false
-      ? `<button type="button" class="primary-action" data-edit-batch="${esc(batch.id)}">Registrera grodd</button>`
-      : `<a class="primary-action" href="${esc(batch.actionHref)}">Registrera grodd</a>`;
-    const action = shouldRegisterGermination
-      ? `${germinationAction}<button type="button" class="secondary-action" data-register-seedling="${esc(batch.id)}">Registrera fröplanta</button>`
-      : `<button type="button" class="primary-action" data-register-seedling="${esc(batch.id)}">Registrera fröplanta</button>${batch.adapter === false ? `<button type="button" class="secondary-action" data-edit-batch="${esc(batch.id)}">Uppdatera groning</button>` : ""}`;
+    const action = isLegacy
+      ? `<a class="primary-action" href="${esc(batch.actionHref || "korsningar.html")}">Öppna äldre korsningsflöde →</a>`
+      : (() => {
+          const germinationAction = `<button type="button" class="primary-action" data-edit-batch="${esc(batch.id)}">Registrera grodd</button>`;
+          return shouldRegisterGermination
+            ? `${germinationAction}<button type="button" class="secondary-action" data-register-seedling="${esc(batch.id)}">Registrera fröplanta</button>`
+            : `<button type="button" class="primary-action" data-register-seedling="${esc(batch.id)}">Registrera fröplanta</button><button type="button" class="secondary-action" data-edit-batch="${esc(batch.id)}">Uppdatera groning</button>`;
+        })();
+    const actionNote = isLegacy
+      ? "Äldre såbatch. Registrering och uppdatering görs i det äldre korsningsflödet."
+      : (shouldRegisterGermination ? "Registrera först groddantalet, eller individualisera en redan känd planta." : "Skapar nästa permanenta nummer inom batchen, utan samlings-ID.");
     return `<section class="detail-shell">
       <button type="button" class="back-button" data-close-detail>← Till sådder</button>
       <article class="detail-card">
-        <div class="detail-hero"><div><div class="detail-kicker">Såbatch · ${esc(batch.species)}</div><h2>${esc(batch.name)}</h2><div class="detail-code">${esc(batch.fullCode)}</div></div><div class="detail-actions">${action}<p class="action-note">${shouldRegisterGermination ? "Registrera först groddantalet, eller individualisera en redan känd planta." : "Skapar nästa permanenta nummer inom batchen, utan samlings-ID."}</p></div></div>
+        <div class="detail-hero"><div><div class="detail-kicker">${isLegacy ? "Legacy-såbatch" : "Såbatch"} · ${esc(batch.species)}</div><h2>${esc(batch.name)}</h2><div class="detail-code">${esc(batch.fullCode)}</div></div><div class="detail-actions">${action}<p class="action-note">${actionNote}</p></div></div>
         <div class="detail-body">
           <dl class="fact-grid">
             <div class="fact"><dt>Sådatum</dt><dd>${esc(displayDate(batch.sownDate, true))}</dd></div>
@@ -1330,7 +1340,7 @@
     }
     else if (registerSeedling) {
       const selectedBatch = model.batchById.get(registerSeedling.dataset.registerSeedling);
-      if (selectedBatch) openSeedlingRegistration(selectedBatch);
+      if (selectedBatch?.adapter === false) openSeedlingRegistration(selectedBatch);
     }
     else if (addMilestone) {
       const selectedSeedling = model.seedlingById.get(addMilestone.dataset.addSeedlingMilestone);
@@ -1421,7 +1431,7 @@
       if (typeof ensurePlantImageImport === "function") ensurePlantImageImport();
       await refreshModel();
       if ("serviceWorker" in navigator && window.isSecureContext) {
-        navigator.serviceWorker.register("service-worker.js?v=18").catch(() => {});
+        navigator.serviceWorker.register("service-worker.js?v=19").catch(() => {});
       }
     } catch (error) {
       console.error("Labbet kunde inte starta.", error);
