@@ -39,10 +39,11 @@ h1 { margin: 8px 0; font-family: Georgia, "Times New Roman", serif; font-size: c
 
 main { max-width: 1180px; margin: 0 auto; padding: 0 18px 72px; }
 .lab-controls { display: grid; gap: 12px; margin-bottom: 24px; }
-.lab-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--muted); font-size: .9rem; font-weight: 700; }
-.control-row { display: flex; align-items: center; justify-content: center; gap: 10px; min-width: 0; }
+.control-row { display: grid; gap: 8px; min-width: 0; }
+.filter-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .control-label { color: var(--muted); font-size: .78rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
-.pill-group { display: flex; justify-content: center; gap: 7px; }
+.pill-group { display: flex; justify-content: flex-start; gap: 7px; min-width: 0; overflow-x: auto; padding: 1px 2px 3px; scrollbar-width: none; scroll-padding-inline: 2px 16px; }
+.pill-group::-webkit-scrollbar { display: none; }
 .pill-group button, .status-filters button {
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -290,14 +291,10 @@ button.origin-link { width: 100%; font: inherit; text-align: left; cursor: point
   h1 { margin: 2px 0 4px; font-size: 2.9rem; }
   .subtitle { font-size: .86rem; }
   main { padding: 0 12px calc(54px + env(safe-area-inset-bottom)); }
-  .control-row { display: grid; justify-content: stretch; gap: 5px; }
-  .lab-toolbar { justify-content: flex-end; align-items: stretch; }
-  .lab-toolbar span { display: none; }
-  .lab-toolbar span { align-self: center; }
-  .lab-toolbar .primary-action { flex: 0 0 auto; }
+  .control-row { gap: 5px; }
+  .filter-heading .primary-action { min-height: 38px; padding: 8px 12px; font-size: .9rem; }
   .control-label { padding-left: 3px; }
-  .pill-group { justify-content: flex-start; overflow-x: auto; padding: 1px 2px 3px; scrollbar-width: none; }
-  .pill-group::-webkit-scrollbar { display: none; }
+  .pill-group { width: 100%; padding-right: 16px; }
   .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .stat-card { min-height: 97px; }
   .stat-card strong { font-size: 2rem; }

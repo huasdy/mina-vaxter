@@ -29,12 +29,11 @@
 
   <main>
     <section class="lab-controls" aria-label="Filtrera Labbet">
-      <div class="lab-toolbar">
-        <span>Översikt över Labbet.</span>
-        <button type="button" class="primary-action" id="newLabItem">+ Nytt</button>
-      </div>
       <div class="control-row">
-        <span class="control-label">Art</span>
+        <div class="filter-heading">
+          <span class="control-label">Art</span>
+          <button type="button" class="primary-action" id="newLabItem">+ Nytt</button>
+        </div>
         <div class="pill-group" id="speciesFilters" role="group" aria-label="Artfilter">
           <button type="button" data-species="Alla" class="active" aria-pressed="true">Alla</button>
           <button type="button" data-species="Hibiskus" aria-pressed="false">Hibiskus</button>

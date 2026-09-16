@@ -879,11 +879,23 @@
   }
 
   function syncControls(current) {
+    let activeButton = null;
     speciesFilters.querySelectorAll("[data-species]").forEach(button => {
       const active = button.dataset.species === current.species;
       button.classList.toggle("active", active);
       button.setAttribute("aria-pressed", String(active));
+      if (active) activeButton = button;
     });
+    if (activeButton) requestAnimationFrame(() => revealSpeciesFilter(activeButton));
+  }
+
+  function revealSpeciesFilter(button) {
+    const scroller = button?.parentElement;
+    if (!scroller) return;
+    const leftGap = button.offsetLeft - scroller.scrollLeft;
+    const rightGap = leftGap + button.offsetWidth - scroller.clientWidth;
+    if (leftGap < 0) scroller.scrollLeft += leftGap - 8;
+    else if (rightGap > 0) scroller.scrollLeft += rightGap + 8;
   }
 
   function render() {
