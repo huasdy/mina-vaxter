@@ -57,7 +57,12 @@
       width: 57mm; height: 16mm; display: grid; align-content: center; justify-items: center;
       padding: 1.8mm 2.4mm; text-align: center; line-height: 1.05; overflow: hidden; row-gap: .35mm;
     }
-    .plant-label:first-child { border-bottom: 1px dashed #aaa; }
+    .plant-label:first-child { border-bottom: 0; position: relative; }
+    .plant-label:first-child::after {
+      content: ""; position: absolute; z-index: 1; right: 0; bottom: 0; left: 0;
+      border-bottom: 1px dashed #aaa; pointer-events: none;
+    }
+    :is(.label-sheet.full-label, .batch-preview-sheet.full, .batch-print-sheet.full) .plant-label:first-child::after { display: none; }
     .label-sheet.full-label { grid-template-rows: 1fr; }
     .label-sheet.full-label .plant-label:first-child { height: 32mm; border-bottom: 0; }
     .label-sheet.full-label #previewB { display: none; }
@@ -77,6 +82,10 @@
     .plant-label.id-badge .label-id.label-id-compact { font-size: 20pt; letter-spacing: 0; }
     .plant-label.id-badge .label-name { font-size: 9.4pt; line-height: 1; font-weight: 760; }
     .plant-label.id-badge .label-meta { font-size: 7.4pt; line-height: 1; }
+    .plant-label:has(.stapeliad-label-front) {
+      grid-template-rows: minmax(0, 1fr);
+      align-content: stretch;
+    }
     .batch-panel {
       width: min(100%, 980px); background: rgba(255,253,248,.78); border: 1px solid var(--line);
       border-radius: 22px; box-shadow: var(--shadow); overflow: hidden;
@@ -127,26 +136,38 @@
     .batch-preview-sheet.full .label-name { font-size: 9.4pt; line-height: 1; }
     .batch-preview-sheet.full .label-meta { font-size: 7.4pt; line-height: 1; }
     .batch-preview-sheet.half { display: grid; grid-template-rows: 1fr 1fr; }
-    .batch-preview-sheet.half .plant-label:first-child { border-bottom: 1px dashed #aaa; }
+    .batch-preview-sheet.half .plant-label:first-child { border-bottom: 0; }
     .label-name.pelargon-label-name {
       min-width: 0; white-space: normal; overflow-wrap: anywhere; text-wrap: balance;
       overflow: visible; text-overflow: clip;
     }
     .stapeliad-label-front {
-      width: 100%; min-width: 0; display: grid; justify-items: center;
+      width: 100%; height: 100%; min-width: 0; min-height: 0; display: grid;
+      grid-template-rows: minmax(0, 1fr) auto; align-self: stretch; justify-items: center;
+      padding: 0 0 .8mm; box-sizing: border-box;
       gap: .5mm; text-align: center;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
     .stapeliad-label-name, .stapeliad-label-detail {
       max-width: 100%; white-space: normal; overflow-wrap: anywhere; text-wrap: balance;
     }
-    .stapeliad-label-name { font-size: 10pt; font-weight: 750; line-height: 1.1; }
+    .stapeliad-label-name { min-height: 0; align-self: center; }
+    .stapeliad-label-name { font-size: 11pt; font-weight: 750; line-height: 1.05; }
+    .stapeliad-label-name.stapeliad-label-name-compact { font-size: 9.2pt; }
+    .stapeliad-label-no-source .stapeliad-label-name { font-size: 12.2pt; }
+    .stapeliad-label-no-source .stapeliad-label-name.stapeliad-label-name-compact { font-size: 10.2pt; }
     .stapeliad-label-detail { font-size: 8pt; line-height: 1.1; }
+    .stapeliad-label-name-detail { white-space: normal; }
+    .stapeliad-label-meta {
+      align-self: end; margin-top: 0; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: clip;
+      font-size: 6.3pt; font-weight: 550; line-height: 1;
+    }
     .pelargon-label-id { max-width: 100%; overflow-wrap: anywhere; text-align: center; }
     .stapeliad-label-id, .pelargon-label-id { margin-top: .4mm; font-size: 6.5pt; font-weight: 500; line-height: 1; }
     :is(.label-sheet.full-label, .batch-preview-sheet.full, .batch-print-sheet.full) .stapeliad-label-front { gap: 1mm; }
     :is(.label-sheet.full-label, .batch-preview-sheet.full, .batch-print-sheet.full) .stapeliad-label-name { font-size: 14pt; }
     :is(.label-sheet.full-label, .batch-preview-sheet.full, .batch-print-sheet.full) .stapeliad-label-detail { font-size: 10pt; }
+    :is(.label-sheet.full-label, .batch-preview-sheet.full, .batch-print-sheet.full) .stapeliad-label-meta { margin-top: 1mm; font-size: 8pt; }
     :is(.label-sheet.full-label, .batch-preview-sheet.full, .batch-print-sheet.full) :is(.stapeliad-label-id, .pelargon-label-id) { margin-top: 1mm; font-size: 8pt; }
     .print-note {
       width: min(100%, 980px); color: var(--muted); text-align: center; font-size: .92rem;
@@ -230,13 +251,90 @@
     @media (max-width: 760px) { .toolbar-inner { display: grid; grid-template-columns: 1fr; } select, input, button { width: 100%; text-align: center; } .batch-head { display: grid; } .tool-grid { grid-template-columns: 1fr; } .arrival-form, .data-form, .data-picker, .arrival-hibiscus-grid { grid-template-columns: 1fr; } .arrival-field.full, .arrival-actions, .data-actions, .data-field.parent-field { grid-column: auto; } .arrival-hibiscus-note { grid-column: auto; } .arrival-category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .arrival-actions button, .data-actions button { width: auto; } }
     @media print {
       @page { size: 57mm 32mm; margin: 0; }
-      html, body { width: 57mm; height: auto; min-height: 0; margin: 0; padding: 0; background: #fff; }
+      :root { --dymo-label-width: 57mm; --dymo-label-height: 32mm; --dymo-printable-height: 32mm; --dymo-printable-half-height: 16mm; }
+      html, body { width: var(--dymo-label-width); height: var(--dymo-printable-height); min-height: 0; max-height: var(--dymo-printable-height); margin: 0; padding: 0; overflow: hidden; background: #fff; box-sizing: border-box; }
+      html:has(body.batch-printing), body.batch-printing { height: auto; min-height: 0; max-height: none; overflow: visible; }
       header, .tool-menu, .arrival-shell, .data-shell, .toolbar, .summary, .section-title, .print-note, .batch-panel, .batch-preview { display: none !important; }
-      main { width: 57mm; height: 32mm; margin: 0; padding: 0; display: block; }
-      .sheet-frame { padding: 0; border: 0; border-radius: 0; box-shadow: none; }
+      main { width: var(--dymo-label-width); height: var(--dymo-printable-height); max-height: var(--dymo-printable-height); margin: 0; padding: 0; display: block; overflow: hidden; box-sizing: border-box; }
+      .sheet-frame { width: var(--dymo-label-width); height: var(--dymo-printable-height); max-height: var(--dymo-printable-height); padding: 0; border: 0; border-radius: 0; box-shadow: none; overflow: hidden; box-sizing: border-box; }
       /* Den flytande synkkön får inte täcka text på de små etikettsidorna. */
       .import-queue-button { display: none !important; }
-      .label-sheet { border: 0; }
+      .label-sheet { width: var(--dymo-label-width); height: var(--dymo-printable-height); max-height: var(--dymo-printable-height); display: block; border: 0; margin: 0; padding: 0; overflow: hidden; box-sizing: border-box; page-break-inside: avoid; break-inside: avoid; }
+      .label-sheet .plant-label { width: var(--dymo-label-width); height: var(--dymo-printable-half-height); min-height: 0; max-height: var(--dymo-printable-half-height); display: grid; margin: 0; padding: 1.8mm 2.4mm; border: 0; overflow: hidden; box-sizing: border-box; page-break-inside: avoid; break-inside: avoid; }
+      .label-sheet .plant-label:first-child { border-bottom: 0; }
+      .label-sheet.full-label { display: block; }
+      .label-sheet.full-label .plant-label:first-child { height: var(--dymo-printable-height); max-height: var(--dymo-printable-height); flex-basis: var(--dymo-printable-height); border-bottom: 0; }
+      /* Keep the ordinary two-half preview in normal print flow from the physical origin. */
+      body:not(.batch-printing) #etiketter,
+      body:not(.batch-printing) #etiketter .sheet-frame,
+      body:not(.batch-printing) #etiketter .label-sheet {
+        position: static; inset: auto; top: 0; right: auto; bottom: auto; left: 0;
+        margin: 0; transform: none !important; float: none;
+      }
+      /* Safari ska få en fristående, exakt en-sidig yta för det vanliga tvåhalvsläget.
+         Förhandsvisningen ovan har skärmlayoutens scroll-/centreringskontext, som Safari
+         annars kan fragmentera till en förskjuten första halva och en tom andra sida. */
+      html:has(body.current-full-printing), body.current-full-printing,
+      html:has(body.current-two-half-printing), body.current-two-half-printing {
+        width: var(--dymo-label-width); height: var(--dymo-printable-height); min-height: 0; max-height: var(--dymo-printable-height); overflow: hidden;
+      }
+      body.current-full-printing main,
+      body.current-two-half-printing main { display: none !important; }
+      body.current-full-printing .batch-print-area {
+        display: block !important; visibility: visible !important;
+        position: static; inset: auto; top: auto; left: auto; width: var(--dymo-label-width); height: var(--dymo-printable-height); max-height: var(--dymo-printable-height);
+        margin: 0; padding: 0; overflow: hidden; box-sizing: border-box;
+        transform: none !important; float: none;
+      }
+      body.current-full-printing .batch-print-area .batch-print-sheet.current-full {
+        display: block !important; visibility: visible !important;
+        position: static; top: auto; left: auto; width: 57mm; height: var(--dymo-label-height); max-height: var(--dymo-label-height);
+        margin: 0; padding: 0; overflow: hidden; box-sizing: border-box;
+        page-break-before: avoid; page-break-after: avoid; page-break-inside: avoid;
+        break-before: avoid; break-after: avoid; break-inside: avoid;
+        transform: none !important; float: none;
+      }
+      body.current-full-printing .batch-print-area .current-full .plant-label {
+        display: grid !important; visibility: visible !important;
+        position: static !important; top: auto; left: auto; width: 57mm; height: var(--dymo-label-height) !important;
+        min-height: 0 !important; max-height: var(--dymo-label-height) !important; margin: 0; padding: 1.8mm 2.4mm;
+        border: 0; overflow: visible; box-sizing: border-box;
+        align-content: center; justify-items: center;
+        text-align: center; line-height: 1.05; row-gap: .35mm;
+        page-break-before: auto; page-break-after: auto; page-break-inside: auto;
+        break-before: auto; break-after: auto; break-inside: auto;
+        transform: none !important; float: none;
+      }
+      body.current-full-printing .batch-print-area .current-full .stapeliad-label-front { gap: 1mm; }
+      body.current-full-printing .batch-print-area .current-full .stapeliad-label-name { font-size: 10pt; white-space: nowrap; overflow: visible; text-overflow: clip; }
+      body.current-full-printing .batch-print-area .current-full .stapeliad-label-detail { font-size: 8pt; }
+      body.current-full-printing .batch-print-area .current-full .stapeliad-label-meta { margin-top: 1mm; font-size: 8pt; }
+      body.current-full-printing .batch-print-area .current-full .stapeliad-label-id { margin-top: 1mm; font-size: 8pt; }
+      body.current-two-half-printing .batch-print-area {
+        display: block !important; visibility: visible !important;
+        position: static; inset: auto; top: auto; left: auto; width: var(--dymo-label-width); height: var(--dymo-printable-height); max-height: var(--dymo-printable-height);
+        margin: 0; padding: 0; overflow: hidden; box-sizing: border-box;
+        transform: none !important; float: none;
+      }
+      body.current-two-half-printing .batch-print-area .batch-print-sheet.current-two-half {
+        display: block !important; visibility: visible !important;
+        position: static; top: auto; left: auto; width: var(--dymo-label-width); height: var(--dymo-printable-height); max-height: var(--dymo-printable-height);
+        margin: 0; padding: 0; overflow: hidden; box-sizing: border-box;
+        page-break-before: avoid; page-break-after: avoid; page-break-inside: avoid;
+        break-before: avoid; break-after: avoid; break-inside: avoid;
+        transform: none !important; float: none;
+      }
+      /* Safari/DYMO kan släppa barn i en staplad HTML-utskriftslayout.
+         Tvåhalvsläget får därför en enda målad bildyta med båda halvorna i samma box. */
+      body.current-two-half-printing .batch-print-area .current-two-half-image {
+        display: block !important; visibility: visible !important;
+        position: static; top: auto; left: auto; width: var(--dymo-label-width);
+        height: var(--dymo-printable-height); max-height: var(--dymo-printable-height);
+        margin: 0; padding: 0; overflow: hidden; box-sizing: border-box;
+        page-break-before: avoid; page-break-after: avoid; page-break-inside: avoid;
+        break-before: avoid; break-after: avoid; break-inside: avoid;
+        transform: none !important; float: none;
+      }
       body.batch-printing main { display: none !important; }
       /* Safari behöver en konkret, synlig utskriftsyta och en målad layout före window.print(). */
       body.batch-printing .batch-print-area { display: block !important; visibility: visible !important; width: 57mm; margin: 0; }
@@ -255,7 +353,7 @@
       body.batch-printing .batch-print-sheet.full .label-meta { font-size: 7.4pt; line-height: 1; }
       body.batch-printing .batch-print-sheet.half { height: 32mm; display: grid; grid-template-rows: 1fr 1fr; }
       body.batch-printing .batch-print-sheet.half .plant-label { width: 57mm; height: 16mm; padding: 1.8mm 2.4mm; border: 0; }
-      body.batch-printing .batch-print-sheet.half .plant-label:first-child { border-bottom: 1px dashed #aaa; }
+      body.batch-printing .batch-print-sheet.half .plant-label:first-child { border-bottom: 0; }
     }
   </style>
 </head>
@@ -421,6 +519,14 @@
       <select id="categoryFilter" aria-label="Växtkategori"></select>
       <select id="labelA" aria-label="Övre växtetikett"></select>
       <select id="labelB" aria-label="Nedre växtetikett"></select>
+      <div class="stapeliad-seed-lot-fields" id="stapeliadSeedLotFields" hidden>
+        <label id="stapeliadSeedLotLabelA" hidden>Fröparti för övre etikett
+          <select id="stapeliadSeedLotA" aria-label="Fröparti för övre etikett"></select>
+        </label>
+        <label id="stapeliadSeedLotLabelB" hidden>Fröparti för nedre etikett
+          <select id="stapeliadSeedLotB" aria-label="Fröparti för nedre etikett"></select>
+        </label>
+      </div>
       <div class="free-field-group" id="freeFieldA" hidden>
         <input id="freeTextA" type="text" maxlength="50" placeholder="Namn på övre etiketten" aria-label="Huvudrad på övre etiketten" autocomplete="off">
         <input id="freeSubtextA" type="text" maxlength="50" placeholder="Valfri underrad, t.ex. Stickling" aria-label="Underrad på övre etiketten" autocomplete="off">
@@ -430,6 +536,7 @@
         <input id="freeSubtextB" type="text" maxlength="50" placeholder="Valfri underrad, t.ex. Stickling" aria-label="Underrad på nedre etiketten" autocomplete="off">
       </div>
       <button id="printBtn" type="button">Skriv ut</button>
+      <button id="pdfBtn" class="secondary" type="button">Skapa PDF för DYMO</button>
     </div>
   </section>
   <main id="etiketter" hidden>
@@ -490,7 +597,7 @@
   <section class="batch-print-area" id="batchPrintArea" aria-label="Batchutskrift"></section>
   <script src="originalarkiv-local.js"></script>
   <script src="common.js?v=20260824-offline-queue"></script>
-  <script id="labelData" type="application/json">[{"category": "Hibiskus", "id": "HIB-001", "name": "Hibiskus", "batch": "", "cross": "", "nickname": "Cato"}, {"category": "Hibiskus", "id": "HIB-002", "name": "Hibiskus", "batch": "", "cross": "", "nickname": "Bemita"}, {"category": "Hibiskus", "id": "PL-H01-A", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-B", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-C", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-D", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-G", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-H", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-I", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-J", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-K", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-L", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-M", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-N", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-O", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-Q", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-R", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-A-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-B-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × 030", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-C-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "030 × 041", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-C-02", "name": "Hibiskus", "batch": "PL-H02", "cross": "030 × 041", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-C-03", "name": "Hibiskus", "batch": "PL-H02", "cross": "030 × 041", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-D-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-D-02", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-D-03", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × okänd", "nickname": ""}, {"category": "Pelargon", "id": "p-acetosum", "label_number": "PEL-001", "name": "P. acetosum", "nickname": ""}, {"category": "Pelargon", "id": "p-australe-1", "label_number": "PEL-002", "name": "P. australe", "nickname": ""}, {"category": "Pelargon", "id": "p-bowkeri-silver-leaf", "label_number": "PEL-005", "name": "P. bowkeri ‘Silver Leaf’", "nickname": ""}, {"category": "Pelargon", "id": "p-cotyledonis-1", "label_number": "PEL-007", "name": "P. cotyledonis", "nickname": ""}, {"category": "Pelargon", "id": "p-dimeierii-selma", "label_number": "PEL-010", "name": "P. dimeierii ‘Selma’", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-1", "label_number": "PEL-013", "name": "P. gibbosum", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-4", "label_number": "PEL-014", "name": "P. gibbosum 4", "nickname": "Grotesco"}, {"category": "Pelargon", "id": "p-gibbosum-anethifolium", "label_number": "PEL-015", "name": "P. gibbosum × anethifolium", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-maroon-1", "label_number": "PEL-016", "name": "P. gibbosum ‘Maroon’", "nickname": ""}, {"category": "Pelargon", "id": "p-laxum-1", "label_number": "PEL-018", "name": "P. laxum", "nickname": ""}, {"category": "Pelargon", "id": "p-magenteum", "label_number": "PEL-020", "name": "P. magenteum", "nickname": ""}, {"category": "Pelargon", "id": "p-odoratissimum-1", "label_number": "PEL-022", "name": "P. odoratissimum", "nickname": ""}, {"category": "Pelargon", "id": "p-sidoides", "label_number": "PEL-025", "name": "P. sidoides", "nickname": ""}, {"category": "Pelargon", "id": "p-triffidum", "label_number": "PEL-027", "name": "P. triffidum", "nickname": ""}, {"category": "Pelargon", "id": "p-caffrum-diana", "label_number": "PEL-006", "name": "P. × caffrum ‘Diana’", "nickname": ""}, {"category": "Pelargon", "id": "p-bontrosai-1", "label_number": "PEL-003", "name": "P. ‘Bontrosai’", "nickname": ""}, {"category": "Pelargon", "id": "p-cys-sunburst-1", "label_number": "PEL-009", "name": "P. ‘Cy’s Sunburst’", "nickname": ""}, {"category": "Pelargon", "id": "p-dr-westerlund-1", "label_number": "PEL-011", "name": "P. ‘Dr Westerlund’", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosina-bicolour", "label_number": "PEL-012", "name": "P. ‘Gibbosina Bicolour’", "nickname": ""}, {"category": "Pelargon", "id": "p-glauciifolium", "label_number": "PEL-017", "name": "P. ‘Glauciifolium’", "nickname": ""}, {"category": "Pelargon", "id": "p-lemon-queen", "label_number": "PEL-019", "name": "P. ‘Lemon Queen’", "nickname": ""}, {"category": "Pelargon", "id": "p-nielsens-fragrans-1", "label_number": "PEL-021", "name": "P. ‘Nielsens Fragrans’", "nickname": ""}, {"category": "Pelargon", "id": "p-prince-of-orange", "label_number": "PEL-023", "name": "P. ‘Prince of Orange’", "nickname": ""}, {"category": "Pelargon", "id": "p-rushmoor-mississippi", "label_number": "PEL-024", "name": "‘Rushmoor Mississippi’", "nickname": ""}, {"category": "Citrus", "id": "c-calamondin", "name": "Calamondin", "nickname": ""}, {"category": "Citrus", "id": "c-limon-1", "name": "Citron", "nickname": ""}, {"category": "Citrus", "id": "c-kaffirlime", "name": "Kaffirlime", "nickname": ""}, {"category": "Citrus", "id": "c-kumquat-1", "name": "Kumquat", "nickname": ""}, {"category": "Citrus", "id": "c-limequat", "name": "Limequat", "nickname": ""}, {"category": "Citrus", "id": "c-pomelo", "name": "Pomelo", "nickname": ""}, {"category": "Citrus", "id": "c-rod-fingerlime", "name": "Röd fingerlime", "nickname": ""}, {"category": "Udda", "id": "SP-006", "name": "Fredskalla"}, {"category": "Udda", "id": "SP-005", "name": "Hjärtbräken"}, {"category": "Udda", "id": "SP-002", "name": "Patchouli"}, {"category": "Udda", "id": "SP-004", "name": "Plumeria"}, {"category": "Udda", "id": "SP-003", "name": "Salvia apiana"}, {"category": "Udda", "id": "SP-001", "name": "Stapelia mix"}, {"category": "Udda", "id": "SP-008", "name": "The Monster"}, {"category": "Udda", "id": "SP-011", "name": "Vippjasmin"}, {"category": "Udda", "id": "SP-007", "name": "Ödesträd"}, {"category": "Stapeliader", "id": "STA-005", "name": "D. sulcata subsp. seminuda", "supplier": "Cactus Art"}, {"category": "Stapeliader", "id": "STA-011", "name": "E. cereiformis", "supplier": "Cactus Art"}, {"category": "Stapeliader", "id": "STA-029", "name": "H. hystrix", "supplier": "SuccSeed"}, {"category": "Stapeliader", "id": "STA-017", "name": "H. hystrix — cristat form", "supplier": "Cactus Art"}, {"category": "Stapeliader", "id": "STA-028", "name": "H. hystrix — sp. nova", "supplier": "Exotic Plants"}, {"category": "Stapeliader", "id": "STA-007", "name": "H. keniensis var. nairobiensis", "supplier": "Cactus Art"}, {"category": "Stapeliader", "id": "STA-012", "name": "H. laevis — Harras", "supplier": "Cactus Art"}, {"category": "Stapeliader", "id": "STA-035", "name": "H. macrocarpa", "supplier": "Cactus Art"}, {"category": "Stapeliader", "id": "STA-001", "name": "H. rosea — RH230", "supplier": "Cactus Art"}, {"category": "Stapeliader", "id": "STA-030", "name": "H. zebrina", "supplier": "SuccSeed"}, {"category": "Stapeliader", "id": "STA-006", "name": "H. × pendurata", "supplier": "Cactus Art"}, {"category": "Stapeliader", "id": "STA-034", "name": "H. ‘Pink Eye’", "supplier": "Cactus Art"}, {"category": "Stapeliader", "id": "STA-016", "name": "O. deflersiana — Clone B", "supplier": "Cactus Art"}, {"category": "Stapeliader", "id": "STA-009", "name": "O. hardyi", "supplier": "Cactus Art"}, {"category": "Stapeliader", "id": "STA-010", "name": "O. lutea", "supplier": "Cactus Art"}, {"category": "Stapeliader", "id": "STA-020", "name": "O. mcloughlinii × O. variegata", "supplier": "Cactus Art"}, {"category": "Stapeliader", "id": "STA-019", "name": "O. semota — lutea-form", "supplier": "Cactus Art"}, {"category": "Stapeliader", "id": "STA-015", "name": "O. sp. 'Cypro'", "supplier": "Cactus Art"}, {"category": "Stapeliader", "id": "STA-033", "name": "O. variegata", "supplier": "eBay – vendoesvendotutto"}, {"category": "Stapeliader", "id": "STA-032", "name": "P. geminatus — foetidus", "supplier": "SuccSeed"}, {"category": "Stapeliader", "id": "STA-002", "name": "P. geminatus — globosus", "supplier": "Cactus Art"}, {"category": "Stapeliader", "id": "STA-018", "name": "P. punctatus var. framesii", "supplier": "Cactus Art"}, {"category": "Stapeliader", "id": "STA-004", "name": "S. decaryi", "supplier": "Cactus Art"}, {"category": "Stapeliader", "id": "STA-008", "name": "S. divaricata", "supplier": "Cactus Art"}, {"category": "Stapeliader", "id": "STA-022", "name": "S. flavopurpurea", "supplier": "Exotic Plants"}, {"category": "Stapeliader", "id": "STA-021", "name": "S. gigantea", "supplier": ""}, {"category": "Stapeliader", "id": "STA-003", "name": "S. grandiflora", "supplier": "Cactus Art"}, {"category": "Stapeliader", "id": "STA-025", "name": "S. hirsuta", "supplier": "Exotic Plants"}, {"category": "Stapeliader", "id": "STA-026", "name": "S. paniculata subsp. scitula", "supplier": "Exotic Plants"}, {"category": "Stapeliader", "id": "STA-013", "name": "S. schinzii var. bergeriana", "supplier": "Cactus Art"}, {"category": "Stapeliader", "id": "STA-027", "name": "T. aperta", "supplier": "Exotic Plants"}, {"category": "Stapeliader", "id": "STA-024", "name": "T. gemmiflora", "supplier": "Exotic Plants"}, {"category": "Stapeliader", "id": "STA-023", "name": "T. revoluta", "supplier": "Exotic Plants"}, {"category": "Stapeliader", "id": "STA-014", "name": "× Tavarorbea ‘Red Leopard’", "supplier": "Cactus Art"}, {"category": "Korsningar", "id": "KRS-P-335486E61ACD", "name": "P. cotyledonis × P. gibbosum", "mother": "P. cotyledonis", "father": "P. gibbosum"}, {"category": "Korsningar", "id": "KRS-P-AA9AC1EE9B4F", "name": "P. gibbosum 4 × P. laxum", "mother": "P. gibbosum 4", "father": "P. laxum"}, {"category": "Korsningar", "id": "KRS-P-2A4E5C71076E", "name": "P. gibbosum ‘Maroon’ × P. laxum", "mother": "P. gibbosum ‘Maroon’", "father": "P. laxum"}]</script>
+  <script id="labelData" type="application/json">[{"category": "Hibiskus", "id": "HIB-001", "name": "Hibiskus", "batch": "", "cross": "", "nickname": "Cato"}, {"category": "Hibiskus", "id": "HIB-002", "name": "Hibiskus", "batch": "", "cross": "", "nickname": "Bemita"}, {"category": "Hibiskus", "id": "PL-H01-A", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-B", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-C", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-D", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-G", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-H", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-I", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-J", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-K", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-L", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-M", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-N", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-O", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-Q", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-R", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-A-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-B-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × 030", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-C-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "030 × 041", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-C-02", "name": "Hibiskus", "batch": "PL-H02", "cross": "030 × 041", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-C-03", "name": "Hibiskus", "batch": "PL-H02", "cross": "030 × 041", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-D-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-D-02", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-D-03", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × okänd", "nickname": ""}, {"category": "Pelargon", "id": "p-acetosum", "label_number": "PEL-001", "name": "P. acetosum", "nickname": ""}, {"category": "Pelargon", "id": "p-australe-1", "label_number": "PEL-002", "name": "P. australe", "nickname": ""}, {"category": "Pelargon", "id": "p-bowkeri-silver-leaf", "label_number": "PEL-005", "name": "P. bowkeri ‘Silver Leaf’", "nickname": ""}, {"category": "Pelargon", "id": "p-cotyledonis-1", "label_number": "PEL-007", "name": "P. cotyledonis", "nickname": ""}, {"category": "Pelargon", "id": "p-dimeierii-selma", "label_number": "PEL-010", "name": "P. dimeierii ‘Selma’", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-1", "label_number": "PEL-013", "name": "P. gibbosum", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-4", "label_number": "PEL-014", "name": "P. gibbosum 4", "nickname": "Grotesco"}, {"category": "Pelargon", "id": "p-gibbosum-anethifolium", "label_number": "PEL-015", "name": "P. gibbosum × anethifolium", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-maroon-1", "label_number": "PEL-016", "name": "P. gibbosum ‘Maroon’", "nickname": ""}, {"category": "Pelargon", "id": "p-laxum-1", "label_number": "PEL-018", "name": "P. laxum", "nickname": ""}, {"category": "Pelargon", "id": "p-magenteum", "label_number": "PEL-020", "name": "P. magenteum", "nickname": ""}, {"category": "Pelargon", "id": "p-odoratissimum-1", "label_number": "PEL-022", "name": "P. odoratissimum", "nickname": ""}, {"category": "Pelargon", "id": "p-sidoides", "label_number": "PEL-025", "name": "P. sidoides", "nickname": ""}, {"category": "Pelargon", "id": "p-triffidum", "label_number": "PEL-027", "name": "P. triffidum", "nickname": ""}, {"category": "Pelargon", "id": "p-caffrum-diana", "label_number": "PEL-006", "name": "P. × caffrum ‘Diana’", "nickname": ""}, {"category": "Pelargon", "id": "p-bontrosai-1", "label_number": "PEL-003", "name": "P. ‘Bontrosai’", "nickname": ""}, {"category": "Pelargon", "id": "p-cys-sunburst-1", "label_number": "PEL-009", "name": "P. ‘Cy’s Sunburst’", "nickname": ""}, {"category": "Pelargon", "id": "p-dr-westerlund-1", "label_number": "PEL-011", "name": "P. ‘Dr Westerlund’", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosina-bicolour", "label_number": "PEL-012", "name": "P. ‘Gibbosina Bicolour’", "nickname": ""}, {"category": "Pelargon", "id": "p-glauciifolium", "label_number": "PEL-017", "name": "P. ‘Glauciifolium’", "nickname": ""}, {"category": "Pelargon", "id": "p-lemon-queen", "label_number": "PEL-019", "name": "P. ‘Lemon Queen’", "nickname": ""}, {"category": "Pelargon", "id": "p-nielsens-fragrans-1", "label_number": "PEL-021", "name": "P. ‘Nielsens Fragrans’", "nickname": ""}, {"category": "Pelargon", "id": "p-prince-of-orange", "label_number": "PEL-023", "name": "P. ‘Prince of Orange’", "nickname": ""}, {"category": "Pelargon", "id": "p-rushmoor-mississippi", "label_number": "PEL-024", "name": "‘Rushmoor Mississippi’", "nickname": ""}, {"category": "Citrus", "id": "c-calamondin", "name": "Calamondin", "nickname": ""}, {"category": "Citrus", "id": "c-limon-1", "name": "Citron", "nickname": ""}, {"category": "Citrus", "id": "c-kaffirlime", "name": "Kaffirlime", "nickname": ""}, {"category": "Citrus", "id": "c-kumquat-1", "name": "Kumquat", "nickname": ""}, {"category": "Citrus", "id": "c-limequat", "name": "Limequat", "nickname": ""}, {"category": "Citrus", "id": "c-pomelo", "name": "Pomelo", "nickname": ""}, {"category": "Citrus", "id": "c-rod-fingerlime", "name": "Röd fingerlime", "nickname": ""}, {"category": "Udda", "id": "SP-006", "name": "Fredskalla"}, {"category": "Udda", "id": "SP-005", "name": "Hjärtbräken"}, {"category": "Udda", "id": "SP-002", "name": "Patchouli"}, {"category": "Udda", "id": "SP-004", "name": "Plumeria"}, {"category": "Udda", "id": "SP-003", "name": "Salvia apiana"}, {"category": "Udda", "id": "SP-001", "name": "Stapelia mix"}, {"category": "Udda", "id": "SP-008", "name": "The Monster"}, {"category": "Udda", "id": "SP-011", "name": "Vippjasmin"}, {"category": "Udda", "id": "SP-007", "name": "Ödesträd"}, {"category": "Stapeliader", "id": "STA-005", "name": "D. sulcata subsp. seminuda", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-011", "name": "E. cereiformis", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-029", "name": "H. hystrix", "supplier": "SuccSeed", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-017", "name": "H. hystrix — cristat form", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-028", "name": "H. hystrix — sp. nova", "supplier": "Exotic Plants", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-007", "name": "H. keniensis var. nairobiensis", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-012", "name": "H. laevis — Harras", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-035", "name": "H. macrocarpa", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-001", "name": "H. rosea — RH230", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-030", "name": "H. zebrina", "supplier": "SuccSeed", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-006", "name": "H. × pendurata", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-034", "name": "H. ‘Pink Eye’", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-016", "name": "O. deflersiana — Clone B", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-009", "name": "O. hardyi", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-010", "name": "O. lutea", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-020", "name": "O. mcloughlinii × O. variegata", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-019", "name": "O. semota — lutea-form", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-015", "name": "O. sp. 'Cypro'", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-033", "name": "O. variegata", "supplier": "eBay – vendoesvendotutto", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-032", "name": "P. geminatus — foetidus", "supplier": "SuccSeed", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-002", "name": "P. geminatus — globosus", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-018", "name": "P. punctatus var. framesii", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-004", "name": "S. decaryi", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-008", "name": "S. divaricata", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-022", "name": "S. flavopurpurea", "supplier": "Exotic Plants", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-021", "name": "S. gigantea", "supplier": "", "seed_lot_id": "", "seed_lots": [{"seed_lot_id": "STA-021-F01", "supplier": "Exotic Plants"}, {"seed_lot_id": "STA-021-F02", "supplier": "SuccSeed"}]}, {"category": "Stapeliader", "id": "STA-003", "name": "S. grandiflora", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-025", "name": "S. hirsuta", "supplier": "Exotic Plants", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-026", "name": "S. paniculata subsp. scitula", "supplier": "Exotic Plants", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-013", "name": "S. schinzii var. bergeriana", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-027", "name": "T. aperta", "supplier": "Exotic Plants", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-024", "name": "T. gemmiflora", "supplier": "Exotic Plants", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-023", "name": "T. revoluta", "supplier": "Exotic Plants", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-014", "name": "× Tavarorbea ‘Red Leopard’", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Korsningar", "id": "KRS-P-335486E61ACD", "name": "P. cotyledonis × P. gibbosum", "mother": "P. cotyledonis", "father": "P. gibbosum"}, {"category": "Korsningar", "id": "KRS-P-AA9AC1EE9B4F", "name": "P. gibbosum 4 × P. laxum", "mother": "P. gibbosum 4", "father": "P. laxum"}, {"category": "Korsningar", "id": "KRS-P-2A4E5C71076E", "name": "P. gibbosum ‘Maroon’ × P. laxum", "mother": "P. gibbosum ‘Maroon’", "father": "P. laxum"}]</script>
   <script>
     const labels = JSON.parse(document.querySelector("#labelData").textContent);
     const labelMode = document.querySelector("#labelMode");
@@ -498,6 +605,11 @@
     const categoryFilter = document.querySelector("#categoryFilter");
     const labelA = document.querySelector("#labelA");
     const labelB = document.querySelector("#labelB");
+    const stapeliadSeedLotFields = document.querySelector("#stapeliadSeedLotFields");
+    const stapeliadSeedLotLabelA = document.querySelector("#stapeliadSeedLotLabelA");
+    const stapeliadSeedLotLabelB = document.querySelector("#stapeliadSeedLotLabelB");
+    const stapeliadSeedLotA = document.querySelector("#stapeliadSeedLotA");
+    const stapeliadSeedLotB = document.querySelector("#stapeliadSeedLotB");
     const freeFieldA = document.querySelector("#freeFieldA");
     const freeFieldB = document.querySelector("#freeFieldB");
     const freeTextA = document.querySelector("#freeTextA");
@@ -1048,6 +1160,13 @@
       return `${row.category} · ${name}`;
     }
 
+    function stapeliadLabelNameHtml(value) {
+      return escapeHtml(value)
+        .replace(/\s+(×)/g, " <wbr>$1")
+        .replace(/\s+(var\.)\s+/gi, "&nbsp;$1 <wbr>")
+        .replace(/\s+(subsp\.)\s+/gi, "&nbsp;$1 <wbr>");
+    }
+
     function visibleLabels() {
       const category = categoryFilter.value;
       return labels
@@ -1116,7 +1235,16 @@
         const [name, ...details] = String(row.name || "").split(" — ");
         const normalizeStapeliadQuotes = value => String(value || "").replace(/'([^'\n]+)'/g, "‘$1’");
         const detail = details.join(" — ");
-        return `<div class="stapeliad-label-front"><div class="stapeliad-label-name">${escapeHtml(normalizeStapeliadQuotes(name))}</div>${detail ? `<div class="stapeliad-label-detail">— ${escapeHtml(normalizeStapeliadQuotes(detail))} —</div>` : ""}<div class="stapeliad-label-id">${escapeHtml(row.id)}</div></div>`;
+        const showSource = stapeliadLabelShowsSource(row);
+        const labelId = showSource && row.seed_lot_id && /^STA-\d{3}$/i.test(row.id) ? row.seed_lot_id : row.id;
+        const detailHtml = detail
+          ? `<wbr><span class="stapeliad-label-name-detail" data-full-text=" — ${escapeHtml(normalizeStapeliadQuotes(detail))}"> — ${escapeHtml(normalizeStapeliadQuotes(detail))}</span>`
+          : "";
+        const metadata = [labelId, showSource ? row.supplier : ""].filter(Boolean).join(" · ");
+        const frontClass = showSource
+          ? "stapeliad-label-front stapeliad-label-with-source"
+          : "stapeliad-label-front stapeliad-label-no-source";
+        return `<div class="${frontClass}"><div class="stapeliad-label-name">${stapeliadLabelNameHtml(normalizeStapeliadQuotes(name))}${detailHtml}</div><div class="stapeliad-label-meta">${escapeHtml(metadata)}</div></div>`;
       }
       if (row.category === "Korsningar") {
         return `<div class="label-name">♀ ${escapeHtml(row.mother || row.name)}</div><div class="label-meta">× ♂ ${escapeHtml(row.father || "")}</div>`;
@@ -1127,6 +1255,66 @@
     function selected(select) {
       if (select.value === "") return null;
       return labels[Number(select.value)] || null;
+    }
+
+    function labelWithSelectedSeedLot(row, lotSelect) {
+      if (!row || row.category !== "Stapeliader" || !Array.isArray(row.seed_lots) || !row.seed_lots.length) return row;
+      const lot = row.seed_lots.find(item => item.seed_lot_id === lotSelect?.value) || row.seed_lots[0];
+      if (!lot) return row;
+      return {...row, seed_lot_id: lot.seed_lot_id, supplier: lot.supplier || row.supplier};
+    }
+
+    function updateStapeliadSeedLotSelect(select, label, row) {
+      const lots = row && row.category === "Stapeliader" && Array.isArray(row.seed_lots) ? row.seed_lots : [];
+      const current = select.value;
+      select.innerHTML = lots.map(lot => `<option value="${escapeHtml(lot.seed_lot_id)}">${escapeHtml(lot.seed_lot_id)} · ${escapeHtml(lot.supplier || "okänd källa")}</option>`).join("");
+      if (lots.some(lot => lot.seed_lot_id === current)) select.value = current;
+      else if (lots.length === 1) select.value = lots[0].seed_lot_id;
+      label.hidden = lots.length < 2;
+      select.disabled = lots.length < 2;
+      return lots.length > 1;
+    }
+
+    function stapeliadLabelShowsSource(row) {
+      if (!row || row.category !== "Stapeliader") return false;
+      const lots = Array.isArray(row.seed_lots)
+        ? row.seed_lots.filter(lot => lot && String(lot.seed_lot_id || "").trim())
+        : [];
+      const id = String(row.id || "").trim();
+      return lots.length > 1 || /-F\d+(?:-\d+)?$/i.test(id);
+    }
+
+    function updateStapeliadSeedLotControls() {
+      const needsA = updateStapeliadSeedLotSelect(stapeliadSeedLotA, stapeliadSeedLotLabelA, selected(labelA));
+      const needsB = usesTwoFields() && updateStapeliadSeedLotSelect(stapeliadSeedLotB, stapeliadSeedLotLabelB, selected(labelB));
+      stapeliadSeedLotFields.hidden = !(needsA || needsB);
+      stapeliadSeedLotLabelB.hidden = !needsB;
+    }
+
+    function adaptStapeliadLabel(preview) {
+      const name = preview.querySelector(".stapeliad-label-name");
+      if (!name) return;
+      const detail = name.querySelector(".stapeliad-label-name-detail");
+      if (detail) detail.textContent = detail.dataset.fullText || detail.textContent;
+      name.classList.remove("stapeliad-label-name-compact");
+      name.style.removeProperty("font-size");
+      if (!labelSheet.classList.contains("full-label")) {
+        const noSource = name.closest(".stapeliad-label-front")?.classList.contains("stapeliad-label-no-source");
+        const largeFontSize = noSource ? "12.2pt" : "11pt";
+        name.style.fontSize = largeFontSize;
+        const largeLineCount = visualTextLines(name).length;
+        if (largeLineCount > 1) {
+          name.classList.add("stapeliad-label-name-compact");
+          name.style.fontSize = noSource ? "10.2pt" : "9.2pt";
+          if (visualTextLines(name).length > 2) name.style.fontSize = noSource ? "9.4pt" : "8.6pt";
+        }
+      }
+      if (detail) {
+        const detailRect = detail.getClientRects()[0];
+        const nameRect = name.getBoundingClientRect();
+        const detailStartsNewLine = detailRect && detailRect.top > nameRect.top + 1;
+        if (detailStartsNewLine) detail.textContent = (detail.dataset.fullText || "").replace(/^\s*—\s*/, "");
+      }
     }
 
     function freeTextHtml(value, subvalue) {
@@ -1152,6 +1340,7 @@
       labelB.hidden = freeTextMode || !twoFields;
       freeFieldA.hidden = !freeTextMode;
       freeFieldB.hidden = !freeTextMode || !twoFields;
+      if (freeTextMode) stapeliadSeedLotFields.hidden = true;
     }
 
     function render() {
@@ -1175,17 +1364,22 @@
 
       const a = selected(labelA);
       const b = twoFields ? selected(labelB) : null;
+      const selectedA = labelWithSelectedSeedLot(a, stapeliadSeedLotA);
+      const selectedB = labelWithSelectedSeedLot(b, stapeliadSeedLotB);
       previewA.classList.remove("free-label");
       previewB.classList.remove("free-label");
       previewA.classList.toggle("name-only", !!a && (a.category === "Pelargon" || a.category === "Citrus"));
       previewB.classList.toggle("name-only", !!b && (b.category === "Pelargon" || b.category === "Citrus"));
-      previewA.innerHTML = labelHtml(a);
-      previewB.innerHTML = labelHtml(b);
+      previewA.innerHTML = labelHtml(selectedA);
+      previewB.innerHTML = labelHtml(selectedB);
+      adaptStapeliadLabel(previewA);
+      adaptStapeliadLabel(previewB);
       summary.innerHTML = [a, b].filter(Boolean).map(row => {
         if (row.category === "Korsningar") return `<span class="pill">${escapeHtml(row.name)}</span>`;
         const detail = row.category === "Hibiskus" ? hibiscusLabelDetail(row) : row.name;
         return `<span class="pill">${escapeHtml(row.id)}${detail ? ` · ${escapeHtml(detail)}` : ""}</span>`;
       }).join("");
+      updateStapeliadSeedLotControls();
     }
 
     function batchRows() {
@@ -1298,24 +1492,330 @@
     }
 
     function resetBatchPrintMode() {
-      document.body.classList.remove("batch-printing");
+      document.body.classList.remove("batch-printing", "current-full-printing", "current-two-half-printing");
       batchPrintArea.style.removeProperty("display");
       batchPrintArea.style.removeProperty("visibility");
       batchPrintArea.innerHTML = "";
     }
 
-    function printCurrentSheet() {
-      if (isFreeTextMode()) {
-        const missingFirst = !freeTextA.value.trim();
-        const missingSecond = usesTwoFields() && !freeTextB.value.trim();
-        if (missingFirst || missingSecond) {
-          alert(usesTwoFields() ? "Skriv ett namn i båda fälten." : "Skriv ett namn på etiketten.");
-          (missingFirst ? freeTextA : freeTextB).focus();
-          return;
+    function renderCurrentFullPrintArea() {
+      const className = previewA.className || "plant-label";
+      batchPrintArea.innerHTML = `<section class="batch-print-sheet current-full"><article class="${escapeHtml(className)}">${previewA.innerHTML}</article></section>`;
+    }
+
+    function renderedTextLineRecords(node) {
+      const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
+      const range = document.createRange();
+      const lines = [];
+      let currentTop = null;
+      let currentText = "";
+      let textNode;
+      while ((textNode = walker.nextNode())) {
+        for (let index = 0; index < textNode.length; index += 1) {
+          range.setStart(textNode, index);
+          range.setEnd(textNode, index + 1);
+          const rect = [...range.getClientRects()].find(item => item.width || item.height);
+          if (!rect) continue;
+          if (currentTop !== null && Math.abs(rect.top - currentTop) > 1) {
+            if (currentText.trim()) lines.push({text: currentText.trim(), top: currentTop});
+            currentText = "";
+          }
+          if (currentTop === null || Math.abs(rect.top - currentTop) > 1) currentTop = rect.top;
+          currentText += textNode.data[index];
         }
       }
+      if (currentText.trim()) lines.push({text: currentText.trim(), top: currentTop});
+      return lines;
+    }
+
+    function visualTextLines(node) {
+      const lines = renderedTextLineRecords(node).map(line => line.text).filter(Boolean);
+      return lines.length ? lines : [String(node.textContent || "").trim()].filter(Boolean);
+    }
+
+    function currentLabelLines(preview, canvasScale) {
+      const nodes = [...preview.querySelectorAll(
+        ".stapeliad-label-name, .stapeliad-label-detail, .stapeliad-label-meta, .stapeliad-label-id, .pelargon-label-id, .label-id, .label-name, .label-subline, .label-meta"
+      )];
+      if (!nodes.length) {
+        return String(preview.innerText || preview.textContent || "")
+          .split(/\r?\n/)
+          .map(text => ({text: text.trim(), beforeSpace: 0, fontSize: 10 * canvasScale, fontWeight: 500, fontFamily: "-apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif", lineHeight: 12 * canvasScale}))
+          .filter(line => line.text);
+      }
+      return nodes.flatMap((node, nodeIndex) => {
+        const text = String(node.textContent || "").trim();
+        if (!text) return [];
+        const style = getComputedStyle(node);
+        const fontSize = Math.max(8, Number.parseFloat(style.fontSize) || 10) * canvasScale;
+        const lineHeight = style.lineHeight === "normal"
+          ? fontSize * 1.15
+          : Math.max(fontSize, Number.parseFloat(style.lineHeight) * canvasScale || fontSize * 1.15);
+        const parentStyle = getComputedStyle(node.parentElement || node);
+        const rowGap = Number.parseFloat(parentStyle.rowGap) || Number.parseFloat(parentStyle.gap) || 0;
+        const marginTop = Number.parseFloat(style.marginTop) || 0;
+        const beforeSpace = nodeIndex ? (rowGap + marginTop) * canvasScale : marginTop * canvasScale;
+        return visualTextLines(node).map((visualLine, lineIndex) => ({
+          text: visualLine,
+          beforeSpace: lineIndex === 0 ? beforeSpace : 0,
+          fontSize,
+          fontWeight: style.fontWeight || "500",
+          fontFamily: style.fontFamily || "-apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          fontStyle: style.fontStyle || "normal",
+          lineHeight
+        }));
+      });
+    }
+
+    function wrapCanvasText(context, text, maxWidth) {
+      const words = text.split(/\s+/).filter(Boolean);
+      const result = [];
+      let current = "";
+      const addWord = word => {
+        if (!word) return;
+        if (!current && context.measureText(word).width <= maxWidth) {
+          current = word;
+          return;
+        }
+        const candidate = current ? `${current} ${word}` : word;
+        if (context.measureText(candidate).width <= maxWidth) {
+          current = candidate;
+          return;
+        }
+        if (current) {
+          result.push(current);
+          current = "";
+        }
+        if (context.measureText(word).width <= maxWidth) {
+          current = word;
+          return;
+        }
+        let part = "";
+        for (const character of word) {
+          const next = part + character;
+          if (part && context.measureText(next).width > maxWidth) {
+            result.push(part);
+            part = character;
+          } else {
+            part = next;
+          }
+        }
+        current = part;
+      };
+      words.forEach(addWord);
+      if (current) result.push(current);
+      return result;
+    }
+
+    function drawCanvasLabel(context, preview, top, height, canvasScale, canvasWidth, canvasHeight) {
+      const stapeliadFront = preview.querySelector(".stapeliad-label-front");
+      const stapeliadName = stapeliadFront?.querySelector(".stapeliad-label-name");
+      const stapeliadMeta = stapeliadFront?.querySelector(".stapeliad-label-meta");
+      if (stapeliadFront && stapeliadName && stapeliadMeta) {
+        const styledLines = node => {
+          const style = getComputedStyle(node);
+          const fontSize = Math.max(8, Number.parseFloat(style.fontSize) || 10) * canvasScale;
+          const lineHeight = style.lineHeight === "normal"
+            ? fontSize * 1.15
+            : Math.max(fontSize, Number.parseFloat(style.lineHeight) * canvasScale || fontSize * 1.15);
+          return visualTextLines(node).map(text => ({
+            text,
+            fontSize,
+            fontWeight: style.fontWeight || "500",
+            fontFamily: style.fontFamily || "-apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+            fontStyle: style.fontStyle || "normal",
+            lineHeight
+          }));
+        };
+        const nameLines = styledLines(stapeliadName);
+        const metaLines = styledLines(stapeliadMeta);
+        const frontStyle = getComputedStyle(stapeliadFront);
+        const metaStyle = getComputedStyle(stapeliadMeta);
+        const rowGap = (Number.parseFloat(frontStyle.rowGap) || Number.parseFloat(frontStyle.gap) || 0) * canvasScale;
+        const metaMarginTop = (Number.parseFloat(metaStyle.marginTop) || 0) * canvasScale;
+        const topSafe = 1.8 * 40;
+        const bottomSafe = (1.8 + .8) * 40;
+        const metaHeight = metaLines.reduce((total, line) => total + line.lineHeight, 0);
+        const metaTop = top + height - bottomSafe - metaHeight;
+        const nameAreaTop = top + topSafe;
+        const nameAreaBottom = metaTop - rowGap - metaMarginTop;
+        const nameHeight = nameLines.reduce((total, line) => total + line.lineHeight, 0);
+        let cursor = nameAreaTop + Math.max(0, (nameAreaBottom - nameAreaTop - nameHeight) / 2);
+        const drawLines = lines => {
+          lines.forEach(line => {
+            context.font = `${line.fontStyle} ${line.fontWeight} ${line.fontSize}px ${line.fontFamily}`;
+            const baseline = cursor + (line.lineHeight - line.fontSize) / 2 + line.fontSize * .82;
+            context.fillText(line.text, canvasWidth / 2, baseline);
+            cursor += line.lineHeight;
+          });
+        };
+        context.textAlign = "center";
+        context.textBaseline = "alphabetic";
+        context.fillStyle = "#111";
+        drawLines(nameLines);
+        cursor = metaTop;
+        drawLines(metaLines);
+        return;
+      }
+      const maxWidth = canvasWidth - 2 * (2.4 * 40);
+      const prepared = [];
+      currentLabelLines(preview, canvasScale).forEach(line => {
+        context.font = `${line.fontStyle} ${line.fontWeight} ${line.fontSize}px ${line.fontFamily}`;
+        const lines = context.measureText(line.text).width > maxWidth
+          ? wrapCanvasText(context, line.text, maxWidth)
+          : [line.text];
+        lines.forEach((text, lineIndex) => {
+          prepared.push({...line, text, beforeSpace: lineIndex === 0 ? line.beforeSpace : 0});
+        });
+      });
+      if (!prepared.length) return;
+      const totalHeight = prepared.reduce((total, line) => total + (line.beforeSpace || 0) + line.lineHeight, 0);
+      let cursor = top + Math.max(0, (height - totalHeight) / 2);
+      context.textAlign = "center";
+      context.textBaseline = "alphabetic";
+      context.fillStyle = "#111";
+      prepared.forEach(line => {
+        cursor += line.beforeSpace || 0;
+        context.font = `${line.fontStyle} ${line.fontWeight} ${line.fontSize}px ${line.fontFamily}`;
+        const baseline = cursor + (line.lineHeight - line.fontSize) / 2 + line.fontSize * .82;
+        context.fillText(line.text, canvasWidth / 2, baseline);
+        cursor += line.lineHeight;
+      });
+    }
+
+    function renderCurrentLabelCanvas() {
+      const canvas = document.createElement("canvas");
+      canvas.width = 2280;
+      canvas.height = 1280;
+      const canvasScale = canvas.width / (57 * 96 / 25.4);
+      const context = canvas.getContext("2d");
+      context.fillStyle = "#fff";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      if (usesTwoFields()) {
+        drawCanvasLabel(context, previewA, 0, 640, canvasScale, canvas.width, canvas.height);
+        context.strokeStyle = "#aaa";
+        context.lineWidth = Math.max(1, canvasScale / 2);
+        context.setLineDash([4 * canvasScale, 4 * canvasScale]);
+        context.beginPath();
+        context.moveTo(0, 640);
+        context.lineTo(canvas.width, 640);
+        context.stroke();
+        drawCanvasLabel(context, previewB, 640, 640, canvasScale, canvas.width, canvas.height);
+      } else {
+        drawCanvasLabel(context, previewA, 0, 1280, canvasScale, canvas.width, canvas.height);
+      }
+      return canvas;
+    }
+
+    function pdfBlobFromCanvas(canvas) {
+      const data = atob(canvas.toDataURL("image/jpeg", .95).split(",", 2)[1]);
+      const jpeg = new Uint8Array(data.length);
+      for (let index = 0; index < data.length; index += 1) jpeg[index] = data.charCodeAt(index);
+      const encoder = new TextEncoder();
+      const chunks = [];
+      const offsets = Array(6).fill(0);
+      let byteLength = 0;
+      const appendText = value => {
+        const bytes = encoder.encode(value);
+        chunks.push(bytes);
+        byteLength += bytes.length;
+      };
+      const appendBytes = value => {
+        chunks.push(value);
+        byteLength += value.length;
+      };
+      const addObject = (number, body) => {
+        offsets[number] = byteLength;
+        appendText(`${number} 0 obj\n${body}\nendobj\n`);
+      };
+      const pageWidth = (57 / 25.4 * 72).toFixed(4);
+      const pageHeight = (32 / 25.4 * 72).toFixed(4);
+      appendText("%PDF-1.4\n");
+      addObject(1, "<< /Type /Catalog /Pages 2 0 R >>");
+      addObject(2, "<< /Type /Pages /Kids [3 0 R] /Count 1 >>");
+      addObject(3, `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageWidth} ${pageHeight}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>`);
+      offsets[4] = byteLength;
+      appendText(`4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${canvas.width} /Height ${canvas.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpeg.length} >>\nstream\n`);
+      appendBytes(jpeg);
+      appendText("\nendstream\nendobj\n");
+      const content = `q\n${pageWidth} 0 0 ${pageHeight} 0 0 cm\n/Im0 Do\nQ\n`;
+      addObject(5, `<< /Length ${encoder.encode(content).length} >>\nstream\n${content}endstream`);
+      const xrefOffset = byteLength;
+      appendText("xref\n0 6\n0000000000 65535 f \n");
+      for (let number = 1; number <= 5; number += 1) {
+        appendText(`${String(offsets[number]).padStart(10, "0")} 00000 n \n`);
+      }
+      appendText(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF\n`);
+      return new Blob(chunks, {type: "application/pdf"});
+    }
+
+    function validateCurrentLabelInputs() {
+      if (!isFreeTextMode()) return true;
+      const missingFirst = !freeTextA.value.trim();
+      const missingSecond = usesTwoFields() && !freeTextB.value.trim();
+      if (!missingFirst && !missingSecond) return true;
+      alert(usesTwoFields() ? "Skriv ett namn i båda fälten." : "Skriv ett namn på etiketten.");
+      (missingFirst ? freeTextA : freeTextB).focus();
+      return false;
+    }
+
+    function createCurrentLabelPdf() {
+      if (!validateCurrentLabelInputs()) return;
+      const button = document.querySelector("#pdfBtn");
+      button.disabled = true;
+      button.textContent = "Skapar PDF…";
+      try {
+        const blobUrl = URL.createObjectURL(pdfBlobFromCanvas(renderCurrentLabelCanvas()));
+        const opened = window.open(blobUrl, "_blank");
+        if (!opened) {
+          const link = document.createElement("a");
+          link.href = blobUrl;
+          link.target = "_blank";
+          link.rel = "noopener";
+          link.click();
+        }
+        window.setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+      } catch (error) {
+        alert("PDF-filen kunde inte skapas. Försök igen.");
+      } finally {
+        button.disabled = false;
+        button.textContent = "Skapa PDF för DYMO";
+      }
+    }
+
+    function renderCurrentTwoHalfPrintArea() {
+      const canvas = renderCurrentLabelCanvas();
+      const imageUrl = canvas.toDataURL("image/png");
+      batchPrintArea.innerHTML = `<section class="batch-print-sheet current-two-half"><img class="current-two-half-image" src="${imageUrl}" alt="Två halva etiketter"></section>`;
+    }
+
+    function printPreparedCurrentSheet() {
+      void batchPrintArea.offsetHeight;
+      const image = batchPrintArea.querySelector(".current-two-half-image");
+      const startPrint = () => setTimeout(() => window.print(), 50);
+      if (image && !image.complete) image.addEventListener("load", startPrint, {once: true});
+      else startPrint();
+    }
+
+    function printCurrentSheet() {
+      if (!validateCurrentLabelInputs()) return;
+      if (usesTwoFields()) {
+        resetBatchPrintMode();
+        renderCurrentTwoHalfPrintArea();
+        document.body.classList.add("current-two-half-printing");
+        batchPrintArea.style.display = "block";
+        batchPrintArea.style.visibility = "visible";
+        window.addEventListener("afterprint", resetBatchPrintMode, {once: true});
+        printPreparedCurrentSheet();
+        return;
+      }
       resetBatchPrintMode();
-      window.print();
+      renderCurrentFullPrintArea();
+      document.body.classList.add("current-full-printing");
+      batchPrintArea.style.display = "block";
+      batchPrintArea.style.visibility = "visible";
+      window.addEventListener("afterprint", resetBatchPrintMode, {once: true});
+      printPreparedCurrentSheet();
     }
 
     function printBatchRows(rows) {
@@ -1390,6 +1890,8 @@
     });
     labelA.addEventListener("change", render);
     labelB.addEventListener("change", render);
+    stapeliadSeedLotA.addEventListener("change", render);
+    stapeliadSeedLotB.addEventListener("change", render);
     freeTextA.addEventListener("input", render);
     freeTextB.addEventListener("input", render);
     freeSubtextA.addEventListener("input", render);
@@ -1415,6 +1917,7 @@
       updateBatchSummary();
     });
     document.querySelector("#printBtn").addEventListener("click", printCurrentSheet);
+    document.querySelector("#pdfBtn").addEventListener("click", createCurrentLabelPdf);
     document.querySelector("#previewBatchBtn").addEventListener("click", () => {
       const rows = selectedBatchRows();
       if (!rows.length) {

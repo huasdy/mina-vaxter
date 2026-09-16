@@ -62,6 +62,28 @@
     .plant-card[data-category="Stapeliader"] .plant-card-milestone-slot { height:82px; min-height:82px; }
     .plant-card[data-category="Stapeliader"] .stapeliad-milestone-age { margin-left:24px; white-space:nowrap; }
     .plant-card[data-category="Stapeliader"] .stapeliad-milestone-age { grid-column:1 / -1; margin-left:24px; }
+    .plant-card[data-category="Stapeliader"] .card-body { display:flex !important; flex-direction:column; gap:12px; }
+    .plant-card[data-category="Stapeliader"] .plant-card-head { order:1; display:block !important; height:auto; min-height:0; margin:0; overflow:visible; }
+    .plant-card[data-category="Stapeliader"] .plant-title-block h2 { overflow-wrap:anywhere; word-break:normal; }
+    .stapeliad-rarity-card-button { display:flex; align-items:baseline; gap:8px; width:fit-content; max-width:100%; margin-top:8px; padding:2px 0; border:0; background:none; color:var(--accent); font:inherit; font-size:.86rem; font-weight:850; line-height:1.25; text-align:left; cursor:pointer; }
+    .stapeliad-rarity-card-button:hover { color:var(--ink); }
+    .stapeliad-rarity-card-button:active { transform:translateY(1px); }
+    .stapeliad-rarity-card-stars { letter-spacing:.08em; white-space:nowrap; }
+    .plant-card[data-category="Stapeliader"] .stapeliad-material-actions-row { order:2; display:flex; align-items:center; justify-content:space-between; gap:10px; min-height:44px; }
+    .plant-card[data-category="Stapeliader"] .stapeliad-material-actions-row .plant-card-chip-slot { flex:1 1 auto; min-width:0; height:auto; min-height:0; overflow:visible; }
+    .plant-card[data-category="Stapeliader"] .stapeliad-material-actions-row .import-actions { position:static; display:flex !important; flex:0 0 auto; flex-direction:row !important; align-items:center; justify-content:flex-end; gap:6px; margin:0; }
+    .plant-card[data-category="Stapeliader"] .stapeliad-material-actions-row .plant-log-btn,
+    .plant-card[data-category="Stapeliader"] .stapeliad-material-actions-row .add-photo-btn { width:44px; height:44px; }
+    .plant-card[data-category="Stapeliader"] .plant-card-info { order:3; height:auto; min-height:0; overflow:visible; }
+    .plant-card[data-category="Stapeliader"] .plant-card-milestone-slot { order:4; height:auto; min-height:0; overflow:visible; }
+    .plant-card[data-category="Stapeliader"] .plant-card-notes-slot { order:5; height:auto; min-height:0; overflow:visible; }
+    .plant-card[data-category="Stapeliader"] .plant-title-block h2 { display:block; min-height:2.16em; overflow:visible; }
+    @media (min-width:701px) {
+      .grid.stapeliad-grid:not(.stapeliad-gallery) { align-items:stretch; }
+      .grid.stapeliad-grid:not(.stapeliad-gallery) > .plant-card { height:100%; min-height:0; }
+      .grid.stapeliad-grid:not(.stapeliad-gallery) > .plant-card .card-body { flex:1 1 auto; min-height:0; }
+      .grid.stapeliad-grid:not(.stapeliad-gallery) > .plant-card .plant-card-notes-slot { margin-top:auto; }
+    }
     .stapeliad-gallery { grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
     .stapeliad-gallery-item.plant-card { min-height:0; border-radius:15px; box-shadow:none; cursor:pointer; background:var(--paper); }
     .stapeliad-gallery-image { aspect-ratio:1; overflow:hidden; background:linear-gradient(135deg,rgba(125,79,59,.16),rgba(96,119,97,.14)),#eadfce; }
@@ -73,9 +95,12 @@
     .stapelia-rarity { border-top:1px solid var(--line); padding-top:14px; }
     .stapelia-rarity-toggle { display:flex; width:100%; align-items:baseline; justify-content:space-between; gap:12px; border:0; padding:0; background:none; color:var(--ink); text-align:left; font:inherit; cursor:pointer; }
     .stapelia-rarity-toggle:hover { color:var(--accent); }
+    .stapelia-rarity-chevron { transition:transform .18s ease; }
+    .stapelia-rarity-toggle[aria-expanded="true"] .stapelia-rarity-chevron { transform:rotate(180deg); }
     .stapelia-rarity-summary { font-weight:850; }
     .stapelia-rarity-summary-stars { letter-spacing:.08em; white-space:nowrap; }
     .stapelia-rarity-details { display:grid; gap:11px; margin-top:12px; }
+    .stapelia-rarity-details[hidden] { display:none; }
     .stapelia-rarity-factor { padding:10px 12px; border-radius:13px; background:rgba(125,79,59,.07); }
     .stapelia-rarity-factor strong { display:block; }
     .stapelia-rarity-reason { margin:4px 0 0; color:var(--muted); overflow-wrap:anywhere; }
@@ -127,20 +152,22 @@
       <select id="typeFilter" aria-label="Filtrera typ"><option value="">Alla typer</option></select>
       <select id="supplierFilter" aria-label="Filtrera butik"><option value="">Alla butiker</option></select>
       <select id="statusFilter" aria-label="Filtrera status"><option value="">Alla statusar</option></select>
+      <select id="sortOrder" aria-label="Sortera Stapeliader"><option value="name">Namn A–Ö</option><option value="rarity-desc">Betyg: högst</option><option value="rarity-asc">Betyg: lägst</option></select>
       <button id="clear" type="button">Rensa</button>
       <div class="view-toggle" aria-label="Välj visning"><button id="cardView" type="button" aria-pressed="true">Kort</button><button id="galleryView" type="button" aria-pressed="false">Galleri</button></div>
       <div class="stats" id="stats">Laddar…</div>
     </div>
-    <section class="grid" id="grid"></section>
+    <section class="grid stapeliad-grid" id="grid"></section>
   </main>
-  <script src="common.js?v=76b35c8229e1"></script>
+  <script src="common.js?v=77ae455b7831"></script>
   <script>
-    const PUBLIC_CATALOG_SCHEMA_VERSION = 2;
+      const PUBLIC_CATALOG_SCHEMA_VERSION = 4;
     const grid = document.querySelector("#grid");
     const search = document.querySelector("#search");
     const typeFilter = document.querySelector("#typeFilter");
     const supplierFilter = document.querySelector("#supplierFilter");
     const statusFilter = document.querySelector("#statusFilter");
+    const sortOrder = document.querySelector("#sortOrder");
     const clearButton = document.querySelector("#clear");
     const cardViewButton = document.querySelector("#cardView");
     const galleryViewButton = document.querySelector("#galleryView");
@@ -154,6 +181,20 @@
       return String(value || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
     }
 
+    function supplierMarketplace(value) {
+      const supplier = clean(value);
+      return /^eBay\s*[–—-]/i.test(supplier) ? "eBay" : supplier;
+    }
+
+    function supplierSeller(value) {
+      const match = /^eBay\s*[–—-]\s*(.+)$/i.exec(clean(value));
+      return match ? match[1].trim() : "";
+    }
+
+    function supplierMatches(value, selected) {
+      return !selected || supplierMarketplace(value) === selected;
+    }
+
     function field(label, value) {
       const text = clean(value);
       return text ? `<dt>${escapeText(label)}</dt><dd>${escapeText(text)}</dd>` : "";
@@ -164,12 +205,51 @@
       return content || extra ? `<div><h3>${escapeText(heading)}</h3>${content ? `<dl class="stapeliad-facts">${content}</dl>` : ""}${extra}</div>` : "";
     }
 
-    function seedLotSection(seedLots) {
+    function seedLotSection(seedLots, logs) {
       return detailSection("Fröpartier", (seedLots || []).map(lot => {
         const price = lot.inköpspris ? `${lot.inköpspris} ${lot.valuta || ""}`.trim() : "";
-        const details = [lot.ordernummer && `Order ${lot.ordernummer}`, lot.mängd, price, lot.förvärvstyp, lot.status].filter(Boolean).join(" · ");
-        return field(lot.leverantör || "Fröparti", details);
+        const remaining = seedRemainingFromHistory({original_seed_count: lot.ursprungligt_fröantal, logs}, lot.fröparti_id);
+        const seedDetails = [
+          field("Typ", lot.förvärvstyp), field("Inköpspris", price),
+          field("Ursprungligt fröantal", lot.ursprungligt_fröantal),
+          field("Frön kvar", remaining.text), field("Status", lot.status),
+        ].filter(Boolean).join("");
+        const otherDetails = [lot.ordernummer && `Order ${lot.ordernummer}`, lot.mängd, price, lot.förvärvstyp, lot.status].filter(Boolean).join(" · ");
+        return lot.förvärvstyp === "Frö"
+          ? `<div class="stapeliad-seed-lot-facts"><strong>${escapeText(lot.fröparti_id || "Fröparti")} · ${escapeText(lot.leverantör || "okänd källa")}</strong><dl class="stapeliad-facts">${seedDetails}</dl></div>`
+          : field(lot.leverantör || "Fröparti", otherDetails);
       }));
+    }
+
+    function seedRemainingFromHistory(row, seedLotId = "") {
+      const originalText = clean(row.original_seed_count) || (seedLotId ? "" : (row.seed_lots || []).reduce((sum, lot) => sum + (Number(lot.ursprungligt_fröantal) || 0), 0) || "");
+      if (!originalText) return { text: "Kan inte beräknas — ursprungligt fröantal saknas", conflict: true };
+      const original = Number(originalText);
+      if (!Number.isInteger(original) || original < 0) return { text: "Datakonflikt — ogiltigt ursprungligt fröantal", conflict: true };
+      let sown = 0;
+      for (const log of row.logs || []) {
+        if (clean(log.type).toLocaleLowerCase("sv") !== "sådd" || (seedLotId && clean(log.seed_lot_id) !== seedLotId)) continue;
+        const match = /(\d+)\s*(?:fröer?|frön?)/i.exec(clean(log.note));
+        if (!match) return { text: "Datakonflikt — Sådd saknar antal frön", conflict: true };
+        sown += Number(match[1]);
+      }
+      const remaining = original - sown;
+      if (remaining < 0) return { text: `Datakonflikt — ${sown} sådda frön överstiger ${original}`, conflict: true };
+      return { text: String(remaining), conflict: false };
+    }
+
+    function stapeliadAcquisitionFacts(row) {
+      if (clean(row.acquisition_type) === "Frö") {
+        const remaining = seedRemainingFromHistory(row);
+        return [
+          field("Typ", row.acquisition_type),
+          field("Inköpspris", row.purchase_price ? `${row.purchase_price} ${row.purchase_currency || ""}`.trim() : ""),
+          field("Ursprungligt fröantal", clean(row.original_seed_count) || (row.seed_lots || []).reduce((sum, lot) => sum + (Number(lot.ursprungligt_fröantal) || 0), 0) || ""),
+          field("Frön kvar", remaining.text),
+          field("Status", row.status),
+        ];
+      }
+      return [field("Typ", row.acquisition_type), field("Inköpspris", row.purchase_price ? `${row.purchase_price} ${row.purchase_currency || ""}`.trim() : ""), field("Inköpsantal", row.purchase_quantity), field("Mängd", row.package_quantity), field("Inköpsdatum", row.purchase_date), field("Ankomstdatum", row.arrival_date), field("Sådatum", row.sown_date), field("Grodddatum", row.germination_date), field("Status", row.status)];
     }
 
     function latestStapeliaRarity(assessments, plantId) {
@@ -180,6 +260,10 @@
     function rarityStars(stars) {
       const count = Math.max(0, Math.min(5, Number(stars) || 0));
       return `${"★".repeat(count)}${"☆".repeat(5 - count)}`;
+    }
+
+    function rarityStarWord(stars) {
+      return ["noll", "en", "två", "tre", "fyra", "fem"][Math.max(0, Math.min(5, Number(stars) || 0))];
     }
 
     function rarityNumber(value) {
@@ -201,7 +285,14 @@
         ["Odlingssällsynthet", "cultivation"], ["Proveniens/accession", "provenance"],
         ["Naturlig/geografisk sällsynthet", "natural"], ["Taxonomiskt/samlarhistoriskt intresse", "taxonomic"],
       ].map(([label, key]) => `<div class="stapelia-rarity-factor"><strong>${escapeText(label)}: ${escapeText(rarity[`${key}_score`])}/5 · ${escapeText(rarityPercent(Number(rarity[`${key}_weight`] || 0)))} % → ${escapeText(rarityNumber(Number(rarity[`${key}_score`]) * Number(rarity[`${key}_weight`])))} </strong><p class="stapelia-rarity-reason">${escapeText(rarity[`${key}_reason`])}</p></div>`).join("");
-      return `<section class="stapelia-rarity" aria-labelledby="${escapeAttr(controlId)}-heading"><button type="button" class="stapelia-rarity-toggle" id="${escapeAttr(controlId)}-heading" aria-expanded="false" aria-controls="${escapeAttr(controlId)}"><span class="stapelia-rarity-summary"><span class="stapelia-rarity-summary-stars" aria-hidden="true">${stars}</span> ${escapeText(rarity.label)} · ${escapeText(rarityNumber(rarity.weighted_total))}/5${escapeText(preliminaryText)}</span><span aria-hidden="true">⌄</span><span class="sr-only">Samlarraritet: ${starCount} av fem stjärnor, ${escapeText(rarity.label)}${preliminary ? ", preliminär" : ""}</span></button><div class="stapelia-rarity-details" id="${escapeAttr(controlId)}" hidden>${factors}<div class="stapelia-rarity-meta">${escapeText(rarity.standard_name)} v${escapeText(rarity.standard_version)} · Bedömd ${escapeText(rarity.assessed_date)}</div></div></section>`;
+      return `<section class="stapelia-rarity" aria-labelledby="${escapeAttr(controlId)}-heading"><button type="button" class="stapelia-rarity-toggle" id="${escapeAttr(controlId)}-heading" aria-expanded="false" aria-controls="${escapeAttr(controlId)}"><span class="stapelia-rarity-summary"><span class="stapelia-rarity-summary-stars" aria-hidden="true">${stars}</span> ${escapeText(rarity.label)} · ${escapeText(rarityNumber(rarity.weighted_total))}/5${escapeText(preliminaryText)}</span><span class="stapelia-rarity-chevron" aria-hidden="true">⌄</span><span class="sr-only">Samlarraritet: ${starCount} av fem stjärnor, ${escapeText(rarity.label)}${preliminary ? ", preliminär" : ""}</span></button><div class="stapelia-rarity-details" id="${escapeAttr(controlId)}" hidden>${factors}<div class="stapelia-rarity-meta">${escapeText(rarity.standard_name)} v${escapeText(rarity.standard_version)} · Bedömd ${escapeText(rarity.assessed_date)}</div></div></section>`;
+    }
+
+    function rarityCardButton(rarity, plantId) {
+      if (!rarity) return "";
+      const starCount = Math.max(0, Math.min(5, Number(rarity.stars) || 0));
+      const label = `Visa samlarraritetsbedömning: ${rarityStarWord(starCount)} av fem stjärnor, ${clean(rarity.label)}`;
+      return `<button type="button" class="stapeliad-rarity-card-button" data-stapeliad-rarity-trigger aria-label="${escapeAttr(label)}"><span class="stapeliad-rarity-card-stars" aria-hidden="true">${rarityStars(starCount)}</span><span>${escapeText(rarity.label)}</span></button>`;
     }
 
     function editField(label, key, value, type = "text", wide = false, options = []) {
@@ -257,8 +348,8 @@
       return `
         <section class="plant-panel-section stapeliad-panel" data-stapeliad-detail-root aria-label="Stapeliaddata">
           ${detailSection("Botanisk identitet", [field("Fullständigt botaniskt namn", row.full_botanical_name), field("Etikettnamn", row.short_name), field("Växt-ID", row.id), field("Släkte", row.genus), field("Art", row.species), field("Underart/varietet/form", row.infraspecific_taxon), field("Inköpsnamn från leverantören", row.supplier_purchase_name), field("Accession/fältnummer", row.accession_field_number), field("Proveniens/lokalitet", row.provenance_location), field("Accepterat namn/synonym", row.accepted_name_or_synonym)]) }
-          ${detailSection("Förvärv och odling", [field("Leverantör", row.supplier), field("Ordernummer", row.order_number), field("Typ", row.acquisition_type), field("Inköpspris", row.purchase_price ? `${row.purchase_price} ${row.purchase_currency || ""}`.trim() : ""), field("Inköpsantal", row.purchase_quantity), field("Ursprungligt fröantal", row.original_seed_count), field("Mängd", row.package_quantity), field("Inköpsdatum", row.purchase_date), field("Ankomstdatum", row.arrival_date), field("Sådatum", row.sown_date), field("Grodddatum", row.germination_date), field("Status", row.status)])}
-          ${seedLotSection(row.seed_lots)}
+          ${detailSection("Förvärv och odling", [field(supplierSeller(row.supplier) ? "Köpt från" : "Leverantör", supplierMarketplace(row.supplier)), field("Säljare", supplierSeller(row.supplier)), field("Ordernummer", row.order_number), ...stapeliadAcquisitionFacts(row)])}
+          ${seedLotSection(row.seed_lots, row.logs)}
           ${detailSection("Blomdoft", [field("Förväntad doft", row.expected_scent), field("Egen doftobservation", row.own_scent_observation), field("Doftstyrka", clean(row.scent_strength) ? `${row.scent_strength}/5` : ""), field("Doftbeskrivning", row.scent_description), field("Doftavstånd", row.scent_distance), field("☠️-flagga", veto ? "Ja" : "")], veto ? '<p class="scent-veto">☠️ Näsan har lagt in sitt veto.</p>' : "")}
           ${raritySection(row.rarity, row.id)}
           ${detailSection("Anteckningar", [field("Anteckningar", row.notes)])}
@@ -306,13 +397,10 @@
 
     function stapeliadCardInfo(plant) {
       const provenance = clean(plant.provenance_location);
-      const parts = provenance.split(" · ");
-      const compactProvenance = provenance.length > 36 && parts.length > 2
-        ? parts.slice(-2).join(" · ") : provenance;
       return [
         [clean(plant.supplier), "Leverantör", "supplier"],
         [clean(plant.accession_field_number), "Accession/fältnummer", "accession"],
-        [compactProvenance, "Proveniens/lokalitet", "provenance"]
+        [provenance, "Proveniens/lokalitet", "provenance"]
       ].filter(([value]) => value).map(([value, label, role]) =>
         `<span class="stapeliad-info-line stapeliad-info-line--${role}" aria-label="${escapeAttr(label)}">${escapeText(value)}</span>`
       ).join("");
@@ -365,6 +453,21 @@
       `;
     }
 
+    function stapeliadPhotoButtons(plant, activeFile) {
+      const photos = plant.photos || [];
+      if (photos.length <= 1) return "";
+      const displayLabel = plant.full_botanical_name || plant.short_name || plant.id;
+      return photos.map(photo => {
+        const ageText = photoAgeText(photo.date, plant.logs);
+        const label = (photo.label || (photo.date + " · " + photo.type)) + (ageText ? " · " + ageText : "");
+        return `
+          <button class="thumb ${photo.file === activeFile ? "active" : ""}" type="button"
+            data-plant="${escapeAttr(displayLabel)}" data-file="${escapeAttr(photo.file)}" data-label="${escapeAttr(label)}" data-photo-type="${escapeAttr(photo.type)}">
+            <img src="${escapeAttr(photo.file)}" alt="${escapeAttr(displayLabel + " " + photo.date)}" loading="lazy">
+          </button>`;
+      }).join("");
+    }
+
     function cardTemplate(plant) {
       const visibleStatus = visiblePlantStatus(plant);
       const materialType = ["Frö", "Stickling"].includes(clean(plant.acquisition_type)) ? clean(plant.acquisition_type) : "";
@@ -379,14 +482,16 @@
           <div class="image-wrap">
             ${active.file ? `<img class="main-photo" src="${escapeAttr(active.file)}" alt="${escapeAttr(plant.full_botanical_name)}" data-caption="${escapeAttr(`${plant.full_botanical_name} · ${caption}`)}" loading="lazy">` : '<div class="image-empty">Bild saknas</div>'}
             ${caption ? `<div class="date-ribbon">${escapeText(caption)}</div>` : ""}
-            <div class="plant-card-gallery-slot ${(plant.photos || []).length > 1 ? "has-gallery" : ""}"></div>
+            <div class="plant-card-gallery-slot ${(plant.photos || []).length > 1 ? "has-gallery" : ""}">${(plant.photos || []).length > 1 ? `<div class="thumbs">${stapeliadPhotoButtons(plant, active.file)}</div>` : ""}</div>
           </div>
           <div class="card-body">
             <div class="plant-card-head">
-              <div class="plant-title-block"><h2>${escapeText(plant.full_botanical_name || plant.short_name || plant.id)}</h2>${stapeliadMaterialIdentity(plant) ? `<div class="stapeliad-material-identity">${escapeText(stapeliadMaterialIdentity(plant))}</div>` : ""}</div>
-              <div class="import-actions"><button class="plant-log-btn" type="button" aria-label="Visa stapeliaddata och historik" title="Detaljer och historik">${logBookIcon()}</button><button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button><span class="import-badge" data-import-badge hidden></span></div>
+              <div class="plant-title-block"><h2>${escapeText(plant.full_botanical_name || plant.short_name || plant.id)}</h2>${plant.rarity ? rarityCardButton(plant.rarity, plant.id) : ""}</div>
             </div>
-            <div class="plant-card-chip-slot"><div class="chips">${materialType ? `<span class="chip" data-material-chip>${escapeText(materialType)}</span>` : ""}</div></div>
+            <div class="stapeliad-material-actions-row">
+              <div class="plant-card-chip-slot"><div class="chips">${materialType ? `<span class="chip" data-material-chip>${escapeText(materialType)}</span>` : ""}</div></div>
+              <div class="import-actions"><button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button><button class="plant-log-btn" type="button" aria-label="Visa stapeliaddata och historik" title="Detaljer och historik">${logBookIcon()}</button><span class="import-badge" data-import-badge hidden></span></div>
+            </div>
             <div class="plant-card-info">${stapeliadCardInfo(plant)}</div>
             <div class="plant-card-milestone-slot">${stapeliadMilestoneSummary(plant.logs)}</div>
             <div class="plant-card-notes-slot">${plantCardNoteField(plant.id, plant.card_note, plant.card_note_updated_at, "Stapeliader")}</div>
@@ -413,6 +518,22 @@
       render();
     }
 
+    function sortStapeliads(rows) {
+      const mode = sortOrder.value;
+      return [...rows].sort((a, b) => {
+        if (mode === "rarity-desc" || mode === "rarity-asc") {
+          const aTotal = Number(a.rarity?.weighted_total);
+          const bTotal = Number(b.rarity?.weighted_total);
+          const aHasRarity = Number.isFinite(aTotal);
+          const bHasRarity = Number.isFinite(bTotal);
+          if (aHasRarity !== bHasRarity) return aHasRarity ? -1 : 1;
+          if (aHasRarity && aTotal !== bTotal) return mode === "rarity-desc" ? bTotal - aTotal : aTotal - bTotal;
+          return clean(a.full_botanical_name || a.short_name || a.id).localeCompare(clean(b.full_botanical_name || b.short_name || b.id), "sv", {sensitivity:"base"});
+        }
+        return sortNatural(a.short_name || a.id, b.short_name || b.id);
+      });
+    }
+
     function render() {
       const previousStatus = statusFilter.value;
       const statuses = [...new Set(plants.map(visiblePlantStatus).filter(Boolean))].sort((a, b) => a.localeCompare(b, "sv"));
@@ -422,13 +543,13 @@
       const type = typeFilter.value;
       const supplier = supplierFilter.value;
       const status = statusFilter.value;
-      const visible = plants.filter(plant => {
+      const visible = sortStapeliads(plants.filter(plant => {
         const haystack = [...Object.values(plant).filter(value => typeof value === "string"), ...(plant.seed_lots || []).flatMap(lot => Object.values(lot))].join(" ").toLowerCase();
         return (!query || haystack.includes(query))
           && (!type || plant.acquisition_type === type)
-          && (!supplier || plant.supplier === supplier || (plant.seed_lots || []).some(lot => lot.leverantör === supplier))
+          && (supplierMatches(plant.supplier, supplier) || (plant.seed_lots || []).some(lot => supplierMatches(lot.leverantör, supplier)))
           && (!status || visiblePlantStatus(plant) === status);
-      });
+      }));
       grid.classList.toggle("stapeliad-gallery", viewMode === "gallery");
       grid.innerHTML = visible.length ? visible.map(viewMode === "gallery" ? galleryTemplate : cardTemplate).join("") : '<div class="empty">Inga stapeliader matchar sökningen just nu.</div>';
       stats.textContent = `${visible.length} visas av ${plants.length}`;
@@ -471,7 +592,7 @@
           element.innerHTML = `<option value="">${empty}</option>` + values.sort((a, b) => a.localeCompare(b, "sv")).map(value => `<option value="${escapeAttr(value)}">${escapeText(value)}</option>`).join("");
         };
         setOptions(typeFilter, [...new Set(plants.map(plant => clean(plant.acquisition_type)).filter(Boolean))], "Alla typer");
-        setOptions(supplierFilter, [...new Set(plants.flatMap(plant => [clean(plant.supplier), ...(plant.seed_lots || []).map(lot => clean(lot.leverantör))]).filter(Boolean))], "Alla butiker");
+        setOptions(supplierFilter, [...new Set(plants.flatMap(plant => [supplierMarketplace(plant.supplier), ...(plant.seed_lots || []).map(lot => supplierMarketplace(lot.leverantör))]).filter(Boolean))], "Alla butiker");
         setOptions(statusFilter, [...new Set(plants.map(visiblePlantStatus).filter(Boolean))], "Alla statusar");
         window.stapeliadDetailPanelHtml = id => detailPanel(plants.find(plant => plant.id === id));
         window.bindStapeliadDetailPanel = (dialog, id) => {
@@ -491,7 +612,7 @@
               const expanded = button.getAttribute("aria-expanded") === "true";
               button.setAttribute("aria-expanded", expanded ? "false" : "true");
               details.hidden = expanded;
-            }, {once:true});
+            });
             dialog.querySelector("[data-stapeliad-edit]")?.addEventListener("click", () => show(true), {once:true});
             dialog.querySelector("[data-stapeliad-cancel]")?.addEventListener("click", () => show(false), {once:true});
             dialog.querySelector("[data-stapeliad-edit-form]")?.addEventListener("submit", async event => {
@@ -545,6 +666,33 @@
         ensurePlantImageImport();
         ensurePlantFavorites();
         grid.addEventListener("click", event => {
+          const thumb = event.target.closest(".thumb");
+          if (thumb) {
+            event.preventDefault();
+            event.stopPropagation();
+            const card = thumb.closest(".plant-card");
+            const image = card && card.querySelector(".main-photo");
+            if (!card || !image) return;
+            const ribbon = card.querySelector(".date-ribbon");
+            card.querySelectorAll(".thumb").forEach(item => item.classList.remove("active"));
+            thumb.classList.add("active");
+            image.src = thumb.dataset.file || image.src;
+            image.dataset.photoType = thumb.dataset.photoType || "";
+            image.dataset.caption = `${thumb.dataset.plant} · ${thumb.dataset.label}`;
+            if (ribbon) ribbon.textContent = thumb.dataset.label || "";
+            return;
+          }
+          const rarityTrigger = event.target.closest(".stapeliad-rarity-card-button");
+          if (rarityTrigger) {
+            event.preventDefault();
+            event.stopPropagation();
+            const card = rarityTrigger.closest(".plant-card");
+            if (!card) return;
+            openPlantPanel(card);
+            const toggle = document.querySelector("#plantLogDialog .stapelia-rarity-toggle");
+            if (toggle && toggle.getAttribute("aria-expanded") !== "true") toggle.click();
+            return;
+          }
           const galleryItem = event.target.closest(".stapeliad-gallery-item");
           if (galleryItem && !event.target.closest(".favorite-corner")) {
             openPlantPanel(galleryItem);
@@ -562,6 +710,7 @@
         typeFilter.addEventListener("change", render);
         supplierFilter.addEventListener("change", render);
         statusFilter.addEventListener("change", render);
+        sortOrder.addEventListener("change", render);
         cardViewButton.addEventListener("click", () => setViewMode("cards"));
         galleryViewButton.addEventListener("click", () => setViewMode("gallery"));
         clearButton.addEventListener("click", () => {
@@ -569,6 +718,7 @@
           typeFilter.value = "";
           supplierFilter.value = "";
           statusFilter.value = "";
+          sortOrder.value = "name";
           render();
         });
         setViewMode(viewMode);

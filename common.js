@@ -646,6 +646,8 @@ function addPlantMilestoneEntry(entry) {
     date,
     type,
     note: clean(entry.note),
+    seed_lot_id: clean(entry.seed_lot_id),
+    from_sowing_key: clean(entry.from_sowing_key),
     local: "true",
     createdAt: new Date().toISOString(),
     operationId: localQueueId("milestone")
@@ -663,7 +665,9 @@ function addPlantMilestoneEntries(entries) {
     clean(row.id),
     clean(row.date),
     clean(row.type),
-    clean(row.note)
+    clean(row.note),
+    clean(row.seed_lot_id),
+    clean(row.from_sowing_key)
   ].join("|")));
   const createdAt = new Date().toISOString();
   const added = [];
@@ -672,11 +676,13 @@ function addPlantMilestoneEntries(entries) {
     const date = clean(entry && entry.date);
     const type = clean(entry && entry.type);
     const note = clean(entry && entry.note);
+    const seedLotId = clean(entry && entry.seed_lot_id);
+    const fromSowingKey = clean(entry && entry.from_sowing_key);
     if (!id || !date || !type) return;
-    const key = [id, date, type, note].join("|");
+    const key = [id, date, type, note, seedLotId, fromSowingKey].join("|");
     if (existing.has(key)) return;
     existing.add(key);
-    const row = {id, date, type, note, local: "true", createdAt, operationId: localQueueId("milestone")};
+    const row = {id, date, type, note, seed_lot_id: seedLotId, from_sowing_key: fromSowingKey, local: "true", createdAt, operationId: localQueueId("milestone")};
     rows.push(row);
     added.push(row);
   });
@@ -707,6 +713,8 @@ function buildPlantMilestoneExport(rows = getPlantMilestoneAdditions()) {
       date: clean(row.date),
       type: clean(row.type),
       note: clean(row.note),
+      seed_lot_id: clean(row.seed_lot_id),
+      from_sowing_key: clean(row.from_sowing_key),
       createdAt: clean(row.createdAt),
       operationId: clean(row.operationId)
     })).filter(row => row.id && row.date && row.type)
@@ -2130,14 +2138,25 @@ function openPlantPanel(card) {
   const options = plantMilestoneTypes
     .map(type => `<option value="${htmlEscape(type)}">${htmlEscape(type)}</option>`)
     .join("");
+  const stapeliadSeedLots = category === "Stapeliader"
+    ? (window.publicCatalogSnapshot?.categories?.Stapeliader?.seedLots || []).filter(lot => clean(lot.plant_id) === id)
+    : [];
+  const milestoneKey = milestone => [milestone.id, milestone.date, milestone.type, milestone.note, milestone.seed_lot_id].map(clean).join("|");
+  const sowingMilestones = category === "Stapeliader" ? milestones.filter(item => clean(item.type) === "Sådd") : [];
+  const sowingLabel = milestone => `${milestone.date}${clean(milestone.seed_lot_id) ? ` · ${milestone.seed_lot_id}` : ""}${clean(milestone.note) ? ` · ${milestone.note}` : ""}`;
+  const seedLotField = stapeliadSeedLots.length ? `<select name="seed_lot_id" aria-label="Fröparti" hidden${stapeliadSeedLots.length > 1 ? " required" : ""}>${stapeliadSeedLots.map((lot, index) => `<option value="${htmlEscape(lot.fröparti_id)}"${index === 0 ? " selected" : ""}>${htmlEscape(lot.fröparti_id)} · ${htmlEscape(lot.leverantör || "okänd källa")}</option>`).join("")}</select>` : "";
+  const fromSowingField = sowingMilestones.length ? `<select name="from_sowing_key" aria-label="Sådd som grodden kommer från" hidden${sowingMilestones.length > 1 ? " required" : ""}>${sowingMilestones.map((sowing, index) => `<option value="${htmlEscape(milestoneKey(sowing))}"${index === 0 ? " selected" : ""}>${htmlEscape(sowingLabel(sowing))}</option>`).join("")}</select>` : "";
+  const seedCountField = category === "Stapeliader" ? `<input name="seed_count" type="number" min="1" step="1" inputmode="numeric" aria-label="Antal frön" placeholder="Antal frön" hidden>` : "";
   const rows = milestones.map(milestone => `
     <article class="plant-log-item">
       <div class="plant-log-meta">
         <span>${htmlEscape(milestoneIcon(milestone.type))}</span>
         <span class="plant-log-date">${htmlEscape(milestone.date)}</span>
         <span class="plant-log-type">${htmlEscape(milestone.type)}</span>
+        ${clean(milestone.seed_lot_id) ? `<span class="plant-log-seed-lot">${htmlEscape(milestone.seed_lot_id)}</span>` : ""}
       </div>
       ${clean(milestone.note) ? `<div class="plant-log-note">${htmlEscape(milestone.note)}</div>` : ""}
+      ${clean(milestone.from_sowing_key) ? `<div class="plant-log-note">från Sådd: ${htmlEscape((sowingMilestones.find(item => milestoneKey(item) === clean(milestone.from_sowing_key)) && sowingLabel(sowingMilestones.find(item => milestoneKey(item) === clean(milestone.from_sowing_key)))) || milestone.from_sowing_key)}</div>` : ""}
     </article>
   `).join("");
   dialog.innerHTML = `
@@ -2163,7 +2182,7 @@ function openPlantPanel(card) {
           <form class="plant-log-form" method="dialog">
             <div class="plant-log-fields">
               <div class="plant-log-date-field"><input name="date" type="date" value="${htmlEscape(localDateString())}" aria-label="Datum" required></div>
-              <select name="type" aria-label="Typ av milstolpe" required>${options}</select>
+              <select name="type" aria-label="Typ av milstolpe" required>${options}</select>${seedLotField}${fromSowingField}${seedCountField}
             </div>
             <textarea name="note" maxlength="160" placeholder="Kort anteckning, frivilligt"></textarea>
             <button class="plant-log-submit" type="submit">Spara milstolpe</button>
@@ -2173,6 +2192,19 @@ function openPlantPanel(card) {
     </div>
   `;
   dialog.querySelector(".plant-log-close").addEventListener("click", () => dialog.close(), {once: true});
+  const milestoneType = dialog.querySelector('.plant-log-form select[name="type"]');
+  const seedLotSelect = dialog.querySelector('.plant-log-form select[name="seed_lot_id"]');
+  const fromSowingSelect = dialog.querySelector('.plant-log-form select[name="from_sowing_key"]');
+  const seedCountInput = dialog.querySelector('.plant-log-form input[name="seed_count"]');
+  const updateStapeliadSeedFields = () => {
+    const isSowing = category === "Stapeliader" && milestoneType?.value === "Sådd";
+    const isGermination = category === "Stapeliader" && milestoneType?.value === "Grodd";
+    if (seedLotSelect) seedLotSelect.hidden = !isSowing;
+    if (fromSowingSelect) fromSowingSelect.hidden = !isGermination;
+    if (seedCountInput) { seedCountInput.hidden = !isSowing; seedCountInput.required = isSowing; }
+  };
+  milestoneType?.addEventListener("change", updateStapeliadSeedFields);
+  updateStapeliadSeedFields();
   dialog.querySelectorAll(".plant-parent-reference-button").forEach(button => {
     button.addEventListener("click", () => {
       const referenceDialog = ensurePlantPhotoGallery();
@@ -2201,11 +2233,25 @@ function openPlantPanel(card) {
   dialog.querySelector(".plant-log-form").addEventListener("submit", event => {
     event.preventDefault();
     const form = event.currentTarget;
+    const isStapeliadSowing = category === "Stapeliader" && form.elements.type.value === "Sådd";
+    const isStapeliadGermination = category === "Stapeliader" && form.elements.type.value === "Grodd";
+    const seedCount = isStapeliadSowing ? Number(form.elements.seed_count?.value || 0) : 0;
+    if (isStapeliadSowing && (!Number.isInteger(seedCount) || seedCount < 1)) {
+      form.elements.seed_count?.focus();
+      return;
+    }
+    if (isStapeliadSowing && stapeliadSeedLots.length && !clean(form.elements.seed_lot_id?.value)) return;
+    if (isStapeliadGermination && sowingMilestones.length && !clean(form.elements.from_sowing_key?.value)) return;
+    const note = isStapeliadSowing
+      ? `${seedCount} fröer${clean(form.elements.note.value) ? ` · ${clean(form.elements.note.value)}` : ""}`
+      : form.elements.note.value;
     const entry = addPlantMilestoneEntry({
       id,
       date: form.elements.date.value,
       type: form.elements.type.value,
-      note: form.elements.note.value
+      note,
+      seed_lot_id: isStapeliadSowing ? form.elements.seed_lot_id?.value : "",
+      from_sowing_key: isStapeliadGermination ? form.elements.from_sowing_key?.value : ""
     });
     if (entry) {
       window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: entry}));

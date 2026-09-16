@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 2,
-  "catalogVersion": "2026-09-13-synk-0859",
+  "schemaVersion": 4,
+  "catalogVersion": "2026-09-15-synk-1440",
   "categories": {
     "Hibiskus": {
       "titleField": "id",
@@ -3237,6 +3237,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "",
           "notes": "",
           "card_note": "",
@@ -3277,6 +3278,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "",
           "notes": "Leverantörsnotering: Brown-red flowers.",
           "card_note": "",
@@ -3302,8 +3304,8 @@
           "supplier": "SuccSeed",
           "order_number": "278352062",
           "acquisition_type": "Frö",
-          "purchase_price": "",
-          "purchase_currency": "EUR",
+          "purchase_price": "36",
+          "purchase_currency": "SEK",
           "purchase_quantity": "2",
           "original_seed_count": "20",
           "purchase_date": "",
@@ -3317,6 +3319,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "2 paket",
           "notes": "",
           "card_note": "",
@@ -3357,6 +3360,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "",
           "notes": "",
           "card_note": "",
@@ -3397,6 +3401,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "3 frön",
           "notes": "Inköpsnamnet är bevarat exakt; ingen taxonomisk tolkning har gjorts.",
           "card_note": "",
@@ -3437,6 +3442,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "",
           "notes": "",
           "card_note": "",
@@ -3477,6 +3483,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "",
           "notes": "Formangivelsen är bevarad exakt från leverantören.",
           "card_note": "",
@@ -3517,6 +3524,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "",
           "notes": "Gåva / bonusplanta",
           "card_note": "",
@@ -3557,6 +3565,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "",
           "notes": "Accession RH230. Lokalitet enligt Cactus Arts separata artsida; leverantörens ursprungliga inköpsnamn är bevarat separat.",
           "card_note": "",
@@ -3582,8 +3591,8 @@
           "supplier": "SuccSeed",
           "order_number": "278352062",
           "acquisition_type": "Frö",
-          "purchase_price": "",
-          "purchase_currency": "EUR",
+          "purchase_price": "18",
+          "purchase_currency": "SEK",
           "purchase_quantity": "1",
           "original_seed_count": "10",
           "purchase_date": "",
@@ -3597,6 +3606,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "1 paket",
           "notes": "",
           "card_note": "",
@@ -3637,6 +3647,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "",
           "notes": "Käll-/leverantörsuppgift: materialet anges traditionellt som Huernia hystrix × H. pendula; detta är inte en säker taxonomisk ombestämning.",
           "card_note": "",
@@ -3677,6 +3688,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "",
           "notes": "Gåva / bonusplanta",
           "card_note": "",
@@ -3717,6 +3729,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "",
           "notes": "Leverantörsuppgift/synonym: Orbea deflersiana. Klon B; ocher & purple.",
           "card_note": "",
@@ -3757,6 +3770,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "",
           "notes": "Leverantörsuppgift/synonym: Stapelianthus hardyi.",
           "card_note": "",
@@ -3797,6 +3811,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "",
           "notes": "",
           "card_note": "",
@@ -3837,6 +3852,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "",
           "notes": "Korsningsnamn och stavning är bevarade exakt från leverantören.",
           "card_note": "",
@@ -3877,6 +3893,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "",
           "notes": "",
           "card_note": "",
@@ -3917,6 +3934,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "",
           "notes": "'Cypro' behandlas tills vidare som odlingsbeteckning; leverantörens ursprungliga inköpsnamn är bevarat separat.",
           "card_note": "",
@@ -3957,6 +3975,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "200 frön",
           "notes": "eBay Item ID: 185401812050.",
           "card_note": "",
@@ -3982,8 +4001,8 @@
           "supplier": "SuccSeed",
           "order_number": "278352062",
           "acquisition_type": "Stickling",
-          "purchase_price": "",
-          "purchase_currency": "",
+          "purchase_price": "45",
+          "purchase_currency": "SEK",
           "purchase_quantity": "",
           "original_seed_count": "",
           "purchase_date": "",
@@ -3997,6 +4016,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "",
           "notes": "",
           "card_note": "",
@@ -4037,6 +4057,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "",
           "notes": "",
           "card_note": "",
@@ -4077,6 +4098,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "",
           "notes": "",
           "card_note": "",
@@ -4117,6 +4139,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "",
           "notes": "",
           "card_note": "",
@@ -4157,6 +4180,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "",
           "notes": "Lokalitet enligt kontrollerad uppgift; leverantörens ursprungliga stavning är bevarad i inköpsnamnet.",
           "card_note": "",
@@ -4197,6 +4221,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "5 frön",
           "notes": "",
           "card_note": "",
@@ -4237,6 +4262,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "2 fröpartier",
           "notes": "Artkort. Fröpartierna från Exotic Plants och SuccSeed är kopplade separat.",
           "card_note": "",
@@ -4277,6 +4303,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "",
           "notes": "",
           "card_note": "",
@@ -4317,6 +4344,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "5 frön",
           "notes": "",
           "card_note": "",
@@ -4357,6 +4385,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "5 frön",
           "notes": "",
           "card_note": "",
@@ -4397,6 +4426,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "",
           "notes": "Leverantörsuppgift/synonym: Stapelia schinzii var. bergeriana.",
           "card_note": "",
@@ -4437,6 +4467,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "2 frön",
           "notes": "",
           "card_note": "",
@@ -4477,6 +4508,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "3 frön",
           "notes": "",
           "card_note": "",
@@ -4517,6 +4549,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "5 frön",
           "notes": "",
           "card_note": "",
@@ -4557,6 +4590,7 @@
           "scent_description": "",
           "scent_distance": "",
           "scent_veto": "nej",
+          "seed_lot_id": "",
           "package_quantity": "",
           "notes": "Leverantörs-/historisk uppgift: Tavaresia barklyi × Orbea variegata; parentaget är inte verifierat här.",
           "card_note": "",
@@ -4704,6 +4738,13 @@
           "label": "2026-09-03 · ref"
         },
         {
+          "plant_id": "STA-019",
+          "date": "2026-09-15",
+          "type": "knopp",
+          "file": "bilder/stapeliader/STA-019_synk-2f1b7c3d90_2026-09-15_knopp.jpg",
+          "label": "2026-09-15 · knopp"
+        },
+        {
           "plant_id": "STA-020",
           "date": "2026-09-03",
           "type": "ref",
@@ -4818,7 +4859,7 @@
       ],
       "seedLots": [
         {
-          "fröparti_id": "STA-021-EP",
+          "fröparti_id": "STA-021-F01",
           "plant_id": "STA-021",
           "leverantör": "Exotic Plants",
           "inköpsnamn": "Stapelia gigantea",
@@ -4838,7 +4879,7 @@
           "förvärvstyp": "Frö"
         },
         {
-          "fröparti_id": "STA-021-SS",
+          "fröparti_id": "STA-021-F02",
           "plant_id": "STA-021",
           "leverantör": "SuccSeed",
           "inköpsnamn": "Stapelia gigantea",
@@ -4848,11 +4889,11 @@
           "ankomstdatum": "",
           "sådatum": "",
           "grodddatum": "",
-          "status": "Beställd",
+          "status": "",
           "anteckningar": "Separat förvärv och fröparti.",
           "ursprungligt_växt_id": "STA-031",
-          "inköpspris": "",
-          "valuta": "",
+          "inköpspris": "36",
+          "valuta": "SEK",
           "inköpsantal": "2",
           "ursprungligt_fröantal": "40",
           "förvärvstyp": "Frö"
@@ -5649,571 +5690,761 @@
       "id": "PL-H01-A",
       "date": "2025-11-16",
       "type": "Sådd",
-      "note": "Frö med okänd moder och fader såddes som del av fröbatch PL-H01."
+      "note": "Frö med okänd moder och fader såddes som del av fröbatch PL-H01.",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H01-B",
       "date": "2025-11-16",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H01-B",
       "date": "2026-08-17",
       "type": "Beskuren",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H01-C",
       "date": "2025-11-16",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H01-C",
       "date": "2026-08-17",
       "type": "Beskuren",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H01-D",
       "date": "2025-11-16",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H01-G",
       "date": "2025-11-16",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H01-H",
       "date": "2025-11-16",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H01-H",
       "date": "2026-08-17",
       "type": "Beskuren",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H01-I",
       "date": "2025-11-16",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H01-J",
       "date": "2025-11-16",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H01-K",
       "date": "2025-11-16",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H01-K",
       "date": "2026-08-17",
       "type": "Beskuren",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H01-L",
       "date": "2025-11-16",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H01-M",
       "date": "2025-11-16",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H01-N",
       "date": "2025-11-16",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H01-O",
       "date": "2025-11-16",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H01-Q",
       "date": "2025-11-16",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H01-R",
       "date": "2025-11-16",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H01-R",
       "date": "2026-08-17",
       "type": "Beskuren",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H02-A-01",
       "date": "2026-06-25",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H02-A-01",
       "date": "2026-07-06",
       "type": "Grodd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H02-B-01",
       "date": "2026-06-25",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H02-B-01",
       "date": "2026-07-06",
       "type": "Grodd",
-      "note": "Första individuella plantan från korsning B."
+      "note": "Första individuella plantan från korsning B.",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H02-C-01",
       "date": "2026-06-25",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H02-C-01",
       "date": "2026-07-06",
       "type": "Grodd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H02-C-02",
       "date": "2026-06-25",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H02-C-02",
       "date": "2026-07-27",
       "type": "Grodd",
-      "note": "Individuell planta från korsning C dokumenterad."
+      "note": "Individuell planta från korsning C dokumenterad.",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H02-C-03",
       "date": "2026-06-25",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H02-C-03",
       "date": "2026-07-31",
       "type": "Grodd",
-      "note": "Individuell planta från korsning C dokumenterad."
+      "note": "Individuell planta från korsning C dokumenterad.",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H02-D-01",
       "date": "2026-06-25",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H02-D-01",
       "date": "2026-07-06",
       "type": "Grodd",
-      "note": "Första individuella plantan från korsning D."
+      "note": "Första individuella plantan från korsning D.",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H02-D-02",
       "date": "2026-06-25",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H02-D-02",
       "date": "2026-07-06",
       "type": "Grodd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H02-D-03",
       "date": "2026-06-25",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "PL-H02-D-03",
       "date": "2026-07-23",
       "type": "Grodd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "SP-001",
       "date": "2025-01-13",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "SP-001",
       "date": "2026-06-26",
       "type": "Omplanterad",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "SP-002",
       "date": "2025-11-13",
       "type": "Sådd",
-      "note": "Sådd av första batchen."
+      "note": "Sådd av första batchen.",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "SP-002",
       "date": "2026-02-02",
       "type": "Omplanterad",
-      "note": "Till 9 × 9 cm."
+      "note": "Till 9 × 9 cm.",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "SP-002",
       "date": "2026-08-06",
       "type": "Beskuren",
-      "note": "Alla plantor friserade\nFormade efter individ\nStora inåtvända blad borttagna\nBasen städad\nBredd anpassad till nuvarande krukstorlek\nBad och avrinning efter beskä"
+      "note": "Alla plantor friserade\nFormade efter individ\nStora inåtvända blad borttagna\nBasen städad\nBredd anpassad till nuvarande krukstorlek\nBad och avrinning efter beskä",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "SP-003",
       "date": "2026-06-25",
       "type": "Sådd",
-      "note": "Frön blötlagda 24 h med rökpapper före sådd."
+      "note": "Frön blötlagda 24 h med rökpapper före sådd.",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "SP-003",
       "date": "2026-07-04",
       "type": "Grodd",
-      "note": "Första synliga grodd."
+      "note": "Första synliga grodd.",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "SP-003",
       "date": "2026-08-11",
       "type": "Omplanterad",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "SP-004",
       "date": "2025-11-13",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "SP-007",
       "date": "2026-07-26",
       "type": "Plantering",
-      "note": "Mottagen och planterad samma dag."
+      "note": "Mottagen och planterad samma dag.",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "SP-008",
       "date": "2025-11-16",
       "type": "Sådd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "SP-008",
       "date": "2026-06-27",
       "type": "Omplanterad",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "SP-009",
       "date": "2026-08-23",
       "type": "Överlämnad som gåva",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "SP-010",
       "date": "2025-11-13",
       "type": "Sådd",
-      "note": "Sådd av första batchen."
+      "note": "Sådd av första batchen.",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "SP-010",
       "date": "2026-02-02",
       "type": "Omplanterad",
-      "note": "Till 9 × 9 cm."
+      "note": "Till 9 × 9 cm.",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "SP-010",
       "date": "2026-06-15",
       "type": "Omplanterad",
-      "note": "Den utvalda plantan planterades i sin terrakottakruka inför bröllopet."
+      "note": "Den utvalda plantan planterades i sin terrakottakruka inför bröllopet.",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "SP-010",
       "date": "2026-07-21",
       "type": "Överlämnad som gåva",
-      "note": "Överlämnad som bröllopspresent."
+      "note": "Överlämnad som bröllopspresent.",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-001",
       "date": "2026-09-11",
       "type": "Planterad",
-      "note": "planterad i enbart LECHUZA CactusPon"
+      "note": "planterad i enbart LECHUZA CactusPon",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-002",
       "date": "2026-09-11",
       "type": "Planterad",
-      "note": "planterad i enbart LECHUZA CactusPon"
+      "note": "planterad i enbart LECHUZA CactusPon",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-003",
       "date": "2026-09-11",
       "type": "Planterad",
-      "note": "planterad i enbart LECHUZA CactusPon"
+      "note": "planterad i enbart LECHUZA CactusPon",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-004",
       "date": "2026-09-11",
       "type": "Planterad",
-      "note": "planterad i enbart LECHUZA CactusPon"
+      "note": "planterad i enbart LECHUZA CactusPon",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-005",
       "date": "2026-09-11",
       "type": "Planterad",
-      "note": "planterad i enbart LECHUZA CactusPon"
+      "note": "planterad i enbart LECHUZA CactusPon",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-006",
       "date": "2026-09-11",
       "type": "Planterad",
-      "note": "planterad i enbart LECHUZA CactusPon"
+      "note": "planterad i enbart LECHUZA CactusPon",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-007",
       "date": "2026-09-11",
       "type": "Planterad",
-      "note": "planterad i enbart LECHUZA CactusPon"
+      "note": "planterad i enbart LECHUZA CactusPon",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-008",
       "date": "2026-09-11",
       "type": "Planterad",
-      "note": "planterad i enbart LECHUZA CactusPon"
+      "note": "planterad i enbart LECHUZA CactusPon",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-009",
       "date": "2026-09-11",
       "type": "Planterad",
-      "note": "planterad i enbart LECHUZA CactusPon"
+      "note": "planterad i enbart LECHUZA CactusPon",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-010",
       "date": "2026-09-11",
       "type": "Planterad",
-      "note": "planterad i enbart LECHUZA CactusPon"
+      "note": "planterad i enbart LECHUZA CactusPon",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-011",
       "date": "2026-09-11",
       "type": "Planterad",
-      "note": "planterad i enbart LECHUZA CactusPon"
+      "note": "planterad i enbart LECHUZA CactusPon",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-012",
       "date": "2026-09-11",
       "type": "Planterad",
-      "note": "planterad i enbart LECHUZA CactusPon"
+      "note": "planterad i enbart LECHUZA CactusPon",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-013",
       "date": "2026-09-11",
       "type": "Planterad",
-      "note": "planterad i enbart LECHUZA CactusPon"
+      "note": "planterad i enbart LECHUZA CactusPon",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-014",
       "date": "2026-09-11",
       "type": "Planterad",
-      "note": "planterad i enbart LECHUZA CactusPon"
+      "note": "planterad i enbart LECHUZA CactusPon",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-015",
       "date": "2026-09-11",
       "type": "Planterad",
-      "note": "planterad i enbart LECHUZA CactusPon"
+      "note": "planterad i enbart LECHUZA CactusPon",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-016",
       "date": "2026-09-11",
       "type": "Planterad",
-      "note": "planterad i enbart LECHUZA CactusPon"
+      "note": "planterad i enbart LECHUZA CactusPon",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-017",
       "date": "2026-09-11",
       "type": "Planterad",
-      "note": "planterad i enbart LECHUZA CactusPon"
+      "note": "planterad i enbart LECHUZA CactusPon",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-018",
       "date": "2026-09-11",
       "type": "Planterad",
-      "note": "planterad i enbart LECHUZA CactusPon"
+      "note": "planterad i enbart LECHUZA CactusPon",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-019",
       "date": "2026-09-11",
       "type": "Planterad",
-      "note": "planterad i enbart LECHUZA CactusPon"
+      "note": "planterad i enbart LECHUZA CactusPon",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-020",
       "date": "2026-09-11",
       "type": "Planterad",
-      "note": "planterad i enbart LECHUZA CactusPon"
+      "note": "planterad i enbart LECHUZA CactusPon",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-021",
       "date": "2026-09-09",
       "type": "Sådd",
-      "note": "5 fröer"
+      "note": "5 fröer",
+      "seed_lot_id": "STA-021-F02",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-021",
       "date": "2026-09-12",
       "type": "Grodd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": "STA-021|2026-09-09|Sådd|5 fröer|STA-021-F02"
     },
     {
       "id": "STA-029",
       "date": "2026-09-09",
       "type": "Sådd",
-      "note": "5 fröer"
+      "note": "5 fröer",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-029",
       "date": "2026-09-12",
       "type": "Grodd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-030",
       "date": "2026-09-09",
       "type": "Sådd",
-      "note": "5 fröer"
+      "note": "5 fröer",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-030",
       "date": "2026-09-12",
       "type": "Grodd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-032",
       "date": "2026-09-07",
       "type": "Planterad",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-033",
       "date": "2026-09-09",
       "type": "Sådd",
-      "note": "5 fröer"
+      "note": "5 fröer",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-033",
       "date": "2026-09-12",
       "type": "Grodd",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-034",
       "date": "2026-09-11",
       "type": "Planterad",
-      "note": "planterad i enbart LECHUZA CactusPon"
+      "note": "planterad i enbart LECHUZA CactusPon",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "STA-035",
       "date": "2026-09-11",
       "type": "Planterad",
-      "note": "planterad i enbart LECHUZA CactusPon"
+      "note": "planterad i enbart LECHUZA CactusPon",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "p-bothams-surprise-1",
       "date": "2026-08-27",
       "type": "Överlämnad som gåva",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "p-bowkeri-silver-leaf",
       "date": "2026-09-09",
       "type": "Planterad",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "p-creamery",
       "date": "2026-07-04",
       "type": "Första blomning",
-      "note": "Ny blommbild importerad och gammal knoppbild ersatt."
+      "note": "Ny blommbild importerad och gammal knoppbild ersatt.",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "p-creamery",
       "date": "2026-08-27",
       "type": "Överlämnad som gåva",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "p-dimeierii-selma",
       "date": "2026-09-09",
       "type": "Planterad",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "p-gibbosina-bicolour",
       "date": "2026-09-09",
       "type": "Planterad",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "p-gibbosum-anethifolium",
       "date": "2026-09-09",
       "type": "Planterad",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "p-glauciifolium",
       "date": "2026-09-09",
       "type": "Planterad",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "p-prince-of-orange",
       "date": "2026-07-01",
       "type": "Första blomning",
-      "note": "Ny blommbild dokumenterad."
+      "note": "Ny blommbild dokumenterad.",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "p-rushmoor-mississippi",
       "date": "2026-09-09",
       "type": "Planterad",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     },
     {
       "id": "p-torento",
       "date": "2026-08-08",
       "type": "Avslutad/död",
-      "note": ""
+      "note": "",
+      "seed_lot_id": "",
+      "from_sowing_key": ""
     }
   ],
   "crossings": {
