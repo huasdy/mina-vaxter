@@ -11,7 +11,6 @@
 
   const content = document.querySelector("#labContent");
   const speciesFilters = document.querySelector("#speciesFilters");
-  const viewTabs = document.querySelector("#viewTabs");
   const infoDialog = document.querySelector("#infoDialog");
   const infoDialogContent = document.querySelector("#infoDialogContent");
   const newLabItem = document.querySelector("#newLabItem");
@@ -659,51 +658,18 @@
   }
 
   function renderActive(species) {
-    const crossings = model.crossings.filter(row => row.active && matchesSpecies(row, species));
-    const batches = model.batches.filter(row => row.active && matchesSpecies(row, species));
-    const seedlings = model.seedlings.filter(row => matchesSpecies(row, species));
-    const activeSeedlings = seedlings.filter(row => row.status === "Under uppdragning");
-    const ready = seedlings.filter(row => row.status === "Redo för bedömning");
-    const stats = `<section class="stats-grid" aria-label="Sammanfattning">
-      <article class="stat-card"><strong>${crossings.length}</strong><span>Aktiva korsningar</span></article>
-      <article class="stat-card"><strong>${batches.length}</strong><span>Aktiva såbatcher</span></article>
-      <article class="stat-card"><strong>${activeSeedlings.length}</strong><span>Under uppdragning</span></article>
-      <article class="stat-card"><strong>${ready.length}</strong><span>Redo för bedömning</span></article>
+    const activeCrossings = model.crossings.filter(row => row.adapter === false && row.active && matchesSpecies(row, species));
+    const activeBatches = model.batches.filter(row => row.adapter === false && row.active && matchesSpecies(row, species));
+    const labSeedlings = model.seedlings.filter(row => row.adapter === false && matchesSpecies(row, species));
+    const activeSeedlings = labSeedlings.filter(row => row.status === "Under uppdragning");
+    const ready = labSeedlings.filter(row => row.status === "Redo för bedömning");
+    const portalCard = (label, count, view, status = "") => `<button type="button" class="stat-card${count === 0 ? " is-empty" : ""}" data-portal-view="${view}"${status ? ` data-portal-status="${esc(status)}"` : ""} aria-label="${esc(`${label}: ${count}. Öppna.`)}"><strong>${count}</strong><span>${esc(label)}</span></button>`;
+    return `<section class="stats-grid" aria-label="Labbetportal">
+      ${portalCard("Korsningar", activeCrossings.length, "korsningar")}
+      ${portalCard("Sådder", activeBatches.length, "sadder")}
+      ${portalCard("Under uppdragning", activeSeedlings.length, "uppdragning", "Under uppdragning")}
+      ${portalCard("Redo för bedömning", ready.length, "uppdragning", "Redo för bedömning")}
     </section>`;
-
-    const attentions = [];
-    seedlings.filter(row => ACTIVE_SEEDLING_STATUSES.has(row.status)).forEach(seedling => {
-      const notable = latest(seedling.milestones.filter(row => ["första knopp", "första blomning"].includes(clean(row.type).toLocaleLowerCase("sv"))));
-      if (notable) attentions.push({
-        date: notable.date,
-        title: `${notable.type} registrerad`,
-        detail: `${seedling.shortId} · ${displayDate(notable.date)}`,
-        type: "seedling",
-        id: seedling.id
-      });
-    });
-    batches.filter(batch => batch.germinatedDate && daysSince(batch.germinatedDate) <= 14).forEach(batch => attentions.push({
-      date: batch.germinatedDate,
-      title: "Nyligen grodd såbatch",
-      detail: `${batch.fullCode} · ${displayDate(batch.germinatedDate)}`,
-      type: "batch",
-      id: batch.id
-    }));
-    attentions.sort((a, b) => clean(b.date).localeCompare(clean(a.date)));
-    const attentionHtml = attentions.length
-      ? `<div class="attention-list">${attentions.slice(0, 6).map(item => `<button type="button" class="attention-card" data-open-${item.type}="${esc(item.id)}"><span class="attention-icon">!</span><span><strong>${esc(item.title)}</strong><span>${esc(item.detail)}</span></span></button>`).join("")}</div>`
-      : emptyState("Inget behöver särskild uppmärksamhet just nu.");
-
-    const activeSowings = batches.filter(batch => batch.activeSowing !== false && (batch.germinated === 0 || daysSince(batch.sownDate) <= 45));
-    const batchHtml = activeSowings.length ? `<div class="compact-list">${activeSowings.slice(0, 6).map(batchCard).join("")}</div>` : emptyState("Inga pågående groningsbatcher i valt filter.");
-
-    const groups = ["Hibiskus", "Pelargon", "Stapelia"].map(groupSpecies => ({
-      species: groupSpecies,
-      count: model.seedlings.filter(row => row.species === groupSpecies && ACTIVE_SEEDLING_STATUSES.has(row.status) && (species === "Alla" || species === groupSpecies)).length
-    })).filter(row => row.count > 0);
-    const groupHtml = groups.length ? `<div class="group-grid">${groups.map(group => `<button type="button" class="group-card" data-open-group="${esc(group.species)}"><strong>${esc(group.species)}</strong><span>${group.count}</span></button>`).join("")}</div>` : emptyState("Inga individuella fröplantor under uppdragning i valt filter.");
-
-    return `${stats}${section("Behöver uppmärksamhet", attentionHtml)}${section("Aktiva sådder", batchHtml, `${activeSowings.length} batcher`)}${section("Under uppdragning", groupHtml)}`;
   }
 
   function renderCrossings(species) {
@@ -917,11 +883,6 @@
       const active = button.dataset.species === current.species;
       button.classList.toggle("active", active);
       button.setAttribute("aria-pressed", String(active));
-    });
-    viewTabs.querySelectorAll("[data-view]").forEach(button => {
-      const active = button.dataset.view === current.view;
-      button.classList.toggle("active", active);
-      button.setAttribute("aria-selected", String(active));
     });
   }
 
@@ -1297,12 +1258,6 @@
     updateRoute({art: button.dataset.species, batch: null, planta: null, korsning: null, material: null});
   });
 
-  viewTabs.addEventListener("click", event => {
-    const button = event.target.closest("[data-view]");
-    if (!button) return;
-    updateRoute({vy: button.dataset.view, batch: null, planta: null, korsning: null, material: null});
-  });
-
   newLabItem.addEventListener("click", openNewMenu);
 
   content.addEventListener("click", event => {
@@ -1311,6 +1266,7 @@
     const crossing = event.target.closest("[data-open-crossing]");
     const material = event.target.closest("[data-open-material]");
     const group = event.target.closest("[data-open-group]");
+    const portal = event.target.closest("[data-portal-view]");
     const status = event.target.closest("[data-status]");
     const sowSection = event.target.closest("[data-sow-section]");
     const back = event.target.closest("[data-close-detail]");
@@ -1328,6 +1284,15 @@
     else if (crossing) updateRoute({vy: "korsningar", korsning: crossing.dataset.openCrossing, batch: null, planta: null, material: null});
     else if (material) updateRoute({vy: "sadder", del: "material", material: material.dataset.openMaterial, batch: null, planta: null, korsning: null});
     else if (group) updateRoute({vy: "uppdragning", art: group.dataset.openGroup, status: "Alla", batch: null, planta: null});
+    else if (portal) updateRoute({
+      vy: portal.dataset.portalView,
+      del: portal.dataset.portalView === "sadder" ? "batcher" : null,
+      status: portal.dataset.portalView === "uppdragning" ? portal.dataset.portalStatus : null,
+      batch: null,
+      planta: null,
+      korsning: null,
+      material: null
+    });
     else if (status) updateRoute({status: status.dataset.status});
     else if (sowSection) updateRoute({del: sowSection.dataset.sowSection, batch: null, planta: null, korsning: null, material: null});
     else if (back) updateRoute({batch: null, planta: null, korsning: null, material: null});

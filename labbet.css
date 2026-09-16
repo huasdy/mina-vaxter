@@ -42,8 +42,8 @@ main { max-width: 1180px; margin: 0 auto; padding: 0 18px 72px; }
 .lab-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--muted); font-size: .9rem; font-weight: 700; }
 .control-row { display: flex; align-items: center; justify-content: center; gap: 10px; min-width: 0; }
 .control-label { color: var(--muted); font-size: .78rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
-.pill-group, .view-tabs { display: flex; justify-content: center; gap: 7px; }
-.pill-group button, .view-tabs button, .status-filters button {
+.pill-group { display: flex; justify-content: center; gap: 7px; }
+.pill-group button, .status-filters button {
   border: 1px solid var(--line);
   border-radius: 999px;
   background: rgba(255, 253, 248, .82);
@@ -54,22 +54,11 @@ main { max-width: 1180px; margin: 0 auto; padding: 0 18px 72px; }
   white-space: nowrap;
 }
 .pill-group button.active, .pill-group button[aria-pressed="true"],
-.view-tabs button.active, .view-tabs button[aria-selected="true"],
 .status-filters button.active, .status-filters button[aria-pressed="true"] {
   border-color: var(--accent);
   background: var(--accent);
   color: white;
 }
-.view-tabs {
-  width: min(100%, 700px);
-  margin: 0 auto;
-  padding: 5px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: rgba(255, 253, 248, .56);
-}
-.view-tabs button { flex: 1 1 0; border-color: transparent; background: transparent; }
-
 .lab-content { display: grid; gap: 30px; }
 .loading-card, .empty-state, .error-state {
   border: 1px solid var(--line);
@@ -90,6 +79,7 @@ main { max-width: 1180px; margin: 0 auto; padding: 0 18px 72px; }
 
 .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 11px; }
 .stat-card {
+  width: 100%;
   min-height: 112px;
   display: grid;
   align-content: space-between;
@@ -99,9 +89,15 @@ main { max-width: 1180px; margin: 0 auto; padding: 0 18px 72px; }
   background: rgba(255, 253, 248, .84);
   padding: 15px;
   box-shadow: 0 8px 25px rgba(62, 43, 28, .07);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }
 .stat-card strong { font-family: Georgia, "Times New Roman", serif; font-size: 2.25rem; font-weight: 500; line-height: 1; }
 .stat-card span { color: var(--muted); font-size: .85rem; font-weight: 800; }
+.stat-card:hover { border-color: rgba(125, 79, 59, .55); transform: translateY(-1px); }
+.stat-card.is-empty { opacity: .68; }
 
 .attention-list, .compact-list, .crossing-grid, .batch-grid, .group-grid { display: grid; gap: 10px; }
 .attention-list { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
@@ -286,22 +282,22 @@ button.origin-link { width: 100%; font: inherit; text-align: left; cursor: point
 .seedling-detail-copy .add-photo-btn { width: auto; height: auto; padding: 10px 14px; }
 
 @media (max-width: 760px) {
-  .page-header { padding: max(18px, env(safe-area-inset-top)) 16px 20px; }
-  nav { justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; margin: 0 -16px 16px; padding: 0 16px 4px; scrollbar-width: none; }
+  .page-header { padding: max(12px, env(safe-area-inset-top)) 16px 12px; }
+  nav { justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; margin: 0 -16px 9px; padding: 0 16px 3px; scrollbar-width: none; }
   nav::-webkit-scrollbar { display: none; }
   nav a { flex: 0 0 auto; }
-  .subtitle { font-size: .96rem; }
+  .eyebrow { display: none; }
+  h1 { margin: 2px 0 4px; font-size: 2.9rem; }
+  .subtitle { font-size: .86rem; }
   main { padding: 0 12px calc(54px + env(safe-area-inset-bottom)); }
-  .control-row { display: grid; justify-content: stretch; gap: 6px; }
-  .lab-toolbar { align-items: stretch; }
+  .control-row { display: grid; justify-content: stretch; gap: 5px; }
+  .lab-toolbar { justify-content: flex-end; align-items: stretch; }
+  .lab-toolbar span { display: none; }
   .lab-toolbar span { align-self: center; }
   .lab-toolbar .primary-action { flex: 0 0 auto; }
   .control-label { padding-left: 3px; }
   .pill-group { justify-content: flex-start; overflow-x: auto; padding: 1px 2px 3px; scrollbar-width: none; }
   .pill-group::-webkit-scrollbar { display: none; }
-  .view-tabs { width: 100%; overflow-x: auto; justify-content: flex-start; border-radius: 17px; scrollbar-width: none; }
-  .view-tabs::-webkit-scrollbar { display: none; }
-  .view-tabs button { flex: 0 0 auto; padding-inline: 14px; }
   .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .stat-card { min-height: 97px; }
   .stat-card strong { font-size: 2rem; }
