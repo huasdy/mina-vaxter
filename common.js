@@ -831,7 +831,7 @@ function buildCrossingExport(items = getPendingCrossingItems()) {
 }
 
 const labChangeStorageKey = "mina-vaxter-lab-changes-v1";
-const labChangeKinds = Object.freeze(["crossing", "seed_harvest", "seed_lot", "sow_batch", "batch_update", "material_update", "seedling", "milestone", "update"]);
+const labChangeKinds = Object.freeze(["crossing", "seed_harvest", "seed_lot", "sow_batch", "batch_update", "material_update", "seedling", "remove_seedling", "milestone", "update"]);
 
 function getPendingLabItems() {
   try {
@@ -873,7 +873,7 @@ function deletePendingLabItem(operationId) {
   const harvestIds = new Set(target?.kind === "seed_harvest" ? [clean(target.seed_harvest?.seed_harvest_id)] : []);
   const lotIds = new Set(target?.kind === "seed_lot" ? [clean(target.seed_lot?.seed_lot_id)] : []);
   const batchIds = new Set(target?.kind === "sow_batch" ? [clean(target.sow_batch?.sow_batch_id)] : []);
-  const seedlingIds = new Set(target?.kind === "seedling" ? [clean(target.seedling?.seedling_id)] : []);
+  const seedlingIds = new Set(["seedling", "remove_seedling"].includes(target?.kind) ? [clean(target.seedling?.seedling_id || target.remove_seedling?.seedling_id)] : []);
   items.forEach(item => {
     if (item.kind === "seed_harvest" && crossingIds.has(clean(item.seed_harvest?.crossing_id))) harvestIds.add(clean(item.seed_harvest?.seed_harvest_id));
   });
@@ -893,6 +893,7 @@ function deletePendingLabItem(operationId) {
     if (item.kind === "batch_update" && batchIds.has(clean(item.batch_update?.sow_batch_id))) return false;
     if (item.kind === "material_update" && (harvestIds.has(clean(item.material_update?.source_id)) || lotIds.has(clean(item.material_update?.source_id)))) return false;
     if (item.kind === "seedling" && seedlingIds.has(clean(item.seedling?.seedling_id))) return false;
+    if (item.kind === "remove_seedling" && seedlingIds.has(clean(item.remove_seedling?.seedling_id))) return false;
     const linkedId = clean(item.milestone?.seedling_id || item.update?.seedling_id);
     return !seedlingIds.has(linkedId);
   }));

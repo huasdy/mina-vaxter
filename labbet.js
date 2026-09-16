@@ -628,14 +628,15 @@
     if (batch.seedsSown !== null) parts.push(`${batch.seedsSown} sådda`);
     if (batch.germinatedExact) parts.push(`${batch.germinated} grodda`);
     else if (batch.germinated) parts.push(`grodd registrerad`);
-    if (batch.registered) parts.push(`${batch.registered} ${batch.registered === 1 ? "fröplanta" : "fröplantor"}`);
+    if (batch.registered) parts.push(`${batch.registered} individualiserad${batch.registered === 1 ? "" : "e"}`);
     return parts.join(" · ") || "Sådd registrerad";
   }
 
   function batchNextStep(batch) {
-    if (batch.registered > 0) return "Nästa: följ uppdragning och urval";
+    if (batch.registered > 0) return "Nästa: följ LAB-plantor och urval";
     if (batch.germinated === 0) return "Nästa: följ groningen";
-    return "Nästa: individualisera fröplantor";
+    if (["Stapelia", "Pelargon"].includes(batch.species)) return "Nästa: följ gemensam uppdragning";
+    return "Nästa: följ uppdragning eller individualisera vid behov";
   }
 
   function batchCard(batch) {
@@ -741,7 +742,7 @@
     }
     const rows = model.batches.filter(row => matchesSpecies(row, species));
     const cards = rows.length ? `<div class="batch-grid">${rows.map(batchCard).join("")}</div>` : emptyState("Inga såbatcher i valt artfilter.");
-    return `<div class="view-intro"><div><h2>Sådder</h2><p>Batcher samlar sådatum, groning, individualisering och härkomst utan att flytta eller skriva om befintlig data.</p></div>${tabs}</div>${cards}`;
+    return `<div class="view-intro"><div><h2>Sådder</h2><p>Batcher samlar sådatum, groddantal, eventuell individualisering och härkomst utan att flytta eller skriva om befintlig data.</p></div>${tabs}</div>${cards}`;
   }
 
   function seedlingAge(seedling) {
@@ -818,12 +819,16 @@
       : (() => {
           const germinationAction = `<button type="button" class="primary-action" data-edit-batch="${esc(batch.id)}">Registrera grodd</button>`;
           return shouldRegisterGermination
-            ? `${germinationAction}<button type="button" class="secondary-action" data-register-seedling="${esc(batch.id)}">Registrera fröplanta</button>`
-            : `<button type="button" class="primary-action" data-register-seedling="${esc(batch.id)}">Registrera fröplanta</button><button type="button" class="secondary-action" data-edit-batch="${esc(batch.id)}">Uppdatera groning</button>`;
+            ? `${germinationAction}<button type="button" class="secondary-action" data-register-seedling="${esc(batch.id)}">Individualisera känd planta</button>`
+            : `<button type="button" class="primary-action" data-register-seedling="${esc(batch.id)}">Individualisera planta</button><button type="button" class="secondary-action" data-edit-batch="${esc(batch.id)}">Uppdatera groning</button>`;
         })();
     const actionNote = isLegacy
       ? "Äldre såbatch. Registrering och uppdatering görs i det äldre korsningsflödet."
-      : (shouldRegisterGermination ? "Registrera först groddantalet, eller individualisera en redan känd planta." : "Skapar nästa permanenta nummer inom batchen, utan samlings-ID.");
+      : (batch.registered > 0
+        ? "Individualisera bara fler plantor som behöver egen identitet. Övriga kan fortsätta som grupp."
+        : (["Stapelia", "Pelargon"].includes(batch.species)
+          ? "Groddantal och första grodddatum sparas på batchen. Fortsatt gemensam uppdragning är normalt; individualisera vid behov."
+          : "Groddantal och första grodddatum sparas på batchen. Individualisera först när en planta behöver egen identitet."));
     return `<section class="detail-shell">
       <button type="button" class="back-button" data-close-detail>← Till sådder</button>
       <article class="detail-card">
@@ -833,7 +838,7 @@
             <div class="fact"><dt>Sådatum</dt><dd>${esc(displayDate(batch.sownDate, true))}</dd></div>
             <div class="fact"><dt>Antal sådda</dt><dd>${esc(countText(batch.seedsSown))}</dd></div>
             <div class="fact"><dt>Antal grodda</dt><dd>${esc(countText(batch.germinated, batch.germinatedExact))}</dd></div>
-            <div class="fact"><dt>Individuellt registrerade</dt><dd>${batch.registered}</dd></div>
+            ${batch.registered > 0 ? `<div class="fact"><dt>Individualiserade LAB-plantor</dt><dd>${batch.registered}</dd></div>` : ""}
             <div class="fact"><dt>Under uppdragning</dt><dd>${batch.raising}</dd></div>
             <div class="fact"><dt>Redo för bedömning</dt><dd>${batch.ready}</dd></div>
             <div class="fact"><dt>Kvar / ej grodda</dt><dd>${esc(countText(batch.remaining, batch.remainingExact, "Ej räknat"))}</dd></div>
@@ -1197,13 +1202,13 @@
     const nextNumber = Math.max(0, ...used) + 1;
     const provisionalId = `${batch.shortCode}-${String(nextNumber).padStart(2, "0")}`;
     const suggestedDate = isoDate(batch.germinatedDate) || "";
-    showFormDialog(`<h2>Registrera fröplanta</h2>
-      <p>${esc(batch.fullCode)} · nästa lediga nummer är <strong>${esc(provisionalId)}</strong>.</p>
+    showFormDialog(`<h2>Individualisera planta</h2>
+      <p>${esc(batch.fullCode)} · skapa en LAB-identitet endast för en planta som ska följas separat. Nästa lediga nummer är <strong>${esc(provisionalId)}</strong>.</p>
       <form class="lab-form">
         <label>Provisoriskt ID<input value="${esc(provisionalId)}" disabled></label>
         <label>Grodddatum<input name="germinated_date" type="date" value="${esc(suggestedDate)}" max="${today()}" required></label>
         <label class="wide">Anteckning<textarea name="notes" rows="3" placeholder="Frivilligt"></textarea></label>
-        <div class="dialog-actions"><button type="button" class="secondary-action" data-dialog-close>Avbryt</button><button type="submit" class="primary-action">Skapa fröplanta</button></div>
+        <div class="dialog-actions"><button type="button" class="secondary-action" data-dialog-close>Avbryt</button><button type="submit" class="primary-action">Individualisera planta</button></div>
       </form>`, async data => {
       const germinatedDate = isoDate(data.get("germinated_date"));
       if (!germinatedDate) throw new Error("Grodddatum krävs.");
