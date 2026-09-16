@@ -830,6 +830,76 @@ function buildCrossingExport(items = getPendingCrossingItems()) {
   };
 }
 
+const labChangeStorageKey = "mina-vaxter-lab-changes-v1";
+const labChangeKinds = Object.freeze(["seedling", "milestone", "update"]);
+
+function getPendingLabItems() {
+  try {
+    const items = JSON.parse(localStorage.getItem(labChangeStorageKey) || "[]");
+    return Array.isArray(items)
+      ? items.filter(item => item && typeof item === "object" && clean(item.operation_id) && labChangeKinds.includes(clean(item.kind)))
+      : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function savePendingLabItems(items) {
+  try { localStorage.setItem(labChangeStorageKey, JSON.stringify(items || [])); } catch (error) {}
+  if (typeof updatePlantImageImportUI === "function") updatePlantImageImportUI();
+}
+
+function queueLabChange(kind, payload = {}, operationId = "") {
+  const normalizedKind = clean(kind);
+  if (!labChangeKinds.includes(normalizedKind)) return null;
+  const item = {
+    operation_id: clean(operationId) || localQueueId("lab"),
+    kind: normalizedKind,
+    created_at: new Date().toISOString(),
+    [normalizedKind]: payload
+  };
+  const items = getPendingLabItems().filter(row => clean(row.operation_id) !== item.operation_id);
+  items.push(item);
+  savePendingLabItems(items);
+  window.dispatchEvent(new CustomEvent("lab-data-changed", {detail: item}));
+  return item;
+}
+
+function deletePendingLabItem(operationId) {
+  const id = clean(operationId);
+  const items = getPendingLabItems();
+  const target = items.find(item => clean(item.operation_id) === id);
+  const seedlingId = target?.kind === "seedling" ? clean(target.seedling?.seedling_id) : "";
+  savePendingLabItems(items.filter(item => {
+    if (clean(item.operation_id) === id) return false;
+    if (!seedlingId) return true;
+    const linkedId = clean(item.milestone?.seedling_id || item.update?.seedling_id);
+    return linkedId !== seedlingId;
+  }));
+  window.dispatchEvent(new CustomEvent("lab-data-changed", {detail: {deleted: true}}));
+}
+
+function clearPendingLabItems() {
+  savePendingLabItems([]);
+  window.dispatchEvent(new CustomEvent("lab-data-changed", {detail: {cleared: true}}));
+}
+
+function buildLabExport(items = getPendingLabItems()) {
+  return {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    items: (items || []).map(item => {
+      const kind = clean(item.kind);
+      return {
+        operation_id: clean(item.operation_id),
+        kind,
+        created_at: clean(item.created_at),
+        ...(labChangeKinds.includes(kind) ? {[kind]: item[kind] || {}} : {})
+      };
+    }).filter(item => item.operation_id && labChangeKinds.includes(item.kind))
+  };
+}
+
 function plantMilestoneKey(row) {
   return [
     clean(row && row.id),
@@ -839,7 +909,7 @@ function plantMilestoneKey(row) {
   ].join("|");
 }
 
-function buildSyncManifest(imageItems, milestoneItems, cardNoteItems, plantStatusItems, flowerAssessmentItems = [], cardImageItems = [], arrivalItems = [], crossingItems = [], wishlistItems = [], packageId = "") {
+function buildSyncManifest(imageItems, milestoneItems, cardNoteItems, plantStatusItems, flowerAssessmentItems = [], cardImageItems = [], arrivalItems = [], crossingItems = [], wishlistItems = [], labItems = [], packageId = "") {
   return {
     version: 1,
     exportedAt: new Date().toISOString(),
@@ -855,7 +925,8 @@ function buildSyncManifest(imageItems, milestoneItems, cardNoteItems, plantStatu
       cardImages: cardImageItems.length,
       arrivals: arrivalItems.length,
       crossings: crossingItems.length,
-      wishlists: wishlistItems.length
+      wishlists: wishlistItems.length,
+      lab: labItems.length
     },
     note: "Hundöron och fokusnotiser är lokal arbetslista och ingår inte i synkpaketet."
   };
@@ -3067,7 +3138,7 @@ async function ensurePrivateWishlists() {
   render();
 }
 
-function syncPackageSnapshot(imageItems, milestoneItems, cardNoteItems, plantStatusItems, flowerAssessmentItems, cardImageItems, arrivalItems, crossingItems, wishlistItems) {
+function syncPackageSnapshot(imageItems, milestoneItems, cardNoteItems, plantStatusItems, flowerAssessmentItems, cardImageItems, arrivalItems, crossingItems, wishlistItems, labItems) {
   return {
     imageIds: (imageItems || []).map(item => clean(item.id)).filter(Boolean),
     milestoneOperationIds: (milestoneItems || []).map(item => clean(item.operationId)).filter(Boolean),
@@ -3082,7 +3153,8 @@ function syncPackageSnapshot(imageItems, milestoneItems, cardNoteItems, plantSta
     })).filter(item => item.category && item.id && item.updatedAt),
     arrivalRequestIds: (arrivalItems || []).map(item => clean(item.request_id)).filter(Boolean),
     crossingOperationIds: (crossingItems || []).map(item => clean(item.operation_id)).filter(Boolean),
-    wishlists: (wishlistItems || []).map(item => ({category: clean(item.category), id: clean(item.id), updatedAt: clean(item.updatedAt)})).filter(item => item.category && item.id && item.updatedAt)
+    wishlists: (wishlistItems || []).map(item => ({category: clean(item.category), id: clean(item.id), updatedAt: clean(item.updatedAt)})).filter(item => item.category && item.id && item.updatedAt),
+    labOperationIds: (labItems || []).map(item => clean(item.operation_id)).filter(Boolean)
   };
 }
 
@@ -3099,6 +3171,7 @@ async function createPendingSyncPackage(payload) {
     payload.arrivalItems,
     payload.crossingItems,
     payload.wishlistItems,
+    payload.labItems,
     packageId
   );
   const item = {
@@ -3115,7 +3188,8 @@ async function createPendingSyncPackage(payload) {
       payload.cardImageExport.items || [],
       payload.arrivalItems,
       payload.crossingItems,
-      payload.wishlistItems
+      payload.wishlistItems,
+      payload.labItems
     )
   };
   await savePendingSyncPackage(item);
@@ -3161,6 +3235,8 @@ async function clearAcknowledgedSyncPackage(outbox) {
   if (arrivalIds.size) savePendingArrivalItems(getPendingArrivalItems().filter(item => !arrivalIds.has(clean(item.request_id))));
   const crossingIds = new Set(snapshot.crossingOperationIds || []);
   if (crossingIds.size) savePendingCrossingItems(getPendingCrossingItems().filter(item => !crossingIds.has(clean(item.operation_id))));
+  const labIds = new Set(snapshot.labOperationIds || []);
+  if (labIds.size) savePendingLabItems(getPendingLabItems().filter(item => !labIds.has(clean(item.operation_id))));
   clearWishlistChangesIfUnchanged(snapshot.wishlists || []);
   await clearPendingSyncPackage();
 }
@@ -3512,7 +3588,7 @@ async function openImageImportForm(file) {
     const date = data.get("date") || suggestedDate.date;
     const note = String(data.get("note") || "").trim();
     const imageType = clean(data.get("type")) || "hel";
-    await addImageImportItem({
+    const queuedImage = {
       id: importId,
       createdAt,
       category: plantImageImportPending.category,
@@ -3525,20 +3601,33 @@ async function openImageImportForm(file) {
       mime: file.type || "image/jpeg",
       size: file.size || 0,
       data: imageData
-    });
+    };
+    await addImageImportItem(queuedImage);
     const milestoneType = milestoneTypeByImageType[imageType] || "";
     if (milestoneType) {
-      const milestone = addPlantMilestoneEntry({
-        id: plantImageImportPending.plantId,
-        date,
-        type: milestoneType,
-        note
-      });
-      if (milestone) window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: milestone}));
+      if (plantImageImportPending.category === "Labbet") {
+        queueLabChange("milestone", {
+          milestone_id: localQueueId("LABM"),
+          seedling_id: plantImageImportPending.plantId,
+          date,
+          type: milestoneType,
+          note,
+          created_at: createdAt
+        });
+      } else {
+        const milestone = addPlantMilestoneEntry({
+          id: plantImageImportPending.plantId,
+          date,
+          type: milestoneType,
+          note
+        });
+        if (milestone) window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: milestone}));
+      }
     }
     dialog.close();
     plantImageImportPending = null;
     updatePlantImageImportUI();
+    window.dispatchEvent(new CustomEvent("image-import-added", {detail: queuedImage}));
   }, {once: true});
 }
 
@@ -3660,7 +3749,8 @@ async function updatePlantImageImportUI() {
   const cardImageItems = buildPlantCardImageExport().items;
   const wishlistItems = buildWishlistExport().items;
   const crossingItems = getPendingCrossingItems();
-  const syncCount = items.length + getPlantMilestoneAdditions().length + buildPlantCardNoteExport().items.length + buildPlantStatusExport().items.length + flowerAssessmentItems.length + cardImageItems.length + arrivalItems.length + crossingItems.length + wishlistItems.length;
+  const labItems = getPendingLabItems();
+  const syncCount = items.length + getPlantMilestoneAdditions().length + buildPlantCardNoteExport().items.length + buildPlantStatusExport().items.length + flowerAssessmentItems.length + cardImageItems.length + arrivalItems.length + crossingItems.length + wishlistItems.length + labItems.length;
   const button = document.querySelector(".import-queue-button");
   if (button) {
     button.classList.toggle("has-items", syncCount > 0);
@@ -3696,8 +3786,9 @@ async function openImageImportQueue() {
   const arrivalItems = getPendingArrivalItems();
   const crossingItems = getPendingCrossingItems();
   const wishlistItems = buildWishlistExport().items;
+  const labItems = getPendingLabItems();
   const pendingSyncPackage = await getPendingSyncPackage().catch(() => null);
-  const syncCount = items.length + milestoneItems.length + cardNoteItems.length + plantStatusItems.length + flowerAssessmentItems.length + cardImageItems.length + arrivalItems.length + crossingItems.length + wishlistItems.length;
+  const syncCount = items.length + milestoneItems.length + cardNoteItems.length + plantStatusItems.length + flowerAssessmentItems.length + cardImageItems.length + arrivalItems.length + crossingItems.length + wishlistItems.length + labItems.length;
   const localSyncReady = Boolean(localSyncEndpoint());
   const needsPairing = localSyncReady && !localSyncToken();
   const urls = [];
@@ -3824,16 +3915,34 @@ async function openImageImportQueue() {
       </div>
     </article>
   `).join("");
+  const labRows = labItems.map(item => {
+    const data = item[item.kind] || {};
+    const title = item.kind === "seedling"
+      ? `Ny fröplanta · ${data.provisional_id || ""}`
+      : item.kind === "milestone"
+        ? `${data.type || "Milstolpe"} · ${data.date || ""}`
+        : `Uppdatera · ${data.seedling_id || ""}`;
+    return `
+      <article class="import-item">
+        <div class="import-item-icon" aria-hidden="true">🌱</div>
+        <div>
+          <strong>${htmlEscape(title)}</strong>
+          <small>Labbet · sparad för Mac-synk</small>
+        </div>
+        <button class="import-delete" type="button" data-delete-lab="${escapeAttr(item.operation_id)}">Ta bort</button>
+      </article>
+    `;
+  }).join("");
   dialog.innerHTML = `
     <div class="import-panel import-queue-panel">
       <header>
         <div>
           <h2>Synka till Mac</h2>
-          <p>${syncCount ? `${items.length} bilder · ${milestoneItems.length} milstolpar · ${cardNoteItems.length} anteckningar · ${plantStatusItems.length} statusar · ${flowerAssessmentItems.length} blombedömningar · ${cardImageItems.length} kortutsnitt · ${arrivalItems.length} ankomstsamtal · ${crossingItems.length} korsningsändringar · ${wishlistItems.length} önskelisteändringar` : "Kön är tom just nu."}</p>
+          <p>${syncCount ? `${items.length} bilder · ${milestoneItems.length} milstolpar · ${cardNoteItems.length} anteckningar · ${plantStatusItems.length} statusar · ${flowerAssessmentItems.length} blombedömningar · ${cardImageItems.length} kortutsnitt · ${arrivalItems.length} ankomstsamtal · ${crossingItems.length} korsningsändringar · ${labItems.length} Labbet-ändringar · ${wishlistItems.length} önskelisteändringar` : "Kön är tom just nu."}</p>
         </div>
         <button class="import-close" type="button" aria-label="Stäng">×</button>
       </header>
-      <div class="import-list">${rows + milestoneRows + cardNoteRows + plantStatusRows + flowerAssessmentRows + cardImageRows + arrivalRows + crossingRows + wishlistRows || '<div class="import-empty">Inga ändringar i kön.</div>'}</div>
+      <div class="import-list">${rows + milestoneRows + cardNoteRows + plantStatusRows + flowerAssessmentRows + cardImageRows + arrivalRows + crossingRows + labRows + wishlistRows || '<div class="import-empty">Inga ändringar i kön.</div>'}</div>
       <div class="import-buttons">
         ${syncCount || pendingSyncPackage ? `
           ${needsPairing ? '<label class="import-pairing"><span>Parkopplingskod från Macen</span><input data-sync-pairing-code autocomplete="one-time-code" inputmode="text" autocapitalize="none" spellcheck="false"></label>' : ''}
@@ -3918,6 +4027,14 @@ async function openImageImportQueue() {
       openImageImportQueue();
     });
   });
+  dialog.querySelectorAll("[data-delete-lab]").forEach(button => {
+    button.addEventListener("click", async () => {
+      await clearPendingSyncPackage();
+      deletePendingLabItem(button.dataset.deleteLab);
+      updatePlantImageImportUI();
+      openImageImportQueue();
+    });
+  });
   const clearButton = dialog.querySelector("[data-clear-import]");
   if (clearButton) clearButton.addEventListener("click", async () => {
     if (!confirm("Ta bort alla bilder, milstolpar, anteckningar, statusändringar, kortutsnitt, blombedömningar, ankomstsamtal, korsningsändringar och önskelisteändringar i synkkön? Gör detta först när paketet är sparat eller importerat på Mac.")) return;
@@ -3929,6 +4046,7 @@ async function openImageImportQueue() {
     clearPlantCardImageChanges();
     clearPendingArrivalItems();
     clearPendingCrossingItems();
+    clearPendingLabItems();
     clearWishlistChanges();
     if (typeof window.clearHibiscusFlowerAssessmentChanges === "function") window.clearHibiscusFlowerAssessmentChanges();
     window.dispatchEvent(new CustomEvent("plant-milestone-added", {detail: {cleared: true}}));
@@ -3955,7 +4073,8 @@ async function openImageImportQueue() {
         cardImageExport,
         arrivalItems,
         crossingItems,
-        wishlistItems
+        wishlistItems,
+        labItems
       });
       const localSave = await saveSyncPackageToMac(outbox.filename, outbox.blob);
       if (!localSave || !localSave.ok) throw new Error(localSave?.error || "Kunde inte nå Macen.");
@@ -4007,7 +4126,7 @@ function buildImageImportManifest(items) {
   };
 }
 
-async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRows = [], plantStatusRows = [], flowerAssessmentExport = {version: 1, traits: [], items: []}, cardImageExport = {version: 1, items: []}, arrivalItems = [], crossingItems = [], wishlistItems = [], packageId = "") {
+async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRows = [], plantStatusRows = [], flowerAssessmentExport = {version: 1, traits: [], items: []}, cardImageExport = {version: 1, items: []}, arrivalItems = [], crossingItems = [], wishlistItems = [], labItems = [], packageId = "") {
   const imageManifest = buildImageImportManifest(imageItems);
   const milestoneExport = buildPlantMilestoneExport(milestoneRows);
   const cardNoteExport = buildPlantCardNoteExport(cardNoteRows);
@@ -4016,7 +4135,8 @@ async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRo
   const cardImageItems = cardImageExport.items || [];
   const crossingExport = buildCrossingExport(crossingItems);
   const wishlistExport = buildWishlistExport(wishlistItems);
-  const syncManifest = buildSyncManifest(imageManifest.items, milestoneExport.items, cardNoteExport.items, plantStatusExport.items, flowerAssessmentItems, cardImageItems, arrivalItems, crossingExport.items, wishlistExport.items, packageId);
+  const labExport = buildLabExport(labItems);
+  const syncManifest = buildSyncManifest(imageManifest.items, milestoneExport.items, cardNoteExport.items, plantStatusExport.items, flowerAssessmentItems, cardImageItems, arrivalItems, crossingExport.items, wishlistExport.items, labExport.items, packageId);
   syncManifest.images = imageManifest.items;
   syncManifest.milestonesFile = "milstolpar.json";
   syncManifest.cardNotesFile = "kortanteckningar.json";
@@ -4026,6 +4146,7 @@ async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRo
   syncManifest.arrivalsFile = "ankomstsamtal.json";
   syncManifest.crossingsFile = "korsningar.json";
   syncManifest.wishlistsFile = "onskelistor.json";
+  syncManifest.labFile = "labbet.json";
 
   const entries = [
     {
@@ -4063,6 +4184,10 @@ async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRo
     {
       name: "onskelistor.json",
       blob: new Blob([JSON.stringify(wishlistExport, null, 2)], {type: "application/json;charset=utf-8"})
+    },
+    {
+      name: "labbet.json",
+      blob: new Blob([JSON.stringify(labExport, null, 2)], {type: "application/json;charset=utf-8"})
     }
   ];
   imageManifest.items.forEach((manifestItem, index) => {

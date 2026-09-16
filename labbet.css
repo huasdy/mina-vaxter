@@ -260,6 +260,17 @@ main { max-width: 1180px; margin: 0 auto; padding: 0 18px 72px; }
 .dialog-panel h2 { margin: 0 36px 6px 0; font-family: Georgia, "Times New Roman", serif; font-size: 1.75rem; font-weight: 600; }
 .dialog-panel p { margin: 0; color: var(--muted); }
 .dialog-close { position: absolute; right: 13px; top: 12px; width: 40px; height: 40px; border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--ink); font-size: 1.35rem; cursor: pointer; }
+.lab-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.lab-form label { display: grid; gap: 6px; color: var(--muted); font-size: .82rem; font-weight: 850; }
+.lab-form label.wide { grid-column: 1 / -1; }
+.lab-form input, .lab-form select, .lab-form textarea {
+  width: 100%; border: 1px solid var(--line); border-radius: 13px; padding: 10px 11px;
+  background: white; color: var(--ink); font: inherit;
+}
+.lab-form input:disabled { background: rgba(245, 241, 234, .7); color: var(--muted); }
+.lab-form textarea { resize: vertical; }
+.dialog-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 8px; padding-top: 4px; }
+.seedling-detail-copy .add-photo-btn { width: auto; height: auto; padding: 10px 14px; }
 
 @media (max-width: 760px) {
   .page-header { padding: max(18px, env(safe-area-inset-top)) 16px 20px; }
@@ -293,6 +304,8 @@ main { max-width: 1180px; margin: 0 auto; padding: 0 18px 72px; }
   .fact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .seedling-detail-hero { grid-template-columns: 1fr; }
   .history-item { grid-template-columns: 78px 1fr; }
+  .lab-form { grid-template-columns: 1fr; }
+  .lab-form label.wide, .dialog-actions { grid-column: 1; }
 }
 
 @media (max-width: 390px) {
