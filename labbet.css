@@ -249,6 +249,9 @@ button.origin-link { width: 100%; font: inherit; text-align: left; cursor: point
 .detail-section > p { margin: 0; color: var(--muted); }
 .detail-body details { border-top: 1px solid var(--line); padding-top: 13px; }
 .detail-body summary { color: var(--accent); cursor: pointer; font-size: .8rem; font-weight: 900; letter-spacing: .09em; text-transform: uppercase; }
+.archive-section { display: grid; gap: 13px; border-top: 1px solid var(--line); padding-top: 13px; }
+.archive-section summary { color: var(--accent); cursor: pointer; font-size: .8rem; font-weight: 900; letter-spacing: .09em; text-transform: uppercase; }
+.archive-section summary span { margin-left: 5px; color: var(--muted); }
 .material-detail-list { display: grid; gap: 0; margin: 12px 0 0; }
 .material-detail-list > div { display: grid; grid-template-columns: minmax(160px, .7fr) minmax(0, 1.3fr); gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); }
 .material-detail-list > div:last-child { border-bottom: 0; }

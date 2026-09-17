@@ -640,6 +640,12 @@
     return species === "Alla" || row.species === species;
   }
 
+  function crossingIsExhausted(crossing) {
+    return crossing.adapter === false
+      && crossing.harvests.length > 0
+      && crossing.harvests.every(material => material.remaining !== null && material.remaining === 0);
+  }
+
   function countText(value, exact = true, unknown = "Ej registrerat") {
     if (value === null || value === undefined) return unknown;
     return exact ? String(value) : (value > 0 ? `minst ${value}` : "Inte registrerat");
@@ -673,7 +679,7 @@
   }
 
   function renderActive(species) {
-    const activeCrossings = model.crossings.filter(row => row.adapter === false && row.active && matchesSpecies(row, species));
+    const activeCrossings = model.crossings.filter(row => row.adapter === false && row.active && !crossingIsExhausted(row) && matchesSpecies(row, species));
     const activeBatches = model.batches.filter(row => row.adapter === false && row.active && matchesSpecies(row, species));
     const labSeedlings = model.seedlings.filter(row => row.adapter === false && matchesSpecies(row, species));
     const activeSeedlings = labSeedlings.filter(row => row.status === "Under uppdragning");
@@ -689,8 +695,8 @@
 
   function renderCrossings(species) {
     const rows = model.crossings.filter(row => matchesSpecies(row, species));
-    const cards = rows.length ? `<div class="crossing-grid">${rows.map(row => row.adapter === false ? `<button type="button" class="crossing-card" data-open-crossing="${esc(row.crossing_id)}">
-      <span class="chip-row"><span class="chip green">${esc(row.species)}</span><span class="chip ${row.active ? "" : "ended"}">${esc(row.status)}</span></span>
+    const crossingCards = rowsToRender => rowsToRender.length ? `<div class="crossing-grid">${rowsToRender.map(row => row.adapter === false ? `<button type="button" class="crossing-card" data-open-crossing="${esc(row.crossing_id)}">
+      <span class="chip-row"><span class="chip green">${esc(row.species)}</span><span class="chip ${crossingIsExhausted(row) || !row.active ? "ended" : ""}">${esc(crossingIsExhausted(row) ? "Avslutad" : row.status)}</span></span>
       <h3>${esc(row.name)}</h3>
       <span class="crossing-meta">Pollinerad ${esc(displayDate(row.pollinatedDate))}</span>
       ${row.note ? `<p>${esc(row.note)}</p>` : ""}
@@ -699,8 +705,13 @@
       <span class="chip-row"><span class="chip green">${esc(row.species)}</span><span class="chip">Legacy</span><span class="chip ${row.active ? "" : "ended"}">${esc(row.status)}</span></span>
       <h3>${esc(row.name)}</h3><span class="crossing-meta">${esc(row.crossing_id)}</span>
       ${row.note ? `<p>${esc(row.note)}</p>` : ""}<span class="batch-next">Öppna äldre korsningsflöde →</span>
-    </a>`).join("")}</div>` : emptyState("Inga registrerade korsningar i valt artfilter.");
-    return `<div class="view-intro"><div><h2>Korsningar</h2><p>Nya korsningar skapas och följs direkt i Labbet. Äldre poster ligger kvar oförändrade.</p></div><button type="button" class="primary-action" data-new-crossing>Ny korsning</button></div>${cards}`;
+    </a>`).join("")}</div>` : emptyState("Inga korsningar i denna sektion i valt artfilter.");
+    const activeRows = rows.filter(row => row.active && !crossingIsExhausted(row));
+    const endedRows = rows.filter(row => !row.active || crossingIsExhausted(row));
+    const endedSection = endedRows.length
+      ? `<details class="archive-section"><summary>Avslutade korsningar <span>${endedRows.length}</span></summary>${crossingCards(endedRows)}</details>`
+      : "";
+    return `<div class="view-intro"><div><h2>Korsningar</h2><p>Nya korsningar skapas och följs direkt i Labbet. Äldre poster ligger kvar oförändrade.</p></div><button type="button" class="primary-action" data-new-crossing>Ny korsning</button></div>${activeRows.length ? crossingCards(activeRows) : emptyState("Inga aktiva korsningar i valt artfilter.")}${endedSection}`;
   }
 
   function materialCard(material) {
@@ -720,8 +731,13 @@
       : '<button type="button" class="text-link secondary-view-link" data-sow-section="material">Frömaterial →</button>';
     if (sowSection === "material") {
       const rows = model.materials.filter(row => matchesSpecies(row, species));
-      const cards = rows.length ? `<div class="material-grid">${rows.map(materialCard).join("")}</div>` : emptyState("Inga fröskördar eller fröpartier i Labbet ännu.");
-      return `<div class="view-intro"><div><h2>Frömaterial</h2><div class="view-subnav">${sectionLink}</div><p>Fröskördar och externa fröpartier hålls åtskilda och kan ge flera såbatcher.</p></div></div>${cards}`;
+      const materialCards = rowsToRender => rowsToRender.length ? `<div class="material-grid">${rowsToRender.map(materialCard).join("")}</div>` : emptyState("Inga fröskördar eller fröpartier i denna sektion i valt artfilter.");
+      const activeRows = rows.filter(row => row.remaining !== 0);
+      const consumedRows = rows.filter(row => row.remaining === 0);
+      const consumedSection = consumedRows.length
+        ? `<details class="archive-section"><summary>Förbrukade <span>${consumedRows.length}</span></summary>${materialCards(consumedRows)}</details>`
+        : "";
+      return `<div class="view-intro"><div><h2>Frömaterial</h2><div class="view-subnav">${sectionLink}</div><p>Fröskördar och externa fröpartier hålls åtskilda och kan ge flera såbatcher.</p></div></div>${activeRows.length ? materialCards(activeRows) : emptyState("Inget aktivt frömaterial i valt artfilter.")}${consumedSection}`;
     }
     const rows = model.batches.filter(row => matchesSpecies(row, species));
     const cards = rows.length ? `<div class="batch-grid">${rows.map(batchCard).join("")}</div>` : emptyState("Inga såbatcher i valt artfilter.");
