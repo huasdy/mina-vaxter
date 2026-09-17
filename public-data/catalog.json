@@ -1381,7 +1381,7 @@
           "name": "P. gibbosum",
           "parentage": "",
           "type": "Vildpelargon",
-          "specimen_count": "4",
+          "specimen_count": "5",
           "tags": "",
           "status": "Bekräftad",
           "scent": "Kvällsdoftande / kryddigt-balsamisk",
@@ -1405,38 +1405,6 @@
           "card_crop_x": "",
           "card_crop_y": "",
           "card_image_updated_at": ""
-        },
-        {
-          "id": "p-gibbosum-4",
-          "record_kind": "INDIVIDUAL",
-          "collection_id": "p-gibbosum-1",
-          "name": "P. gibbosum 4",
-          "parentage": "",
-          "type": "Vildpelargon",
-          "specimen_count": "",
-          "tags": "",
-          "status": "Bekräftad",
-          "scent": "Kvällsdoftande / kryddigt-balsamisk",
-          "source": "Sune Trygg",
-          "notes": "Har både maj- och junibild i katalogen.",
-          "nickname": "Grotesco",
-          "card_note": "",
-          "card_note_updated_at": "",
-          "arrival_type": "Köpt planta",
-          "start_date": "",
-          "seed_lot_id": "",
-          "crossing_id": "",
-          "sow_batch_id": "",
-          "batch_individual_number": "",
-          "seedling_label": "",
-          "label_number": "PEL-014",
-          "breeding_selected": "nej",
-          "cuttings_available": "",
-          "cuttings_updated_at": "",
-          "card_image": "bilder/pelargoner/p-gibbosum-4_synk-b61ffb5f3d_2026-08-08_blomma.jpg",
-          "card_crop_x": "50",
-          "card_crop_y": "50",
-          "card_image_updated_at": "2026-08-14T16:06:14.548Z"
         },
         {
           "id": "p-gibbosum-anethifolium",
@@ -2299,6 +2267,13 @@
         },
         {
           "plant_id": "p-gibbosum-1",
+          "date": "2026-05-24",
+          "type": "hel",
+          "file": "bilder/pelargoner/p-gibbosum-4_2026-05-24_hel.jpg",
+          "label": "2026-05-24 · hel"
+        },
+        {
+          "plant_id": "p-gibbosum-1",
           "date": "2026-06-21",
           "type": "hel",
           "file": "bilder/pelargoner/p-gibbosum-1_2026-06-21_hel.jpg",
@@ -2320,38 +2295,31 @@
         },
         {
           "plant_id": "p-gibbosum-1",
-          "date": "2026-08-25",
-          "type": "blomma",
-          "file": "bilder/pelargoner/p-gibbosum-1_synk-32b7970f23_2026-08-25_blomma.jpg",
-          "label": "2026-08-25 · blomma"
-        },
-        {
-          "plant_id": "p-gibbosum-4",
-          "date": "2026-05-24",
-          "type": "hel",
-          "file": "bilder/pelargoner/p-gibbosum-4_2026-05-24_hel.jpg",
-          "label": "2026-05-24 · hel"
-        },
-        {
-          "plant_id": "p-gibbosum-4",
           "date": "2026-06-21",
           "type": "hel",
           "file": "bilder/pelargoner/p-gibbosum-4_2026-06-21_hel.jpg",
           "label": "2026-06-21 · hel"
         },
         {
-          "plant_id": "p-gibbosum-4",
+          "plant_id": "p-gibbosum-1",
           "date": "2026-08-08",
           "type": "blomma",
           "file": "bilder/pelargoner/p-gibbosum-4_synk-b61ffb5f3d_2026-08-08_blomma.jpg",
           "label": "2026-08-08 · blomma"
         },
         {
-          "plant_id": "p-gibbosum-4",
+          "plant_id": "p-gibbosum-1",
           "date": "2026-08-08",
           "type": "hel",
           "file": "bilder/pelargoner/p-gibbosum-4_synk-fc60acc601_2026-08-08_hel.jpg",
           "label": "2026-08-08 · hel"
+        },
+        {
+          "plant_id": "p-gibbosum-1",
+          "date": "2026-08-25",
+          "type": "blomma",
+          "file": "bilder/pelargoner/p-gibbosum-1_synk-32b7970f23_2026-08-25_blomma.jpg",
+          "label": "2026-08-25 · blomma"
         },
         {
           "plant_id": "p-gibbosum-anethifolium",
@@ -6480,7 +6448,7 @@
       {
         "crossing_id": "KRS-P-AA9AC1EE9B4F",
         "category": "Pelargon",
-        "mother_id": "p-gibbosum-4",
+        "mother_id": "p-gibbosum-1",
         "father_id": "p-laxum-1",
         "status": "Sådd",
         "note": "",
