@@ -6416,127 +6416,64 @@
     }
   ],
   "crossings": {
-    "items": [
+    "items": [],
+    "events": [],
+    "seedLots": [],
+    "sowBatches": []
+  },
+  "lab": {
+    "crossings": [
       {
-        "crossing_id": "KRS-P-2A4E5C71076E",
-        "category": "Pelargon",
-        "mother_id": "p-gibbosum-maroon-1",
-        "father_id": "p-laxum-1",
-        "status": "Pollinerad",
-        "note": "",
-        "seedling_prefix": "M×L 26",
-        "hibiscus_batch": "",
-        "hibiscus_cross_code": "",
-        "created_at": "2026-08-25T16:00:03.404Z",
-        "closed_at": "",
-        "closed_note": ""
-      },
-      {
-        "crossing_id": "KRS-P-335486E61ACD",
-        "category": "Pelargon",
-        "mother_id": "p-cotyledonis-1",
-        "father_id": "p-gibbosum-1",
-        "status": "Pollinerad",
-        "note": "",
-        "seedling_prefix": "C×G 26",
-        "hibiscus_batch": "",
-        "hibiscus_cross_code": "",
-        "created_at": "2026-08-26T16:24:54.181Z",
-        "closed_at": "",
-        "closed_note": ""
-      },
-      {
-        "crossing_id": "KRS-P-AA9AC1EE9B4F",
-        "category": "Pelargon",
+        "crossing_id": "LABC-legacy-AA9AC1EE9B4F",
+        "species_group": "Pelargon",
         "mother_id": "p-gibbosum-1",
+        "mother_name": "P. gibbosum",
         "father_id": "p-laxum-1",
-        "status": "Sådd",
-        "note": "",
-        "seedling_prefix": "G×L 26",
-        "hibiscus_batch": "",
-        "hibiscus_cross_code": "",
-        "created_at": "2026-08-25T15:58:56.260Z",
-        "closed_at": "",
-        "closed_note": ""
-      }
-    ],
-    "events": [
-      {
-        "event_id": "cross-event-e82a9f5431264e45b31f53ae4f618a51",
-        "crossing_id": "KRS-P-AA9AC1EE9B4F",
-        "date": "2026-08-18",
-        "type": "Pollinerad",
-        "note": "",
+        "father_name": "P. laxum",
+        "pollinated_date": "2026-08-18",
+        "status": "Frö skördat",
+        "notes": "",
         "created_at": "2026-08-25T15:58:56.260Z"
       },
       {
-        "event_id": "cross-event-7def93ca2a384d2b84b73134784b9524",
-        "crossing_id": "KRS-P-2A4E5C71076E",
-        "date": "2026-08-25",
-        "type": "Pollinerad",
-        "note": "",
+        "crossing_id": "LABC-legacy-2A4E5C71076E",
+        "species_group": "Pelargon",
+        "mother_id": "p-gibbosum-maroon-1",
+        "mother_name": "P. gibbosum ‘Maroon’",
+        "father_id": "p-laxum-1",
+        "father_name": "P. laxum",
+        "pollinated_date": "2026-08-25",
+        "status": "Pollinerad",
+        "notes": "",
         "created_at": "2026-08-25T16:00:03.404Z"
       },
       {
-        "event_id": "cross-event-cece07cd867d427d99dfc0284c4c2c6f",
-        "crossing_id": "KRS-P-335486E61ACD",
-        "date": "2026-08-26",
-        "type": "Pollinerad",
-        "note": "",
+        "crossing_id": "LABC-legacy-335486E61ACD",
+        "species_group": "Pelargon",
+        "mother_id": "p-cotyledonis-1",
+        "mother_name": "P. cotyledonis",
+        "father_id": "p-gibbosum-1",
+        "father_name": "P. gibbosum",
+        "pollinated_date": "2026-08-26",
+        "status": "Pollinerad",
+        "notes": "",
         "created_at": "2026-08-26T16:24:54.181Z"
-      },
-      {
-        "event_id": "cross-event-d0c9e28795dd4c80aea3194b3b02982a",
-        "crossing_id": "KRS-P-AA9AC1EE9B4F",
-        "date": "2026-09-04",
-        "type": "Frö utvecklas",
-        "note": "",
-        "created_at": "2026-09-04T20:29:12.696Z"
-      },
-      {
-        "event_id": "cross-event-harvest-aa9ac1ee9b4f",
-        "crossing_id": "KRS-P-AA9AC1EE9B4F",
-        "date": "2026-09-11",
-        "type": "Frö skördat",
-        "note": "14 frön",
-        "created_at": "2026-09-12T10:00:00Z"
-      },
-      {
-        "event_id": "cross-event-53b8d84c4e414a7d8aa0790f4982879c",
-        "crossing_id": "KRS-P-AA9AC1EE9B4F",
-        "date": "2026-09-12",
-        "type": "Sådd",
-        "note": "",
-        "created_at": "2026-09-12T15:16:58.467Z"
       }
     ],
-    "seedLots": [
+    "seedHarvests": [
       {
-        "seed_lot_id": "SL-P-AA9AC1EE9B4F-26A",
-        "crossing_id": "KRS-P-AA9AC1EE9B4F",
-        "seed_lot_code": "26A",
+        "seed_harvest_id": "LABH-legacy-AA9AC1EE9B4F-26A",
+        "crossing_id": "LABC-legacy-AA9AC1EE9B4F",
+        "code": "26A",
         "pollinated_date": "2026-08-18",
-        "harvested_date": "",
+        "seed_development_date": "2026-09-04",
+        "harvested_date": "2026-09-11",
+        "seeds_harvested": "14",
+        "seeds_remaining": "0",
+        "notes": "",
         "created_at": "2026-08-25T15:58:56.260Z"
       }
     ],
-    "sowBatches": [
-      {
-        "sow_batch_id": "SB-P-AA9AC1EE9B4F-26A-B01",
-        "seed_lot_id": "SL-P-AA9AC1EE9B4F-26A",
-        "sow_code": "B01",
-        "sown_date": "2026-09-12",
-        "seeds_sown": "14",
-        "pot_count": "2",
-        "germinated_count": "0",
-        "last_individual_number": "0",
-        "created_at": "2026-09-12T10:00:00Z"
-      }
-    ]
-  },
-  "lab": {
-    "crossings": [],
-    "seedHarvests": [],
     "seedLots": [
       {
         "seed_lot_id": "LABL-sta029-hystrix-20260916",
@@ -6608,6 +6545,24 @@
       }
     ],
     "sowBatches": [
+      {
+        "sow_batch_id": "LABB-legacy-AA9AC1EE9B4F-26A-B01",
+        "source_type": "seed_harvest",
+        "source_id": "LABH-legacy-AA9AC1EE9B4F-26A",
+        "source_label": "",
+        "batch_number": "1",
+        "batch_code": "B01",
+        "full_code": "26A-B01",
+        "species_group": "Pelargon",
+        "taxon": "P. gibbosum × P. laxum",
+        "sown_date": "2026-09-12",
+        "seeds_sown": "14",
+        "container_count": "2",
+        "germinated_count": "0",
+        "germinated_date": "",
+        "notes": "",
+        "created_at": "2026-09-12T10:00:00Z"
+      },
       {
         "sow_batch_id": "LABB-sta021-gigantea-20260916",
         "source_type": "seed_lot",
