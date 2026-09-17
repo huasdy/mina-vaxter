@@ -604,6 +604,7 @@
         groupCode: clean(row.batch_code),
         originCode: clean(row.origin_code),
         createdAt: clean(row.created_at),
+        individualizedDate: isoDate(clean(row.created_at).slice(0, 10)),
         adapter: false
       });
     });
@@ -906,7 +907,7 @@
     const latestMilestone = seedling.latestMilestone ? `${seedling.latestMilestone.type} · ${displayDate(seedling.latestMilestone.date, true)}` : "—";
     const lineage = [
       {title: seedling.shortId, sub: `Provisoriskt fröplants-ID · internt ${seedling.internalId}`},
-      {title: `Såbatch ${batch?.shortCode || seedling.groupCode}`, sub: batch?.sownDate ? `Sådd ${displayDate(batch.sownDate, true)}` : ""}
+      {title: `Såbatch ${batch?.fullCode || batch?.shortCode || seedling.groupCode}`, sub: batch?.sownDate ? `Sådd ${displayDate(batch.sownDate, true)}` : ""}
     ];
     if (seedling.adapter === false && batch) {
       const material = model.materialById.get(batch.materialId);
@@ -935,6 +936,7 @@
             <div><div class="detail-kicker">Fröplanta · ${esc(seedling.species)}</div><h2>${esc(seedling.shortId)}</h2><div class="detail-code">${esc(seedling.taxon)}</div></div>
             <span class="chip ${seedling.status === "Redo för bedömning" ? "gold" : "green"}">${esc(seedling.status)}</span>
             <dl class="fact-grid">
+              ${seedling.adapter === false ? `<div class="fact"><dt>Individualiserad</dt><dd>${esc(seedling.individualizedDate ? displayDate(seedling.individualizedDate, true) : "—")}</dd></div>` : ""}
               <div class="fact"><dt>Grodddatum</dt><dd>${esc(seedling.germinatedDate ? displayDate(seedling.germinatedDate, true) : "Ej registrerat")}</dd></div>
               <div class="fact"><dt>Ålder</dt><dd>${esc(seedlingAge(seedling) || "—")}</dd></div>
               <div class="fact"><dt>Senaste milstolpe</dt><dd>${esc(latestMilestone)}</dd></div>
@@ -1248,17 +1250,15 @@
       .map(row => number(row.individualNumber));
     const nextNumber = Math.max(0, ...used) + 1;
     const provisionalId = `${batch.shortCode}-${String(nextNumber).padStart(2, "0")}`;
-    const suggestedDate = isoDate(batch.germinatedDate) || "";
     showFormDialog(`<h2>Individualisera planta</h2>
-      <p>${esc(batch.fullCode)} · skapa en LAB-identitet endast för en planta som ska följas separat. Nästa lediga nummer är <strong>${esc(provisionalId)}</strong>.</p>
+      <p>${esc(batch.fullCode)} · nästa ID <strong>${esc(provisionalId)}</strong></p>
       <form class="lab-form">
         <label>Provisoriskt ID<input value="${esc(provisionalId)}" disabled></label>
-        <label>Grodddatum<input name="germinated_date" type="date" value="${esc(suggestedDate)}" max="${today()}" required></label>
+        <label>Grodddatum (om känt)<input name="germinated_date" type="date" max="${today()}"></label>
         <label class="wide">Anteckning<textarea name="notes" rows="3" placeholder="Frivilligt"></textarea></label>
         <div class="dialog-actions"><button type="button" class="secondary-action" data-dialog-close>Avbryt</button><button type="submit" class="primary-action">Individualisera planta</button></div>
       </form>`, async data => {
       const germinatedDate = isoDate(data.get("germinated_date"));
-      if (!germinatedDate) throw new Error("Grodddatum krävs.");
       const createdAt = new Date().toISOString();
       const seedlingId = uniqueId("LAB");
       const row = {
@@ -1278,14 +1278,14 @@
         collection_id: ""
       };
       queueLabChange("seedling", row);
-      queueLabChange("milestone", {
-        milestone_id: uniqueId("LABM"),
-        seedling_id: seedlingId,
-        date: germinatedDate,
-        type: "Grodd",
-        note: "Individuell fröplanta registrerad.",
-        created_at: createdAt
-      });
+      if (germinatedDate) queueLabChange("milestone", {
+          milestone_id: uniqueId("LABM"),
+          seedling_id: seedlingId,
+          date: germinatedDate,
+          type: "Grodd",
+          note: "Individuellt grodddatum registrerat.",
+          created_at: createdAt
+        });
       await refreshModel();
       updateRoute({planta: seedlingId, batch: null, vy: "uppdragning"});
     });
