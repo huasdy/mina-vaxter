@@ -29,6 +29,25 @@
   const clean = value => String(value ?? "").trim();
   const number = value => Number.parseInt(String(value || "0"), 10) || 0;
   const isoDate = value => /^\d{4}-\d{2}-\d{2}$/.test(clean(value)) ? clean(value) : "";
+  const crossingName = (mother, father) => `${clean(mother) || "Okänd"} × ${clean(father) || "Okänd"}`;
+
+  function parentPairHtml(crossing, className = "") {
+    const mother = clean(crossing?.motherName) || clean(crossing?.mother_name) || "Okänd";
+    const father = clean(crossing?.fatherName) || clean(crossing?.father_name) || "Okänd";
+    return `<div class="parent-pair${className ? ` ${className}` : ""}" aria-label="Föräldrar">
+      <div class="parent-role"><span class="parent-role-label">MODER</span><strong>${esc(mother)}</strong></div>
+      <span class="parent-cross" aria-hidden="true">×</span>
+      <div class="parent-role"><span class="parent-role-label">POLLEN</span><strong>${esc(father)}</strong></div>
+    </div>`;
+  }
+
+  function originContent(batch) {
+    const material = model.materialById.get(clean(batch.materialId));
+    if (material?.type === "seed_harvest" && material.crossing) {
+      return `<span class="origin-copy"><span class="origin-label">FRÖSKÖRD ${esc(material.code)}</span>${parentPairHtml(material.crossing, "origin-parent-pair")}</span>`;
+    }
+    return `<span class="origin-copy"><span class="origin-label">HÄRKOMST</span><strong>${esc(batch.originDetail || batch.originLabel || "—")}</strong></span>`;
+  }
 
   function today() {
     const date = new Date();
@@ -231,10 +250,14 @@
         const row = pelargonById.get(id);
         return row ? clean(row.nickname) || clean(row.name) || id : id || "Okänd";
       };
+      const motherName = parent(crossing.mother_id);
+      const fatherName = parent(crossing.father_id);
       return {
         ...crossing,
         species: crossing.category === "Hibiskus" ? "Hibiskus" : "Pelargon",
-        name: `${parent(crossing.mother_id)} ♀ × ${parent(crossing.father_id)} ♂`,
+        motherName,
+        fatherName,
+        name: crossingName(motherName, fatherName),
         active: clean(crossing.status) !== "Avslutad",
         href: `korsningar.html#${encodeURIComponent(crossing.crossing_id)}`,
         adapter: true
@@ -265,7 +288,7 @@
       const latestMilestone = latest(rows.filter(item => !["sådd"].includes(clean(item.type).toLocaleLowerCase("sv")))) || latest(rows);
       const shortId = clean(row.id).replace(/^PL-/, "");
       const parentage = [clean(row.mother), clean(row.father)].some(value => value && value.toLocaleLowerCase("sv") !== "okänd")
-        ? `${clean(row.mother) || "okänd"} ♀ × ${clean(row.father) || "okänd"} ♂`
+        ? crossingName(clean(row.mother) || "okänd", clean(row.father) || "okänd")
         : "";
       const seedling = {
         id: row.id,
@@ -435,7 +458,7 @@
         motherName: clean(row.mother_name),
         fatherId: clean(row.father_id),
         fatherName: clean(row.father_name),
-        name: `${clean(row.mother_name)} ♀ × ${clean(row.father_name)} ♂`,
+        name: crossingName(row.mother_name, row.father_name),
         pollinatedDate: clean(row.pollinated_date),
         status: clean(row.status) || "Pollinerad",
         note: clean(row.notes),
@@ -741,6 +764,7 @@
         <div class="detail-hero"><div><div class="detail-kicker">Egen korsning · ${esc(crossing.species)}</div><h2>${esc(crossing.name)}</h2><div class="detail-code">Pollinerad ${esc(displayDate(crossing.pollinatedDate, true))}</div></div><div class="detail-actions"><button type="button" class="primary-action" data-register-harvest="${esc(crossing.crossing_id)}">Registrera fröskörd</button><p class="action-note">En korsning kan ge flera separata fröskördar.</p></div></div>
         <div class="detail-body">
           <dl class="fact-grid"><div class="fact"><dt>Status</dt><dd>${esc(crossing.status)}</dd></div><div class="fact"><dt>Pollineringsdatum</dt><dd>${esc(displayDate(crossing.pollinatedDate, true))}</dd></div><div class="fact"><dt>Fröskördar</dt><dd>${crossing.harvests.length}</dd></div><div class="fact"><dt>Såbatcher</dt><dd>${crossing.harvests.reduce((sum, row) => sum + row.batches.length, 0)}</dd></div></dl>
+          <section class="detail-section"><h3>Föräldrar</h3>${parentPairHtml(crossing)}</section>
           <section class="detail-section"><h3>Anteckningar</h3><p>${esc(crossing.note || "Ingen anteckning ännu.")}</p></section>
           <section class="detail-section"><h3>Fröskördar</h3>${crossing.harvests.length ? `<div class="material-grid">${crossing.harvests.map(materialCard).join("")}</div>` : emptyState("Ingen fröskörd registrerad ännu.")}</section>
         </div>
@@ -751,6 +775,9 @@
   function renderMaterialDetail(material) {
     const price = material.type === "seed_lot" && material.price ? `${material.price} ${material.currency}`.trim() : "—";
     const origin = material.type === "seed_harvest" ? material.sourceName : material.sourceName;
+    const originSection = material.type === "seed_harvest"
+      ? `<section class="detail-section"><h3>Härkomst</h3><button type="button" class="origin-link" data-open-crossing="${esc(material.crossing.crossing_id)}">${originContent({materialId: material.id})}<b>→</b></button></section>`
+      : `<section class="detail-section"><h3>Härkomst</h3><p>${esc(material.sourceCross ? `${material.sourceName} · uppgiven korsning: ${material.sourceCross}` : material.sourceName)}</p></section>`;
     return `<section class="detail-shell">
       <button type="button" class="back-button" data-close-detail>← Till frömaterial</button>
       <article class="detail-card">
@@ -763,7 +790,7 @@
             <div class="fact"><dt>${material.type === "seed_harvest" ? "Pollineringsdatum" : "Pris"}</dt><dd>${esc(material.type === "seed_harvest" ? displayDate(material.pollinatedDate, true) : price)}</dd></div>
             ${material.type === "seed_lot" ? `<div class="fact"><dt>Butik/källa</dt><dd>${esc(material.sourceName)}</dd></div><div class="fact"><dt>Säljare</dt><dd>${esc(material.seller || "Ej registrerad")}</dd></div>${material.purchaseName ? `<div class="fact"><dt>Inköpsnamn</dt><dd>${esc(material.purchaseName)}</dd></div>` : ""}` : ""}
           </dl>
-          ${material.type === "seed_harvest" ? `<section class="detail-section"><h3>Härkomst</h3><button type="button" class="origin-link" data-open-crossing="${esc(material.crossing.crossing_id)}"><span>Egen korsning<strong>${esc(material.sourceName)}</strong></span><b>→</b></button></section>` : `<section class="detail-section"><h3>Härkomst</h3><p>${esc(material.sourceCross ? `${material.sourceName} · uppgiven korsning: ${material.sourceCross}` : material.sourceName)}</p></section>`}
+          ${originSection}
           <section class="detail-section"><h3>Anteckningar</h3><p>${esc(material.notes || "Ingen anteckning ännu.")}</p></section>
           <section class="detail-section"><h3>Såbatcher</h3>${material.batches.length ? `<div class="batch-grid">${material.batches.map(batchCard).join("")}</div>` : emptyState("Inga såbatcher ännu.")}</section>
         </div>
@@ -805,7 +832,7 @@
             <div class="fact"><dt>Behållna i samlingen</dt><dd>${batch.kept}</dd></div>
             <div class="fact"><dt>Avslutade</dt><dd>${batch.concluded}</dd></div>
           </dl>
-          <section class="detail-section"><h3>Ursprung</h3>${batch.materialId ? `<button type="button" class="origin-link" data-open-material="${esc(batch.materialId)}"><span>Härkomst<strong>${esc(batch.originLabel)} → ${esc(batch.originDetail)}</strong></span><b>→</b></button>` : `<a class="origin-link" href="${esc(batch.originHref || "#")}"><span>Härkomst<strong>${esc(batch.originLabel)} → ${esc(batch.originDetail)}</strong></span><b>→</b></a>`}</section>
+          <section class="detail-section"><h3>Ursprung</h3>${batch.materialId ? `<button type="button" class="origin-link" data-open-material="${esc(batch.materialId)}">${originContent(batch)}<b>→</b></button>` : `<a class="origin-link" href="${esc(batch.originHref || "#")}">${originContent(batch)}<b>→</b></a>`}</section>
           ${batch.seedlings?.length ? `<section class="detail-section"><h3>Fröplantor</h3><div class="seedling-grid">${batch.seedlings.filter(row => row.id && model.seedlingById.has(row.id)).map(row => seedlingCard(model.seedlingById.get(row.id))).join("")}</div></section>` : ""}
           <details><summary>Historik och övriga detaljer</summary>${historyHtml(batch.history)}</details>
         </div>
