@@ -721,11 +721,11 @@
     if (sowSection === "material") {
       const rows = model.materials.filter(row => matchesSpecies(row, species));
       const cards = rows.length ? `<div class="material-grid">${rows.map(materialCard).join("")}</div>` : emptyState("Inga fröskördar eller fröpartier i Labbet ännu.");
-      return `<div class="view-intro"><div><h2>Frömaterial</h2><p>Fröskördar och externa fröpartier hålls åtskilda och kan ge flera såbatcher.</p></div>${sectionLink}</div>${cards}`;
+      return `<div class="view-intro"><div><h2>Frömaterial</h2><div class="view-subnav">${sectionLink}</div><p>Fröskördar och externa fröpartier hålls åtskilda och kan ge flera såbatcher.</p></div></div>${cards}`;
     }
     const rows = model.batches.filter(row => matchesSpecies(row, species));
     const cards = rows.length ? `<div class="batch-grid">${rows.map(batchCard).join("")}</div>` : emptyState("Inga såbatcher i valt artfilter.");
-    return `<div class="view-intro"><div><h2>Sådder</h2></div>${sectionLink}</div>${cards}`;
+    return `<div class="view-intro"><div><h2>Sådder</h2><div class="view-subnav">${sectionLink}</div></div></div>${cards}`;
   }
 
   function seedlingAge(seedling) {
@@ -772,26 +772,63 @@
     </section>`;
   }
 
+  function materialDetailRows(rows) {
+    const visible = rows.filter(([, value]) => clean(value));
+    return visible.length
+      ? `<dl class="material-detail-list">${visible.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join("")}</dl>`
+      : "";
+  }
+
+  function materialRawValue(material, ...keys) {
+    const raw = material.raw || {};
+    return keys.map(key => clean(raw[key])).find(value => value) || "";
+  }
+
+  function materialSecondaryDetails(material) {
+    if (material.type === "seed_harvest") {
+      const rows = materialDetailRows([
+        ["Pollinerad", material.pollinatedDate ? displayDate(material.pollinatedDate, true) : ""],
+        ["Frö började utvecklas", material.developmentDate ? displayDate(material.developmentDate, true) : ""],
+        ["Skördedatum", material.date ? displayDate(material.date, true) : ""],
+        ["Anteckningar", material.notes]
+      ]);
+      return rows ? `<details class="material-secondary-details"><summary>Fröskördsdetaljer</summary>${rows}</details>` : "";
+    }
+    const rawPrice = materialRawValue(material, "price");
+    const price = rawPrice ? `${rawPrice}${material.currency ? ` ${material.currency}` : ""}` : "";
+    const rows = materialDetailRows([
+      ["Mottaget/inköpt", material.date ? displayDate(material.date, true) : ""],
+      ["Pris", price],
+      ["Butik/källa", materialRawValue(material, "supplier")],
+      ["Säljare", materialRawValue(material, "seller")],
+      ["Inköpsnamn", materialRawValue(material, "purchase_name")],
+      ["Ordernummer", materialRawValue(material, "order_number")],
+      ["Leverantörens artikelnummer", materialRawValue(material, "supplier_article_number", "article_number", "supplier_article")],
+      ["Antal paket", materialRawValue(material, "package_count", "packages", "purchase_quantity")],
+      ["Frön per paket", materialRawValue(material, "seeds_per_package", "seed_count_per_package")],
+      ["Historisk referens", materialRawValue(material, "historical_reference", "historic_reference")],
+      ["Inköps-/spårbarhetsanteckning", material.notes]
+    ]);
+    return rows ? `<details class="material-secondary-details"><summary>Inköpsdetaljer</summary>${rows}</details>` : "";
+  }
+
   function renderMaterialDetail(material) {
-    const price = material.type === "seed_lot" && material.price ? `${material.price} ${material.currency}`.trim() : "—";
-    const origin = material.type === "seed_harvest" ? material.sourceName : material.sourceName;
+    const stock = material.remaining === null
+      ? "Frön kvar ej registrerat"
+      : material.original === null
+        ? `${material.remaining} frön kvar`
+        : `${material.remaining} frön kvar av ${material.original}`;
     const originSection = material.type === "seed_harvest"
       ? `<section class="detail-section"><h3>Härkomst</h3><button type="button" class="origin-link" data-open-crossing="${esc(material.crossing.crossing_id)}">${originContent({materialId: material.id})}<b>→</b></button></section>`
       : `<section class="detail-section"><h3>Härkomst</h3><p>${esc(material.sourceCross ? `${material.sourceName} · uppgiven korsning: ${material.sourceCross}` : material.sourceName)}</p></section>`;
     return `<section class="detail-shell">
       <button type="button" class="back-button" data-close-detail>← Till frömaterial</button>
       <article class="detail-card">
-        <div class="detail-hero"><div><div class="detail-kicker">${esc(material.label)} · ${esc(material.species)}</div><h2>${esc(material.type === "seed_harvest" ? material.sourceName : material.taxon)}</h2><div class="detail-code">${esc(material.code)} · ${esc(origin)}</div></div><div class="detail-actions"><button type="button" class="primary-action" data-sow-material="${esc(material.id)}">Så frön</button><button type="button" class="secondary-action" data-adjust-material="${esc(material.id)}">Justera frölager</button><p class="action-note">Varje ny sådd får nästa lediga B-kod inom detta frömaterial.</p></div></div>
+        <div class="detail-hero"><div><div class="detail-kicker">${esc(material.label)} · ${esc(material.species)}</div><h2>${esc(material.type === "seed_harvest" ? material.sourceName : material.taxon)}</h2><div class="detail-code">${esc(material.code)}</div></div><div class="detail-actions"><button type="button" class="primary-action" data-sow-material="${esc(material.id)}">Så frön</button><button type="button" class="secondary-action" data-adjust-material="${esc(material.id)}">Justera frölager</button><p class="action-note">Varje ny sådd får nästa lediga B-kod inom detta frömaterial.</p></div></div>
         <div class="detail-body">
-          <dl class="fact-grid">
-            <div class="fact"><dt>${material.type === "seed_harvest" ? "Skördade frön" : "Ursprungligt antal"}</dt><dd>${esc(material.original === null ? "Ej räknat" : material.original)}</dd></div>
-            <div class="fact"><dt>Frön kvar</dt><dd>${esc(material.remaining === null ? "Ej räknat" : material.remaining)}</dd></div>
-            <div class="fact"><dt>${material.type === "seed_harvest" ? "Skördedatum" : "Mottaget/inköpt"}</dt><dd>${esc(material.date ? displayDate(material.date, true) : "Ej registrerat")}</dd></div>
-            <div class="fact"><dt>${material.type === "seed_harvest" ? "Pollineringsdatum" : "Pris"}</dt><dd>${esc(material.type === "seed_harvest" ? displayDate(material.pollinatedDate, true) : price)}</dd></div>
-            ${material.type === "seed_lot" ? `<div class="fact"><dt>Butik/källa</dt><dd>${esc(material.sourceName)}</dd></div><div class="fact"><dt>Säljare</dt><dd>${esc(material.seller || "Ej registrerad")}</dd></div>${material.purchaseName ? `<div class="fact"><dt>Inköpsnamn</dt><dd>${esc(material.purchaseName)}</dd></div>` : ""}` : ""}
-          </dl>
+          <div class="material-stock" aria-label="Frölager">${esc(stock)}</div>
           ${originSection}
-          <section class="detail-section"><h3>Anteckningar</h3><p>${esc(material.notes || "Ingen anteckning ännu.")}</p></section>
+          ${materialSecondaryDetails(material)}
           <section class="detail-section"><h3>Såbatcher</h3>${material.batches.length ? `<div class="batch-grid">${material.batches.map(batchCard).join("")}</div>` : emptyState("Inga såbatcher ännu.")}</section>
         </div>
       </article>
