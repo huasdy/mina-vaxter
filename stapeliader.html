@@ -362,8 +362,10 @@
       const section = snapshot.categories.Stapeliader;
       const rarityByPlant = new Map();
       (section.stapeliaRarity || []).forEach(item => {
-        const current = rarityByPlant.get(item.plant_id);
-        if (!current || sortNatural(`${current.assessed_date} ${current.assessment_id}`, `${item.assessed_date} ${item.assessment_id}`) < 0) rarityByPlant.set(item.plant_id, item);
+        const plantId = clean(item.plant_id);
+        if (!plantId) return;
+        const current = rarityByPlant.get(plantId);
+        if (!current || sortNatural(`${current.assessed_date} ${current.assessment_id}`, `${item.assessed_date} ${item.assessment_id}`) < 0) rarityByPlant.set(plantId, item);
       });
       const photosByPlant = new Map();
       (section.photos || []).forEach(photo => {

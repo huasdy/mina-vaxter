@@ -19,6 +19,7 @@
   let model = null;
   let pendingLabImages = [];
   let pendingImageUrls = [];
+  let seedBoxExpanded = false;
 
   const esc = value => String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -159,6 +160,26 @@
     return parsed.toLocaleDateString("sv-SE", withYear
       ? {day: "numeric", month: "short", year: "numeric"}
       : {day: "numeric", month: "short"});
+  }
+
+  function calendarDateTimestamp(value) {
+    const date = isoDate(value);
+    if (!date) return null;
+    const [year, month, day] = date.split("-").map(Number);
+    const timestamp = Date.UTC(year, month - 1, day);
+    const parsed = new Date(timestamp);
+    return parsed.getUTCFullYear() === year
+      && parsed.getUTCMonth() === month - 1
+      && parsed.getUTCDate() === day
+      ? timestamp
+      : null;
+  }
+
+  function calendarDaysBetween(start, end) {
+    const startTimestamp = calendarDateTimestamp(start);
+    const endTimestamp = calendarDateTimestamp(end);
+    if (startTimestamp === null || endTimestamp === null) return null;
+    return Math.round((endTimestamp - startTimestamp) / 86400000);
   }
 
   function daysSince(value) {
@@ -502,7 +523,7 @@
       const material = {
         id: clean(row.seed_lot_id),
         type: "seed_lot",
-        label: "Fröparti",
+        label: "Fröpåse",
         code: clean(row.code),
         species: clean(row.species_group),
         taxon: clean(row.taxon),
@@ -675,8 +696,45 @@
     return `<div class="empty-state">${esc(message)}</div>`;
   }
 
+  function labHomeLink() {
+    return '<a class="back-button lab-home-link" href="labbet.html">← Till Labbet</a>';
+  }
+
+  function detailNavigation(label) {
+    return `<div class="detail-navigation">${labHomeLink()}<button type="button" class="back-button" data-close-detail>← ${esc(label)}</button></div>`;
+  }
+
   function section(title, body, count = "") {
     return `<section class="section-block"><div class="section-heading"><h2>${esc(title)}</h2>${count ? `<span class="section-count">${esc(count)}</span>` : ""}</div>${body}</section>`;
+  }
+
+  function seedBoxCard(material) {
+    const name = material.type === "seed_harvest" ? material.sourceName : material.taxon;
+    const source = material.type === "seed_harvest"
+      ? "Egen korsning"
+      : material.sourceName;
+    const detail = `${material.remaining} frön kvar${source ? ` · ${source}` : ""}`;
+    return `<button type="button" class="seed-box-card" data-open-material="${esc(material.id)}" aria-label="${esc(`${name}: ${detail}. Öppna fröpåse.`)}">
+      <span class="seed-box-copy"><strong>${esc(name)}</strong><span>${esc(detail)}</span></span>
+    </button>`;
+  }
+
+  function renderSeedBox(species) {
+    const rows = model.materials
+      .filter(row => matchesSpecies(row, species) && row.remaining !== null && row.remaining > 0)
+      .sort((first, second) => second.remaining - first.remaining || clean(first.taxon).localeCompare(clean(second.taxon), "sv"));
+    const total = rows.reduce((sum, row) => sum + row.remaining, 0);
+    const limit = 5;
+    const visibleRows = seedBoxExpanded ? rows : rows.slice(0, limit);
+    const summary = `${rows.length} ${rows.length === 1 ? "fröpåse" : "fröpåsar"} · ${total} frön kvar`;
+    const toggle = rows.length > limit
+      ? `<button type="button" class="text-link seed-box-toggle" data-seed-box-toggle>${seedBoxExpanded ? "Visa färre" : `Visa alla (${rows.length})`}</button>`
+      : "";
+    return `<section class="seed-box-section" aria-labelledby="seedBoxTitle">
+      <div class="section-heading seed-box-heading"><div><h2 id="seedBoxTitle">Frölådan</h2><p>Fröpåsar med frön kvar och redo att så.</p></div><span class="section-count">${esc(summary)}</span></div>
+      ${visibleRows.length ? `<div class="seed-box-grid">${visibleRows.map(seedBoxCard).join("")}</div>` : emptyState("Inga fröpartier med saldo kvar i valt artfilter.")}
+      ${toggle}
+    </section>`;
   }
 
   function renderActive(species) {
@@ -691,7 +749,7 @@
       ${portalCard("Sådder", activeBatches.length, "sadder")}
       ${portalCard("Under uppdragning", activeSeedlings.length, "uppdragning", "Under uppdragning")}
       ${portalCard("Redo för bedömning", ready.length, "uppdragning", "Redo för bedömning")}
-    </section>`;
+    </section>${renderSeedBox(species)}`;
   }
 
   function renderCrossings(species) {
@@ -712,15 +770,16 @@
     const endedSection = endedRows.length
       ? `<details class="archive-section"><summary>Avslutade korsningar <span>${endedRows.length}</span></summary>${crossingCards(endedRows)}</details>`
       : "";
-    return `<div class="view-intro"><div><h2>Korsningar</h2><p>Nya korsningar skapas och följs direkt i Labbet. Äldre poster ligger kvar oförändrade.</p></div><button type="button" class="primary-action" data-new-crossing>Ny korsning</button></div>${activeRows.length ? crossingCards(activeRows) : emptyState("Inga aktiva korsningar i valt artfilter.")}${endedSection}`;
+    return `${labHomeLink()}<div class="view-intro"><div><h2>Korsningar</h2><p>Nya korsningar skapas och följs direkt i Labbet. Äldre poster ligger kvar oförändrade.</p></div><button type="button" class="primary-action" data-new-crossing>Ny korsning</button></div>${activeRows.length ? crossingCards(activeRows) : emptyState("Inga aktiva korsningar i valt artfilter.")}${endedSection}`;
   }
 
   function materialCard(material) {
     const remaining = material.remaining === null ? "Antal kvar ej registrerat" : `${material.remaining} frön kvar`;
+    const showSeller = material.seller && !(material.type === "seed_lot" && clean(material.sourceName).toLowerCase() === "ebay");
     return `<button type="button" class="material-card" data-open-material="${esc(material.id)}">
       <span class="chip-row"><span class="chip green">${esc(material.species)}</span><span class="chip">${esc(material.label)}</span></span>
       <h3>${esc(material.type === "seed_harvest" ? material.sourceName : material.taxon)}</h3>
-      <p><strong>${esc(material.code)}</strong> · ${esc(material.type === "seed_harvest" ? displayDate(material.date) : material.sourceName)}${material.seller ? ` · Säljare: ${esc(material.seller)}` : ""}</p>
+      <p><strong>${esc(material.code)}</strong> · ${esc(material.type === "seed_harvest" ? displayDate(material.date) : material.sourceName)}${showSeller ? ` · Säljare: ${esc(material.seller)}` : ""}</p>
       <span class="batch-progress">${esc(remaining)}</span>
       <span class="batch-next">${material.batches.length} såbatcher · öppna →</span>
     </button>`;
@@ -732,17 +791,17 @@
       : '<button type="button" class="text-link secondary-view-link" data-sow-section="material">Frömaterial →</button>';
     if (sowSection === "material") {
       const rows = model.materials.filter(row => matchesSpecies(row, species));
-      const materialCards = rowsToRender => rowsToRender.length ? `<div class="material-grid">${rowsToRender.map(materialCard).join("")}</div>` : emptyState("Inga fröskördar eller fröpartier i denna sektion i valt artfilter.");
+      const materialCards = rowsToRender => rowsToRender.length ? `<div class="material-grid">${rowsToRender.map(materialCard).join("")}</div>` : emptyState("Inga fröskördar eller fröpåsar i denna sektion i valt artfilter.");
       const activeRows = rows.filter(row => row.remaining !== 0);
       const consumedRows = rows.filter(row => row.remaining === 0);
       const consumedSection = consumedRows.length
         ? `<details class="archive-section"><summary>Förbrukade <span>${consumedRows.length}</span></summary>${materialCards(consumedRows)}</details>`
         : "";
-      return `<div class="view-intro"><div><h2>Frömaterial</h2><div class="view-subnav">${sectionLink}</div><p>Fröskördar och externa fröpartier hålls åtskilda och kan ge flera såbatcher.</p></div></div>${activeRows.length ? materialCards(activeRows) : emptyState("Inget aktivt frömaterial i valt artfilter.")}${consumedSection}`;
+      return `${labHomeLink()}<div class="view-intro"><div><h2>Frömaterial</h2><div class="view-subnav">${sectionLink}</div><p>Fröskördar och externa fröpåsar hålls åtskilda och kan ge flera såbatcher.</p></div></div>${activeRows.length ? materialCards(activeRows) : emptyState("Inget aktivt frömaterial i valt artfilter.")}${consumedSection}`;
     }
     const rows = model.batches.filter(row => matchesSpecies(row, species));
     const cards = rows.length ? `<div class="batch-grid">${rows.map(batchCard).join("")}</div>` : emptyState("Inga såbatcher i valt artfilter.");
-    return `<div class="view-intro"><div><h2>Sådder</h2><div class="view-subnav">${sectionLink}</div></div></div>${cards}`;
+    return `${labHomeLink()}<div class="view-intro"><div><h2>Sådder</h2><div class="view-subnav">${sectionLink}</div></div></div>${cards}`;
   }
 
   function seedlingAge(seedling) {
@@ -766,7 +825,7 @@
   function renderSeedlings(species, status) {
     const rows = model.seedlings.filter(row => matchesSpecies(row, species) && ACTIVE_SEEDLING_STATUSES.has(row.status) && (status === "Alla" || row.status === status));
     const filters = `<div class="status-filter-wrap"><div><h2>Uppdragning</h2><p>Individuella fröplantor visas visuellt; avslutade plantor är dolda från den aktiva arbetsvyn.</p></div><div class="status-filters" id="statusFilters" role="group" aria-label="Statusfilter">${["Alla", "Under uppdragning", "Redo för bedömning"].map(value => `<button type="button" data-status="${esc(value)}" class="${status === value ? "active" : ""}" aria-pressed="${status === value}">${esc(value)}</button>`).join("")}</div></div>`;
-    return `${filters}${rows.length ? `<div class="seedling-grid">${rows.map(seedlingCard).join("")}</div>` : emptyState("Inga aktiva fröplantor matchar filtren.")}`;
+    return `${labHomeLink()}${filters}${rows.length ? `<div class="seedling-grid">${rows.map(seedlingCard).join("")}</div>` : emptyState("Inga aktiva fröplantor matchar filtren.")}`;
   }
 
   function historyHtml(rows) {
@@ -776,7 +835,7 @@
 
   function renderCrossingDetail(crossing) {
     return `<section class="detail-shell">
-      <button type="button" class="back-button" data-close-detail>← Till korsningar</button>
+      ${detailNavigation("Till korsningar")}
       <article class="detail-card">
         <div class="detail-hero"><div><div class="detail-kicker">Egen korsning · ${esc(crossing.species)}</div><h2>${esc(crossing.name)}</h2><div class="detail-code">Pollinerad ${esc(displayDate(crossing.pollinatedDate, true))}</div></div><div class="detail-actions"><button type="button" class="primary-action" data-register-harvest="${esc(crossing.crossing_id)}">Registrera fröskörd</button><p class="action-note">En korsning kan ge flera separata fröskördar.</p></div></div>
         <div class="detail-body">
@@ -801,10 +860,14 @@
     return keys.map(key => clean(raw[key])).find(value => value) || "";
   }
 
+  function seedHarvestPollinatedDate(material) {
+    return material?.crossing?.pollinatedDate || material?.pollinatedDate || "";
+  }
+
   function materialSecondaryDetails(material) {
     if (material.type === "seed_harvest") {
       const rows = materialDetailRows([
-        ["Pollinerad", material.pollinatedDate ? displayDate(material.pollinatedDate, true) : ""],
+        ["Pollinerad", seedHarvestPollinatedDate(material) ? displayDate(seedHarvestPollinatedDate(material), true) : ""],
         ["Frö började utvecklas", material.developmentDate ? displayDate(material.developmentDate, true) : ""],
         ["Skördedatum", material.date ? displayDate(material.date, true) : ""],
         ["Anteckningar", material.notes]
@@ -835,15 +898,28 @@
       : material.original === null
         ? `${material.remaining} frön kvar`
         : `${material.remaining} frön kvar av ${material.original}`;
+    const pollinatedDate = seedHarvestPollinatedDate(material);
+    const developmentDays = material.type === "seed_harvest"
+      ? calendarDaysBetween(pollinatedDate, material.date)
+      : null;
+    const seedHarvestFacts = material.type === "seed_harvest"
+      ? `<dl class="fact-grid">
+            <div class="fact"><dt>Pollineringsdatum</dt><dd>${esc(pollinatedDate ? displayDate(pollinatedDate, true) : "–")}</dd></div>
+            <div class="fact"><dt>Skördedatum</dt><dd>${esc(material.date ? displayDate(material.date, true) : "–")}</dd></div>
+            <div class="fact"><dt>Utvecklingstid</dt><dd>${esc(developmentDays === null ? "–" : `${developmentDays} dagar`)}</dd></div>
+            <div class="fact"><dt>Skördade frön</dt><dd>${esc(material.original === null ? "–" : material.original)}</dd></div>
+          </dl>`
+      : "";
     const originSection = material.type === "seed_harvest"
       ? `<section class="detail-section"><h3>Härkomst</h3><button type="button" class="origin-link" data-open-crossing="${esc(material.crossing.crossing_id)}">${originContent({materialId: material.id})}<b>→</b></button></section>`
       : `<section class="detail-section"><h3>Härkomst</h3><p>${esc(material.sourceCross ? `${material.sourceName} · uppgiven korsning: ${material.sourceCross}` : material.sourceName)}</p></section>`;
     return `<section class="detail-shell">
-      <button type="button" class="back-button" data-close-detail>← Till frömaterial</button>
+      ${detailNavigation("Till frömaterial")}
       <article class="detail-card">
         <div class="detail-hero"><div><div class="detail-kicker">${esc(material.label)} · ${esc(material.species)}</div><h2>${esc(material.type === "seed_harvest" ? material.sourceName : material.taxon)}</h2><div class="detail-code">${esc(material.code)}</div></div><div class="detail-actions"><button type="button" class="primary-action" data-sow-material="${esc(material.id)}">Så frön</button><button type="button" class="secondary-action" data-adjust-material="${esc(material.id)}">Justera frölager</button><p class="action-note">Varje ny sådd får nästa lediga B-kod inom detta frömaterial.</p></div></div>
         <div class="detail-body">
           <div class="material-stock" aria-label="Frölager">${esc(stock)}</div>
+          ${seedHarvestFacts}
           ${originSection}
           ${materialSecondaryDetails(material)}
           <section class="detail-section"><h3>Såbatcher</h3>${material.batches.length ? `<div class="batch-grid">${material.batches.map(batchCard).join("")}</div>` : emptyState("Inga såbatcher ännu.")}</section>
@@ -871,7 +947,7 @@
           ? "Groddantal och första grodddatum sparas på batchen. Fortsatt gemensam uppdragning är normalt; individualisera vid behov."
           : "Groddantal och första grodddatum sparas på batchen. Individualisera först när en planta behöver egen identitet."));
     return `<section class="detail-shell">
-      <button type="button" class="back-button" data-close-detail>← Till sådder</button>
+      ${detailNavigation("Till sådder")}
       <article class="detail-card">
         <div class="detail-hero"><div><div class="detail-kicker">${isLegacy ? "Legacy-såbatch" : "Såbatch"} · ${esc(batch.species)}</div><h2>${esc(batch.name)}</h2><div class="detail-code">${esc(batch.fullCode)}</div></div><div class="detail-actions">${action}<p class="action-note">${actionNote}</p></div></div>
         <div class="detail-body">
@@ -928,7 +1004,7 @@
       <button type="button" class="secondary-action" data-edit-seedling="${esc(seedling.id)}">Redigera</button>
     ` : "";
     return `<section class="detail-shell">
-      <button type="button" class="back-button" data-close-detail>← Till uppdragning</button>
+      ${detailNavigation("Till uppdragning")}
       <article class="detail-card ${seedling.adapter === false ? "plant-card" : ""}" data-category="Labbet" data-plant-id="${esc(seedling.internalId)}" data-plant-name="${esc(seedling.shortId)}">
         <div class="seedling-detail-hero">
           <div class="detail-gallery">${galleryHtml(seedling)}</div>
@@ -1046,8 +1122,8 @@
   function openNewMenu() {
     infoDialogContent.innerHTML = `<h2>+ Nytt i Labbet</h2><p>Välj var arbetsflödet ska börja.</p><div class="choice-grid">
       <button type="button" data-choice="crossing"><strong>Ny korsning</strong><small>Moder ♀ × pollen ♂ med pollineringsdatum</small></button>
-      <button type="button" data-choice="seed-lot"><strong>Nytt fröparti</strong><small>Externt frömaterial med taxon och källa</small></button>
-      <button type="button" data-choice="sowing"><strong>Ny sådd</strong><small>Utgå från en fröskörd eller ett fröparti</small></button>
+      <button type="button" data-choice="seed-lot"><strong>Registrera fröpåse</strong><small>Köpta, bytta eller mottagna frön med taxon, antal och källa</small></button>
+      <button type="button" data-choice="sowing"><strong>Ny sådd</strong><small>Utgå från en fröskörd eller fröpåse</small></button>
     </div>`;
     infoDialogContent.querySelectorAll("[data-choice]").forEach(button => button.addEventListener("click", () => {
       if (button.dataset.choice === "crossing") openCrossingRegistration();
@@ -1136,9 +1212,9 @@
   }
 
   function openSeedLotRegistration() {
-    showFormDialog(`<h2>Nytt fröparti</h2><p>Externt frömaterial hålls separat från egna korsningar och från den permanenta samlingen.</p><form class="lab-form">
+    showFormDialog(`<h2>Registrera fröpåse</h2><p>Köpta, bytta eller mottagna frön med taxon, antal och källa.</p><form class="lab-form">
       <label>Artgrupp<select name="species_group"><option>Stapelia</option><option>Hibiskus</option><option>Pelargon</option></select></label>
-      <label>Fröpartikod<input name="code" value="${esc(nextSeedLotCode())}" maxlength="24" required></label>
+      <label>Fröpåsekod<input name="code" value="${esc(nextSeedLotCode())}" maxlength="24" required></label>
       <label class="wide">Art/taxon<input name="taxon" required></label>
       <label class="wide">Inköpsnamn från säljaren<input name="purchase_name"></label>
       <label>Leverantör/källa<input name="supplier"></label>
@@ -1150,7 +1226,7 @@
       <label>Valuta<input name="currency" maxlength="3" placeholder="SEK"></label>
       <label class="wide">Korsningsinformation från säljaren<input name="source_cross" placeholder="Uppgift från källan – skapar ingen egen korsning"></label>
       <label class="wide">Anteckning<textarea name="notes" rows="3"></textarea></label>
-      <div class="dialog-actions">${closeDialogButton()}<button type="submit" class="primary-action">Spara fröparti</button></div>
+      <div class="dialog-actions">${closeDialogButton()}<button type="submit" class="primary-action">Spara fröpåse</button></div>
     </form>`, async data => {
       const original = clean(data.get("seeds_original"));
       const lotId = uniqueId("LABL");
@@ -1172,7 +1248,7 @@
 
   function openSowBatchRegistration(selectedMaterial = null) {
     const materialOptions = model.materials.map(row => `<option value="${esc(row.id)}"${selectedMaterial?.id === row.id ? " selected" : ""}>${esc(row.label)} ${esc(row.code)} · ${esc(row.taxon)} · ${row.remaining === null ? "antal okänt" : `${row.remaining} kvar`}</option>`).join("");
-    showFormDialog(`<h2>Ny sådd</h2><p>En såbatch måste ha en fröskörd, ett fröparti eller ett uttryckligt äldre/okänt ursprung.</p><form class="lab-form">
+    showFormDialog(`<h2>Ny sådd</h2><p>En såbatch måste ha en fröskörd, en fröpåse eller ett uttryckligt äldre/okänt ursprung.</p><form class="lab-form">
       <label class="wide">Ursprung<select name="source_id">${materialOptions}<option value="__legacy">Äldre/okänt ursprung…</option></select></label>
       <label data-legacy-field>Artgrupp vid äldre ursprung<select name="legacy_species"><option>Hibiskus</option><option>Pelargon</option><option>Stapelia</option></select></label>
       <label data-legacy-field>Taxon/arbetsnamn<input name="legacy_taxon"></label>
@@ -1341,6 +1417,7 @@
   speciesFilters.addEventListener("click", event => {
     const button = event.target.closest("[data-species]");
     if (!button) return;
+    seedBoxExpanded = false;
     updateRoute({art: button.dataset.species, batch: null, planta: null, korsning: null, material: null});
   });
 
@@ -1353,6 +1430,7 @@
     const material = event.target.closest("[data-open-material]");
     const group = event.target.closest("[data-open-group]");
     const portal = event.target.closest("[data-portal-view]");
+    const seedBoxToggle = event.target.closest("[data-seed-box-toggle]");
     const status = event.target.closest("[data-status]");
     const sowSection = event.target.closest("[data-sow-section]");
     const back = event.target.closest("[data-close-detail]");
@@ -1379,6 +1457,10 @@
       korsning: null,
       material: null
     });
+    else if (seedBoxToggle) {
+      seedBoxExpanded = !seedBoxExpanded;
+      render();
+    }
     else if (status) updateRoute({status: status.dataset.status});
     else if (sowSection) updateRoute({del: sowSection.dataset.sowSection, batch: null, planta: null, korsning: null, material: null});
     else if (back) updateRoute({batch: null, planta: null, korsning: null, material: null});
