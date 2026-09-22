@@ -368,6 +368,49 @@ button.origin-link { width: 100%; font: inherit; text-align: left; cursor: point
   .history-item { grid-template-columns: 78px 1fr; }
   .lab-form { grid-template-columns: 1fr; }
   .lab-form label.wide, .dialog-actions { grid-column: 1; }
+
+  /* Fröpåsens mobilvy: behåll innehållet, men minska luft mellan delarna. */
+  .material-detail-card .detail-actions { gap: 6px; }
+  .material-detail-card .material-secondary-action {
+    min-height: 38px;
+    padding: 7px 10px;
+    font-size: .84rem;
+  }
+  .material-detail-card .action-note {
+    margin-top: -1px;
+    font-size: .7rem;
+    line-height: 1.3;
+  }
+  .material-detail-card .detail-body {
+    gap: 14px;
+    padding-top: 14px;
+  }
+  .material-detail-card .material-stock {
+    font-size: 1.25rem;
+    line-height: 1.2;
+  }
+  .material-detail-card .material-reference-shell { gap: 7px; }
+  .material-detail-card .material-reference-image {
+    width: 100%;
+    height: 235px;
+  }
+  .material-detail-card .material-reference-image img {
+    height: 100%;
+    aspect-ratio: auto;
+    object-fit: cover;
+  }
+  .material-detail-card .material-origin-section { gap: 6px; }
+  .material-detail-card .material-origin-section > p { line-height: 1.25; }
+  .material-detail-card .origin-link { padding: 10px 12px; }
+  .material-detail-card details { padding-top: 8px; }
+  .material-detail-card summary { line-height: 1.2; }
+  .material-detail-card .material-batches-section .empty-state {
+    padding: 10px 12px;
+    border-radius: 12px;
+    box-shadow: none;
+    text-align: left;
+    font-size: .84rem;
+  }
 }
 
 @media (max-width: 390px) {

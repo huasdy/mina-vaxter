@@ -1068,19 +1068,19 @@
           </dl>`
       : "";
     const originSection = material.type === "seed_harvest"
-      ? `<section class="detail-section"><h3>Härkomst</h3><button type="button" class="origin-link" data-open-crossing="${esc(material.crossing.crossing_id)}">${originContent({materialId: material.id})}<b>→</b></button></section>`
-      : `<section class="detail-section"><h3>Härkomst</h3><p>${esc(material.sourceCross ? `${material.sourceName} · uppgiven korsning: ${material.sourceCross}` : material.sourceName)}</p></section>`;
+      ? `<section class="detail-section material-origin-section"><h3>Härkomst</h3><button type="button" class="origin-link" data-open-crossing="${esc(material.crossing.crossing_id)}">${originContent({materialId: material.id})}<b>→</b></button></section>`
+      : `<section class="detail-section material-origin-section"><h3>Härkomst</h3><p>${esc(material.sourceCross ? `${material.sourceName} · uppgiven korsning: ${material.sourceCross}` : material.sourceName)}</p></section>`;
     return `<section class="detail-shell">
       ${detailNavigation("Till frömaterial")}
-      <article class="detail-card">
-        <div class="detail-hero"><div><div class="detail-kicker">${esc(material.label)} · ${esc(material.species)}</div><h2>${esc(material.type === "seed_harvest" ? material.sourceName : material.taxon)}</h2><div class="detail-code">${esc(material.code)}</div></div><div class="detail-actions"><button type="button" class="primary-action" data-sow-material="${esc(material.id)}">Så frön</button>${material.type === "seed_lot" ? `<button type="button" class="secondary-action" data-edit-material-taxon="${esc(material.id)}">Redigera taxon</button>` : ""}<button type="button" class="secondary-action" data-adjust-material="${esc(material.id)}">Justera frölager</button><p class="action-note">Varje ny sådd får nästa lediga B-kod inom detta frömaterial.</p></div></div>
+      <article class="detail-card material-detail-card">
+        <div class="detail-hero"><div><div class="detail-kicker">${esc(material.label)} · ${esc(material.species)}</div><h2>${esc(material.type === "seed_harvest" ? material.sourceName : material.taxon)}</h2><div class="detail-code">${esc(material.code)}</div></div><div class="detail-actions"><button type="button" class="primary-action" data-sow-material="${esc(material.id)}">Så frön</button>${material.type === "seed_lot" ? `<button type="button" class="secondary-action material-secondary-action" data-edit-material-taxon="${esc(material.id)}">Redigera taxon</button>` : ""}<button type="button" class="secondary-action material-secondary-action" data-adjust-material="${esc(material.id)}">Justera frölager</button><p class="action-note">Varje ny sådd får nästa lediga B-kod inom detta frömaterial.</p></div></div>
         <div class="detail-body">
           <div class="material-stock" aria-label="Frölager">${esc(stock)}</div>
           ${seedHarvestFacts}
           ${materialReferenceDetailHtml(material)}
           ${originSection}
           ${materialSecondaryDetails(material)}
-          <section class="detail-section"><h3>Såbatcher</h3>${material.batches.length ? `<div class="batch-grid">${material.batches.map(batchCard).join("")}</div>` : emptyState("Inga såbatcher ännu.")}</section>
+          <section class="detail-section material-batches-section"><h3>Såbatcher</h3>${material.batches.length ? `<div class="batch-grid">${material.batches.map(batchCard).join("")}</div>` : emptyState("Inga såbatcher ännu.")}</section>
         </div>
       </article>
     </section>`;
