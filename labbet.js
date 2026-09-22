@@ -3,13 +3,14 @@
 
   const SCHEMA_VERSION = 4;
   const CACHE_KEY = "mina-vaxter-labbet-katalog-v1";
-  const VALID_VIEWS = new Set(["aktivt", "korsningar", "sadder", "uppdragning"]);
+  const VALID_VIEWS = new Set(["froer", "korsningar", "sadder", "uppdragning"]);
   const VALID_SPECIES = new Set(["Alla", "Hibiskus", "Pelargon", "Stapelia"]);
   const ACTIVE_SEEDLING_STATUSES = new Set(["Under uppdragning", "Redo för bedömning"]);
   const CONCLUDED_STATUSES = new Set(["I samlingen", "Gallrad", "Död", "Bortskänkt"]);
   const ACTIVE_CROSSING_STATUSES = new Set(["Pollinerad", "Frö utvecklas", "Frö skördat"]);
 
   const content = document.querySelector("#labContent");
+  const labPortal = document.querySelector("#labPortal");
   const speciesFilters = document.querySelector("#speciesFilters");
   const infoDialog = document.querySelector("#infoDialog");
   const infoDialogContent = document.querySelector("#infoDialogContent");
@@ -18,6 +19,7 @@
   let snapshot = null;
   let model = null;
   let pendingLabImages = [];
+  let pendingLabMaterialImages = [];
   let pendingImageUrls = [];
   let seedBoxExpanded = false;
 
@@ -28,17 +30,44 @@
     .replaceAll('"', "&quot;");
 
   const clean = value => String(value ?? "").trim();
+  const normalizeTaxon = value => clean(value)
+    .normalize("NFKC")
+    .replace(/\s+/g, " ")
+    .toLocaleLowerCase("sv-SE");
   const number = value => Number.parseInt(String(value || "0"), 10) || 0;
   const isoDate = value => /^\d{4}-\d{2}-\d{2}$/.test(clean(value)) ? clean(value) : "";
   const crossingName = (mother, father) => `${clean(mother) || "Okänd"} × ${clean(father) || "Okänd"}`;
 
-  function parentPairHtml(crossing, className = "") {
+  function plantPageHref(plantId, species) {
+    const page = species === "Hibiskus"
+      ? "hibiskusar.html"
+      : species === "Stapelia" ? "stapeliader.html" : "pelargoner.html";
+    return `${page}#${encodeURIComponent(clean(plantId))}`;
+  }
+
+  function parentRoleHtml(role, label, name, plantId, species, image, linkParents) {
+    const id = clean(plantId);
+    const imageHtml = image
+      ? `<img class="parent-role-image" src="${esc(image)}" alt="${esc(label)}: ${esc(name)}" loading="lazy" onerror="this.remove()">`
+      : "";
+    const nameHtml = linkParents && id
+      ? `<a class="parent-role-link" href="${esc(plantPageHref(id, species))}">${esc(name)}</a>`
+      : `<strong>${esc(name)}</strong>`;
+    return `<div class="parent-role${image ? " has-parent-image" : ""}">${imageHtml}<span class="parent-role-label">${role} ${esc(label)}</span>${nameHtml}</div>`;
+  }
+
+  function parentPairHtml(crossing, className = "", options = {}) {
     const mother = clean(crossing?.motherName) || clean(crossing?.mother_name) || "Okänd";
     const father = clean(crossing?.fatherName) || clean(crossing?.father_name) || "Okänd";
+    const species = clean(crossing?.species) || clean(crossing?.species_group);
+    const motherId = clean(crossing?.motherId) || clean(crossing?.mother_id);
+    const fatherId = clean(crossing?.fatherId) || clean(crossing?.father_id);
+    const linkParents = options.links === true;
+    const showImages = options.images === true;
     return `<div class="parent-pair${className ? ` ${className}` : ""}" aria-label="Föräldrar">
-      <div class="parent-role"><span class="parent-role-label">MODER</span><strong>${esc(mother)}</strong></div>
+      ${parentRoleHtml("♀", "Moder", mother, motherId, species, showImages ? clean(crossing?.motherImage) : "", linkParents)}
       <span class="parent-cross" aria-hidden="true">×</span>
-      <div class="parent-role"><span class="parent-role-label">POLLEN</span><strong>${esc(father)}</strong></div>
+      ${parentRoleHtml("♂", "Pollen", father, fatherId, species, showImages ? clean(crossing?.fatherImage) : "", linkParents)}
     </div>`;
   }
 
@@ -121,8 +150,13 @@
         const update = operation.material_update || {};
         const material = clean(update.source_type) === "seed_harvest" ? harvestsById.get(clean(update.source_id)) : lotsById.get(clean(update.source_id));
         if (material) {
-          material.seeds_remaining = clean(update.seeds_remaining);
+          if (Object.hasOwn(update, "seeds_remaining") && clean(update.seeds_remaining) !== "") material.seeds_remaining = clean(update.seeds_remaining);
           if (Object.hasOwn(update, "notes")) material.notes = clean(update.notes);
+          if (Object.hasOwn(update, "taxon")) material.taxon = clean(update.taxon);
+          if (Object.hasOwn(update, "reference_image")) {
+            material.reference_image = clean(update.reference_image);
+            material._reference_image_override = true;
+          }
         }
       } else if (operation.kind === "seedling") {
         const row = {...(operation.seedling || {})};
@@ -214,9 +248,14 @@
 
   function route() {
     const params = new URLSearchParams(window.location.search);
-    const view = VALID_VIEWS.has(params.get("vy")) ? params.get("vy") : "aktivt";
+    const requestedView = params.get("vy");
+    const view = requestedView === "aktivt"
+      ? "froer"
+      : VALID_VIEWS.has(requestedView) ? requestedView : "froer";
     const species = VALID_SPECIES.has(params.get("art")) ? params.get("art") : "Alla";
-    const status = ["Alla", "Under uppdragning", "Redo för bedömning"].includes(params.get("status")) ? params.get("status") : "Alla";
+    const status = ["Alla", "Under uppdragning", "Redo för bedömning"].includes(params.get("status"))
+      ? params.get("status")
+      : view === "uppdragning" ? "Under uppdragning" : "Alla";
     const sowSection = params.get("del") === "material" ? "material" : "batcher";
     return {
       view, species, status, sowSection,
@@ -243,6 +282,41 @@
 
   function photos(category) {
     return snapshot?.categories?.[category]?.photos || [];
+  }
+
+  function photoCategoryForSpecies(species) {
+    return species === "Stapelia" ? "Stapeliader" : species;
+  }
+
+  function resolvePlantReferenceImage(plantId, species) {
+    const category = photoCategoryForSpecies(species);
+    const plant = plants(category).find(row => clean(row.id) === clean(plantId));
+    if (clean(plant?.card_image)) return clean(plant.card_image);
+    const rows = photos(category)
+      .filter(row => clean(row.plant_id) === clean(plantId) && clean(row.file))
+      .sort((first, second) => clean(second.date).localeCompare(clean(first.date)) || clean(second.file).localeCompare(clean(first.file)));
+    return rows.find(row => clean(row.type) === "hel")?.file || rows[0]?.file || "";
+  }
+
+  function resolveTaxonReferenceImage(taxon, seedLots, excludedLotId = "") {
+    const taxonKey = normalizeTaxon(taxon);
+    if (!taxonKey) return null;
+    return (seedLots || [])
+      .filter(row => row.type === "seed_lot"
+        && clean(row.id) !== clean(excludedLotId)
+        && normalizeTaxon(row.taxon) === taxonKey
+        && clean(row.ownReferenceImage))
+      .sort((first, second) => clean(first.code).localeCompare(clean(second.code), "sv")
+        || clean(first.id).localeCompare(clean(second.id), "sv"))
+      .map(row => ({file: clean(row.ownReferenceImage), material: row}))[0] || null;
+  }
+
+  function resolveMaterialOriginImages(material) {
+    if (material?.type === "seed_harvest" && material.crossing) {
+      return [material.crossing.motherImage, material.crossing.fatherImage].filter(Boolean);
+    }
+    if (material?.type === "seed_lot" && material.referenceImage) return [material.referenceImage];
+    return [];
   }
 
   function buildModel() {
@@ -278,6 +352,8 @@
         species: crossing.category === "Hibiskus" ? "Hibiskus" : "Pelargon",
         motherName,
         fatherName,
+        motherImage: resolvePlantReferenceImage(crossing.mother_id, crossing.category === "Hibiskus" ? "Hibiskus" : "Pelargon"),
+        fatherImage: resolvePlantReferenceImage(crossing.father_id, crossing.category === "Hibiskus" ? "Hibiskus" : "Pelargon"),
         name: crossingName(motherName, fatherName),
         active: clean(crossing.status) !== "Avslutad",
         href: `korsningar.html#${encodeURIComponent(crossing.crossing_id)}`,
@@ -479,6 +555,8 @@
         motherName: clean(row.mother_name),
         fatherId: clean(row.father_id),
         fatherName: clean(row.father_name),
+        motherImage: resolvePlantReferenceImage(row.mother_id, clean(row.species_group)),
+        fatherImage: resolvePlantReferenceImage(row.father_id, clean(row.species_group)),
         name: crossingName(row.mother_name, row.father_name),
         pollinatedDate: clean(row.pollinated_date),
         status: clean(row.status) || "Pollinerad",
@@ -536,12 +614,38 @@
         price: clean(row.price),
         currency: clean(row.currency),
         sourceCross: clean(row.source_cross),
+        ownReferenceImage: row._reference_image_override
+          ? clean(row.reference_image)
+          : pendingLabMaterialImages.find(photo => clean(photo.materialId) === clean(row.seed_lot_id))?.file || clean(row.reference_image),
         notes: clean(row.notes),
         raw: row,
         batches: []
       };
       materials.push(material);
       materialById.set(material.id, material);
+    });
+    const seedLotMaterials = materials.filter(material => material.type === "seed_lot");
+    seedLotMaterials.forEach(material => {
+      const ownReferenceImage = clean(material.ownReferenceImage);
+      if (ownReferenceImage) {
+        material.referenceImage = ownReferenceImage;
+        material.referenceImageInherited = false;
+        material.referenceImageSource = null;
+        return;
+      }
+      const sharedReference = resolveTaxonReferenceImage(material.taxon, seedLotMaterials, material.id);
+      material.referenceImage = sharedReference?.file || "";
+      material.referenceImageInherited = Boolean(sharedReference);
+      material.referenceImageSource = sharedReference?.material || null;
+    });
+    const referenceUsage = new Map();
+    seedLotMaterials.forEach(material => {
+      const key = `${normalizeTaxon(material.taxon)}|${clean(material.referenceImage)}`;
+      if (clean(material.referenceImage)) referenceUsage.set(key, (referenceUsage.get(key) || 0) + 1);
+    });
+    seedLotMaterials.forEach(material => {
+      const key = `${normalizeTaxon(material.taxon)}|${clean(material.referenceImage)}`;
+      material.referenceImageUsageCount = referenceUsage.get(key) || 0;
     });
     lab.sowBatches.forEach(row => {
       const material = materialById.get(clean(row.source_id)) || null;
@@ -696,26 +800,32 @@
     return `<div class="empty-state">${esc(message)}</div>`;
   }
 
-  function labHomeLink() {
-    return '<a class="back-button lab-home-link" href="labbet.html">← Till Labbet</a>';
-  }
-
   function detailNavigation(label) {
-    return `<div class="detail-navigation">${labHomeLink()}<button type="button" class="back-button" data-close-detail>← ${esc(label)}</button></div>`;
+    return `<div class="detail-navigation"><button type="button" class="back-button" data-close-detail>← ${esc(label)}</button></div>`;
   }
 
   function section(title, body, count = "") {
     return `<section class="section-block"><div class="section-heading"><h2>${esc(title)}</h2>${count ? `<span class="section-count">${esc(count)}</span>` : ""}</div>${body}</section>`;
   }
 
+  function viewIntro(title, description, action = "", meta = "", titleId = "") {
+    return `<div class="view-intro"><div class="view-intro-copy"><h2${titleId ? ` id="${esc(titleId)}"` : ""}>${esc(title)}</h2><p>${esc(description)}</p></div>${meta ? `<span class="view-intro-meta">${esc(meta)}</span>` : ""}${action}</div>`;
+  }
+
+  function materialReferenceImagesHtml(material) {
+    const images = resolveMaterialOriginImages(material);
+    if (!images.length) return "";
+    const label = material.type === "seed_harvest" ? "Föräldrabild" : "Referensbild";
+    return `<span class="seed-box-images${images.length > 1 ? " seed-box-images-cross" : ""}" aria-label="${esc(label)}">${images.map((file, index) => `<img src="${esc(file)}" alt="${esc(material.type === "seed_harvest" ? (index === 0 ? "Moder" : "Pollen") : "Referensbild")}" loading="lazy" onerror="this.remove()">`).join("")}</span>`;
+  }
+
   function seedBoxCard(material) {
     const name = material.type === "seed_harvest" ? material.sourceName : material.taxon;
-    const source = material.type === "seed_harvest"
-      ? "Egen korsning"
-      : material.sourceName;
-    const detail = `${material.remaining} frön kvar${source ? ` · ${source}` : ""}`;
-    return `<button type="button" class="seed-box-card" data-open-material="${esc(material.id)}" aria-label="${esc(`${name}: ${detail}. Öppna fröpåse.`)}">
-      <span class="seed-box-copy"><strong>${esc(name)}</strong><span>${esc(detail)}</span></span>
+    const source = material.type === "seed_harvest" ? "Egen korsning" : material.sourceName;
+    const detail = `${material.code}${source ? ` · ${source}` : ""}`;
+    const remaining = material.remaining === null ? "Antal kvar ej registrerat" : `${material.remaining} frön kvar`;
+    return `<button type="button" class="seed-box-card" data-open-material="${esc(material.id)}" aria-label="${esc(`${name}: ${detail}. ${remaining}. Öppna frömaterial.`)}">
+      <span class="seed-box-card-inner"><span class="seed-box-copy"><strong>${esc(name)}</strong><span>${esc(detail)}</span><b>${esc(remaining)}</b></span>${materialReferenceImagesHtml(material)}</span>
     </button>`;
   }
 
@@ -730,26 +840,48 @@
     const toggle = rows.length > limit
       ? `<button type="button" class="text-link seed-box-toggle" data-seed-box-toggle>${seedBoxExpanded ? "Visa färre" : `Visa alla (${rows.length})`}</button>`
       : "";
-    return `<section class="seed-box-section" aria-labelledby="seedBoxTitle">
-      <div class="section-heading seed-box-heading"><div><h2 id="seedBoxTitle">Frölådan</h2><p>Fröpåsar med frön kvar och redo att så.</p></div><span class="section-count">${esc(summary)}</span></div>
+    return `<section class="lab-view" aria-labelledby="seedBoxTitle">
+      ${viewIntro("Fröer", "Fröpåsar med frön kvar och redo att så.", "", summary, "seedBoxTitle")}
       ${visibleRows.length ? `<div class="seed-box-grid">${visibleRows.map(seedBoxCard).join("")}</div>` : emptyState("Inga fröpartier med saldo kvar i valt artfilter.")}
       ${toggle}
     </section>`;
   }
 
-  function renderActive(species) {
+  function portalStats(species) {
     const activeCrossings = model.crossings.filter(row => row.adapter === false && row.active && !crossingIsExhausted(row) && matchesSpecies(row, species));
     const activeBatches = model.batches.filter(row => row.adapter === false && row.active && matchesSpecies(row, species));
     const labSeedlings = model.seedlings.filter(row => row.adapter === false && matchesSpecies(row, species));
     const activeSeedlings = labSeedlings.filter(row => row.status === "Under uppdragning");
     const ready = labSeedlings.filter(row => row.status === "Redo för bedömning");
-    const portalCard = (label, count, view, status = "") => `<button type="button" class="stat-card${count === 0 ? " is-empty" : ""}" data-portal-view="${view}"${status ? ` data-portal-status="${esc(status)}"` : ""} aria-label="${esc(`${label}: ${count}. Öppna.`)}"><strong>${count}</strong><span>${esc(label)}</span></button>`;
-    return `<section class="stats-grid" aria-label="Labbetportal">
-      ${portalCard("Korsningar", activeCrossings.length, "korsningar")}
-      ${portalCard("Sådder", activeBatches.length, "sadder")}
-      ${portalCard("Under uppdragning", activeSeedlings.length, "uppdragning", "Under uppdragning")}
-      ${portalCard("Redo för bedömning", ready.length, "uppdragning", "Redo för bedömning")}
-    </section>${renderSeedBox(species)}`;
+    const seedRows = model.materials.filter(row => matchesSpecies(row, species) && row.remaining !== null && row.remaining > 0);
+    return {
+      froer: {count: seedRows.length, secondary: `${seedRows.reduce((sum, row) => sum + row.remaining, 0)} frön kvar`},
+      korsningar: {count: activeCrossings.length, secondary: "aktiva"},
+      sadder: {count: activeBatches.length, secondary: "aktiva"},
+      uppdragning: {count: activeSeedlings.length, secondary: "aktiva"},
+      redo: {count: ready.length, secondary: "urval"}
+    };
+  }
+
+  function syncPortal(current) {
+    const stats = portalStats(current.species);
+    labPortal.querySelectorAll("[data-lab-view]").forEach(button => {
+      const key = button.dataset.portalStatus === "Redo för bedömning" ? "redo" : button.dataset.labView;
+      const statusMatches = !button.dataset.portalStatus
+        || button.dataset.portalStatus === current.status
+        || current.status === "Alla" && button.dataset.portalStatus === "Under uppdragning";
+      const active = button.dataset.labView === current.view && statusMatches;
+      const stat = stats[key];
+      const label = button.querySelector("span")?.textContent || "Labbetvy";
+      const secondary = button.querySelector(`[data-portal-secondary="${key}"]`);
+      button.classList.toggle("is-active", active);
+      button.classList.toggle("is-empty", stat.count === 0);
+      button.setAttribute("aria-pressed", String(active));
+      button.setAttribute("aria-label", `${label}: ${stat.count}. Öppna.`);
+      const count = button.querySelector(`[data-portal-count="${key}"]`);
+      if (count) count.textContent = String(stat.count);
+      if (secondary) secondary.textContent = stat.secondary;
+    });
   }
 
   function renderCrossings(species) {
@@ -770,7 +902,7 @@
     const endedSection = endedRows.length
       ? `<details class="archive-section"><summary>Avslutade korsningar <span>${endedRows.length}</span></summary>${crossingCards(endedRows)}</details>`
       : "";
-    return `${labHomeLink()}<div class="view-intro"><div><h2>Korsningar</h2><p>Nya korsningar skapas och följs direkt i Labbet. Äldre poster ligger kvar oförändrade.</p></div><button type="button" class="primary-action" data-new-crossing>Ny korsning</button></div>${activeRows.length ? crossingCards(activeRows) : emptyState("Inga aktiva korsningar i valt artfilter.")}${endedSection}`;
+    return `<section class="lab-view">${viewIntro("Korsningar", "Aktiva korsningar och deras fröskördar.", '<button type="button" class="primary-action" data-new-crossing>Ny korsning</button>')}${activeRows.length ? crossingCards(activeRows) : emptyState("Inga aktiva korsningar i valt artfilter.")}${endedSection}</section>`;
   }
 
   function materialCard(material) {
@@ -786,9 +918,6 @@
   }
 
   function renderBatches(species, sowSection) {
-    const sectionLink = sowSection === "material"
-      ? '<button type="button" class="text-link secondary-view-link" data-sow-section="batcher">← Sådder</button>'
-      : '<button type="button" class="text-link secondary-view-link" data-sow-section="material">Frömaterial →</button>';
     if (sowSection === "material") {
       const rows = model.materials.filter(row => matchesSpecies(row, species));
       const materialCards = rowsToRender => rowsToRender.length ? `<div class="material-grid">${rowsToRender.map(materialCard).join("")}</div>` : emptyState("Inga fröskördar eller fröpåsar i denna sektion i valt artfilter.");
@@ -797,11 +926,11 @@
       const consumedSection = consumedRows.length
         ? `<details class="archive-section"><summary>Förbrukade <span>${consumedRows.length}</span></summary>${materialCards(consumedRows)}</details>`
         : "";
-      return `${labHomeLink()}<div class="view-intro"><div><h2>Frömaterial</h2><div class="view-subnav">${sectionLink}</div><p>Fröskördar och externa fröpåsar hålls åtskilda och kan ge flera såbatcher.</p></div></div>${activeRows.length ? materialCards(activeRows) : emptyState("Inget aktivt frömaterial i valt artfilter.")}${consumedSection}`;
+      return `<section class="lab-view">${viewIntro("Frömaterial", "Fröskördar och externa fröpåsar hålls åtskilda och kan ge flera såbatcher.")}${activeRows.length ? materialCards(activeRows) : emptyState("Inget aktivt frömaterial i valt artfilter.")}${consumedSection}</section>`;
     }
     const rows = model.batches.filter(row => matchesSpecies(row, species));
     const cards = rows.length ? `<div class="batch-grid">${rows.map(batchCard).join("")}</div>` : emptyState("Inga såbatcher i valt artfilter.");
-    return `${labHomeLink()}<div class="view-intro"><div><h2>Sådder</h2><div class="view-subnav">${sectionLink}</div></div></div>${cards}`;
+    return `<section class="lab-view">${viewIntro("Sådder", "Såbatcher och deras groddresultat.")}${cards}</section>`;
   }
 
   function seedlingAge(seedling) {
@@ -824,8 +953,12 @@
 
   function renderSeedlings(species, status) {
     const rows = model.seedlings.filter(row => matchesSpecies(row, species) && ACTIVE_SEEDLING_STATUSES.has(row.status) && (status === "Alla" || row.status === status));
-    const filters = `<div class="status-filter-wrap"><div><h2>Uppdragning</h2><p>Individuella fröplantor visas visuellt; avslutade plantor är dolda från den aktiva arbetsvyn.</p></div><div class="status-filters" id="statusFilters" role="group" aria-label="Statusfilter">${["Alla", "Under uppdragning", "Redo för bedömning"].map(value => `<button type="button" data-status="${esc(value)}" class="${status === value ? "active" : ""}" aria-pressed="${status === value}">${esc(value)}</button>`).join("")}</div></div>`;
-    return `${labHomeLink()}${filters}${rows.length ? `<div class="seedling-grid">${rows.map(seedlingCard).join("")}</div>` : emptyState("Inga aktiva fröplantor matchar filtren.")}`;
+    const readyView = status === "Redo för bedömning";
+    const title = readyView ? "Redo för bedömning" : "Under uppdragning";
+    const description = readyView
+      ? "Plantor som nått urvalsstadiet."
+      : "Grodda plantor som ännu inte är redo för urval.";
+    return `<section class="lab-view">${viewIntro(title, description)}${rows.length ? `<div class="seedling-grid">${rows.map(seedlingCard).join("")}</div>` : emptyState("Inga aktiva fröplantor matchar filtren.")}</section>`;
   }
 
   function historyHtml(rows) {
@@ -840,7 +973,7 @@
         <div class="detail-hero"><div><div class="detail-kicker">Egen korsning · ${esc(crossing.species)}</div><h2>${esc(crossing.name)}</h2><div class="detail-code">Pollinerad ${esc(displayDate(crossing.pollinatedDate, true))}</div></div><div class="detail-actions"><button type="button" class="primary-action" data-register-harvest="${esc(crossing.crossing_id)}">Registrera fröskörd</button><p class="action-note">En korsning kan ge flera separata fröskördar.</p></div></div>
         <div class="detail-body">
           <dl class="fact-grid"><div class="fact"><dt>Status</dt><dd>${esc(crossing.status)}</dd></div><div class="fact"><dt>Pollineringsdatum</dt><dd>${esc(displayDate(crossing.pollinatedDate, true))}</dd></div><div class="fact"><dt>Fröskördar</dt><dd>${crossing.harvests.length}</dd></div><div class="fact"><dt>Såbatcher</dt><dd>${crossing.harvests.reduce((sum, row) => sum + row.batches.length, 0)}</dd></div></dl>
-          <section class="detail-section"><h3>Föräldrar</h3>${parentPairHtml(crossing)}</section>
+          <section class="detail-section"><h3>Föräldrar</h3>${parentPairHtml(crossing, "detail-parent-pair", {links: true, images: true})}</section>
           <section class="detail-section"><h3>Anteckningar</h3><p>${esc(crossing.note || "Ingen anteckning ännu.")}</p></section>
           <section class="detail-section"><h3>Fröskördar</h3>${crossing.harvests.length ? `<div class="material-grid">${crossing.harvests.map(materialCard).join("")}</div>` : emptyState("Ingen fröskörd registrerad ännu.")}</section>
         </div>
@@ -892,6 +1025,30 @@
     return rows ? `<details class="material-secondary-details"><summary>Inköpsdetaljer</summary>${rows}</details>` : "";
   }
 
+  function materialReferenceDetailHtml(material) {
+    if (material.type === "seed_harvest") {
+      const images = resolveMaterialOriginImages(material);
+      return images.length
+        ? `<section class="detail-section"><h3>Föräldrabilder</h3><div class="material-origin-images">${images.map((file, index) => `<img src="${esc(file)}" alt="${index === 0 ? "Moder" : "Pollen"}" loading="lazy" onerror="this.remove()">`).join("")}</div></section>`
+        : "";
+    }
+    if (!material.referenceImage) {
+      return `<section class="detail-section"><h3>Referensbild</h3><button type="button" class="material-reference-empty" data-material-image-action="add" data-material-id="${esc(material.id)}"><span class="material-reference-icon">${typeof cameraLineIcon === "function" ? cameraLineIcon() : "＋"}</span><span>Lägg till referensbild</span></button></section>`;
+    }
+    const source = material.referenceImageSource;
+    const sourceLabel = source ? [clean(source.code), clean(source.sourceName)].filter(Boolean).join(" · ") : "";
+    const sharingNote = material.referenceImageUsageCount > 1
+      ? `Bilden visas för ${material.referenceImageUsageCount} fröpartier med samma taxon.`
+      : "";
+    const inheritedNote = material.referenceImageInherited
+      ? `Taxonbild från ${sourceLabel || "ett annat fröparti"}. ${sharingNote || "Bilden delas av fröpartier med samma taxon."}`
+      : sharingNote;
+    const removeAction = material.referenceImageInherited
+      ? ""
+      : `<button type="button" class="secondary-action danger-action" data-material-image-action="remove" data-material-id="${esc(material.id)}">Ta bort bild</button>`;
+    return `<section class="detail-section"><h3>Referensbild</h3><div class="material-reference-shell" data-material-reference-shell><button type="button" class="material-reference-image" data-material-image-action="menu" data-material-id="${esc(material.id)}" aria-label="Öppna åtgärder för referensbild"><img src="${esc(material.referenceImage)}" alt="Referensbild för ${esc(material.taxon)}" onerror="this.remove()"></button><div class="material-reference-menu" data-material-image-menu hidden><button type="button" class="secondary-action" data-material-image-action="replace" data-material-id="${esc(material.id)}">Byt bild</button>${removeAction}</div>${inheritedNote ? `<p class="material-reference-note">${esc(inheritedNote)}</p>` : ""}</div></section>`;
+  }
+
   function renderMaterialDetail(material) {
     const stock = material.remaining === null
       ? "Frön kvar ej registrerat"
@@ -916,10 +1073,11 @@
     return `<section class="detail-shell">
       ${detailNavigation("Till frömaterial")}
       <article class="detail-card">
-        <div class="detail-hero"><div><div class="detail-kicker">${esc(material.label)} · ${esc(material.species)}</div><h2>${esc(material.type === "seed_harvest" ? material.sourceName : material.taxon)}</h2><div class="detail-code">${esc(material.code)}</div></div><div class="detail-actions"><button type="button" class="primary-action" data-sow-material="${esc(material.id)}">Så frön</button><button type="button" class="secondary-action" data-adjust-material="${esc(material.id)}">Justera frölager</button><p class="action-note">Varje ny sådd får nästa lediga B-kod inom detta frömaterial.</p></div></div>
+        <div class="detail-hero"><div><div class="detail-kicker">${esc(material.label)} · ${esc(material.species)}</div><h2>${esc(material.type === "seed_harvest" ? material.sourceName : material.taxon)}</h2><div class="detail-code">${esc(material.code)}</div></div><div class="detail-actions"><button type="button" class="primary-action" data-sow-material="${esc(material.id)}">Så frön</button>${material.type === "seed_lot" ? `<button type="button" class="secondary-action" data-edit-material-taxon="${esc(material.id)}">Redigera taxon</button>` : ""}<button type="button" class="secondary-action" data-adjust-material="${esc(material.id)}">Justera frölager</button><p class="action-note">Varje ny sådd får nästa lediga B-kod inom detta frömaterial.</p></div></div>
         <div class="detail-body">
           <div class="material-stock" aria-label="Frölager">${esc(stock)}</div>
           ${seedHarvestFacts}
+          ${materialReferenceDetailHtml(material)}
           ${originSection}
           ${materialSecondaryDetails(material)}
           <section class="detail-section"><h3>Såbatcher</h3>${material.batches.length ? `<div class="batch-grid">${material.batches.map(batchCard).join("")}</div>` : emptyState("Inga såbatcher ännu.")}</section>
@@ -1054,6 +1212,7 @@
     if (!model) return;
     const current = route();
     syncControls(current);
+    syncPortal(current);
     if (current.crossing) {
       const crossing = model.crossingById.get(current.crossing);
       content.innerHTML = crossing?.adapter === false ? renderCrossingDetail(crossing) : emptyState("Korsningen kunde inte hittas.");
@@ -1077,7 +1236,7 @@
     if (current.view === "korsningar") content.innerHTML = renderCrossings(current.species);
     else if (current.view === "sadder") content.innerHTML = renderBatches(current.species, current.sowSection);
     else if (current.view === "uppdragning") content.innerHTML = renderSeedlings(current.species, current.status);
-    else content.innerHTML = renderActive(current.species);
+    else content.innerHTML = renderSeedBox(current.species);
   }
 
   function closeInfoDialog() {
@@ -1235,7 +1394,7 @@
         purchase_name: clean(data.get("purchase_name")), code: clean(data.get("code")), supplier: clean(data.get("supplier")), seller: clean(data.get("seller")), acquired_date: isoDate(data.get("acquired_date")),
         seeds_original: original, seeds_remaining: clean(data.get("seeds_remaining")) || original,
         price: clean(data.get("price")), currency: clean(data.get("currency")).toUpperCase(),
-        source_cross: clean(data.get("source_cross")), notes: clean(data.get("notes")), created_at: new Date().toISOString()
+        source_cross: clean(data.get("source_cross")), notes: clean(data.get("notes")), created_at: new Date().toISOString(), reference_image: ""
       });
       await refreshModel();
       updateRoute({vy: "sadder", del: "material", material: lotId, korsning: null});
@@ -1301,6 +1460,24 @@
       <div class="dialog-actions">${closeDialogButton()}<button type="submit" class="primary-action">Spara saldo</button></div>
     </form>`, async data => {
       queueLabChange("material_update", {source_type: material.type, source_id: material.id, seeds_remaining: clean(data.get("seeds_remaining")), notes: clean(data.get("notes")), updated_at: new Date().toISOString()});
+      await refreshModel();
+      updateRoute({material: material.id});
+    });
+  }
+
+  function openMaterialTaxonEdit(material) {
+    showFormDialog(`<h2>Redigera taxon</h2><p>${esc(material.label)} ${esc(material.code)} · endast taxonnamnet ändras.</p><form class="lab-form">
+      <label class="wide">Taxon<input name="taxon" value="${esc(material.taxon)}" maxlength="200" required></label>
+      <div class="dialog-actions">${closeDialogButton()}<button type="submit" class="primary-action">Spara taxon</button></div>
+    </form>`, async data => {
+      const taxon = clean(data.get("taxon"));
+      if (!taxon) throw new Error("Taxon måste anges.");
+      queueLabChange("material_update", {
+        source_type: material.type,
+        source_id: material.id,
+        taxon,
+        updated_at: new Date().toISOString()
+      });
       await refreshModel();
       updateRoute({material: material.id});
     });
@@ -1421,6 +1598,22 @@
     updateRoute({art: button.dataset.species, batch: null, planta: null, korsning: null, material: null});
   });
 
+  labPortal.addEventListener("click", event => {
+    const button = event.target.closest("[data-lab-view]");
+    if (!button) return;
+    seedBoxExpanded = false;
+    const view = button.dataset.labView;
+    updateRoute({
+      vy: view,
+      del: view === "sadder" ? "batcher" : null,
+      status: view === "uppdragning" ? (button.dataset.portalStatus || "Alla") : null,
+      batch: null,
+      planta: null,
+      korsning: null,
+      material: null
+    });
+  });
+
   newLabItem.addEventListener("click", openNewMenu);
 
   content.addEventListener("click", event => {
@@ -1429,40 +1622,28 @@
     const crossing = event.target.closest("[data-open-crossing]");
     const material = event.target.closest("[data-open-material]");
     const group = event.target.closest("[data-open-group]");
-    const portal = event.target.closest("[data-portal-view]");
     const seedBoxToggle = event.target.closest("[data-seed-box-toggle]");
-    const status = event.target.closest("[data-status]");
-    const sowSection = event.target.closest("[data-sow-section]");
     const back = event.target.closest("[data-close-detail]");
     const newCrossing = event.target.closest("[data-new-crossing]");
     const registerHarvest = event.target.closest("[data-register-harvest]");
     const sowMaterial = event.target.closest("[data-sow-material]");
+    const editMaterialTaxon = event.target.closest("[data-edit-material-taxon]");
     const adjustMaterial = event.target.closest("[data-adjust-material]");
     const editBatch = event.target.closest("[data-edit-batch]");
     const registerSeedling = event.target.closest("[data-register-seedling]");
     const addMilestone = event.target.closest("[data-add-seedling-milestone]");
     const editSeedling = event.target.closest("[data-edit-seedling]");
     const galleryPhoto = event.target.closest("[data-gallery-photo]");
+    const materialImageAction = event.target.closest("[data-material-image-action]");
     if (batch) updateRoute({vy: "sadder", del: "batcher", batch: batch.dataset.openBatch, planta: null, korsning: null, material: null});
     else if (seedling) updateRoute({vy: "uppdragning", planta: seedling.dataset.openSeedling, batch: null, korsning: null, material: null});
     else if (crossing) updateRoute({vy: "korsningar", korsning: crossing.dataset.openCrossing, batch: null, planta: null, material: null});
-    else if (material) updateRoute({vy: "sadder", del: "material", material: material.dataset.openMaterial, batch: null, planta: null, korsning: null});
+    else if (material) updateRoute({vy: material.classList.contains("seed-box-card") ? "froer" : "sadder", del: "material", material: material.dataset.openMaterial, batch: null, planta: null, korsning: null});
     else if (group) updateRoute({vy: "uppdragning", art: group.dataset.openGroup, status: "Alla", batch: null, planta: null});
-    else if (portal) updateRoute({
-      vy: portal.dataset.portalView,
-      del: portal.dataset.portalView === "sadder" ? "batcher" : null,
-      status: portal.dataset.portalView === "uppdragning" ? portal.dataset.portalStatus : null,
-      batch: null,
-      planta: null,
-      korsning: null,
-      material: null
-    });
     else if (seedBoxToggle) {
       seedBoxExpanded = !seedBoxExpanded;
       render();
     }
-    else if (status) updateRoute({status: status.dataset.status});
-    else if (sowSection) updateRoute({del: sowSection.dataset.sowSection, batch: null, planta: null, korsning: null, material: null});
     else if (back) updateRoute({batch: null, planta: null, korsning: null, material: null});
     else if (newCrossing) openCrossingRegistration();
     else if (registerHarvest) {
@@ -1472,6 +1653,10 @@
     else if (sowMaterial) {
       const selectedMaterial = model.materialById.get(sowMaterial.dataset.sowMaterial);
       if (selectedMaterial) openSowBatchRegistration(selectedMaterial);
+    }
+    else if (editMaterialTaxon) {
+      const selectedMaterial = model.materialById.get(editMaterialTaxon.dataset.editMaterialTaxon);
+      if (selectedMaterial?.type === "seed_lot") openMaterialTaxonEdit(selectedMaterial);
     }
     else if (adjustMaterial) {
       const selectedMaterial = model.materialById.get(adjustMaterial.dataset.adjustMaterial);
@@ -1492,6 +1677,37 @@
     else if (editSeedling) {
       const selectedSeedling = model.seedlingById.get(editSeedling.dataset.editSeedling);
       if (selectedSeedling?.adapter === false) openSeedlingEdit(selectedSeedling);
+    }
+    else if (materialImageAction) {
+      const selectedMaterial = model.materialById.get(materialImageAction.dataset.materialId);
+      if (!selectedMaterial || selectedMaterial.type !== "seed_lot") return;
+      const action = materialImageAction.dataset.materialImageAction;
+      if (action === "menu") {
+        const menu = materialImageAction.closest("[data-material-reference-shell]")?.querySelector("[data-material-image-menu]");
+        if (menu) menu.hidden = !menu.hidden;
+      } else if (action === "add" || action === "replace") {
+        if (typeof window.openLabMaterialReferenceImport === "function") {
+          window.openLabMaterialReferenceImport({id: selectedMaterial.id, name: selectedMaterial.taxon});
+        }
+      } else if (action === "remove") {
+        if (selectedMaterial.referenceImageInherited) return;
+        if (selectedMaterial.referenceImageUsageCount > 1
+          && !window.confirm(`Referensbilden visas för ${selectedMaterial.referenceImageUsageCount} fröpartier med samma taxon. Ta bort taxonbilden från ${selectedMaterial.code || selectedMaterial.taxon}?`)) return;
+        const clearPending = typeof getImageImportItems === "function" && typeof deleteImageImportItem === "function"
+          ? getImageImportItems().then(items => Promise.all(items
+            .filter(item => clean(item.category) === "Labbet" && clean(item.type) === "referens" && clean(item.plantId) === selectedMaterial.id)
+            .map(item => deleteImageImportItem(item.id))))
+          : Promise.resolve();
+        clearPending.then(() => {
+          queueLabChange("material_update", {
+            source_type: selectedMaterial.type,
+            source_id: selectedMaterial.id,
+            reference_image: "",
+            updated_at: new Date().toISOString()
+          });
+          return refreshModel();
+        }).then(() => updateRoute({material: selectedMaterial.id}));
+      }
     }
     else if (galleryPhoto) {
       const image = document.querySelector("#seedlingMainPhoto");
@@ -1529,14 +1745,16 @@
     pendingImageUrls.forEach(url => URL.revokeObjectURL(url));
     pendingImageUrls = [];
     pendingLabImages = [];
+    pendingLabMaterialImages = [];
     if (typeof getImageImportItems === "function" && typeof imageImportBlob === "function") {
       const queued = await getImageImportItems().catch(() => []);
-      pendingLabImages = queued.filter(item => clean(item.category) === "Labbet").map(item => {
+      const localImage = item => {
         const file = URL.createObjectURL(imageImportBlob(item));
         pendingImageUrls.push(file);
         return {
           photo_id: clean(item.id),
           seedling_id: clean(item.plantId),
+          materialId: clean(item.plantId),
           date: clean(item.date),
           type: clean(item.type),
           file,
@@ -1544,7 +1762,9 @@
           created_at: clean(item.createdAt),
           local: true
         };
-      });
+      };
+      pendingLabImages = queued.filter(item => clean(item.category) === "Labbet" && clean(item.type) !== "referens").map(localImage);
+      pendingLabMaterialImages = queued.filter(item => clean(item.category) === "Labbet" && clean(item.type) === "referens").map(localImage);
     }
     model = buildModel();
     render();

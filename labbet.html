@@ -8,7 +8,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <link rel="stylesheet" href="labbet.css?v=20260919-seed-bag-flow-2">
+  <link rel="stylesheet" href="labbet.css?v=20260920-labbet-reference-1">
 </head>
 <body>
   <header class="page-header">
@@ -31,16 +31,33 @@
     <section class="lab-controls" aria-label="Filtrera Labbet">
       <div class="control-row">
         <div class="filter-heading">
-          <span class="control-label">Art</span>
+          <div class="pill-group" id="speciesFilters" role="group" aria-label="Artfilter">
+            <button type="button" data-species="Alla" class="active" aria-pressed="true">Alla</button>
+            <button type="button" data-species="Hibiskus" aria-pressed="false">Hibiskus</button>
+            <button type="button" data-species="Pelargon" aria-pressed="false">Pelargon</button>
+            <button type="button" data-species="Stapelia" aria-pressed="false">Stapelia</button>
+          </div>
           <button type="button" class="primary-action" id="newLabItem">+ Nytt</button>
         </div>
-        <div class="pill-group" id="speciesFilters" role="group" aria-label="Artfilter">
-          <button type="button" data-species="Alla" class="active" aria-pressed="true">Alla</button>
-          <button type="button" data-species="Hibiskus" aria-pressed="false">Hibiskus</button>
-          <button type="button" data-species="Pelargon" aria-pressed="false">Pelargon</button>
-          <button type="button" data-species="Stapelia" aria-pressed="false">Stapelia</button>
-        </div>
       </div>
+    </section>
+
+    <section id="labPortal" class="stats-grid lab-portal" aria-label="Labbet huvudnavigation">
+      <button type="button" class="stat-card is-active" data-lab-view="froer" aria-pressed="true">
+        <strong data-portal-count="froer">—</strong><span>Fröer</span><small data-portal-secondary="froer">Fröpåsar med saldo</small>
+      </button>
+      <button type="button" class="stat-card" data-lab-view="korsningar" aria-pressed="false">
+        <strong data-portal-count="korsningar">—</strong><span>Korsningar</span><small data-portal-secondary="korsningar"></small>
+      </button>
+      <button type="button" class="stat-card" data-lab-view="sadder" aria-pressed="false">
+        <strong data-portal-count="sadder">—</strong><span>Sådder</span><small data-portal-secondary="sadder"></small>
+      </button>
+      <button type="button" class="stat-card" data-lab-view="uppdragning" data-portal-status="Under uppdragning" aria-pressed="false">
+        <strong data-portal-count="uppdragning">—</strong><span>Under uppdragning</span><small data-portal-secondary="uppdragning"></small>
+      </button>
+      <button type="button" class="stat-card" data-lab-view="uppdragning" data-portal-status="Redo för bedömning" aria-pressed="false">
+        <strong data-portal-count="redo">—</strong><span>Redo för bedömning</span><small data-portal-secondary="redo"></small>
+      </button>
     </section>
 
     <div id="labContent" class="lab-content" aria-live="polite">
@@ -55,7 +72,7 @@
     </div>
   </dialog>
 
-  <script src="common.js?v=b3f9c1a850d7"></script>
-  <script src="labbet.js?v=20260919-seed-bag-flow-3"></script>
+  <script src="common.js?v=539799026573"></script>
+  <script src="labbet.js?v=20260920-labbet-reference-2"></script>
 </body>
 </html>

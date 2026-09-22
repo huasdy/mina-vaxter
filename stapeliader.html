@@ -160,7 +160,7 @@
     </div>
     <section class="grid stapeliad-grid" id="grid"></section>
   </main>
-  <script src="common.js?v=b3f9c1a850d7"></script>
+  <script src="common.js?v=539799026573"></script>
   <script>
       const PUBLIC_CATALOG_SCHEMA_VERSION = 4;
     const grid = document.querySelector("#grid");
@@ -481,7 +481,7 @@
       }));
       const searchable = [...Object.values(plant).filter(value => typeof value === "string"), ...(plant.seed_lots || []).flatMap(lot => Object.values(lot))].join(" ").toLowerCase();
       return `
-        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-category="Stapeliader" data-status="${escapeAttr(visibleStatus || "")}" data-plant-id="${escapeAttr(plant.id)}" data-plant-name="${escapeAttr(plant.full_botanical_name || plant.short_name)}" data-plant-identity="${escapeAttr(plant.full_botanical_name)}" data-card-image="${escapeAttr(plant.card_image)}" data-card-crop-x="${escapeAttr(plant.card_crop_x)}" data-card-crop-y="${escapeAttr(plant.card_crop_y)}" data-card-image-updated-at="${escapeAttr(plant.card_image_updated_at)}" data-cuttings-available="${escapeAttr(plant.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(plant.cuttings_updated_at)}" data-page="stapeliader.html" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(plant.logs || []))}">
+        <article class="plant-card" id="${escapeAttr(plant.id)}" data-search="${escapeAttr(searchable)}" data-category="Stapeliader" data-status="${escapeAttr(visibleStatus || "")}" data-plant-id="${escapeAttr(plant.id)}" data-plant-name="${escapeAttr(plant.full_botanical_name || plant.short_name)}" data-plant-identity="${escapeAttr(plant.full_botanical_name)}" data-card-image="${escapeAttr(plant.card_image)}" data-card-crop-x="${escapeAttr(plant.card_crop_x)}" data-card-crop-y="${escapeAttr(plant.card_crop_y)}" data-card-image-updated-at="${escapeAttr(plant.card_image_updated_at)}" data-cuttings-available="${escapeAttr(plant.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(plant.cuttings_updated_at)}" data-page="stapeliader.html" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(plant.logs || []))}">
           <div class="image-wrap">
             ${active.file ? `<img class="main-photo" src="${escapeAttr(active.file)}" alt="${escapeAttr(plant.full_botanical_name)}" data-caption="${escapeAttr(`${plant.full_botanical_name} · ${caption}`)}" loading="lazy">` : '<div class="image-empty">Bild saknas</div>'}
             ${caption ? `<div class="date-ribbon">${escapeText(caption)}</div>` : ""}
@@ -507,7 +507,7 @@
       const gallery = (plant.photos || []).map(photo => ({
         file: photo.file, title: plant.full_botanical_name, caption: photo.label || photo.date || "", alt: plant.full_botanical_name
       }));
-      return `<article class="plant-card stapeliad-gallery-item" data-category="Stapeliader" data-plant-id="${escapeAttr(plant.id)}" data-plant-name="${escapeAttr(plant.full_botanical_name || plant.short_name)}" data-plant-identity="${escapeAttr(plant.full_botanical_name)}" data-card-image="${escapeAttr(plant.card_image)}" data-card-crop-x="${escapeAttr(plant.card_crop_x)}" data-card-crop-y="${escapeAttr(plant.card_crop_y)}" data-card-image-updated-at="${escapeAttr(plant.card_image_updated_at)}" data-cuttings-available="${escapeAttr(plant.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(plant.cuttings_updated_at)}" data-page="stapeliader.html" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(plant.logs || []))}">
+      return `<article class="plant-card stapeliad-gallery-item" id="${escapeAttr(plant.id)}" data-category="Stapeliader" data-plant-id="${escapeAttr(plant.id)}" data-plant-name="${escapeAttr(plant.full_botanical_name || plant.short_name)}" data-plant-identity="${escapeAttr(plant.full_botanical_name)}" data-card-image="${escapeAttr(plant.card_image)}" data-card-crop-x="${escapeAttr(plant.card_crop_x)}" data-card-crop-y="${escapeAttr(plant.card_crop_y)}" data-card-image-updated-at="${escapeAttr(plant.card_image_updated_at)}" data-cuttings-available="${escapeAttr(plant.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(plant.cuttings_updated_at)}" data-page="stapeliader.html" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(plant.logs || []))}">
         <div class="stapeliad-gallery-image">${active.file ? `<img class="main-photo" src="${escapeAttr(active.file)}" alt="${escapeAttr(plant.full_botanical_name)}" loading="lazy">` : '<div class="image-empty">Bild saknas</div>'}</div>
         <h2>${escapeText(plant.short_name || plant.full_botanical_name || plant.id)}</h2>
       </article>`;

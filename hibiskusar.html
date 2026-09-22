@@ -209,7 +209,7 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script src="common.js?v=b3f9c1a850d7"></script>
+  <script src="common.js?v=539799026573"></script>
   <script src="hibiskus-george-import.js?v=20260814v1"></script>
   <script>
     function startHibiscusPage(snapshot) {
@@ -458,7 +458,7 @@
       ].join(" ").toLowerCase();
 
       return `
-        <article class="plant-card" data-search="${escapeAttr(searchable)}" data-batch="${escapeAttr(p.batch)}" data-status="${escapeAttr(p.status)}" data-category="Hibiskus" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(displayName)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(p.nickname)}" data-parent-cross="${escapeAttr(crossLabel)}" data-parent-references="${escapeAttr(JSON.stringify(parentReferenceItems))}" data-card-image="${escapeAttr(p.card_image)}" data-card-crop-x="${escapeAttr(p.card_crop_x)}" data-card-crop-y="${escapeAttr(p.card_crop_y)}" data-card-image-updated-at="${escapeAttr(p.card_image_updated_at)}" data-cuttings-available="${escapeAttr(p.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(p.cuttings_updated_at)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(p.logs || []))}">
+        <article class="plant-card" id="${escapeAttr(p.id)}" data-search="${escapeAttr(searchable)}" data-batch="${escapeAttr(p.batch)}" data-status="${escapeAttr(p.status)}" data-category="Hibiskus" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(displayName)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(p.nickname)}" data-parent-cross="${escapeAttr(crossLabel)}" data-parent-references="${escapeAttr(JSON.stringify(parentReferenceItems))}" data-card-image="${escapeAttr(p.card_image)}" data-card-crop-x="${escapeAttr(p.card_crop_x)}" data-card-crop-y="${escapeAttr(p.card_crop_y)}" data-card-image-updated-at="${escapeAttr(p.card_image_updated_at)}" data-cuttings-available="${escapeAttr(p.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(p.cuttings_updated_at)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(p.logs || []))}">
           <div class="image-wrap">
             ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(displayLabel)}" data-caption="${escapeAttr(displayLabel + " · " + activeLabel + (ageText ? " · " + ageText : ""))}" data-photo-type="${escapeAttr(active.type)}">` : ""}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}${ageText ? " · " + ageText : ""}</div>` : ""}

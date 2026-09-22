@@ -3528,6 +3528,18 @@ function ensurePlantImageImport() {
     openImageImportForm(file);
   });
 
+  window.openLabMaterialReferenceImport = target => {
+    if (!target?.id) return;
+    plantImageImportPending = {
+      category: "Labbet",
+      plantId: target.id,
+      plantName: target.name || target.id,
+      referenceKind: "material"
+    };
+    input.value = "";
+    input.click();
+  };
+
   queueButton.addEventListener("click", openImageImportQueue);
   updatePlantImageImportUI();
 }
@@ -3544,6 +3556,7 @@ function cameraLineIcon() {
 
 async function openImageImportForm(file) {
   const dialog = document.querySelector("#plantImageImportDialog");
+  const referenceMode = plantImageImportPending.referenceKind === "material";
   const previewUrl = URL.createObjectURL(file);
   const imageData = await file.arrayBuffer();
   const suggestedDate = suggestedPhotoDate(file, imageData);
@@ -3553,7 +3566,7 @@ async function openImageImportForm(file) {
       <div class="import-form-content">
         <header>
           <div>
-            <h2>Lägg till bild</h2>
+            <h2>${referenceMode ? "Lägg till referensbild" : "Lägg till bild"}</h2>
             <p>${htmlEscape(plantImageImportPending.plantName)} · sparas i lokal importkö</p>
           </div>
           <button class="import-close" value="cancel" type="submit" aria-label="Stäng">×</button>
@@ -3565,7 +3578,7 @@ async function openImageImportForm(file) {
             <small class="import-date-help">${suggestedDate.source}</small>
           </label>
           <label>Bildtyp
-            <select name="type">
+            <select name="type">${referenceMode ? '<option value="referens">referensbild</option>' : `
               <option value="hel">hel</option>
               <option value="omplanterad">omplanterad</option>
               <option value="stam">stam</option>
@@ -3576,8 +3589,7 @@ async function openImageImportForm(file) {
               <option value="stickling">stickling</option>
               <option value="grodd">grodd</option>
               <option value="beskuren">beskuren</option>
-              <option value="etikett">etikett</option>
-            </select>
+              <option value="etikett">etikett</option>`}</select>
             <small class="import-type-help" hidden>Skapar samtidigt milstolpen Omplanterad.</small>
           </label>
           <textarea name="note" placeholder="Kort anteckning, frivilligt"></textarea>
@@ -3585,7 +3597,7 @@ async function openImageImportForm(file) {
       </div>
       <div class="import-buttons">
         <button class="secondary" value="cancel" type="submit">Avbryt</button>
-        <button class="primary" value="save" type="submit" data-import-save>Spara i bildkö</button>
+        <button class="primary" value="save" type="submit" data-import-save>${referenceMode ? "Spara referensbild" : "Spara i bildkö"}</button>
       </div>
     </form>
   `;
