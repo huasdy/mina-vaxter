@@ -13,8 +13,9 @@
     body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
     .pull-refresh-status {
       position: fixed; z-index: 0; inset: 0 0 auto; height: 72px; display: flex; align-items: center; justify-content: center;
-      color: var(--accent); font-size: .88rem; font-weight: 800; letter-spacing: .01em;
+      color: var(--accent); font-size: .88rem; font-weight: 800; letter-spacing: .01em; opacity: 0; transition: opacity .12s ease-out;
     }
+    body.pull-revealed .pull-refresh-status { opacity: 1; }
     .page-shell { position: relative; z-index: 1; transform: translateY(var(--pull-offset, 0px)); transition: transform .22s ease-out; }
     body.pull-active .page-shell { transition: none; }
     body.pull-refreshing .page-shell { transition: transform .16s ease-out; }
@@ -807,6 +808,7 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
       pullDistance = Math.max(0, event.touches[0].clientY - pullStartY);
       const offset = Math.min(104, pullDistance * 0.72);
       pullPage.style.setProperty('--pull-offset', `${offset}px`);
+      document.body.classList.toggle('pull-revealed', offset >= 48);
       pullRefreshStatus.textContent = pullDistance >= 95 ? 'Släpp för att uppdatera' : 'Dra nedåt för att uppdatera';
       if (pullDistance > 12) event.preventDefault();
     }, {passive: false});
@@ -824,6 +826,7 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
         window.setTimeout(() => window.location.replace(url.toString()), 180);
       } else {
         document.body.classList.remove('pull-active');
+        document.body.classList.remove('pull-revealed');
         pullPage.style.removeProperty('--pull-offset');
       }
       pullStartY = null;
@@ -833,6 +836,7 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
       pullStartY = null;
       pullDistance = 0;
       document.body.classList.remove('pull-active');
+      document.body.classList.remove('pull-revealed');
       pullPage.style.removeProperty('--pull-offset');
     }, {passive: true});
     document.addEventListener('visibilitychange', () => {
