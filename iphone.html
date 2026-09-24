@@ -11,6 +11,13 @@
     }
     * { box-sizing: border-box; }
     body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .pull-refresh-status {
+      position: fixed; z-index: 0; inset: 0 0 auto; height: 72px; display: flex; align-items: center; justify-content: center;
+      color: var(--accent); font-size: .88rem; font-weight: 800; letter-spacing: .01em;
+    }
+    .page-shell { position: relative; z-index: 1; transform: translateY(var(--pull-offset, 0px)); transition: transform .22s ease-out; }
+    body.pull-active .page-shell { transition: none; }
+    body.pull-refreshing .page-shell { transition: transform .16s ease-out; }
     header { position: sticky; top: 0; z-index: 20; background: rgba(245,241,234,.98); backdrop-filter: blur(14px); border-bottom: 1px solid #d2c1ae; box-shadow: 0 4px 14px rgba(43,37,31,.08); padding: 12px 10px 10px; }
     h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(2rem, 11vw, 2.45rem); line-height: .95; margin: 0 0 10px; padding: 0 44px; font-weight: 500; text-align: center; }
     .tabs { display: flex; gap: 6px; overflow-x: auto; padding: 1px 0 3px; scrollbar-width: none; scroll-snap-type: x proximity; }
@@ -111,6 +118,8 @@
   </style>
 </head>
 <body>
+  <div class="pull-refresh-status" id="pullRefreshStatus" aria-live="polite">Dra nedåt för att uppdatera</div>
+  <div class="page-shell" id="pullPage">
   <header>
     <h1 id="mobileHeading" data-wishlist-target="#mobileWishlistAnchor">Mina Växter</h1>
     <div class="tabs" id="tabs"></div>
@@ -127,6 +136,7 @@
     <div class="catalog-status-row"><div class="stats" id="stats"></div><div id="mobileWishlistAnchor"></div></div>
     <section class="grid" id="grid"></section>
   </main>
+  </div>
   <dialog id="photoDialog"></dialog>
   <dialog class="mobile-add-parent-dialog" id="mobileAddParentDialog" aria-labelledby="mobileAddParentDialogTitle">
     <div class="mobile-chooser-dialog-content">
@@ -783,28 +793,47 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
     let pullStartY = null;
     let pullDistance = 0;
     let pullReloading = false;
+    const pullPage = document.querySelector('#pullPage');
+    const pullRefreshStatus = document.querySelector('#pullRefreshStatus');
     document.addEventListener('touchstart', event => {
       if (window.scrollY <= 0 && event.touches.length === 1) {
         pullStartY = event.touches[0].clientY;
         pullDistance = 0;
+        document.body.classList.add('pull-active');
       } else pullStartY = null;
     }, {passive: true});
     document.addEventListener('touchmove', event => {
       if (pullStartY === null || event.touches.length !== 1 || window.scrollY > 0) return;
       pullDistance = Math.max(0, event.touches[0].clientY - pullStartY);
+      const offset = Math.min(104, pullDistance * 0.72);
+      pullPage.style.setProperty('--pull-offset', `${offset}px`);
+      pullRefreshStatus.textContent = pullDistance >= 95 ? 'Släpp för att uppdatera' : 'Dra nedåt för att uppdatera';
       if (pullDistance > 12) event.preventDefault();
     }, {passive: false});
     document.addEventListener('touchend', () => {
       if (pullDistance >= 75 && !pullReloading) {
         pullReloading = true;
+        document.body.classList.remove('pull-active');
+        document.body.classList.add('pull-refreshing');
+        pullPage.style.setProperty('--pull-offset', `${Math.max(68, Math.min(104, pullDistance * 0.72))}px`);
+        pullRefreshStatus.textContent = 'Uppdaterar…';
         const url = new URL(window.location.href);
         url.searchParams.set('v', MOBILE_APP_VERSION);
         url.searchParams.set('uppdaterad', Date.now().toString());
         preserveMobileView(url);
-        window.location.replace(url.toString());
+        window.setTimeout(() => window.location.replace(url.toString()), 180);
+      } else {
+        document.body.classList.remove('pull-active');
+        pullPage.style.removeProperty('--pull-offset');
       }
       pullStartY = null;
       pullDistance = 0;
+    }, {passive: true});
+    document.addEventListener('touchcancel', () => {
+      pullStartY = null;
+      pullDistance = 0;
+      document.body.classList.remove('pull-active');
+      pullPage.style.removeProperty('--pull-offset');
     }, {passive: true});
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) checkMobileVersion();

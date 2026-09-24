@@ -54,6 +54,13 @@
       border: 1px solid rgba(125,79,59,.32); border-radius: 999px; background: var(--paper); color: var(--accent);
       padding: 6px 10px; font: inherit; font-size: .78rem; font-weight: 900; cursor: pointer;
     }
+    .pull-refresh-status {
+      position: fixed; z-index: 0; inset: 0 0 auto; height: 72px; display: none; align-items: center; justify-content: center;
+      color: var(--accent); font-size: .88rem; font-weight: 800; letter-spacing: .01em;
+    }
+    .page-shell { position: relative; z-index: 1; transform: translateY(var(--pull-offset, 0px)); transition: transform .22s ease-out; }
+    body.pull-active .page-shell { transition: none; }
+    body.pull-refreshing .page-shell { transition: transform .16s ease-out; }
     @media (min-width: 701px) {
       .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       a.card--lab { grid-column: span 2; }
@@ -67,6 +74,7 @@
       a.card--lab { grid-column: 1 / -1; }
       a.card[href="verktyg.html"] { display: none; }
       .version-status button { display: none; }
+      .pull-refresh-status { display: flex; }
     }
   </style>
   <link rel="manifest" href="manifest.json">
@@ -78,7 +86,8 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head>
 <body>
-  <main class="wrap">
+  <div class="pull-refresh-status" id="pullRefreshStatus" aria-live="polite">Dra nedåt för att uppdatera</div>
+  <main class="wrap page-shell" id="pullPage">
     <div class="eyebrow">Privat växtkatalog</div>
     <h1>Mina Växter</h1>
     <p class="home-subtitle">Samling, odling, korsningar och historik.</p>
@@ -240,27 +249,46 @@
     let pullStartY = null;
     let pullDistance = 0;
     let pullReloading = false;
+    const pullPage = document.querySelector("#pullPage");
+    const pullRefreshStatus = document.querySelector("#pullRefreshStatus");
     document.addEventListener("touchstart", event => {
       if (window.scrollY <= 0 && event.touches.length === 1) {
         pullStartY = event.touches[0].clientY;
         pullDistance = 0;
+        document.body.classList.add("pull-active");
       } else pullStartY = null;
     }, {passive: true});
     document.addEventListener("touchmove", event => {
       if (pullStartY === null || event.touches.length !== 1 || window.scrollY > 0) return;
       pullDistance = Math.max(0, event.touches[0].clientY - pullStartY);
+      const offset = Math.min(104, pullDistance * 0.72);
+      pullPage.style.setProperty("--pull-offset", `${offset}px`);
+      pullRefreshStatus.textContent = pullDistance >= 95 ? "Släpp för att uppdatera" : "Dra nedåt för att uppdatera";
       if (pullDistance > 12) event.preventDefault();
     }, {passive: false});
     document.addEventListener("touchend", () => {
       if (pullDistance >= 75 && !pullReloading) {
         pullReloading = true;
+        document.body.classList.remove("pull-active");
+        document.body.classList.add("pull-refreshing");
+        pullPage.style.setProperty("--pull-offset", `${Math.max(68, Math.min(104, pullDistance * 0.72))}px`);
+        pullRefreshStatus.textContent = "Uppdaterar…";
         const url = new URL(window.location.href);
         url.searchParams.set("v", APP_VERSION);
         url.searchParams.set("uppdaterad", Date.now().toString());
-        window.location.replace(url.toString());
+        window.setTimeout(() => window.location.replace(url.toString()), 180);
+      } else {
+        document.body.classList.remove("pull-active");
+        pullPage.style.removeProperty("--pull-offset");
       }
       pullStartY = null;
       pullDistance = 0;
+    }, {passive: true});
+    document.addEventListener("touchcancel", () => {
+      pullStartY = null;
+      pullDistance = 0;
+      document.body.classList.remove("pull-active");
+      pullPage.style.removeProperty("--pull-offset");
     }, {passive: true});
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) checkVersion();
