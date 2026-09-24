@@ -1,4 +1,4 @@
-const CACHE_NAME = "mina-vaxter-offline-v22";
+const CACHE_NAME = "mina-vaxter-offline-v23";
 const CORE_ASSETS = [
   "./index.html",
   "./iphone.html",
@@ -61,7 +61,7 @@ self.addEventListener("fetch", event => {
     })());
     return;
   }
-  if (forceRefresh) {
+  if (forceRefresh || request.mode === "navigate") {
     event.respondWith((async () => {
       const response = await refresh;
       if (response) return response;
