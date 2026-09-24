@@ -209,13 +209,17 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script src="common.js?v=539799026573"></script>
+  <script src="common.js?v=7e7a82d67cd6"></script>
   <script src="hibiskus-george-import.js?v=20260814v1"></script>
   <script>
     function startHibiscusPage(snapshot) {
     let plants = [];
     const hibiscusSection = snapshot.categories.Hibiskus;
-    const plantRows = hibiscusSection.plants;
+    const plantRows = hibiscusSection.plants.filter(row =>
+      !/^PL-H\d{2}(?:-|$)/.test(String(row.id || ""))
+      || !String(row.sow_batch_id || "").trim()
+      || String(row.breeding_selected || "").trim().toLocaleLowerCase("sv") === "ja"
+    );
     const photoRows = hibiscusSection.photos;
     const milestoneRows = snapshot.milestones;
     const crossingsById = new Map((snapshot.crossings?.items || []).map(row => [row.crossing_id, row]));

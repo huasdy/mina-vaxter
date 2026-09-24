@@ -15,13 +15,15 @@
   const infoDialog = document.querySelector("#infoDialog");
   const infoDialogContent = document.querySelector("#infoDialogContent");
   const newLabItem = document.querySelector("#newLabItem");
+  const seedPrintMenu = document.querySelector("#seedPrintMenu");
+  const seedPrintArea = document.querySelector("#seedPrintArea");
 
   let snapshot = null;
   let model = null;
   let pendingLabImages = [];
   let pendingLabMaterialImages = [];
   let pendingImageUrls = [];
-  let seedBoxExpanded = false;
+  let pendingSeedPrintCleanup = null;
 
   const esc = value => String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -153,6 +155,10 @@
           if (Object.hasOwn(update, "seeds_remaining") && clean(update.seeds_remaining) !== "") material.seeds_remaining = clean(update.seeds_remaining);
           if (Object.hasOwn(update, "notes")) material.notes = clean(update.notes);
           if (Object.hasOwn(update, "taxon")) material.taxon = clean(update.taxon);
+          if (Object.hasOwn(update, "pollinated_date")) material.pollinatedDate = clean(update.pollinated_date);
+          if (Object.hasOwn(update, "seed_development_date")) material.developmentDate = clean(update.seed_development_date);
+          if (Object.hasOwn(update, "harvested_date")) material.date = clean(update.harvested_date);
+          if (Object.hasOwn(update, "seeds_harvested")) material.original = clean(update.seeds_harvested) === "" ? null : number(update.seeds_harvested);
           if (Object.hasOwn(update, "reference_image")) {
             material.reference_image = clean(update.reference_image);
             material._reference_image_override = true;
@@ -280,6 +286,16 @@
     return snapshot?.categories?.[category]?.plants || [];
   }
 
+  function collectionPlants(category) {
+    const rows = plants(category);
+    if (category !== "Hibiskus") return rows;
+    const locallyKept = new Set(getPendingLabItems()
+      .filter(item => clean(item.kind) === "keep_hibiscus_seedling")
+      .map(item => clean(item.keep_hibiscus_seedling?.plant_id || item.keep_hibiscus_seedling?.seedling_id))
+      .filter(Boolean));
+    return rows.map(row => locallyKept.has(clean(row.id)) ? {...row, breeding_selected: "ja"} : row);
+  }
+
   function photos(category) {
     return snapshot?.categories?.[category]?.photos || [];
   }
@@ -363,14 +379,17 @@
     const legacyCrossingById = new Map(crossings.map(row => [row.crossing_id, row]));
     const seedLotById = new Map((snapshot.crossings?.seedLots || []).map(row => [row.seed_lot_id, row]));
 
+    const lab = combinedLabData();
     const seedlings = [];
     const hibiscusGroups = new Map();
+    const historicalBatchIds = new Set(lab.sowBatches.map(row => clean(row.sow_batch_id)));
 
-    plants("Hibiskus").filter(row => /^PL-H\d{2}(?:-|$)/.test(clean(row.id))).forEach(row => {
+    collectionPlants("Hibiskus").filter(row => /^PL-H\d{2}(?:-|$)/.test(clean(row.id))).forEach(row => {
       const match = clean(row.id).match(/^PL-H(\d{2})(?:-([A-Z]))?(?:-(\d{2}))?$/);
       if (!match) return;
       const groupCode = match[3] ? `H${match[1]}-${match[2]}` : `H${match[1]}`;
-      const batchId = `hib:${groupCode}`;
+      const linkedBatchId = clean(row.sow_batch_id);
+      const batchId = linkedBatchId && historicalBatchIds.has(linkedBatchId) ? linkedBatchId : `hib:${groupCode}`;
       const rows = milestonesByPlant.get(row.id) || [];
       const rowPhotos = photosByPlant.get(`Hibiskus:${row.id}`) || [];
       const firstFlower = rows.find(item => clean(item.type).toLocaleLowerCase("sv") === "första blomning");
@@ -409,9 +428,11 @@
         groupCode
       };
       seedlings.push(seedling);
-      const group = hibiscusGroups.get(batchId) || [];
-      group.push(seedling);
-      hibiscusGroups.set(batchId, group);
+      if (!historicalBatchIds.has(batchId)) {
+        const group = hibiscusGroups.get(batchId) || [];
+        group.push(seedling);
+        hibiscusGroups.set(batchId, group);
+      }
     });
 
     const batches = [];
@@ -545,7 +566,6 @@
       });
     });
 
-    const lab = combinedLabData();
     const labCrossingById = new Map();
     lab.crossings.forEach(row => {
       const crossing = {
@@ -649,13 +669,14 @@
     });
     lab.sowBatches.forEach(row => {
       const material = materialById.get(clean(row.source_id)) || null;
-      const seedsSown = number(row.seeds_sown);
+      const seedsSown = clean(row.seeds_sown) === "" ? null : number(row.seeds_sown);
       const germinated = number(row.germinated_count);
       const batch = {
         id: clean(row.sow_batch_id),
         species: clean(row.species_group),
         name: clean(row.taxon) || material?.taxon || clean(row.source_label) || "Sådd",
-        fullCode: clean(row.full_code),
+        fullCode: clean(row.source_type) === "legacy" && clean(row.species_group) === "Hibiskus" && /^PL-H\d{2}(?:-[A-D])?$/.test(clean(row.source_id))
+          ? clean(row.source_id) : clean(row.full_code),
         shortCode: clean(row.batch_code),
         sownDate: clean(row.sown_date),
         seedsSown,
@@ -666,12 +687,12 @@
         legacyRegistered: 0,
         raising: 0,
         ready: 0,
-        remaining: Math.max(0, seedsSown - germinated),
-        remainingExact: true,
+        remaining: seedsSown === null ? null : Math.max(0, seedsSown - germinated),
+        remainingExact: seedsSown !== null,
         kept: 0,
         concluded: 0,
         active: true,
-        activeSowing: true,
+        activeSowing: !(clean(row.source_type) === "legacy" && clean(row.species_group) === "Hibiskus" && /^PL-H\d{2}(?:-[A-D])?$/.test(clean(row.source_id))),
         originLabel: material ? `${material.label} ${material.code}` : clean(row.source_label) || "Äldre/okänt ursprung",
         originDetail: material ? material.sourceName : clean(row.source_label),
         originHref: "",
@@ -682,7 +703,7 @@
         sourceLabel: clean(row.source_label),
         containerCount: clean(row.container_count) === "" ? null : number(row.container_count),
         notes: clean(row.notes),
-        adapter: false,
+        adapter: clean(row.source_type) === "legacy" && clean(row.species_group) === "Hibiskus" && /^PL-H\d{2}(?:-[A-D])?$/.test(clean(row.source_id)),
         seedlings: []
       };
       batches.push(batch);
@@ -737,14 +758,23 @@
     const batchById = new Map(batches.map(row => [row.id, row]));
     seedlings.forEach(seedling => {
       seedling.batch = batchById.get(seedling.batchId) || null;
-      if (seedling.batch && seedling.adapter === false) {
+      if (seedling.batch && !seedling.batch.seedlings.includes(seedling)) {
         seedling.batch.seedlings.push(seedling);
-        seedling.sownDate = seedling.batch.sownDate;
-        seedling.source = seedling.batch.originDetail;
-        seedling.parentage = seedling.batch.species !== "Stapelia" ? seedling.batch.name : "";
+        if (seedling.adapter === false) {
+          seedling.sownDate = seedling.batch.sownDate;
+          seedling.source = seedling.batch.originDetail;
+          seedling.parentage = seedling.batch.species !== "Stapelia" ? seedling.batch.name : "";
+        }
       }
     });
     batches.forEach(batch => {
+      const linkedLegacy = batch.seedlings.filter(row => row?.adapter !== false && clean(row.batchId) === batch.id && !batch.id.startsWith("hib:"));
+      batch.legacyRegistered = number(batch.legacyRegistered) + linkedLegacy.length;
+      batch.raising = number(batch.raising) + linkedLegacy.filter(row => row.status === "Under uppdragning").length;
+      batch.ready = number(batch.ready) + linkedLegacy.filter(row => row.status === "Redo för bedömning").length;
+      batch.legacyKept = number(batch.legacyKept) + linkedLegacy.filter(row => row.status === "I samlingen").length;
+      batch.legacyConcluded = number(batch.legacyConcluded) + linkedLegacy.filter(row => ["Gallrad", "Död", "Bortskänkt"].includes(row.status)).length;
+      if (linkedLegacy.some(row => ACTIVE_SEEDLING_STATUSES.has(row.status))) batch.active = true;
       const realSeedlings = batch.seedlings.filter(row => row?.adapter === false);
       batch.registered = number(batch.legacyRegistered) + realSeedlings.length;
       batch.raising = number(batch.raising) + realSeedlings.filter(row => row.status === "Under uppdragning").length;
@@ -779,7 +809,7 @@
 
   function batchProgress(batch) {
     const parts = [];
-    if (batch.seedsSown !== null) parts.push(`${batch.seedsSown} sådda`);
+    parts.push(batch.seedsSown === null ? "Sådda: okänt" : `${batch.seedsSown} sådda`);
     if (batch.germinatedExact) parts.push(`${batch.germinated} ${batch.germinated === 1 ? "grodd" : "grodda"}`);
     else if (batch.germinated) parts.push(`grodd registrerad`);
     if (batch.registered) parts.push(`${batch.registered} individualiserad${batch.registered === 1 ? "" : "e"}`);
@@ -829,21 +859,195 @@
     </button>`;
   }
 
+  function printableMaterialLabel(material) {
+    return {
+      kind: "material",
+      id: material.id,
+      name: material.type === "seed_harvest" ? material.sourceName : material.taxon,
+      code: material.code
+    };
+  }
+
+  function printableBatchLabel(batch) {
+    return {kind: "batch", id: batch.id, name: batch.name, code: batch.fullCode};
+  }
+
+  function printableLabel(kind, id) {
+    if (kind === "material") {
+      const material = model.materialById.get(id);
+      return material ? printableMaterialLabel(material) : null;
+    }
+    if (kind === "batch") {
+      const batch = model.batchById.get(id);
+      return batch ? printableBatchLabel(batch) : null;
+    }
+    return null;
+  }
+
+  function seedPrintCopyHtml(label) {
+    return `<div class="seed-print-copy"><strong class="seed-print-taxon">${esc(label.name)}</strong><span class="seed-print-code">${esc(label.code)}</span></div>`;
+  }
+
+  function seedPrintHalvesImage(label) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 2280;
+    canvas.height = 1200;
+    const half = document.createElement("canvas");
+    half.width = canvas.width;
+    half.height = 600;
+    const context = half.getContext("2d");
+    context.fillStyle = "#fff";
+    context.fillRect(0, 0, half.width, half.height);
+    context.textAlign = "center";
+    context.textBaseline = "alphabetic";
+    context.fillStyle = "#111";
+    const maxWidth = 52.2 * 40;
+    const nameFontSize = 11 * 25.4 / 72 * 40;
+    const codeFontSize = 10 * 25.4 / 72 * 40;
+    const lineHeight = nameFontSize * 1.05;
+    const gap = 1.2 * 40;
+
+    context.font = `700 ${nameFontSize}px Georgia, "Times New Roman", serif`;
+    const nameLines = [];
+    let line = "";
+    label.name.split(/\s+/).filter(Boolean).forEach(word => {
+      const candidate = line ? `${line} ${word}` : word;
+      if (line && context.measureText(candidate).width > maxWidth) {
+        nameLines.push(line);
+        line = word;
+      } else {
+        line = candidate;
+      }
+    });
+    if (line) nameLines.push(line);
+
+    const blockHeight = nameLines.length * lineHeight + gap + codeFontSize * 1.05;
+    const top = (half.height - blockHeight) / 2;
+    nameLines.forEach((nameLine, index) => {
+      const baseline = top + lineHeight * (index + 0.82);
+      context.font = `700 ${nameFontSize}px Georgia, "Times New Roman", serif`;
+      context.fillText(nameLine, half.width / 2, baseline);
+    });
+    context.font = `800 ${codeFontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+    context.fillText(label.code, half.width / 2, top + nameLines.length * lineHeight + gap + codeFontSize * 0.82);
+    const fullContext = canvas.getContext("2d");
+    fullContext.fillStyle = "#fff";
+    fullContext.fillRect(0, 0, canvas.width, canvas.height);
+    fullContext.drawImage(half, 0, 0);
+    fullContext.drawImage(half, 0, 600);
+    const canvasScale = canvas.width / (57 * 96 / 25.4);
+    fullContext.strokeStyle = "#aaa";
+    fullContext.lineWidth = Math.max(1, canvasScale / 2);
+    fullContext.setLineDash([4 * canvasScale, 4 * canvasScale]);
+    fullContext.beginPath();
+    fullContext.moveTo(0, 600);
+    fullContext.lineTo(canvas.width, 600);
+    fullContext.stroke();
+    return canvas.toDataURL("image/png");
+  }
+
+  function seedPrintSheetHtml(label, count) {
+    if (count === 2) {
+      const imageUrl = seedPrintHalvesImage(label);
+      return `<section class="seed-print-sheet seed-print-sheet-halves"><img src="${imageUrl}" alt="Två identiska etiketter"></section>`;
+    }
+    return `<section class="seed-print-sheet">${seedPrintCopyHtml(label)}</section>`;
+  }
+
+  function closeSeedPrintMenu() {
+    seedPrintMenu.hidden = true;
+    seedPrintMenu.removeAttribute("data-print-kind");
+    seedPrintMenu.removeAttribute("data-print-id");
+  }
+
+  function showSeedPrintMenu(label, x, y) {
+    seedPrintMenu.dataset.printKind = label.kind;
+    seedPrintMenu.dataset.printId = label.id;
+    seedPrintMenu.innerHTML = `<strong>${esc(label.name)}</strong><small>${esc(label.code)}</small><span>Skriv ut</span><button type="button" role="menuitem" data-seed-print-count="1">1 etikett</button><button type="button" role="menuitem" data-seed-print-count="2">2 etiketter</button>`;
+    seedPrintMenu.hidden = false;
+    seedPrintMenu.style.left = `${Math.max(8, Math.min(x, window.innerWidth - seedPrintMenu.offsetWidth - 8))}px`;
+    seedPrintMenu.style.top = `${Math.max(8, Math.min(y, window.innerHeight - seedPrintMenu.offsetHeight - 8))}px`;
+    seedPrintMenu.querySelector("button").focus();
+  }
+
+  function printSeedLabelsViaDialog(label, count) {
+    if (!label || ![1, 2].includes(count)) return;
+    if (pendingSeedPrintCleanup) pendingSeedPrintCleanup();
+    seedPrintArea.innerHTML = seedPrintSheetHtml(label, count);
+    seedPrintArea.setAttribute("aria-hidden", "false");
+    document.body.classList.add("seed-printing");
+    const cleanup = () => {
+      document.removeEventListener("pointerdown", cleanup, true);
+      document.removeEventListener("keydown", cleanup, true);
+      document.body.classList.remove("seed-printing");
+      seedPrintArea.innerHTML = "";
+      seedPrintArea.setAttribute("aria-hidden", "true");
+      if (pendingSeedPrintCleanup === cleanup) pendingSeedPrintCleanup = null;
+    };
+    pendingSeedPrintCleanup = cleanup;
+    const images = [...seedPrintArea.querySelectorAll("img")];
+    Promise.all(images.map(image => image.decode?.().catch(() => {}) || Promise.resolve()))
+      .then(() => {
+        void seedPrintArea.offsetHeight;
+        setTimeout(() => {
+          window.print();
+          document.addEventListener("pointerdown", cleanup, {capture: true, once: true});
+          document.addEventListener("keydown", cleanup, {capture: true, once: true});
+        }, 50);
+      });
+  }
+
+  async function directSeedLabelImage(label, count) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 2280;
+    canvas.height = 1280;
+    const context = canvas.getContext("2d");
+    context.fillStyle = "white";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    let source;
+    if (count === 2) {
+      source = seedPrintHalvesImage(label);
+    } else {
+      // Rasterize the same HTML and print rules used by the dialog fallback.
+      const markup = seedPrintCopyHtml(label);
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="2280" height="1200"><foreignObject width="2280" height="1200"><div xmlns="http://www.w3.org/1999/xhtml" class="seed-print-sheet"><style>.seed-print-sheet{display:grid;align-content:center;justify-items:center;width:2280px;height:1200px;padding:72px 96px;box-sizing:border-box;overflow:hidden;background:white;color:#111;text-align:center}.seed-print-copy{display:grid;align-content:center;justify-items:center;width:100%;min-width:0;max-height:1056px;overflow:hidden}.seed-print-taxon{font-family:Georgia,'Times New Roman',serif;font-size:${11 * 40 * 25.4 / 72}px;line-height:1.05;font-weight:700;overflow-wrap:anywhere}.seed-print-code{margin-top:48px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:${10 * 40 * 25.4 / 72}px;line-height:1.05;font-weight:800}</style>${markup}</div></foreignObject></svg>`;
+      source = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+    }
+    const image = new Image();
+    image.src = source;
+    await image.decode();
+    context.drawImage(image, 0, 0, 2280, 1200);
+    return canvas.toDataURL("image/jpeg", 1);
+  }
+
+  async function printSeedLabels(label, count) {
+    if (!label || ![1, 2].includes(count)) return;
+    try {
+      const image = await directSeedLabelImage(label, count);
+      const response = await fetch("https://127.0.0.1:47831/lab-label-print", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({image})
+      });
+      const result = await response.json();
+      if (!response.ok || !result.ok) throw new Error(result.error || "Utskriften kunde inte skickas.");
+    } catch (error) {
+      window.alert(error instanceof TypeError
+        ? "DYMO-utskriften kunde inte nå Macens lokala hjälptjänst."
+        : `DYMO-utskrift misslyckades: ${error.message}`);
+    }
+  }
+
   function renderSeedBox(species) {
     const rows = model.materials
       .filter(row => matchesSpecies(row, species) && row.remaining !== null && row.remaining > 0)
       .sort((first, second) => second.remaining - first.remaining || clean(first.taxon).localeCompare(clean(second.taxon), "sv"));
     const total = rows.reduce((sum, row) => sum + row.remaining, 0);
-    const limit = 5;
-    const visibleRows = seedBoxExpanded ? rows : rows.slice(0, limit);
     const summary = `${rows.length} ${rows.length === 1 ? "fröpåse" : "fröpåsar"} · ${total} frön kvar`;
-    const toggle = rows.length > limit
-      ? `<button type="button" class="text-link seed-box-toggle" data-seed-box-toggle>${seedBoxExpanded ? "Visa färre" : `Visa alla (${rows.length})`}</button>`
-      : "";
     return `<section class="lab-view" aria-labelledby="seedBoxTitle">
       ${viewIntro("Fröer", "Fröpåsar med frön kvar och redo att så.", "", summary, "seedBoxTitle")}
-      ${visibleRows.length ? `<div class="seed-box-grid">${visibleRows.map(seedBoxCard).join("")}</div>` : emptyState("Inga fröpartier med saldo kvar i valt artfilter.")}
-      ${toggle}
+      ${rows.length ? `<div class="seed-box-grid">${rows.map(seedBoxCard).join("")}</div>` : emptyState("Inga fröpartier med saldo kvar i valt artfilter.")}
     </section>`;
   }
 
@@ -994,7 +1198,7 @@
   }
 
   function seedHarvestPollinatedDate(material) {
-    return material?.crossing?.pollinatedDate || material?.pollinatedDate || "";
+    return material?.pollinatedDate || material?.crossing?.pollinatedDate || "";
   }
 
   function materialSecondaryDetails(material) {
@@ -1073,7 +1277,7 @@
     return `<section class="detail-shell">
       ${detailNavigation("Till frömaterial")}
       <article class="detail-card material-detail-card">
-        <div class="detail-hero"><div><div class="detail-kicker">${esc(material.label)} · ${esc(material.species)}</div><h2>${esc(material.type === "seed_harvest" ? material.sourceName : material.taxon)}</h2><div class="detail-code">${esc(material.code)}</div></div><div class="detail-actions"><button type="button" class="primary-action" data-sow-material="${esc(material.id)}">Så frön</button>${material.type === "seed_lot" ? `<button type="button" class="secondary-action material-secondary-action" data-edit-material-taxon="${esc(material.id)}">Redigera taxon</button>` : ""}<button type="button" class="secondary-action material-secondary-action" data-adjust-material="${esc(material.id)}">Justera frölager</button><p class="action-note">Varje ny sådd får nästa lediga B-kod inom detta frömaterial.</p></div></div>
+        <div class="detail-hero"><div><div class="detail-kicker">${esc(material.label)} · ${esc(material.species)}</div><h2>${esc(material.type === "seed_harvest" ? material.sourceName : material.taxon)}</h2><div class="detail-code">${esc(material.code)}</div></div><div class="detail-actions"><button type="button" class="primary-action" data-sow-material="${esc(material.id)}">Så frön</button><button type="button" class="secondary-action seed-print-trigger" data-seed-print-menu-kind="material" data-seed-print-menu-id="${esc(material.id)}">Skriv ut</button><button type="button" class="material-admin-trigger" data-edit-material-admin="${esc(material.id)}" aria-label="Redigera ${esc(material.type === "seed_harvest" ? "fröskörd" : "frömaterial")}" title="Redigera ${esc(material.type === "seed_harvest" ? "fröskörd" : "frömaterial")}"><span aria-hidden="true">${typeof logBookIcon === "function" ? logBookIcon() : "⚙"}</span></button><p class="action-note">Varje ny sådd får nästa lediga B-kod inom detta frömaterial.</p></div></div>
         <div class="detail-body">
           <div class="material-stock" aria-label="Frölager">${esc(stock)}</div>
           ${seedHarvestFacts}
@@ -1089,7 +1293,10 @@
   function renderBatchDetail(batch) {
     const isLegacy = batch.adapter !== false;
     const shouldRegisterGermination = batch.germinated === 0;
-    const action = isLegacy
+    const historicalHibiscus = batch.sourceType === "legacy" && batch.species === "Hibiskus" && batch.seedlings.some(row => row.adapter !== false);
+    const action = historicalHibiscus
+      ? ""
+      : isLegacy
       ? `<a class="primary-action" href="${esc(batch.actionHref || "korsningar.html")}">Öppna äldre korsningsflöde →</a>`
       : (() => {
           const germinationAction = `<button type="button" class="primary-action" data-edit-batch="${esc(batch.id)}">Registrera grodd</button>`;
@@ -1097,7 +1304,9 @@
             ? `${germinationAction}<button type="button" class="secondary-action" data-register-seedling="${esc(batch.id)}">Individualisera känd planta</button>`
             : `<button type="button" class="primary-action" data-register-seedling="${esc(batch.id)}">Individualisera planta</button><button type="button" class="secondary-action" data-edit-batch="${esc(batch.id)}">Uppdatera groning</button>`;
         })();
-    const actionNote = isLegacy
+    const actionNote = historicalHibiscus
+      ? "Historisk såbatch. De registrerade fröplantorna behåller sina permanenta PL-H-ID:n."
+      : isLegacy
       ? "Äldre såbatch. Registrering och uppdatering görs i det äldre korsningsflödet."
       : (batch.registered > 0
         ? "Individualisera bara fler plantor som behöver egen identitet. Övriga kan fortsätta som grupp."
@@ -1107,13 +1316,13 @@
     return `<section class="detail-shell">
       ${detailNavigation("Till sådder")}
       <article class="detail-card">
-        <div class="detail-hero"><div><div class="detail-kicker">${isLegacy ? "Legacy-såbatch" : "Såbatch"} · ${esc(batch.species)}</div><h2>${esc(batch.name)}</h2><div class="detail-code">${esc(batch.fullCode)}</div></div><div class="detail-actions">${action}<p class="action-note">${actionNote}</p></div></div>
+        <div class="detail-hero"><div><div class="detail-kicker">${isLegacy ? "Legacy-såbatch" : "Såbatch"} · ${esc(batch.species)}</div><h2>${esc(batch.name)}</h2><div class="detail-code">${esc(batch.fullCode)}</div></div><div class="detail-actions">${action}<button type="button" class="secondary-action seed-print-trigger" data-seed-print-menu-kind="batch" data-seed-print-menu-id="${esc(batch.id)}">Skriv ut</button><p class="action-note">${actionNote}</p></div></div>
         <div class="detail-body">
           <dl class="fact-grid">
             <div class="fact"><dt>Sådatum</dt><dd>${esc(displayDate(batch.sownDate, true))}</dd></div>
-            <div class="fact"><dt>Antal sådda</dt><dd>${esc(countText(batch.seedsSown))}</dd></div>
+            <div class="fact"><dt>Antal sådda</dt><dd>${esc(countText(batch.seedsSown, true, "Okänt"))}</dd></div>
             <div class="fact"><dt>Antal grodda</dt><dd>${esc(countText(batch.germinated, batch.germinatedExact))}</dd></div>
-            ${batch.registered > 0 ? `<div class="fact"><dt>Individualiserade LAB-plantor</dt><dd>${batch.registered}</dd></div>` : ""}
+            ${batch.registered > 0 ? `<div class="fact"><dt>Registrerade plantor</dt><dd>${batch.registered}</dd></div>` : ""}
             <div class="fact"><dt>Under uppdragning</dt><dd>${batch.raising}</dd></div>
             <div class="fact"><dt>Redo för bedömning</dt><dd>${batch.ready}</dd></div>
             <div class="fact"><dt>Kvar / ej grodda</dt><dd>${esc(countText(batch.remaining, batch.remainingExact, "Ej räknat"))}</dd></div>
@@ -1122,7 +1331,7 @@
           </dl>
           <section class="detail-section"><h3>Ursprung</h3>${batch.materialId ? `<button type="button" class="origin-link" data-open-material="${esc(batch.materialId)}">${originContent(batch)}<b>→</b></button>` : `<a class="origin-link" href="${esc(batch.originHref || "#")}">${originContent(batch)}<b>→</b></a>`}</section>
           ${batch.seedlings?.length ? `<section class="detail-section"><h3>Fröplantor</h3><div class="seedling-grid">${batch.seedlings.filter(row => row.id && model.seedlingById.has(row.id)).map(row => seedlingCard(model.seedlingById.get(row.id))).join("")}</div></section>` : ""}
-          <details><summary>Historik och övriga detaljer</summary>${historyHtml(batch.history)}</details>
+          <details><summary>Historik och övriga detaljer</summary>${historyHtml(batch.history)}${batch.notes ? `<p>${esc(batch.notes)}</p>` : ""}</details>
         </div>
       </article>
     </section>`;
@@ -1156,11 +1365,18 @@
       if (seedling.parentage) lineage.push({title: seedling.parentage, sub: "Registrerad härkomst"});
       else lineage.push({title: seedling.source, sub: "Källa"});
     }
+    const canKeepHibiscusSeedling = seedling.species === "Hibiskus"
+      && /^PL-H\d{2}(?:-[A-Z](?:-\d{2})?)?$/.test(clean(seedling.internalId))
+      && seedling.status !== "I samlingen"
+      && !["Gallrad", "Död", "Bortskänkt"].includes(seedling.status);
     const labActions = seedling.adapter === false ? `
       <button type="button" class="secondary-action add-photo-btn" data-lab-photo>Lägg till bild</button>
       <button type="button" class="secondary-action" data-add-seedling-milestone="${esc(seedling.id)}">Registrera milstolpe</button>
       <button type="button" class="secondary-action" data-edit-seedling="${esc(seedling.id)}">Redigera</button>
     ` : "";
+    const keepAction = canKeepHibiscusSeedling
+      ? `<button type="button" class="secondary-action" data-keep-hibiscus-seedling="${esc(seedling.internalId)}">Behåll i samlingen</button>`
+      : "";
     return `<section class="detail-shell">
       ${detailNavigation("Till uppdragning")}
       <article class="detail-card ${seedling.adapter === false ? "plant-card" : ""}" data-category="Labbet" data-plant-id="${esc(seedling.internalId)}" data-plant-name="${esc(seedling.shortId)}">
@@ -1175,7 +1391,7 @@
               <div class="fact"><dt>Ålder</dt><dd>${esc(seedlingAge(seedling) || "—")}</dd></div>
               <div class="fact"><dt>Senaste milstolpe</dt><dd>${esc(latestMilestone)}</dd></div>
             </dl>
-            <div class="detail-actions">${labActions}<button type="button" class="future-action" disabled title="Slutlig ID- och migreringslogik byggs inte i denna version">Behåll i samlingen</button><p class="action-note">Förberedd för en senare, säker överföring till den permanenta samlingen.</p></div>
+            <div class="detail-actions">${labActions}${keepAction}${keepAction ? '<p class="action-note">ID:t behålls. Endast urvalet ändras så att plantan lämnar aktiv uppdragning.</p>' : ""}</div>
           </div>
         </div>
         <div class="detail-body">
@@ -1210,6 +1426,7 @@
 
   function render() {
     if (!model) return;
+    closeSeedPrintMenu();
     const current = route();
     syncControls(current);
     syncPortal(current);
@@ -1268,8 +1485,15 @@
 
   function collectionParents(species) {
     const category = species === "Stapelia" ? "Stapeliader" : species;
-    return plants(category)
-      .filter(row => species !== "Hibiskus" || !/^PL-H/.test(clean(row.id)))
+    return collectionPlants(category)
+      .filter(row => species !== "Hibiskus" || (() => {
+        const status = clean(row.status).toLocaleLowerCase("sv");
+        const concludedByMilestone = (snapshot.milestones || []).some(item => clean(item.id) === clean(row.id) && milestoneIsConcluded(item));
+        const active = !concludedByMilestone && !["bortgiven", "död", "avliden"].includes(status) && !status.startsWith("avslutad");
+        const seedlingRole = ["Frö", "Egen korsning"].includes(clean(row.arrival_type));
+        const selected = clean(row.breeding_selected).toLocaleLowerCase("sv") === "ja";
+        return active && (!seedlingRole || selected);
+      })())
       .map(row => ({
         id: clean(row.id),
         name: clean(row.nickname) || clean(row.full_botanical_name) || clean(row.name) || clean(row.short_name) || clean(row.id)
@@ -1453,31 +1677,41 @@
     refreshSource();
   }
 
-  function openMaterialAdjustment(material) {
-    showFormDialog(`<h2>Justera frölager</h2><p>${esc(material.label)} ${esc(material.code)} · justeringen sparar ett nytt faktiskt saldo.</p><form class="lab-form">
+  function openMaterialAdminEdit(material) {
+    const isHarvest = material.type === "seed_harvest";
+    showFormDialog(`<h2>${isHarvest ? "Redigera fröskörd" : "Redigera frömaterial"}</h2><p>${esc(isHarvest ? material.sourceName : material.taxon)} · ${esc(material.code)} · all administrativ redigering sparas tillsammans.</p><form class="lab-form">
+      ${isHarvest ? "" : `<label class="wide">Taxon<input name="taxon" value="${esc(material.taxon)}" maxlength="200" required></label>`}
+      ${isHarvest ? `<label>Pollineringsdatum<input name="pollinated_date" type="date" value="${esc(material.pollinatedDate || material.crossing?.pollinatedDate || "")}"></label>
+      <label>Frö började utvecklas<input name="seed_development_date" type="date" value="${esc(material.developmentDate || "")}"></label>
+      <label>Skördedatum<input name="harvested_date" type="date" value="${esc(material.date || "")}" required></label>
+      <label>Antal skördade frön<input name="seeds_harvested" type="number" min="0" value="${esc(material.original ?? "")}" inputmode="numeric"></label>` : ""}
       <label>Antal frön kvar<input name="seeds_remaining" type="number" min="0" value="${esc(material.remaining ?? "")}" inputmode="numeric" required></label>
-      <label class="wide">Anteckning<textarea name="notes" rows="3">${esc(material.notes)}</textarea></label>
-      <div class="dialog-actions">${closeDialogButton()}<button type="submit" class="primary-action">Spara saldo</button></div>
+      <label class="wide">Anteckningar<textarea name="notes" rows="3">${esc(material.notes || "")}</textarea></label>
+      <div class="dialog-actions">${closeDialogButton()}<button type="submit" class="primary-action">Spara ändringar</button></div>
     </form>`, async data => {
-      queueLabChange("material_update", {source_type: material.type, source_id: material.id, seeds_remaining: clean(data.get("seeds_remaining")), notes: clean(data.get("notes")), updated_at: new Date().toISOString()});
-      await refreshModel();
-      updateRoute({material: material.id});
-    });
-  }
-
-  function openMaterialTaxonEdit(material) {
-    showFormDialog(`<h2>Redigera taxon</h2><p>${esc(material.label)} ${esc(material.code)} · endast taxonnamnet ändras.</p><form class="lab-form">
-      <label class="wide">Taxon<input name="taxon" value="${esc(material.taxon)}" maxlength="200" required></label>
-      <div class="dialog-actions">${closeDialogButton()}<button type="submit" class="primary-action">Spara taxon</button></div>
-    </form>`, async data => {
-      const taxon = clean(data.get("taxon"));
-      if (!taxon) throw new Error("Taxon måste anges.");
-      queueLabChange("material_update", {
+      const update = {
         source_type: material.type,
         source_id: material.id,
-        taxon,
+        seeds_remaining: clean(data.get("seeds_remaining")),
+        notes: clean(data.get("notes")),
         updated_at: new Date().toISOString()
-      });
+      };
+      if (isHarvest) {
+        const harvestedDate = isoDate(data.get("harvested_date"));
+        if (!harvestedDate) throw new Error("Skördedatum måste anges.");
+        const harvested = clean(data.get("seeds_harvested"));
+        if (harvested && !/^\\d+$/.test(harvested)) throw new Error("Antal skördade frön måste vara ett heltal.");
+        if (harvested && update.seeds_remaining && number(update.seeds_remaining) > number(harvested)) throw new Error("Antal frön kvar kan inte vara större än antal skördade frön.");
+        update.pollinated_date = isoDate(data.get("pollinated_date"));
+        update.seed_development_date = isoDate(data.get("seed_development_date"));
+        update.harvested_date = harvestedDate;
+        update.seeds_harvested = harvested;
+      } else {
+        const taxon = clean(data.get("taxon"));
+        if (!taxon) throw new Error("Taxon måste anges.");
+        update.taxon = taxon;
+      }
+      queueLabChange("material_update", update);
       await refreshModel();
       updateRoute({material: material.id});
     });
@@ -1485,7 +1719,7 @@
 
   function openBatchUpdate(batch) {
     showFormDialog(`<h2>Registrera grodd</h2><p>${esc(batch.fullCode)} · groddantal och individuella fröplantor hålls separata.</p><form class="lab-form">
-      <label>Antal grodda<input name="germinated_count" type="number" min="0" max="${batch.seedsSown}" value="${batch.germinated}" inputmode="numeric" required></label>
+      <label>Antal grodda<input name="germinated_count" type="number" min="0" ${batch.seedsSown === null ? "" : `max="${batch.seedsSown}"`} value="${batch.germinated}" inputmode="numeric" required></label>
       <label>Första grodddatum<input name="germinated_date" type="date" value="${esc(batch.germinatedDate || today())}" max="${today()}"></label>
       <label class="wide">Anteckning<textarea name="notes" rows="3">${esc(batch.notes || "")}</textarea></label>
       <div class="dialog-actions">${closeDialogButton()}<button type="submit" class="primary-action">Spara groning</button></div>
@@ -1594,14 +1828,12 @@
   speciesFilters.addEventListener("click", event => {
     const button = event.target.closest("[data-species]");
     if (!button) return;
-    seedBoxExpanded = false;
     updateRoute({art: button.dataset.species, batch: null, planta: null, korsning: null, material: null});
   });
 
   labPortal.addEventListener("click", event => {
     const button = event.target.closest("[data-lab-view]");
     if (!button) return;
-    seedBoxExpanded = false;
     const view = button.dataset.labView;
     updateRoute({
       vy: view,
@@ -1616,23 +1848,61 @@
 
   newLabItem.addEventListener("click", openNewMenu);
 
-  content.addEventListener("click", event => {
+  content.addEventListener("contextmenu", event => {
+    const target = event.target instanceof Element ? event.target : event.target?.parentElement;
+    const materialCard = target?.closest(".seed-box-grid .seed-box-card[data-open-material]");
+    const batchCard = target?.closest(".batch-grid .batch-card[data-open-batch]");
+    const card = materialCard || batchCard;
+    if (!card) return;
+    if (navigator.maxTouchPoints > 0) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const label = materialCard
+      ? printableLabel("material", materialCard.dataset.openMaterial)
+      : printableLabel("batch", batchCard.dataset.openBatch);
+    if (!label) return;
+    showSeedPrintMenu(label, event.clientX, event.clientY);
+  }, true);
+
+  seedPrintMenu.addEventListener("click", event => {
+    const choice = event.target.closest("[data-seed-print-count]");
+    if (!choice) return;
+    const label = printableLabel(seedPrintMenu.dataset.printKind, seedPrintMenu.dataset.printId);
+    const count = Number(choice.dataset.seedPrintCount);
+    closeSeedPrintMenu();
+    printSeedLabels(label, count);
+  });
+  document.addEventListener("click", event => {
+    if (!seedPrintMenu.hidden && !seedPrintMenu.contains(event.target) && !event.target.closest("[data-seed-print-menu-kind]")) closeSeedPrintMenu();
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && !seedPrintMenu.hidden) { closeSeedPrintMenu(); event.preventDefault(); }
+  });
+  content.addEventListener("click", async event => {
+    const printMenuTrigger = event.target.closest("[data-seed-print-menu-kind]");
+    if (printMenuTrigger) {
+      const label = printableLabel(printMenuTrigger.dataset.seedPrintMenuKind, printMenuTrigger.dataset.seedPrintMenuId);
+      if (label) {
+        const rect = printMenuTrigger.getBoundingClientRect();
+        showSeedPrintMenu(label, rect.left, rect.bottom + 4);
+      }
+      return;
+    }
     const batch = event.target.closest("[data-open-batch]");
     const seedling = event.target.closest("[data-open-seedling]");
     const crossing = event.target.closest("[data-open-crossing]");
     const material = event.target.closest("[data-open-material]");
     const group = event.target.closest("[data-open-group]");
-    const seedBoxToggle = event.target.closest("[data-seed-box-toggle]");
     const back = event.target.closest("[data-close-detail]");
     const newCrossing = event.target.closest("[data-new-crossing]");
     const registerHarvest = event.target.closest("[data-register-harvest]");
     const sowMaterial = event.target.closest("[data-sow-material]");
-    const editMaterialTaxon = event.target.closest("[data-edit-material-taxon]");
-    const adjustMaterial = event.target.closest("[data-adjust-material]");
+    const editMaterialAdmin = event.target.closest("[data-edit-material-admin]");
     const editBatch = event.target.closest("[data-edit-batch]");
     const registerSeedling = event.target.closest("[data-register-seedling]");
     const addMilestone = event.target.closest("[data-add-seedling-milestone]");
     const editSeedling = event.target.closest("[data-edit-seedling]");
+    const keepHibiscusSeedling = event.target.closest("[data-keep-hibiscus-seedling]");
     const galleryPhoto = event.target.closest("[data-gallery-photo]");
     const materialImageAction = event.target.closest("[data-material-image-action]");
     if (batch) updateRoute({vy: "sadder", del: "batcher", batch: batch.dataset.openBatch, planta: null, korsning: null, material: null});
@@ -1640,10 +1910,6 @@
     else if (crossing) updateRoute({vy: "korsningar", korsning: crossing.dataset.openCrossing, batch: null, planta: null, material: null});
     else if (material) updateRoute({vy: material.classList.contains("seed-box-card") ? "froer" : "sadder", del: "material", material: material.dataset.openMaterial, batch: null, planta: null, korsning: null});
     else if (group) updateRoute({vy: "uppdragning", art: group.dataset.openGroup, status: "Alla", batch: null, planta: null});
-    else if (seedBoxToggle) {
-      seedBoxExpanded = !seedBoxExpanded;
-      render();
-    }
     else if (back) updateRoute({batch: null, planta: null, korsning: null, material: null});
     else if (newCrossing) openCrossingRegistration();
     else if (registerHarvest) {
@@ -1654,13 +1920,9 @@
       const selectedMaterial = model.materialById.get(sowMaterial.dataset.sowMaterial);
       if (selectedMaterial) openSowBatchRegistration(selectedMaterial);
     }
-    else if (editMaterialTaxon) {
-      const selectedMaterial = model.materialById.get(editMaterialTaxon.dataset.editMaterialTaxon);
-      if (selectedMaterial?.type === "seed_lot") openMaterialTaxonEdit(selectedMaterial);
-    }
-    else if (adjustMaterial) {
-      const selectedMaterial = model.materialById.get(adjustMaterial.dataset.adjustMaterial);
-      if (selectedMaterial) openMaterialAdjustment(selectedMaterial);
+    else if (editMaterialAdmin) {
+      const selectedMaterial = model.materialById.get(editMaterialAdmin.dataset.editMaterialAdmin);
+      if (selectedMaterial) openMaterialAdminEdit(selectedMaterial);
     }
     else if (editBatch) {
       const selectedBatch = model.batchById.get(editBatch.dataset.editBatch);
@@ -1677,6 +1939,19 @@
     else if (editSeedling) {
       const selectedSeedling = model.seedlingById.get(editSeedling.dataset.editSeedling);
       if (selectedSeedling?.adapter === false) openSeedlingEdit(selectedSeedling);
+    }
+    else if (keepHibiscusSeedling) {
+      const selectedSeedling = model.seedlingById.get(keepHibiscusSeedling.dataset.keepHibiscusSeedling);
+      if (!selectedSeedling || selectedSeedling.species !== "Hibiskus" || selectedSeedling.status === "I samlingen") return;
+      queueLabChange("keep_hibiscus_seedling", {
+        seedling_id: selectedSeedling.internalId,
+        plant_id: selectedSeedling.internalId,
+        collection_category: "Hibiskus",
+        status: "I samlingen",
+        updated_at: new Date().toISOString()
+      });
+      await refreshModel();
+      updateRoute({planta: selectedSeedling.internalId, batch: null});
     }
     else if (materialImageAction) {
       const selectedMaterial = model.materialById.get(materialImageAction.dataset.materialId);
@@ -1794,7 +2069,7 @@
       if (typeof ensurePlantImageImport === "function") ensurePlantImageImport();
       await refreshModel();
       if ("serviceWorker" in navigator && window.isSecureContext) {
-        navigator.serviceWorker.register("service-worker.js?v=20").catch(() => {});
+        navigator.serviceWorker.register("service-worker.js?v=21").catch(() => {});
       }
     } catch (error) {
       console.error("Labbet kunde inte starta.", error);

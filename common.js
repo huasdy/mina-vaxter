@@ -831,7 +831,7 @@ function buildCrossingExport(items = getPendingCrossingItems()) {
 }
 
 const labChangeStorageKey = "mina-vaxter-lab-changes-v1";
-const labChangeKinds = Object.freeze(["crossing", "seed_harvest", "seed_lot", "sow_batch", "batch_update", "material_update", "seedling", "remove_seedling", "milestone", "update"]);
+const labChangeKinds = Object.freeze(["crossing", "seed_harvest", "seed_lot", "sow_batch", "batch_update", "material_update", "seedling", "remove_seedling", "milestone", "update", "keep_hibiscus_seedling"]);
 
 function getPendingLabItems() {
   try {
@@ -1232,35 +1232,40 @@ function ensurePlantPhotoGallery() {
     style.id = "plantGalleryStyles";
     style.textContent = `
       dialog.photo-gallery {
-        width: 100vw; height: 100vh; max-width: none; max-height: none; margin: 0; padding: 0;
-        background: #0d0c0b; color: white; border: 0;
+        position: fixed; inset: 0; width: auto; height: auto; max-width: none; max-height: none; margin: 0; padding: 0;
+        overflow: hidden; background: #241e1a; color: #fffaf4; border: 0;
       }
-      dialog.photo-gallery::backdrop { background: rgba(0,0,0,.82); }
-      .gallery-shell { width: 100%; height: 100%; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; }
+      dialog.photo-gallery::backdrop { background: rgba(38,29,23,.86); }
+      .gallery-shell { position: absolute; inset: 0; width: 100%; height: 100%; min-width: 0; min-height: 0; background: linear-gradient(145deg, #30251f, #1f1a17); }
       .gallery-top {
-        min-height: 58px; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 12px;
-        padding: max(12px, env(safe-area-inset-top)) 14px 10px;
+        position: absolute; z-index: 10; top: 0; left: 0; right: 0; min-height: 58px;
+        display: flex; justify-content: flex-end; align-items: center;
+        padding: max(12px, env(safe-area-inset-top)) 16px 8px; pointer-events: none;
+        background: linear-gradient(to bottom, rgba(31,26,23,.62), transparent);
       }
-      .gallery-title { grid-column: 2; min-width: 0; max-width: min(58vw, 680px); font-weight: 800; color: rgba(255,255,255,.88); overflow: hidden; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
-      .gallery-actions { grid-column: 3; justify-self: end; display: flex; align-items: center; gap: 8px; }
+      .gallery-title { min-width: 0; max-width: min(82vw, 760px); font-family: Georgia, "Times New Roman", serif; font-size: 1.05rem; font-weight: 650; color: rgba(255,250,244,.94); overflow: hidden; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
+      .gallery-actions { display: flex; align-items: center; justify-content: center; gap: 6px; min-width: 0; }
       .gallery-card-crop-button {
-        border: 1px solid rgba(255,255,255,.28); background: rgba(255,255,255,.12); color: white;
-        border-radius: 999px; min-height: 40px; padding: 0 13px; font: 800 .86rem/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        border: 1px solid rgba(255,250,244,.22); background: rgba(255,250,244,.08); color: rgba(255,250,244,.92);
+        border-radius: 999px; min-height: 36px; padding: 0 12px; font: 800 .78rem/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; cursor: pointer;
       }
-      .gallery-card-crop-button.active { background: white; color: #2b251f; }
-      .gallery-tools { display: flex; align-items: center; gap: 6px; padding: 4px; border-radius: 999px; background: rgba(255,255,255,.08); }
+      .gallery-card-crop-button.active { background: #fffaf4; color: #2b251f; }
+      .gallery-tools { display: flex; align-items: center; gap: 4px; padding: 3px; border: 1px solid rgba(255,250,244,.14); border-radius: 999px; background: rgba(255,250,244,.07); }
       .gallery-tool, .gallery-close, .gallery-nav {
-        border: 0; background: rgba(255,255,255,.14); color: white; border-radius: 999px;
+        border: 0; background: rgba(255,250,244,.12); color: #fffaf4; border-radius: 999px;
         width: 44px; min-width: 44px; height: 44px; flex: 0 0 44px; padding: 0; display: grid; place-items: center; font: 800 1.25rem/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       }
-      .gallery-tool { width: 38px; height: 36px; font-size: 1rem; }
-      .gallery-reset { width: auto; min-width: 56px; padding: 0 12px; font-size: .82rem; }
+      .gallery-tool:hover, .gallery-close:hover, .gallery-nav:hover { background: rgba(255,250,244,.2); }
+      .gallery-tool { width: 34px; min-width: 34px; height: 32px; font-size: .96rem; }
+      .gallery-reset { width: auto; min-width: 52px; padding: 0 10px; font-size: .76rem; }
       .gallery-tool:disabled { opacity: .38; cursor: default; }
-      .gallery-close { font-size: 1.6rem; }
-        .gallery-stage { position: relative; min-height: 0; display: grid; place-items: center; overflow: hidden; touch-action: none; overscroll-behavior: contain; }
+      .gallery-close { pointer-events: auto; width: 46px; min-width: 46px; height: 46px; font-size: 1.45rem; background: rgba(255,250,244,.16); }
+      .gallery-main { position: absolute; inset: 0; display: grid; place-items: center; min-width: 0; min-height: 0; overflow: hidden; box-sizing: border-box; padding: max(64px, env(safe-area-inset-top)) 76px 28px; }
+      .gallery-package { display: grid; grid-template-rows: auto auto; gap: 12px; width: min(100%, 1180px); max-width: 1180px; max-height: 100%; min-width: 0; }
+      .gallery-stage { position: relative; width: 100%; height: min(62vh, calc(100vh - 300px)); min-width: 0; min-height: 160px; display: grid; place-items: center; overflow: hidden; touch-action: none; overscroll-behavior: contain; }
         .gallery-image {
-          width: calc(100% - 16px); height: 100%; min-width: 0; min-height: 0;
-          max-width: none; max-height: none; object-fit: contain; display: block;
+          width: 100%; height: 100%; min-width: 0; min-height: 0;
+          max-width: 1180px; max-height: 100%; object-fit: contain; display: block;
           transform: translate3d(var(--pan-x, 0px), var(--pan-y, 0px), 0) scale(var(--zoom, 1));
           transform-origin: center center; transition: transform .14s ease; cursor: zoom-in; user-select: none; -webkit-user-drag: none;
         }
@@ -1279,75 +1284,91 @@ function ensurePlantPhotoGallery() {
         background: linear-gradient(to right, transparent 33.1%, rgba(255,255,255,.48) 33.3%, transparent 33.6%, transparent 66.4%, rgba(255,255,255,.48) 66.7%, transparent 66.9%),
                     linear-gradient(to bottom, transparent 33.1%, rgba(255,255,255,.48) 33.3%, transparent 33.6%, transparent 66.4%, rgba(255,255,255,.48) 66.7%, transparent 66.9%);
       }
-      .gallery-nav { position: absolute; top: 50%; transform: translateY(-50%); z-index: 2; }
-      .gallery-prev { left: 12px; }
-      .gallery-next { right: 12px; }
+      .gallery-nav { position: absolute; top: 50%; z-index: 6; width: 58px; min-width: 58px; height: 76px; transform: translateY(-50%); border: 1px solid rgba(255,250,244,.12); background: rgba(255,250,244,.07); font-size: 2rem; }
+      .gallery-prev { left: 14px; }
+      .gallery-next { right: 14px; }
       .gallery-nav[hidden] { display: none; }
-      .gallery-bottom { padding: 10px 16px max(16px, env(safe-area-inset-bottom)); text-align: center; }
-      .gallery-caption { color: rgba(255,255,255,.8); font-size: .94rem; font-weight: 650; }
-      .gallery-count { margin-top: 14px; color: rgba(255,255,255,.6); font-size: .82rem; font-weight: 700; }
-      .gallery-dots { display: flex; justify-content: center; gap: 7px; margin-top: 7px; }
-      .gallery-dot { width: 7px; height: 7px; border-radius: 999px; background: rgba(255,255,255,.32); }
-      .gallery-dot.active { background: white; }
+      .gallery-bottom { position: static; display: grid; gap: 9px; min-width: 0; padding: 10px 16px max(16px, env(safe-area-inset-bottom)); border: 1px solid rgba(255,250,244,.12); border-radius: 18px; background: #211a17; text-align: center; }
+      .gallery-standard-bottom { display: grid; gap: 9px; min-width: 0; }
+      .gallery-info { display: flex; align-items: baseline; justify-content: center; gap: 10px; min-width: 0; flex-wrap: wrap; }
+      .gallery-caption { min-width: 0; max-width: min(72vw, 760px); color: rgba(255,250,244,.8); font-size: .84rem; font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .gallery-count { color: rgba(255,250,244,.52); font-size: .76rem; font-weight: 750; white-space: nowrap; }
+      .gallery-thumbs { display: flex; justify-content: center; gap: 7px; min-width: 0; max-width: 100%; overflow-x: auto; padding: 1px 2px 3px; scrollbar-width: none; }
+      .gallery-thumbs::-webkit-scrollbar { display: none; }
+      .gallery-thumb { width: 58px; height: 44px; flex: 0 0 58px; overflow: hidden; border: 2px solid transparent; border-radius: 10px; padding: 0; background: rgba(255,250,244,.08); cursor: pointer; }
+      .gallery-thumb.active { border-color: #e6c9a9; box-shadow: 0 0 0 1px rgba(230,201,169,.24); }
+      .gallery-thumb img { width: 100%; height: 100%; display: block; object-fit: cover; }
+      .gallery-controlbar { display: flex; justify-content: center; min-width: 0; }
       .gallery-crop-bottom { display: grid; gap: 10px; }
-      .gallery-crop-help { color: rgba(255,255,255,.82); font-size: .9rem; font-weight: 750; }
+      .gallery-crop-help { color: rgba(255,250,244,.82); font-size: .9rem; font-weight: 750; }
       .gallery-crop-actions { display: flex; justify-content: center; gap: 9px; }
       .gallery-crop-actions button {
-        border: 1px solid rgba(255,255,255,.28); border-radius: 999px; padding: 10px 15px;
-        background: rgba(255,255,255,.12); color: white; font: inherit; font-weight: 850;
+        border: 1px solid rgba(255,250,244,.22); border-radius: 999px; padding: 10px 15px;
+        background: rgba(255,250,244,.1); color: #fffaf4; font: inherit; font-weight: 850;
       }
-      .gallery-crop-actions .primary { background: white; color: #2b251f; }
+      .gallery-crop-actions .primary { background: #fffaf4; color: #2b251f; }
       .gallery-crop-frame[hidden], .gallery-standard-bottom[hidden], .gallery-crop-bottom[hidden] { display: none; }
       @media (max-width: 700px) {
-        .gallery-title { max-width: calc(100vw - 88px); }
-        .gallery-tools { display: none; }
-        .gallery-nav {
-          display: grid; width: 42px; height: 52px; border-radius: 999px;
-          background: rgba(0,0,0,.32); backdrop-filter: blur(8px);
-        }
+        .gallery-top { min-height: 54px; padding-left: 12px; padding-right: 12px; }
+        .gallery-title { max-width: calc(100vw - 82px); font-size: .96rem; }
+        .gallery-main { padding: 60px 58px 20px; }
+        .gallery-stage { height: min(56vh, calc(100vh - 310px)); min-height: 132px; }
+        .gallery-nav { display: grid; width: 52px; min-width: 52px; height: 66px; background: rgba(255,250,244,.09); }
         .gallery-nav[hidden] { display: none; }
-        .gallery-prev { left: 8px; }
-          .gallery-next { right: 8px; }
-          .gallery-image { width: calc(100% - 16px); height: 100%; }
-        }
+        .gallery-prev { left: 5px; }
+        .gallery-next { right: 5px; }
+        .gallery-bottom { padding-left: 10px; padding-right: 10px; border-radius: 16px; }
+        .gallery-info { gap: 6px; }
+        .gallery-caption { max-width: calc(100vw - 74px); font-size: .78rem; }
+        .gallery-thumbs { justify-content: flex-start; }
+        .gallery-controlbar .gallery-card-crop-button { min-height: 34px; }
+      }
     `;
     document.head.appendChild(style);
   }
   if (dialog.dataset.ready === "true") return dialog;
   dialog.className = "photo-gallery";
   dialog.innerHTML = `
-    <div class="gallery-shell">
-      <div class="gallery-top">
-        <div aria-hidden="true"></div>
-        <div class="gallery-title" id="galleryTitle"></div>
-        <div class="gallery-actions">
-          <button class="gallery-card-crop-button" type="button">Kortutsnitt</button>
-          <div class="gallery-tools" aria-label="Bildzoom">
-            <button class="gallery-tool gallery-zoom-out" type="button" aria-label="Zooma ut">−</button>
-            <button class="gallery-tool gallery-reset" type="button" aria-label="Anpassa hela bilden till fönstret">Passa</button>
-            <button class="gallery-tool gallery-zoom-in" type="button" aria-label="Zooma in">+</button>
-          </div>
+      <div class="gallery-shell">
+        <div class="gallery-top">
           <button class="gallery-close" type="button" aria-label="Stäng">×</button>
         </div>
-      </div>
-      <div class="gallery-stage">
-        <button class="gallery-nav gallery-prev" type="button" aria-label="Föregående bild">‹</button>
-        <img class="gallery-image" id="modalImg" alt="">
-        <div class="gallery-crop-frame" hidden><img class="gallery-crop-image" alt=""></div>
-        <button class="gallery-nav gallery-next" type="button" aria-label="Nästa bild">›</button>
-      </div>
-      <div class="gallery-bottom">
-        <div class="gallery-standard-bottom">
-          <div class="gallery-caption" id="modalCaption"></div>
-          <div class="gallery-count" id="galleryCount"></div>
-          <div class="gallery-dots" id="galleryDots"></div>
+        <div class="gallery-main">
+          <div class="gallery-package">
+            <div class="gallery-stage">
+              <img class="gallery-image" id="modalImg" alt="">
+              <div class="gallery-crop-frame" hidden><img class="gallery-crop-image" alt=""></div>
+            </div>
+            <div class="gallery-bottom">
+              <div class="gallery-standard-bottom">
+                <div class="gallery-info">
+                  <div class="gallery-title" id="galleryTitle"></div>
+                  <div class="gallery-caption" id="modalCaption"></div>
+                  <div class="gallery-count" id="galleryCount"></div>
+                </div>
+                <div class="gallery-thumbs" id="galleryThumbs" aria-label="Välj bild"></div>
+              </div>
+              <div class="gallery-controlbar">
+                <div class="gallery-actions">
+                  <button class="gallery-card-crop-button" type="button">Kortutsnitt</button>
+                  <div class="gallery-tools" aria-label="Bildzoom">
+                    <button class="gallery-tool gallery-zoom-out" type="button" aria-label="Zooma ut">−</button>
+                    <button class="gallery-tool gallery-reset" type="button" aria-label="Anpassa hela bilden till fönstret">Passa</button>
+                    <button class="gallery-tool gallery-zoom-in" type="button" aria-label="Zooma in">+</button>
+                  </div>
+                </div>
+              </div>
+              <div class="gallery-crop-bottom" hidden>
+                <div class="gallery-crop-help">Dra bilden tills rätt del syns i ramen.</div>
+                <div class="gallery-crop-actions"><button type="button" data-crop-reset>Återställ</button><button class="primary" type="button" data-crop-save>Använd på kortet</button></div>
+              </div>
+            </div>
+          </div>
+          <button class="gallery-nav gallery-prev" type="button" aria-label="Föregående bild">‹</button>
+          <button class="gallery-nav gallery-next" type="button" aria-label="Nästa bild">›</button>
         </div>
-        <div class="gallery-crop-bottom" hidden>
-          <div class="gallery-crop-help">Dra bilden tills rätt del syns i ramen.</div>
-          <div class="gallery-crop-actions"><button type="button" data-crop-reset>Återställ</button><button class="primary" type="button" data-crop-save>Använd på kortet</button></div>
-        </div>
       </div>
-    </div>`;
+    `;
   dialog.dataset.ready = "true";
   dialog.galleryState = {
     items: [], index: 0, startX: 0, startY: 0,
@@ -1367,11 +1388,37 @@ function ensurePlantPhotoGallery() {
   const cropImage = dialog.querySelector(".gallery-crop-image");
   const standardBottom = dialog.querySelector(".gallery-standard-bottom");
   const cropBottom = dialog.querySelector(".gallery-crop-bottom");
+  const galleryThumbs = dialog.querySelector("#galleryThumbs");
+  const galleryMain = dialog.querySelector(".gallery-main");
+  const galleryPackage = dialog.querySelector(".gallery-package");
+  const galleryBottom = dialog.querySelector(".gallery-bottom");
+  const stage = dialog.querySelector(".gallery-stage");
   const updateZoomControls = () => {
     const state = dialog.galleryState;
     zoomOutButton.disabled = state.zoom <= 1.01;
     zoomInButton.disabled = state.zoom >= 3.99;
     resetButton.textContent = state.zoom <= 1.01 ? "Passa" : `${Math.round(state.zoom * 100)}%`;
+  };
+  const resizeGalleryPackage = () => {
+    const mainRect = galleryMain.getBoundingClientRect();
+    if (!mainRect.width || !mainRect.height) return;
+    const mainStyle = getComputedStyle(galleryMain);
+    const horizontalPadding = parseFloat(mainStyle.paddingLeft) + parseFloat(mainStyle.paddingRight);
+    const verticalPadding = parseFloat(mainStyle.paddingTop) + parseFloat(mainStyle.paddingBottom);
+    const availableWidth = Math.max(180, galleryMain.clientWidth - horizontalPadding);
+    const availableHeight = Math.max(160, galleryMain.clientHeight - verticalPadding);
+    const footerHeight = galleryBottom.offsetHeight || 104;
+    const maxWidth = Math.min(1180, availableWidth);
+    const maxHeight = Math.max(132, availableHeight - footerHeight - 12);
+    const ratio = img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : 1.35;
+    let height = Math.min(maxHeight, maxWidth / ratio);
+    let width = height * ratio;
+    if (width > maxWidth) {
+      width = maxWidth;
+      height = width / ratio;
+    }
+    galleryPackage.style.width = `${Math.round(width)}px`;
+    stage.style.height = `${Math.round(height)}px`;
   };
   const clampPan = () => {
     const state = dialog.galleryState;
@@ -1446,7 +1493,10 @@ function ensurePlantPhotoGallery() {
       cropImage.src = item.file;
       cropImage.alt = item.alt || item.title || "";
       updateCropPreview();
-      requestAnimationFrame(resizeCropFrame);
+      requestAnimationFrame(() => {
+        resizeGalleryPackage();
+        resizeCropFrame();
+      });
     }
   };
 
@@ -1461,14 +1511,22 @@ function ensurePlantPhotoGallery() {
     dialog.querySelector("#galleryTitle").textContent = item.title || "";
     dialog.querySelector("#modalCaption").textContent = item.caption || item.label || item.title || "";
     dialog.querySelector("#galleryCount").textContent = `${state.index + 1} av ${state.items.length}`;
-    dialog.querySelector("#galleryDots").innerHTML = state.items.map((_, dotIndex) =>
-      `<span class="gallery-dot ${dotIndex === state.index ? "active" : ""}"></span>`
-    ).join("");
+    galleryThumbs.innerHTML = state.items.length > 1
+      ? state.items.map((galleryItem, thumbIndex) => `<button class="gallery-thumb ${thumbIndex === state.index ? "active" : ""}" type="button" data-gallery-index="${thumbIndex}" aria-label="Bild ${thumbIndex + 1} av ${state.items.length}"><img src="${escapeAttr(galleryItem.file)}" alt="" loading="lazy"></button>`).join("")
+      : "";
     dialog.querySelector(".gallery-prev").hidden = state.items.length < 2;
     dialog.querySelector(".gallery-next").hidden = state.items.length < 2;
     if (state.cropMode) setCropMode(true);
+    requestAnimationFrame(resizeGalleryPackage);
   };
   dialog.galleryShow = show;
+  galleryThumbs.addEventListener("click", event => {
+    const thumb = event.target.closest("[data-gallery-index]");
+    if (!thumb) return;
+    event.preventDefault();
+    event.stopPropagation();
+    show(Number(thumb.dataset.galleryIndex));
+  });
   dialog.querySelector(".gallery-close").addEventListener("click", () => dialog.close());
   cropButton.addEventListener("click", event => {
     event.stopPropagation();
@@ -1518,7 +1576,6 @@ function ensurePlantPhotoGallery() {
     if (event.key === "0" || event.key === "Escape") resetZoom();
   });
 
-  const stage = dialog.querySelector(".gallery-stage");
   let cropDrag = null;
   cropFrame.addEventListener("pointerdown", event => {
     event.preventDefault();
@@ -1547,7 +1604,14 @@ function ensurePlantPhotoGallery() {
   // A drag ends with a synthetic click on iPhone. Keep that click inside the
   // crop frame; otherwise the gallery interprets it as zoom or next/previous.
   cropFrame.addEventListener("click", event => event.stopPropagation());
-  window.addEventListener("resize", resizeCropFrame);
+  img.addEventListener("load", () => {
+    resizeGalleryPackage();
+    if (dialog.galleryState.cropMode) resizeCropFrame();
+  });
+  window.addEventListener("resize", () => {
+    resizeGalleryPackage();
+    resizeCropFrame();
+  });
   stage.addEventListener("click", event => {
     if (dialog.galleryState.cropMode) return;
     if (event.target.closest(".gallery-nav")) return;
@@ -1838,7 +1902,7 @@ function ensurePlantMilestones() {
     }
     .plant-card .plant-card-chip-slot .chip.green { background: rgba(96,119,97,.17); color: #435943; }
     .plant-card .plant-card-gallery-slot {
-      position: absolute; top: 0; left: 0; right: 0; z-index: 4;
+      position: absolute; top: 0; left: 0; right: 0; z-index: 5; pointer-events: auto;
       height: var(--plant-gallery-height); overflow: hidden;
       padding: 5px 58px 5px 12px; display: flex; align-items: center;
       border: 0; border-bottom: 1px solid rgba(255,255,255,.18); border-radius: 0;
@@ -1852,7 +1916,7 @@ function ensurePlantMilestones() {
     }
     .plant-card .plant-card-gallery-slot .thumb,
     .plant-card .plant-card-gallery-slot .photo-button {
-      width: 40px; height: 40px; flex: 0 0 40px; padding: 0;
+      width: 40px; height: 40px; flex: 0 0 40px; padding: 0; position: relative; z-index: 1; pointer-events: auto;
       border: 2px solid transparent; border-radius: 9px; overflow: hidden; cursor: pointer;
       background: rgba(255,253,248,.82);
     }
@@ -3964,7 +4028,9 @@ async function openImageImportQueue() {
                 ? `Justerat frölager · ${data.seeds_remaining || "0"} kvar`
                 : item.kind === "seedling"
                   ? `Ny fröplanta · ${data.provisional_id || ""}`
-                  : item.kind === "milestone"
+              : item.kind === "keep_hibiscus_seedling"
+                ? `Behållen Hibiskus · ${data.plant_id || data.seedling_id || ""}`
+                : item.kind === "milestone"
                     ? `${data.type || "Milstolpe"} · ${data.date || ""}`
                     : `Uppdatera · ${data.seedling_id || ""}`;
     return `

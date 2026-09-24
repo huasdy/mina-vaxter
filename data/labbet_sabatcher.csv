@@ -1,4 +1,9 @@
 sow_batch_id,source_type,source_id,source_label,batch_number,batch_code,full_code,species_group,taxon,sown_date,seeds_sown,container_count,germinated_count,germinated_date,notes,created_at
+LABB-hibiskus-legacy-pl-h01,legacy,PL-H01,Rareplants.eu · okänd × okänd,1,B01,PL-H01-B01,Hibiskus,Hibiskus · okänd × okänd,2025-11-16,,,15,2025-12-24,2026-05-24 · Omplantering: 15 befintliga plantor omplanterades (batchhistorik).,2026-09-23T12:50:01+02:00
+LABB-hibiskus-legacy-pl-h02-a,legacy,PL-H02-A,Rareplants.eu · okänd × okänd,1,B01,PL-H02-A-B01,Hibiskus,Hibiskus · okänd × okänd,2026-06-25,11,,1,2026-07-06,,2026-09-23T12:50:01+02:00
+LABB-hibiskus-legacy-pl-h02-b,legacy,PL-H02-B,Rareplants.eu · 012 × 030,1,B01,PL-H02-B-B01,Hibiskus,Hibiskus · 012 × 030,2026-06-25,6,,1,2026-07-06,,2026-09-23T12:50:01+02:00
+LABB-hibiskus-legacy-pl-h02-c,legacy,PL-H02-C,Rareplants.eu · 030 × 041,1,B01,PL-H02-C-B01,Hibiskus,Hibiskus · 030 × 041,2026-06-25,6,,3,2026-07-06,,2026-09-23T12:50:01+02:00
+LABB-hibiskus-legacy-pl-h02-d,legacy,PL-H02-D,Rareplants.eu · 012 × okänd,1,B01,PL-H02-D-B01,Hibiskus,Hibiskus · 012 × okänd,2026-06-25,6,,3,2026-07-06,,2026-09-23T12:50:01+02:00
 LABB-legacy-AA9AC1EE9B4F-26A-B01,seed_harvest,LABH-legacy-AA9AC1EE9B4F-26A,,1,B01,26A-B01,Pelargon,P. gibbosum × P. laxum,2026-09-12,14,2,0,,,2026-09-12T10:00:00Z
 LABB-sta021-gigantea-20260916,seed_lot,LABL-sta021-gigantea-20260916,,1,B01,F04-B01,Stapelia,Stapelia gigantea,2026-09-09,5,,2,2026-09-12,Första grodd registrerad 2026-09-12.,2026-09-16T23:50:00+02:00
 LABB-sta029-hystrix-20260916,seed_lot,LABL-sta029-hystrix-20260916,,1,B01,F01-B01,Stapelia,Huernia hystrix,2026-09-09,5,,2,2026-09-12,Första grodd registrerad 2026-09-12.,2026-09-16T23:50:00+02:00

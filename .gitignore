@@ -4,3 +4,6 @@ data/*.backup
 bilder/pelargoner/p-cotyledonis-1_2026-06-21_stam.jpg
 bilder/pelargoner/p-cotyledonis-2_2026-06-21_stam.jpg
 originalarkiv-local.js
+node_modules/
+playwright-report/
+test-results/
