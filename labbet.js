@@ -2069,7 +2069,7 @@
       if (typeof ensurePlantImageImport === "function") ensurePlantImageImport();
       await refreshModel();
       if ("serviceWorker" in navigator && window.isSecureContext) {
-        navigator.serviceWorker.register("service-worker.js?v=21").catch(() => {});
+        navigator.serviceWorker.register("service-worker.js?v=22").catch(() => {});
       }
     } catch (error) {
       console.error("Labbet kunde inte starta.", error);
