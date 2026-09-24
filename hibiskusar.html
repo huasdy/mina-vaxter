@@ -209,7 +209,7 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script src="common.js?v=7e7a82d67cd6"></script>
+  <script src="common.js?v=846775f52a72"></script>
   <script src="hibiskus-george-import.js?v=20260814v1"></script>
   <script>
     function startHibiscusPage(snapshot) {
@@ -742,6 +742,7 @@
     markerFilter.addEventListener("change", render);
     sortSelect.addEventListener("change", render);
     window.addEventListener("plant-milestone-added", rebuild);
+    window.addEventListener("collection-plant-updated", rebuild);
     window.addEventListener("hibiscus-flower-data-changed", rebuild);
     rebuild();
     if (requestedTool === "milstolpar") openBulkMilestoneDialog();

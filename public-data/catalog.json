@@ -1,9 +1,228 @@
 {
   "schemaVersion": 4,
-  "catalogVersion": "2026-09-23-hibiskus-migrering",
+  "catalogVersion": "2026-09-24-synk-2212",
   "categories": {
     "Hibiskus": {
       "titleField": "id",
+      "profile": {
+        "sections": [
+          "Identitet",
+          "Ursprung och proveniens",
+          "Förvärv",
+          "Samlingsspecifikt",
+          "Anteckningar"
+        ],
+        "fields": [
+          {
+            "key": "id",
+            "label": "Permanent plant-ID",
+            "section": "Identitet",
+            "type": "text",
+            "editable": false
+          },
+          {
+            "key": "nickname",
+            "label": "Namn",
+            "section": "Identitet",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "status",
+            "label": "Status",
+            "section": "Identitet",
+            "type": "select",
+            "editable": true,
+            "options": [
+              "Grodd",
+              "Ej blommat / under utvärdering",
+              "Aktiv",
+              "Bortgiven",
+              "Avslutad/död"
+            ]
+          },
+          {
+            "key": "arrival_type",
+            "label": "Material/förvärvssätt",
+            "section": "Ursprung och proveniens",
+            "type": "select",
+            "editable": true,
+            "options": [
+              "Annat",
+              "Egen korsning",
+              "Frö",
+              "Gåva",
+              "Köpt planta",
+              "Stickling"
+            ]
+          },
+          {
+            "key": "source",
+            "label": "Källa",
+            "section": "Ursprung och proveniens",
+            "type": "select",
+            "editable": true,
+            "hide_for_arrival": "Gåva"
+          },
+          {
+            "key": "start_date",
+            "label": "Startdatum",
+            "section": "Ursprung och proveniens",
+            "type": "date",
+            "editable": true
+          },
+          {
+            "key": "supplier",
+            "label": "Leverantör/butik",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "seller",
+            "label": "Säljare",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "purchase_name",
+            "label": "Inköpsnamn",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true,
+            "hide_if_equal_to": [
+              "name",
+              "full_botanical_name",
+              "short_name"
+            ]
+          },
+          {
+            "key": "order_number",
+            "label": "Ordernummer",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "article_number",
+            "label": "Artikelnummer",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "purchase_date",
+            "label": "Inköpsdatum",
+            "section": "Förvärv",
+            "type": "date",
+            "editable": true
+          },
+          {
+            "key": "arrival_date",
+            "label": "Mottagningsdatum",
+            "section": "Förvärv",
+            "type": "date",
+            "editable": true
+          },
+          {
+            "key": "purchase_price_sek",
+            "label": "Inköpspris",
+            "section": "Förvärv",
+            "type": "decimal",
+            "editable": true,
+            "format": "sek"
+          },
+          {
+            "key": "purchase_price_original",
+            "label": "Originalpris",
+            "section": "Förvärv",
+            "type": "decimal",
+            "editable": true,
+            "currency_key": "purchase_currency"
+          },
+          {
+            "key": "purchase_currency",
+            "label": "Originalvaluta",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true,
+            "detail": false
+          },
+          {
+            "key": "purchase_exchange_rate",
+            "label": "Valutakurs",
+            "section": "Förvärv",
+            "type": "decimal",
+            "editable": true,
+            "format": "exchange_rate",
+            "currency_key": "purchase_currency"
+          },
+          {
+            "key": "purchase_exchange_rate_note",
+            "label": "Kursunderlag",
+            "section": "Förvärv",
+            "type": "textarea",
+            "editable": true
+          },
+          {
+            "key": "purchase_note",
+            "label": "Förvärvsnotering",
+            "section": "Förvärv",
+            "type": "textarea",
+            "editable": true
+          },
+          {
+            "key": "mother",
+            "label": "Moder",
+            "section": "Samlingsspecifikt",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "father",
+            "label": "Pollenförälder",
+            "section": "Samlingsspecifikt",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "crossing_id",
+            "label": "Korsnings-ID",
+            "section": "Samlingsspecifikt",
+            "type": "text",
+            "editable": false
+          },
+          {
+            "key": "sow_batch_id",
+            "label": "Såbatch",
+            "section": "Samlingsspecifikt",
+            "type": "text",
+            "editable": false
+          },
+          {
+            "key": "breeding_selected",
+            "label": "Utvald för framtida korsning",
+            "section": "Samlingsspecifikt",
+            "type": "checkbox",
+            "editable": true
+          },
+          {
+            "key": "cuttings_available",
+            "label": "Sticklingar tillgängliga",
+            "section": "Samlingsspecifikt",
+            "type": "checkbox",
+            "editable": true
+          },
+          {
+            "key": "notes",
+            "label": "Anteckningar",
+            "section": "Anteckningar",
+            "type": "textarea",
+            "editable": true
+          }
+        ]
+      },
       "plants": [
         {
           "id": "HIB-001",
@@ -24,7 +243,21 @@
           "card_image": "bilder/hibiskusar/HIB-001_synk-c157b46745_2026-08-14_blomma.jpg",
           "card_crop_x": "32.896",
           "card_crop_y": "57.4362",
-          "card_image_updated_at": "2026-08-14T15:33:20.442Z"
+          "card_image_updated_at": "2026-08-14T15:33:20.442Z",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "HIB-002",
@@ -45,7 +278,21 @@
           "card_image": "bilder/hibiskusar/HIB-002_synk-8f3fe5a3db_2026-08-13_blomma.jpg",
           "card_crop_x": "50.0972",
           "card_crop_y": "55.7461",
-          "card_image_updated_at": "2026-08-14T15:33:05.920Z"
+          "card_image_updated_at": "2026-08-14T15:33:05.920Z",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "PL-H01-A",
@@ -66,7 +313,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "PL-H01-B",
@@ -87,7 +348,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "PL-H01-C",
@@ -108,7 +383,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "PL-H01-D",
@@ -129,7 +418,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "PL-H01-G",
@@ -150,7 +453,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "PL-H01-H",
@@ -171,7 +488,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "PL-H01-I",
@@ -192,7 +523,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "PL-H01-J",
@@ -213,7 +558,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "PL-H01-K",
@@ -234,7 +593,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "PL-H01-L",
@@ -255,7 +628,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "PL-H01-M",
@@ -276,7 +663,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "PL-H01-N",
@@ -297,7 +698,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "PL-H01-O",
@@ -318,7 +733,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "PL-H01-Q",
@@ -339,7 +768,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "PL-H01-R",
@@ -360,7 +803,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "PL-H02-A-01",
@@ -381,7 +838,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "PL-H02-B-01",
@@ -402,7 +873,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "PL-H02-C-01",
@@ -423,7 +908,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "PL-H02-C-02",
@@ -444,7 +943,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "PL-H02-C-03",
@@ -465,7 +978,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "PL-H02-D-01",
@@ -486,7 +1013,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "PL-H02-D-02",
@@ -507,7 +1048,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "PL-H02-D-03",
@@ -528,7 +1083,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "notes": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         }
       ],
       "photos": [
@@ -1238,6 +1807,277 @@
     },
     "Pelargon": {
       "titleField": "name",
+      "profile": {
+        "sections": [
+          "Identitet",
+          "Ursprung och proveniens",
+          "Förvärv",
+          "Samlingsspecifikt",
+          "Anteckningar"
+        ],
+        "fields": [
+          {
+            "key": "id",
+            "label": "Internt ID",
+            "section": "Identitet",
+            "type": "text",
+            "editable": false
+          },
+          {
+            "key": "label_number",
+            "label": "Etikettnummer",
+            "section": "Identitet",
+            "type": "text",
+            "editable": false
+          },
+          {
+            "key": "name",
+            "label": "Sort/art eller individnamn",
+            "section": "Identitet",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "nickname",
+            "label": "Smeknamn",
+            "section": "Identitet",
+            "type": "text",
+            "editable": true,
+            "show_for_record_kind": "INDIVIDUAL"
+          },
+          {
+            "key": "record_kind",
+            "label": "Posttyp",
+            "section": "Identitet",
+            "type": "select",
+            "editable": true,
+            "options": [
+              "COLLECTION",
+              "INDIVIDUAL"
+            ],
+            "format": "record_kind"
+          },
+          {
+            "key": "collection_id",
+            "label": "Tillhör samlingskort",
+            "section": "Identitet",
+            "type": "select",
+            "editable": true,
+            "show_for_record_kind": "INDIVIDUAL"
+          },
+          {
+            "key": "specimen_count",
+            "label": "Antal exemplar",
+            "section": "Identitet",
+            "type": "number",
+            "editable": true,
+            "show_for_record_kind": "COLLECTION"
+          },
+          {
+            "key": "type",
+            "label": "Art/sort/hybrid",
+            "section": "Identitet",
+            "type": "select",
+            "editable": true
+          },
+          {
+            "key": "arrival_type",
+            "label": "Material/förvärvssätt",
+            "section": "Ursprung och proveniens",
+            "type": "select",
+            "editable": true,
+            "options": [
+              "Annat",
+              "Egen korsning",
+              "Frö",
+              "Gåva",
+              "Köpt planta",
+              "Stickling"
+            ]
+          },
+          {
+            "key": "source",
+            "label": "Källa",
+            "section": "Ursprung och proveniens",
+            "type": "select",
+            "editable": true,
+            "hide_for_arrival": "Gåva"
+          },
+          {
+            "key": "start_date",
+            "label": "Startdatum",
+            "section": "Ursprung och proveniens",
+            "type": "date",
+            "editable": true
+          },
+          {
+            "key": "supplier",
+            "label": "Leverantör/butik",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "seller",
+            "label": "Säljare",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "purchase_name",
+            "label": "Inköpsnamn",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true,
+            "hide_if_equal_to": [
+              "name",
+              "full_botanical_name",
+              "short_name"
+            ]
+          },
+          {
+            "key": "order_number",
+            "label": "Ordernummer",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "article_number",
+            "label": "Artikelnummer",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "purchase_date",
+            "label": "Inköpsdatum",
+            "section": "Förvärv",
+            "type": "date",
+            "editable": true
+          },
+          {
+            "key": "arrival_date",
+            "label": "Mottagningsdatum",
+            "section": "Förvärv",
+            "type": "date",
+            "editable": true
+          },
+          {
+            "key": "purchase_price_sek",
+            "label": "Inköpspris",
+            "section": "Förvärv",
+            "type": "decimal",
+            "editable": true,
+            "format": "sek"
+          },
+          {
+            "key": "purchase_price_original",
+            "label": "Originalpris",
+            "section": "Förvärv",
+            "type": "decimal",
+            "editable": true,
+            "currency_key": "purchase_currency"
+          },
+          {
+            "key": "purchase_currency",
+            "label": "Originalvaluta",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true,
+            "detail": false
+          },
+          {
+            "key": "purchase_exchange_rate",
+            "label": "Valutakurs",
+            "section": "Förvärv",
+            "type": "decimal",
+            "editable": true,
+            "format": "exchange_rate",
+            "currency_key": "purchase_currency"
+          },
+          {
+            "key": "purchase_exchange_rate_note",
+            "label": "Kursunderlag",
+            "section": "Förvärv",
+            "type": "textarea",
+            "editable": true
+          },
+          {
+            "key": "purchase_note",
+            "label": "Förvärvsnotering",
+            "section": "Förvärv",
+            "type": "textarea",
+            "editable": true
+          },
+          {
+            "key": "parentage",
+            "label": "Härstamning",
+            "section": "Samlingsspecifikt",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "crossing_id",
+            "label": "Korsnings-ID",
+            "section": "Samlingsspecifikt",
+            "type": "text",
+            "editable": false
+          },
+          {
+            "key": "seed_lot_id",
+            "label": "Fröparti",
+            "section": "Samlingsspecifikt",
+            "type": "text",
+            "editable": true,
+            "show_for_record_kind": "INDIVIDUAL"
+          },
+          {
+            "key": "sow_batch_id",
+            "label": "Såbatch",
+            "section": "Samlingsspecifikt",
+            "type": "text",
+            "editable": false
+          },
+          {
+            "key": "scent",
+            "label": "Doft",
+            "section": "Samlingsspecifikt",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "status",
+            "label": "Status",
+            "section": "Samlingsspecifikt",
+            "type": "select",
+            "editable": true
+          },
+          {
+            "key": "breeding_selected",
+            "label": "Utvald",
+            "section": "Samlingsspecifikt",
+            "type": "checkbox",
+            "editable": true,
+            "show_for_record_kind": "INDIVIDUAL"
+          },
+          {
+            "key": "cuttings_available",
+            "label": "Sticklingar tillgängliga",
+            "section": "Samlingsspecifikt",
+            "type": "checkbox",
+            "editable": true
+          },
+          {
+            "key": "notes",
+            "label": "Anteckningar",
+            "section": "Anteckningar",
+            "type": "textarea",
+            "editable": true
+          }
+        ]
+      },
       "plants": [
         {
           "id": "p-acetosum",
@@ -1269,7 +2109,20 @@
           "card_image": "bilder/pelargoner/p-acetosum_synk-fa0da0f811_2026-07-17_blomma.jpg",
           "card_crop_x": "52.2352",
           "card_crop_y": "50.676",
-          "card_image_updated_at": "2026-08-14T16:06:44.526Z"
+          "card_image_updated_at": "2026-08-14T16:06:44.526Z",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "p-australe-1",
@@ -1301,7 +2154,20 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "p-bowkeri-silver-leaf",
@@ -1315,7 +2181,7 @@
           "status": "",
           "scent": "",
           "source": "Ralf Paul Pelargonien, Tyskland",
-          "notes": "Pelargonium bowkeri ‘Silver Leaf’. Art: Pelargonium bowkeri. Typ: vildart/urval. Geofyt. Silvergrått finflikigt bladverk. Extremt fransiga blommor, blekgula/vita/rosa med violetta inslag. Beställd: 2026-09-01. Ordernummer: 1788. Pris: €22. Total order: €82 plantor + €18,50 frakt = €100,50. Status: Beställd, ännu inte mottagen.",
+          "notes": "Pelargonium bowkeri ‘Silver Leaf’. Art: Pelargonium bowkeri. Typ: vildart/urval. Geofyt. Silvergrått finflikigt bladverk. Extremt fransiga blommor, blekgula/vita/rosa med violetta inslag.",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -1333,7 +2199,20 @@
           "card_image": "bilder/pelargoner/p-bowkeri-silver-leaf_synk-83844cb492_2026-09-01_hel.jpg",
           "card_crop_x": "71.8609",
           "card_crop_y": "49.2365",
-          "card_image_updated_at": "2026-09-01T05:52:03.216Z"
+          "card_image_updated_at": "2026-09-01T05:52:03.216Z",
+          "supplier": "Ralf Paul Pelargonien",
+          "seller": "",
+          "purchase_name": "Pelargonium bowkeri silver leaf",
+          "order_number": "1788",
+          "article_number": "00027",
+          "purchase_date": "2026-09-01",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "22",
+          "purchase_currency": "EUR",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": "Ordertotal: 82 EUR plantor + 18,50 EUR frakt = 100,50 EUR. Frakten är inte fördelad på plantorna."
         },
         {
           "id": "p-cotyledonis-1",
@@ -1365,7 +2244,20 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "p-dimeierii-selma",
@@ -1379,7 +2271,7 @@
           "status": "",
           "scent": "",
           "source": "Ralf Paul Pelargonien, Tyskland",
-          "notes": "Pelargonium dimeierii ‘Selma’. Typ: hybrid. Säljarens registrerade namn: P. dimeierii ‘Selma’. Mycket långa tunna blomstänglar och mörkt röda blommor. Beställd: 2026-09-01. Ordernummer: 1788. Pris: €15. Total order: €82 plantor + €18,50 frakt = €100,50. Status: Beställd, ännu inte mottagen.",
+          "notes": "Pelargonium dimeierii ‘Selma’. Typ: hybrid. Säljarens registrerade namn: P. dimeierii ‘Selma’. Mycket långa tunna blomstänglar och mörkt röda blommor.",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -1397,7 +2289,20 @@
           "card_image": "bilder/pelargoner/p-dimeierii-selma_synk-9bce2214fe_2026-09-01_hel.jpg",
           "card_crop_x": "39.5865",
           "card_crop_y": "46.7686",
-          "card_image_updated_at": "2026-09-01T05:52:17.450Z"
+          "card_image_updated_at": "2026-09-01T05:52:17.450Z",
+          "supplier": "Ralf Paul Pelargonien",
+          "seller": "",
+          "purchase_name": "Pelargonium dimeierii 'Selma'",
+          "order_number": "1788",
+          "article_number": "00078",
+          "purchase_date": "2026-09-01",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "15",
+          "purchase_currency": "EUR",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": "Ordertotal: 82 EUR plantor + 18,50 EUR frakt = 100,50 EUR. Frakten är inte fördelad på plantorna."
         },
         {
           "id": "p-gibbosum-1",
@@ -1429,7 +2334,20 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "p-gibbosum-anethifolium",
@@ -1443,7 +2361,7 @@
           "status": "",
           "scent": "",
           "source": "Ralf Paul Pelargonien, Tyskland",
-          "notes": "Pelargonium gibbosum × anethifolium. Föräldrar: P. gibbosum × P. anethifolium. Gibbosum-hybrid med finare/flikigare bladverk och rosa–ljusa blommor. Beställd: 2026-09-01. Ordernummer: 1788. Pris: €10. Total order: €82 plantor + €18,50 frakt = €100,50. Status: Beställd, ännu inte mottagen.",
+          "notes": "Pelargonium gibbosum × anethifolium. Föräldrar: P. gibbosum × P. anethifolium. Gibbosum-hybrid med finare/flikigare bladverk och rosa–ljusa blommor.",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -1461,7 +2379,20 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "Ralf Paul Pelargonien",
+          "seller": "",
+          "purchase_name": "Pelargonium gibbosum X anethifolium",
+          "order_number": "1788",
+          "article_number": "00100",
+          "purchase_date": "2026-09-01",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "10",
+          "purchase_currency": "EUR",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": "Ordertotal: 82 EUR plantor + 18,50 EUR frakt = 100,50 EUR. Frakten är inte fördelad på plantorna."
         },
         {
           "id": "p-gibbosum-maroon-1",
@@ -1493,7 +2424,20 @@
           "card_image": "bilder/pelargoner/p-gibbosum-maroon-1_synk-c5d1c5c02a_2026-08-25_blomma.jpg",
           "card_crop_x": "52.5267",
           "card_crop_y": "56.9292",
-          "card_image_updated_at": "2026-08-25T12:29:14.282Z"
+          "card_image_updated_at": "2026-08-25T12:29:14.282Z",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "p-laxum-1",
@@ -1525,7 +2469,20 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "p-magenteum",
@@ -1557,7 +2514,20 @@
           "card_image": "bilder/pelargoner/p-magenteum_synk-f66141400c_2026-08-01_blomma.jpg",
           "card_crop_x": "47.7648",
           "card_crop_y": "44.2539",
-          "card_image_updated_at": "2026-08-14T16:07:17.774Z"
+          "card_image_updated_at": "2026-08-14T16:07:17.774Z",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "p-odoratissimum-1",
@@ -1589,7 +2559,20 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "p-sidoides",
@@ -1621,7 +2604,20 @@
           "card_image": "bilder/pelargoner/p-sidoides_synk-0e0577ba2f_2026-08-05_blomma.jpg",
           "card_crop_x": "52.0408",
           "card_crop_y": "26.5085",
-          "card_image_updated_at": "2026-08-14T16:07:27.279Z"
+          "card_image_updated_at": "2026-08-14T16:07:27.279Z",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "p-triffidum",
@@ -1653,7 +2649,20 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "p-caffrum-diana",
@@ -1685,7 +2694,20 @@
           "card_image": "bilder/pelargoner/p-caffrum-diana_synk-b1d8c54af2_2026-08-01_blomma.jpg",
           "card_crop_x": "50.5831",
           "card_crop_y": "37.6627",
-          "card_image_updated_at": "2026-08-14T16:07:36.835Z"
+          "card_image_updated_at": "2026-08-14T16:07:36.835Z",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "p-bontrosai-1",
@@ -1717,7 +2739,20 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "p-bothams-surprise-1",
@@ -1749,7 +2784,20 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "p-creamery",
@@ -1781,7 +2829,20 @@
           "card_image": "bilder/pelargoner/p-creamery_2026-07-04_blomma.jpg",
           "card_crop_x": "51.8465",
           "card_crop_y": "2.19705",
-          "card_image_updated_at": "2026-08-14T16:33:34.193Z"
+          "card_image_updated_at": "2026-08-14T16:33:34.193Z",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "p-cys-sunburst-1",
@@ -1813,7 +2874,20 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "p-dr-westerlund-1",
@@ -1845,7 +2919,20 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "p-gibbosina-bicolour",
@@ -1856,10 +2943,10 @@
           "type": "Hybrid/kultivar",
           "specimen_count": "1",
           "tags": "",
-          "status": "Beställd",
+          "status": "",
           "scent": "",
           "source": "Ralf Paul Pelargonien, Tyskland",
-          "notes": "Härstamning: P. gibbosum × (P. gibbosum × P. cortusifolium). Direkta föräldrar: P. gibbosum × P. ‘Cortusina’. ‘Cortusina’ = P. gibbosum × P. cortusifolium, vilket ger ungefär 75 % P. gibbosum-bakgrund. Inköpsdatum: 2026-09-01. Ordernummer: 1788. Pris: €0,00. Gåva/bonusplanta som Ralf Paul lade till utan kostnad i beställningen. Beställd, ännu inte mottagen.",
+          "notes": "Härstamning: P. gibbosum × (P. gibbosum × P. cortusifolium). Direkta föräldrar: P. gibbosum × P. ‘Cortusina’. ‘Cortusina’ = P. gibbosum × P. cortusifolium, vilket ger ungefär 75 % P. gibbosum-bakgrund. Gåva/bonusplanta som Ralf Paul lade till utan kostnad.",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -1877,7 +2964,20 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "Ralf Paul Pelargonien",
+          "seller": "",
+          "purchase_name": "P. ‘Gibbosina Bicolour’",
+          "order_number": "1788",
+          "article_number": "",
+          "purchase_date": "2026-09-01",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "0",
+          "purchase_currency": "EUR",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": "Ordertotal: 82 EUR plantor + 18,50 EUR frakt = 100,50 EUR. Frakten är inte fördelad på plantorna."
         },
         {
           "id": "p-glauciifolium",
@@ -1891,7 +2991,7 @@
           "status": "",
           "scent": "Kraftig nattdoft",
           "source": "Ralf Paul Pelargonien, Tyskland",
-          "notes": "Pelargonium × glauciifolium. Typ: art-/primärhybrid. Föräldrar: P. gibbosum × P. lobatum. Geofytisk gammal hybrid. Små mörkt auberginefärgade blommor med gröngul kant. Kraftig nattdoft. Beställd: 2026-09-01. Ordernummer: 1788. Pris: €15. Total order: €82 plantor + €18,50 frakt = €100,50. Status: Beställd, ännu inte mottagen.",
+          "notes": "Pelargonium × glauciifolium. Typ: art-/primärhybrid. Föräldrar: P. gibbosum × P. lobatum. Geofytisk gammal hybrid. Små mörkt auberginefärgade blommor med gröngul kant. Kraftig nattdoft.",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -1909,7 +3009,20 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "Ralf Paul Pelargonien",
+          "seller": "",
+          "purchase_name": "Pelargonium Glauciifolium",
+          "order_number": "1788",
+          "article_number": "00102",
+          "purchase_date": "2026-09-01",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "15",
+          "purchase_currency": "EUR",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": "Ordertotal: 82 EUR plantor + 18,50 EUR frakt = 100,50 EUR. Frakten är inte fördelad på plantorna."
         },
         {
           "id": "p-lemon-queen",
@@ -1941,7 +3054,20 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "p-nielsens-fragrans-1",
@@ -1973,7 +3099,20 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "p-prince-of-orange",
@@ -2005,7 +3144,20 @@
           "card_image": "bilder/pelargoner/p-prince-of-orange_2026-07-01_blomma.jpg",
           "card_crop_x": "50.7775",
           "card_crop_y": "39.8598",
-          "card_image_updated_at": "2026-08-14T16:08:08.137Z"
+          "card_image_updated_at": "2026-08-14T16:08:08.137Z",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "p-torento",
@@ -2037,7 +3189,20 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "p-rushmoor-mississippi",
@@ -2051,7 +3216,7 @@
           "status": "",
           "scent": "",
           "source": "Ralf Paul Pelargonien, Tyskland",
-          "notes": "Pelargonium Zonartic ‘Rushmoor Mississippi’. Typ: hybrid/sort. Utvald för den tydligt gula blomfärgen. Lemon-/smörgula fyllda till halvfyllda blommor. Beställd: 2026-09-01. Ordernummer: 1788. Pris: €20. Total order: €82 plantor + €18,50 frakt = €100,50. Status: Beställd, ännu inte mottagen.",
+          "notes": "Pelargonium Zonartic ‘Rushmoor Mississippi’. Typ: hybrid/sort. Utvald för den tydligt gula blomfärgen. Lemon-/smörgula fyllda till halvfyllda blommor.",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -2069,7 +3234,20 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "Ralf Paul Pelargonien",
+          "seller": "",
+          "purchase_name": "Pelargonium zonartic Rushmoor Mississippi",
+          "order_number": "1788",
+          "article_number": "00384",
+          "purchase_date": "2026-09-01",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "20",
+          "purchase_currency": "EUR",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": "Ordertotal: 82 EUR plantor + 18,50 EUR frakt = 100,50 EUR. Frakten är inte fördelad på plantorna."
         }
       ],
       "photos": [
@@ -2574,6 +3752,243 @@
     },
     "Citrus": {
       "titleField": "name",
+      "profile": {
+        "sections": [
+          "Identitet",
+          "Ursprung och proveniens",
+          "Förvärv",
+          "Samlingsspecifikt",
+          "Anteckningar"
+        ],
+        "fields": [
+          {
+            "key": "id",
+            "label": "Internt ID",
+            "section": "Identitet",
+            "type": "text",
+            "editable": false
+          },
+          {
+            "key": "name",
+            "label": "Namn",
+            "section": "Identitet",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "latin",
+            "label": "Botaniskt namn",
+            "section": "Identitet",
+            "type": "text",
+            "editable": true,
+            "hide_if_equal_to": [
+              "name"
+            ]
+          },
+          {
+            "key": "nickname",
+            "label": "Smeknamn",
+            "section": "Identitet",
+            "type": "text",
+            "editable": true,
+            "show_for_record_kind": "INDIVIDUAL"
+          },
+          {
+            "key": "record_kind",
+            "label": "Posttyp",
+            "section": "Identitet",
+            "type": "select",
+            "editable": true,
+            "options": [
+              "COLLECTION",
+              "INDIVIDUAL"
+            ],
+            "format": "record_kind"
+          },
+          {
+            "key": "collection_id",
+            "label": "Tillhör samlingskort",
+            "section": "Identitet",
+            "type": "select",
+            "editable": true,
+            "show_for_record_kind": "INDIVIDUAL"
+          },
+          {
+            "key": "specimen_count",
+            "label": "Antal exemplar",
+            "section": "Identitet",
+            "type": "number",
+            "editable": true,
+            "show_for_record_kind": "COLLECTION"
+          },
+          {
+            "key": "type",
+            "label": "Art/sort",
+            "section": "Identitet",
+            "type": "select",
+            "editable": true
+          },
+          {
+            "key": "rootstock",
+            "label": "Grundstam",
+            "section": "Ursprung och proveniens",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "arrival_type",
+            "label": "Material/förvärvssätt",
+            "section": "Ursprung och proveniens",
+            "type": "select",
+            "editable": true,
+            "options": [
+              "Annat",
+              "Egen korsning",
+              "Frö",
+              "Gåva",
+              "Köpt planta",
+              "Stickling"
+            ]
+          },
+          {
+            "key": "source",
+            "label": "Källa",
+            "section": "Ursprung och proveniens",
+            "type": "select",
+            "editable": true,
+            "hide_for_arrival": "Gåva"
+          },
+          {
+            "key": "start_date",
+            "label": "Startdatum",
+            "section": "Ursprung och proveniens",
+            "type": "date",
+            "editable": true
+          },
+          {
+            "key": "supplier",
+            "label": "Leverantör/butik",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "seller",
+            "label": "Säljare",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "purchase_name",
+            "label": "Inköpsnamn",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true,
+            "hide_if_equal_to": [
+              "name",
+              "full_botanical_name",
+              "short_name"
+            ]
+          },
+          {
+            "key": "order_number",
+            "label": "Ordernummer",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "article_number",
+            "label": "Artikelnummer",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "purchase_date",
+            "label": "Inköpsdatum",
+            "section": "Förvärv",
+            "type": "date",
+            "editable": true
+          },
+          {
+            "key": "arrival_date",
+            "label": "Mottagningsdatum",
+            "section": "Förvärv",
+            "type": "date",
+            "editable": true
+          },
+          {
+            "key": "purchase_price_sek",
+            "label": "Inköpspris",
+            "section": "Förvärv",
+            "type": "decimal",
+            "editable": true,
+            "format": "sek"
+          },
+          {
+            "key": "purchase_price_original",
+            "label": "Originalpris",
+            "section": "Förvärv",
+            "type": "decimal",
+            "editable": true,
+            "currency_key": "purchase_currency"
+          },
+          {
+            "key": "purchase_currency",
+            "label": "Originalvaluta",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true,
+            "detail": false
+          },
+          {
+            "key": "purchase_exchange_rate",
+            "label": "Valutakurs",
+            "section": "Förvärv",
+            "type": "decimal",
+            "editable": true,
+            "format": "exchange_rate",
+            "currency_key": "purchase_currency"
+          },
+          {
+            "key": "purchase_exchange_rate_note",
+            "label": "Kursunderlag",
+            "section": "Förvärv",
+            "type": "textarea",
+            "editable": true
+          },
+          {
+            "key": "purchase_note",
+            "label": "Förvärvsnotering",
+            "section": "Förvärv",
+            "type": "textarea",
+            "editable": true
+          },
+          {
+            "key": "status",
+            "label": "Status",
+            "section": "Samlingsspecifikt",
+            "type": "select",
+            "editable": true
+          },
+          {
+            "key": "cuttings_available",
+            "label": "Sticklingar tillgängliga",
+            "section": "Samlingsspecifikt",
+            "type": "checkbox",
+            "editable": true
+          },
+          {
+            "key": "notes",
+            "label": "Anteckningar",
+            "section": "Anteckningar",
+            "type": "textarea",
+            "editable": true
+          }
+        ]
+      },
       "plants": [
         {
           "id": "c-calamondin",
@@ -2596,7 +4011,21 @@
           "card_image": "bilder/citrus/c-calamondin_2026-06-24_hel.jpg",
           "card_crop_x": "41.3508",
           "card_crop_y": "18.9033",
-          "card_image_updated_at": "2026-08-14T16:04:23.464Z"
+          "card_image_updated_at": "2026-08-14T16:04:23.464Z",
+          "rootstock": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "c-limon-1",
@@ -2619,7 +4048,21 @@
           "card_image": "bilder/citrus/c-limon-1_2026-06-24_hel.jpg",
           "card_crop_x": "66.1322",
           "card_crop_y": "11.8052",
-          "card_image_updated_at": "2026-08-14T16:04:13.224Z"
+          "card_image_updated_at": "2026-08-14T16:04:13.224Z",
+          "rootstock": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "c-kaffirlime",
@@ -2642,7 +4085,21 @@
           "card_image": "bilder/citrus/c-kaffirlime_2026-06-24_hel.jpg",
           "card_crop_x": "49.8056",
           "card_crop_y": "23.6354",
-          "card_image_updated_at": "2026-08-14T16:03:37.703Z"
+          "card_image_updated_at": "2026-08-14T16:03:37.703Z",
+          "rootstock": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "c-kumquat-1",
@@ -2665,7 +4122,21 @@
           "card_image": "bilder/citrus/c-kumquat-1_2026-06-24_hel.jpg",
           "card_crop_x": "43.6832",
           "card_crop_y": "11.9993",
-          "card_image_updated_at": "2026-08-14T16:03:27.219Z"
+          "card_image_updated_at": "2026-08-14T16:03:27.219Z",
+          "rootstock": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "c-limequat",
@@ -2688,7 +4159,21 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "rootstock": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "c-pomelo",
@@ -2711,7 +4196,21 @@
           "card_image": "bilder/citrus/c-pomelo_synk-e0f75a2974_2026-08-13_hel.jpg",
           "card_crop_x": "51.4577",
           "card_crop_y": "69.4354",
-          "card_image_updated_at": "2026-08-14T16:03:04.964Z"
+          "card_image_updated_at": "2026-08-14T16:03:04.964Z",
+          "rootstock": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "c-rod-fingerlime",
@@ -2734,7 +4233,21 @@
           "card_image": "bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jpg",
           "card_crop_x": "48.2507",
           "card_crop_y": "16.7063",
-          "card_image_updated_at": "2026-08-14T16:04:34.628Z"
+          "card_image_updated_at": "2026-08-14T16:04:34.628Z",
+          "rootstock": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         }
       ],
       "photos": [
@@ -2805,12 +4318,245 @@
     },
     "Udda": {
       "titleField": "name",
+      "profile": {
+        "sections": [
+          "Identitet",
+          "Ursprung och proveniens",
+          "Förvärv",
+          "Samlingsspecifikt",
+          "Anteckningar"
+        ],
+        "fields": [
+          {
+            "key": "id",
+            "label": "Permanent plant-ID",
+            "section": "Identitet",
+            "type": "text",
+            "editable": false
+          },
+          {
+            "key": "name",
+            "label": "Namn",
+            "section": "Identitet",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "latin",
+            "label": "Taxon/art/sort",
+            "section": "Identitet",
+            "type": "text",
+            "editable": true,
+            "hide_if_equal_to": [
+              "name"
+            ]
+          },
+          {
+            "key": "type",
+            "label": "Typ",
+            "section": "Identitet",
+            "type": "select",
+            "editable": true
+          },
+          {
+            "key": "record_kind",
+            "label": "Posttyp",
+            "section": "Identitet",
+            "type": "select",
+            "editable": true,
+            "options": [
+              "COLLECTION",
+              "INDIVIDUAL",
+              "GROUP"
+            ],
+            "format": "record_kind"
+          },
+          {
+            "key": "collection_id",
+            "label": "Tillhör grupp/samlingspost",
+            "section": "Identitet",
+            "type": "text",
+            "editable": true,
+            "show_for_record_kind": "INDIVIDUAL"
+          },
+          {
+            "key": "specimen_count",
+            "label": "Antal exemplar",
+            "section": "Identitet",
+            "type": "number",
+            "editable": true,
+            "show_for_record_kind": "GROUP"
+          },
+          {
+            "key": "arrival_type",
+            "label": "Material/förvärvssätt",
+            "section": "Ursprung och proveniens",
+            "type": "select",
+            "editable": true,
+            "options": [
+              "Annat",
+              "Egen korsning",
+              "Frö",
+              "Gåva",
+              "Köpt planta",
+              "Stickling"
+            ]
+          },
+          {
+            "key": "source",
+            "label": "Källa",
+            "section": "Ursprung och proveniens",
+            "type": "select",
+            "editable": true,
+            "hide_for_arrival": "Gåva"
+          },
+          {
+            "key": "start_date",
+            "label": "Startdatum",
+            "section": "Ursprung och proveniens",
+            "type": "date",
+            "editable": true
+          },
+          {
+            "key": "supplier",
+            "label": "Leverantör/butik",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "seller",
+            "label": "Säljare",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "purchase_name",
+            "label": "Inköpsnamn",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true,
+            "hide_if_equal_to": [
+              "name",
+              "full_botanical_name",
+              "short_name"
+            ]
+          },
+          {
+            "key": "order_number",
+            "label": "Ordernummer",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "article_number",
+            "label": "Artikelnummer",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "purchase_date",
+            "label": "Inköpsdatum",
+            "section": "Förvärv",
+            "type": "date",
+            "editable": true
+          },
+          {
+            "key": "arrival_date",
+            "label": "Mottagningsdatum",
+            "section": "Förvärv",
+            "type": "date",
+            "editable": true
+          },
+          {
+            "key": "purchase_price_sek",
+            "label": "Inköpspris",
+            "section": "Förvärv",
+            "type": "decimal",
+            "editable": true,
+            "format": "sek"
+          },
+          {
+            "key": "purchase_price_original",
+            "label": "Originalpris",
+            "section": "Förvärv",
+            "type": "decimal",
+            "editable": true,
+            "currency_key": "purchase_currency"
+          },
+          {
+            "key": "purchase_currency",
+            "label": "Originalvaluta",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true,
+            "detail": false
+          },
+          {
+            "key": "purchase_exchange_rate",
+            "label": "Valutakurs",
+            "section": "Förvärv",
+            "type": "decimal",
+            "editable": true,
+            "format": "exchange_rate",
+            "currency_key": "purchase_currency"
+          },
+          {
+            "key": "purchase_exchange_rate_note",
+            "label": "Kursunderlag",
+            "section": "Förvärv",
+            "type": "textarea",
+            "editable": true
+          },
+          {
+            "key": "purchase_note",
+            "label": "Förvärvsnotering",
+            "section": "Förvärv",
+            "type": "textarea",
+            "editable": true
+          },
+          {
+            "key": "tags",
+            "label": "Taggar",
+            "section": "Samlingsspecifikt",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "status",
+            "label": "Status",
+            "section": "Samlingsspecifikt",
+            "type": "select",
+            "editable": true
+          },
+          {
+            "key": "cuttings_available",
+            "label": "Sticklingar tillgängliga",
+            "section": "Samlingsspecifikt",
+            "type": "checkbox",
+            "editable": true
+          },
+          {
+            "key": "notes",
+            "label": "Anteckningar",
+            "section": "Anteckningar",
+            "type": "textarea",
+            "editable": true
+          }
+        ]
+      },
       "plants": [
         {
           "id": "SP-006",
           "name": "Fredskalla",
           "latin": "Spathiphyllum wallisii",
           "type": "Krukväxt",
+          "record_kind": "",
+          "collection_id": "",
+          "specimen_count": "",
           "tags": "",
           "status": "Aktiv",
           "source": "",
@@ -2824,13 +4570,29 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "SP-005",
           "name": "Hjärtbräken",
           "latin": "Hemionitis arifolia",
           "type": "Krukväxt",
+          "record_kind": "",
+          "collection_id": "",
+          "specimen_count": "",
           "tags": "",
           "status": "Aktiv",
           "source": "",
@@ -2844,13 +4606,29 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "SP-002",
           "name": "Patchouli",
           "latin": "Pogostemon cablin",
           "type": "Doftväxt",
+          "record_kind": "",
+          "collection_id": "",
+          "specimen_count": "",
           "tags": "Frö",
           "status": "Aktiv",
           "source": "",
@@ -2864,13 +4642,29 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "SP-010",
           "name": "Patchouli",
           "latin": "Pogostemon cablin",
           "type": "Doftväxt",
+          "record_kind": "",
+          "collection_id": "",
+          "specimen_count": "",
           "tags": "Frö",
           "status": "Bortgiven",
           "source": "",
@@ -2884,13 +4678,29 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "SP-009",
           "name": "Pillerfikus",
           "latin": "Ficus deltoidea",
           "type": "",
+          "record_kind": "",
+          "collection_id": "",
+          "specimen_count": "",
           "tags": "",
           "status": "Bortgiven",
           "source": "Blomsterlandet",
@@ -2904,13 +4714,29 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "SP-004",
           "name": "Plumeria",
           "latin": "Plumeria spp.",
           "type": "Krukväxt",
+          "record_kind": "",
+          "collection_id": "",
+          "specimen_count": "",
           "tags": "",
           "status": "Aktiv",
           "source": "",
@@ -2924,13 +4750,29 @@
           "card_image": "bilder/udda/SP-004_plumeria_2026-06-27_hel.jpg",
           "card_crop_x": "46.4043",
           "card_crop_y": "26.5085",
-          "card_image_updated_at": "2026-08-14T16:12:44.763Z"
+          "card_image_updated_at": "2026-08-14T16:12:44.763Z",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "SP-003",
           "name": "Salvia apiana",
           "latin": "Salvia apiana",
           "type": "Doftväxt",
+          "record_kind": "",
+          "collection_id": "",
+          "specimen_count": "",
           "tags": "Frö",
           "status": "Under uppdragning",
           "source": "",
@@ -2944,13 +4786,29 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "SP-001",
           "name": "Stapelia mix",
           "latin": "Stapelia spp.",
           "type": "Krukväxt",
+          "record_kind": "",
+          "collection_id": "",
+          "specimen_count": "",
           "tags": "Frö",
           "status": "Aktiv",
           "source": "",
@@ -2964,13 +4822,29 @@
           "card_image": "bilder/udda/SP-001_synk-e1900dea6f_2026-07-17_hel.jpg",
           "card_crop_x": "57.483",
           "card_crop_y": "12.4812",
-          "card_image_updated_at": "2026-08-14T16:12:21.818Z"
+          "card_image_updated_at": "2026-08-14T16:12:21.818Z",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "SP-008",
           "name": "The Monster",
           "latin": "Cyphomandra betacea",
           "type": "Krukväxt",
+          "record_kind": "",
+          "collection_id": "",
+          "specimen_count": "",
           "tags": "Frö",
           "status": "",
           "source": "Jalapeno.nu",
@@ -2984,13 +4858,29 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "SP-011",
           "name": "Vippjasmin",
           "latin": "Jasminum polyanthum",
           "type": "",
+          "record_kind": "",
+          "collection_id": "",
+          "specimen_count": "",
           "tags": "",
           "status": "",
           "source": "Blomsterlandet",
@@ -3004,13 +4894,29 @@
           "card_image": "bilder/udda/SP-011_synk-ca92cff2f5_2026-08-27_hel.jpg",
           "card_crop_x": "62.8999",
           "card_crop_y": "50",
-          "card_image_updated_at": "2026-08-27T15:50:39.197Z"
+          "card_image_updated_at": "2026-08-27T15:50:39.197Z",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "SP-007",
           "name": "Ödesträd",
           "latin": "Clerodendrum thomsoniae",
           "type": "Krukväxt",
+          "record_kind": "",
+          "collection_id": "",
+          "specimen_count": "",
           "tags": "",
           "status": "Aktiv",
           "source": "Tradera",
@@ -3024,7 +4930,20 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "supplier": "",
+          "seller": "",
+          "purchase_name": "",
+          "order_number": "",
+          "article_number": "",
+          "purchase_date": "",
+          "arrival_date": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_currency": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         }
       ],
       "photos": [
@@ -3200,6 +5119,312 @@
     },
     "Stapeliader": {
       "titleField": "short_name",
+      "profile": {
+        "sections": [
+          "Identitet",
+          "Ursprung och proveniens",
+          "Förvärv",
+          "Samlingsspecifikt",
+          "Anteckningar"
+        ],
+        "fields": [
+          {
+            "key": "id",
+            "label": "Permanent plant-ID",
+            "section": "Identitet",
+            "type": "text",
+            "editable": false
+          },
+          {
+            "key": "full_botanical_name",
+            "label": "Fullständigt botaniskt namn",
+            "section": "Identitet",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "short_name",
+            "label": "Etikettnamn",
+            "section": "Identitet",
+            "type": "text",
+            "editable": true,
+            "hide_if_equal_to": [
+              "full_botanical_name"
+            ]
+          },
+          {
+            "key": "genus",
+            "label": "Släkte",
+            "section": "Identitet",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "species",
+            "label": "Art",
+            "section": "Identitet",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "infraspecific_taxon",
+            "label": "Underart/varietet/form",
+            "section": "Identitet",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "accession_field_number",
+            "label": "Accession/fältnummer",
+            "section": "Ursprung och proveniens",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "provenance_location",
+            "label": "Proveniens/lokalitet",
+            "section": "Ursprung och proveniens",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "accepted_name_or_synonym",
+            "label": "Accepterat namn/synonym",
+            "section": "Ursprung och proveniens",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "acquisition_type",
+            "label": "Material/förvärvssätt",
+            "section": "Ursprung och proveniens",
+            "type": "select",
+            "editable": true,
+            "options": [
+              "Frö",
+              "Stickling",
+              "Levande planta",
+              "Gåva"
+            ]
+          },
+          {
+            "key": "supplier",
+            "label": "Leverantör/butik",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "seller",
+            "label": "Säljare",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "purchase_name",
+            "label": "Inköpsnamn",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true,
+            "hide_if_equal_to": [
+              "name",
+              "full_botanical_name",
+              "short_name"
+            ]
+          },
+          {
+            "key": "order_number",
+            "label": "Ordernummer",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "article_number",
+            "label": "Artikelnummer",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "purchase_date",
+            "label": "Inköpsdatum",
+            "section": "Förvärv",
+            "type": "date",
+            "editable": true
+          },
+          {
+            "key": "arrival_date",
+            "label": "Mottagningsdatum",
+            "section": "Förvärv",
+            "type": "date",
+            "editable": true
+          },
+          {
+            "key": "purchase_price_sek",
+            "label": "Inköpspris",
+            "section": "Förvärv",
+            "type": "decimal",
+            "editable": true,
+            "format": "sek"
+          },
+          {
+            "key": "purchase_price_original",
+            "label": "Originalpris",
+            "section": "Förvärv",
+            "type": "decimal",
+            "editable": true,
+            "currency_key": "purchase_currency"
+          },
+          {
+            "key": "purchase_currency",
+            "label": "Originalvaluta",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true,
+            "detail": false
+          },
+          {
+            "key": "purchase_exchange_rate",
+            "label": "Valutakurs",
+            "section": "Förvärv",
+            "type": "decimal",
+            "editable": true,
+            "format": "exchange_rate",
+            "currency_key": "purchase_currency"
+          },
+          {
+            "key": "purchase_exchange_rate_note",
+            "label": "Kursunderlag",
+            "section": "Förvärv",
+            "type": "textarea",
+            "editable": true
+          },
+          {
+            "key": "purchase_note",
+            "label": "Förvärvsnotering",
+            "section": "Förvärv",
+            "type": "textarea",
+            "editable": true
+          },
+          {
+            "key": "purchase_quantity",
+            "label": "Inköpsantal",
+            "section": "Förvärv",
+            "type": "number",
+            "editable": true
+          },
+          {
+            "key": "package_quantity",
+            "label": "Mängd",
+            "section": "Förvärv",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "original_seed_count",
+            "label": "Ursprungligt fröantal",
+            "section": "Förvärv",
+            "type": "number",
+            "editable": true
+          },
+          {
+            "key": "seed_lot_id",
+            "label": "Fröparti-ID",
+            "section": "Samlingsspecifikt",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "sown_date",
+            "label": "Sådatum",
+            "section": "Samlingsspecifikt",
+            "type": "date",
+            "editable": true
+          },
+          {
+            "key": "germination_date",
+            "label": "Grodddatum",
+            "section": "Samlingsspecifikt",
+            "type": "date",
+            "editable": true
+          },
+          {
+            "key": "status",
+            "label": "Status",
+            "section": "Samlingsspecifikt",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "expected_scent",
+            "label": "Förväntad doft",
+            "section": "Samlingsspecifikt",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "own_scent_observation",
+            "label": "Egen doftobservation",
+            "section": "Samlingsspecifikt",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "scent_strength",
+            "label": "Doftstyrka",
+            "section": "Samlingsspecifikt",
+            "type": "select",
+            "editable": true,
+            "options": [
+              "0",
+              "1",
+              "2",
+              "3",
+              "4",
+              "5"
+            ],
+            "suffix": "/5"
+          },
+          {
+            "key": "scent_description",
+            "label": "Doftbeskrivning",
+            "section": "Samlingsspecifikt",
+            "type": "textarea",
+            "editable": true
+          },
+          {
+            "key": "scent_distance",
+            "label": "Doftavstånd",
+            "section": "Samlingsspecifikt",
+            "type": "text",
+            "editable": true
+          },
+          {
+            "key": "scent_veto",
+            "label": "☠️-flagga",
+            "section": "Samlingsspecifikt",
+            "type": "checkbox",
+            "editable": true,
+            "show_when": "ja"
+          },
+          {
+            "key": "cuttings_available",
+            "label": "Sticklingar tillgängliga",
+            "section": "Samlingsspecifikt",
+            "type": "checkbox",
+            "editable": true
+          },
+          {
+            "key": "notes",
+            "label": "Anteckningar",
+            "section": "Anteckningar",
+            "type": "textarea",
+            "editable": true
+          }
+        ]
+      },
       "plants": [
         {
           "id": "STA-005",
@@ -3223,7 +5448,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -3240,7 +5465,15 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "seller": "",
+          "purchase_name": "Duvalia sulcata ssp. seminuda",
+          "article_number": "",
+          "purchase_price_sek": "60",
+          "purchase_price_original": "5.11",
+          "purchase_exchange_rate": "11.65",
+          "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
+          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
         },
         {
           "id": "STA-011",
@@ -3264,7 +5497,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -3281,7 +5514,15 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "seller": "",
+          "purchase_name": "Echidnopsis cereiformis (Brown-red flowers)",
+          "article_number": "",
+          "purchase_price_sek": "60",
+          "purchase_price_original": "5.11",
+          "purchase_exchange_rate": "11.65",
+          "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
+          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
         },
         {
           "id": "STA-017",
@@ -3305,7 +5546,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -3322,7 +5563,15 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "seller": "",
+          "purchase_name": "Huernia hystrix f. cristata",
+          "article_number": "",
+          "purchase_price_sek": "93",
+          "purchase_price_original": "7.95",
+          "purchase_exchange_rate": "11.65",
+          "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
+          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
         },
         {
           "id": "STA-007",
@@ -3346,7 +5595,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -3363,7 +5612,15 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "seller": "",
+          "purchase_name": "Huernia keniensis var. nairobiensis",
+          "article_number": "",
+          "purchase_price_sek": "63",
+          "purchase_price_original": "5.45",
+          "purchase_exchange_rate": "11.65",
+          "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
+          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
         },
         {
           "id": "STA-012",
@@ -3387,7 +5644,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -3404,7 +5661,15 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "seller": "",
+          "purchase_name": "Huernia laevis f.ma. Harras",
+          "article_number": "",
+          "purchase_price_sek": "72",
+          "purchase_price_original": "6.14",
+          "purchase_exchange_rate": "11.65",
+          "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
+          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
         },
         {
           "id": "STA-035",
@@ -3428,7 +5693,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -3445,7 +5710,15 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "seller": "",
+          "purchase_name": "Huernia macrocarpa",
+          "article_number": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "STA-001",
@@ -3469,7 +5742,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -3486,7 +5759,15 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "seller": "",
+          "purchase_name": "Huernia rosea RH230 East Al Mayaraba Harar Mt. Yemen",
+          "article_number": "",
+          "purchase_price_sek": "83",
+          "purchase_price_original": "7.16",
+          "purchase_exchange_rate": "11.65",
+          "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
+          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
         },
         {
           "id": "STA-006",
@@ -3510,7 +5791,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -3527,7 +5808,15 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "seller": "",
+          "purchase_name": "Huernia pendurata",
+          "article_number": "",
+          "purchase_price_sek": "40",
+          "purchase_price_original": "3.41",
+          "purchase_exchange_rate": "11.65",
+          "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
+          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
         },
         {
           "id": "STA-034",
@@ -3551,7 +5840,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -3568,7 +5857,15 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "seller": "",
+          "purchase_name": "Huernia cv. PINK EYE",
+          "article_number": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "STA-016",
@@ -3592,7 +5889,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -3609,7 +5906,15 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "seller": "",
+          "purchase_name": "Pachycymbium deflersiana CLONE B ocher & purple (Orbea deflersiana)",
+          "article_number": "",
+          "purchase_price_sek": "72",
+          "purchase_price_original": "6.14",
+          "purchase_exchange_rate": "11.65",
+          "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
+          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
         },
         {
           "id": "STA-009",
@@ -3633,7 +5938,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -3650,7 +5955,15 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "seller": "",
+          "purchase_name": "Orbeanthus hardyi (Stapelianthus hardyi)",
+          "article_number": "",
+          "purchase_price_sek": "72",
+          "purchase_price_original": "6.14",
+          "purchase_exchange_rate": "11.65",
+          "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
+          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
         },
         {
           "id": "STA-010",
@@ -3674,7 +5987,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -3691,7 +6004,15 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "seller": "",
+          "purchase_name": "Caralluma lutea",
+          "article_number": "",
+          "purchase_price_sek": "99",
+          "purchase_price_original": "8.53",
+          "purchase_exchange_rate": "11.65",
+          "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
+          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
         },
         {
           "id": "STA-020",
@@ -3715,7 +6036,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -3732,7 +6053,15 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "seller": "",
+          "purchase_name": "Orbea speciosa × variagata",
+          "article_number": "",
+          "purchase_price_sek": "72",
+          "purchase_price_original": "6.14",
+          "purchase_exchange_rate": "11.65",
+          "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
+          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
         },
         {
           "id": "STA-019",
@@ -3756,7 +6085,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -3773,7 +6102,15 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "seller": "",
+          "purchase_name": "Orbea semota v. lutea",
+          "article_number": "",
+          "purchase_price_sek": "159",
+          "purchase_price_original": "13.64",
+          "purchase_exchange_rate": "11.65",
+          "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
+          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
         },
         {
           "id": "STA-015",
@@ -3797,7 +6134,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -3814,7 +6151,15 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "seller": "",
+          "purchase_name": "Orbea sp. Cypro",
+          "article_number": "",
+          "purchase_price_sek": "60",
+          "purchase_price_original": "5.11",
+          "purchase_exchange_rate": "11.65",
+          "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
+          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
         },
         {
           "id": "STA-032",
@@ -3855,7 +6200,15 @@
           "card_image": "bilder/stapeliader/STA-032_2026-09-03_hel.jpg",
           "card_crop_x": "72.4004",
           "card_crop_y": "49.9509",
-          "card_image_updated_at": "2026-09-09T10:44:21.542Z"
+          "card_image_updated_at": "2026-09-09T10:44:21.542Z",
+          "seller": "",
+          "purchase_name": "Piaranthus geminatus v. foetidus (Dysseldorp)",
+          "article_number": "",
+          "purchase_price_sek": "",
+          "purchase_price_original": "45",
+          "purchase_exchange_rate": "",
+          "purchase_exchange_rate_note": "",
+          "purchase_note": ""
         },
         {
           "id": "STA-002",
@@ -3879,7 +6232,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -3896,7 +6249,15 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "seller": "",
+          "purchase_name": "Piaranthus globosus",
+          "article_number": "",
+          "purchase_price_sek": "48",
+          "purchase_price_original": "4.09",
+          "purchase_exchange_rate": "11.65",
+          "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
+          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
         },
         {
           "id": "STA-018",
@@ -3920,7 +6281,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -3937,7 +6298,15 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "seller": "",
+          "purchase_name": "Piaranthus framesii",
+          "article_number": "",
+          "purchase_price_sek": "93",
+          "purchase_price_original": "7.95",
+          "purchase_exchange_rate": "11.65",
+          "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
+          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
         },
         {
           "id": "STA-004",
@@ -3961,7 +6330,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -3978,7 +6347,15 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "seller": "",
+          "purchase_name": "Stapelianthus decaryi",
+          "article_number": "",
+          "purchase_price_sek": "60",
+          "purchase_price_original": "5.11",
+          "purchase_exchange_rate": "11.65",
+          "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
+          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
         },
         {
           "id": "STA-008",
@@ -4002,7 +6379,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -4019,7 +6396,15 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "seller": "",
+          "purchase_name": "Stapelia divaricata Swelledam",
+          "article_number": "",
+          "purchase_price_sek": "55",
+          "purchase_price_original": "4.71",
+          "purchase_exchange_rate": "11.65",
+          "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
+          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
         },
         {
           "id": "STA-003",
@@ -4043,7 +6428,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -4060,7 +6445,15 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "seller": "",
+          "purchase_name": "Stapelia grandiflora",
+          "article_number": "",
+          "purchase_price_sek": "53",
+          "purchase_price_original": "4.55",
+          "purchase_exchange_rate": "11.65",
+          "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
+          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
         },
         {
           "id": "STA-013",
@@ -4084,7 +6477,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -4101,7 +6494,15 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "seller": "",
+          "purchase_name": "Stapelia bergeriana (Stapelia schinzii var. bergeriana)",
+          "article_number": "",
+          "purchase_price_sek": "119",
+          "purchase_price_original": "10.23",
+          "purchase_exchange_rate": "11.65",
+          "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
+          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
         },
         {
           "id": "STA-014",
@@ -4125,7 +6526,7 @@
           "arrival_date": "",
           "sown_date": "",
           "germination_date": "",
-          "status": "Beställd",
+          "status": "",
           "expected_scent": "",
           "own_scent_observation": "",
           "scent_strength": "",
@@ -4142,7 +6543,15 @@
           "card_image": "",
           "card_crop_x": "",
           "card_crop_y": "",
-          "card_image_updated_at": ""
+          "card_image_updated_at": "",
+          "seller": "",
+          "purchase_name": "Tavarorbea cv. Red Leopard",
+          "article_number": "",
+          "purchase_price_sek": "99",
+          "purchase_price_original": "8.53",
+          "purchase_exchange_rate": "11.65",
+          "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
+          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
         }
       ],
       "photos": [

@@ -63,11 +63,6 @@
     dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; margin: 0; font-size: .94rem; }
     dt { color: var(--muted); font-weight: 800; }
     dd { margin: 0; }
-    .edit-form { display: grid; gap: 10px; }
-    .edit-row { display: grid; grid-template-columns: 88px 1fr; gap: 8px; align-items: center; }
-    .edit-row label { color: var(--muted); font-weight: 800; font-size: .9rem; }
-    .edit-row input, .edit-row textarea { width: 100%; border-radius: 12px; padding: 9px 10px; min-width: 0; }
-    .edit-row textarea { min-height: 70px; resize: vertical; }
     .notes { color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; margin-top: auto; font-size: .94rem; min-height: 2.2em; }
     dialog { border: none; padding: 0; background: transparent; max-width: min(92vw, 1000px); max-height: 92vh; }
     dialog::backdrop { background: rgba(0,0,0,.72); }
@@ -112,7 +107,6 @@
         <option value="status">Status</option>
       </select>
       <button class="secondary" id="clearBtn" type="button">Rensa</button>
-      <button class="secondary" id="editBtn" type="button">Redigera</button>
     </div>
   </section>
 
@@ -128,11 +122,10 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script src="common.js?v=7e7a82d67cd6"></script>
+  <script src="common.js?v=846775f52a72"></script>
   <script>
     function startCitrusPage(snapshot) {
     let plants = [];
-    let editMode = false;
     const citrusSection = snapshot.categories.Citrus;
     const plantRows = citrusSection.plants;
     const photoRows = citrusSection.photos;
@@ -143,7 +136,6 @@
     const typeFilter = document.querySelector("#typeFilter");
     const sortSelect = document.querySelector("#sortSelect");
     const clearBtn = document.querySelector("#clearBtn");
-    const editBtn = document.querySelector("#editBtn");
     const stats = document.querySelector("#stats");
     const dialog = document.querySelector("#photoDialog");
     const modalImg = document.querySelector("#modalImg");
@@ -151,13 +143,6 @@
 
     function escapeText(value) {
       return String(value || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-    }
-
-    function updatePlant(id, field, value) {
-      const plant = plants.find(p => p.id === id);
-      if (!plant) return;
-      plant[field] = value;
-      render();
     }
 
     function rebuild() {
@@ -223,18 +208,6 @@
         ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
       ].join(" ").toLowerCase();
 
-      const details = editMode ? `
-        <div class="edit-form" data-id="${escapeAttr(p.id)}">
-          <div class="edit-row"><label>Namn</label><input data-field="name" value="${escapeAttr(p.name)}"></div>
-          <div class="edit-row"><label>Botaniskt namn</label><input data-field="latin" value="${escapeAttr(p.latin)}"></div>
-          <div class="edit-row"><label>Smeknamn</label><input data-field="nickname" value="${escapeAttr(p.nickname)}"></div>
-          <div class="edit-row"><label>Typ</label><input data-field="type" value="${escapeAttr(p.type)}"></div>
-          <div class="edit-row"><label>Status</label><input data-field="status" value="${escapeAttr(p.status)}"></div>
-          <div class="edit-row"><label>Källa</label><input data-field="source" value="${escapeAttr(p.source)}"></div>
-          <div class="edit-row"><label>Anteckn.</label><textarea data-field="notes">${escapeText(p.notes)}</textarea></div>
-        </div>
-      ` : "";
-
       return `
         <article class="plant-card" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-status="${escapeAttr(p.status)}" data-category="Citrus" data-record-kind="${escapeAttr(p.record_kind)}" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(displayName)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(p.nickname)}" data-card-image="${escapeAttr(p.card_image)}" data-card-crop-x="${escapeAttr(p.card_crop_x)}" data-card-crop-y="${escapeAttr(p.card_crop_y)}" data-card-image-updated-at="${escapeAttr(p.card_image_updated_at)}" data-cuttings-available="${escapeAttr(p.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(p.cuttings_updated_at)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(p.logs || []))}">
           <div class="image-wrap">
@@ -252,9 +225,9 @@
               </div>
             </div>
             <div class="plant-card-chip-slot"><div class="chips">${collectionChipHtml("Citrus", p, escapeText)}</div></div>
-            <div class="plant-card-info">${editMode ? details : collectionRecordInfoHtml(p, collectionName)}</div>
-            <div class="plant-card-milestone-slot">${editMode ? "" : milestoneSummary(latestMilestone)}</div>
-            <div class="plant-card-notes-slot">${!editMode ? plantCardNoteField(p.id, p.card_note, p.card_note_updated_at, "Citrus") : ""}</div>
+            <div class="plant-card-info">${collectionRecordInfoHtml(p, collectionName)}</div>
+            <div class="plant-card-milestone-slot">${milestoneSummary(latestMilestone)}</div>
+            <div class="plant-card-notes-slot">${plantCardNoteField(p.id, p.card_note, p.card_note_updated_at, "Citrus")}</div>
           </div>
         </article>
       `;
@@ -308,8 +281,7 @@
       const activeParts = [
         query ? `Sökning: “${search.value.trim()}”` : "",
         selectedType ? `Typ: ${selectedType}` : "",
-        `Sortering: ${sortSelect.options[sortSelect.selectedIndex].textContent}`,
-        editMode ? "Redigering aktiv" : ""
+        `Sortering: ${sortSelect.options[sortSelect.selectedIndex].textContent}`
       ].filter(Boolean);
       stats.innerHTML = `
         <span class="stat">${collections.length} sorter/arter</span>
@@ -339,22 +311,11 @@
         openPlantPhotoGallery(main);
       }
     });
-    grid.addEventListener("change", event => {
-      const field = event.target.dataset.field;
-      const form = event.target.closest(".edit-form");
-      if (!field || !form) return;
-      updatePlant(form.dataset.id, field, event.target.value.trim());
-    });
     ensurePlantPhotoGallery();
     ensurePlantMilestones();
     ensurePlantImageImport();
     ensurePrivateWishlists();
     ensurePlantFavorites();
-    editBtn.addEventListener("click", () => {
-      editMode = !editMode;
-      editBtn.textContent = editMode ? "Klar" : "Redigera";
-      render();
-    });
     clearBtn.addEventListener("click", () => {
       search.value = "";
       typeFilter.value = "";
@@ -365,6 +326,7 @@
     typeFilter.addEventListener("change", render);
     sortSelect.addEventListener("change", render);
     window.addEventListener("plant-milestone-added", rebuild);
+    window.addEventListener("collection-plant-updated", rebuild);
     rebuild();
     }
   </script>

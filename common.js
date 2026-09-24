@@ -2057,6 +2057,32 @@ function ensurePlantMilestones() {
       color: var(--accent, #7d4f3b); text-transform: uppercase; letter-spacing: .14em;
       font-size: .72rem; font-weight: 900;
     }
+    .collection-detail-panel { display: grid; gap: 16px; }
+    .collection-detail-section { display: grid; gap: 7px; }
+    .collection-detail-facts { margin: 0; display: grid; grid-template-columns: minmax(120px, .72fr) minmax(0, 1.28fr); gap: 6px 14px; }
+    .collection-detail-facts dt { color: var(--muted, #6f655b); font-size: .86rem; font-weight: 800; }
+    .collection-detail-facts dd { margin: 0; overflow-wrap: anywhere; font-weight: 700; white-space: pre-line; }
+    .collection-detail-actions { display: flex; justify-content: flex-end; }
+    .collection-detail-edit, .collection-detail-save, .collection-detail-cancel {
+      border: 1px solid rgba(125,79,59,.35); border-radius: 999px; padding: 9px 13px;
+      background: var(--paper, #fffdf8); color: var(--accent, #7d4f3b); font: inherit; font-weight: 850; cursor: pointer;
+    }
+    .collection-detail-save { background: var(--accent, #7d4f3b); color: white; }
+    .collection-detail-form, .collection-detail-edit-fields { display: grid; gap: 12px; }
+    .collection-detail-edit-section { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .collection-detail-edit-section h3 { grid-column: 1 / -1; margin: 4px 0 0; color: var(--accent, #7d4f3b); font-size: .82rem; letter-spacing: .08em; text-transform: uppercase; }
+    .collection-detail-field { display: grid; gap: 5px; min-width: 0; color: var(--muted, #6f655b); font-size: .83rem; font-weight: 800; }
+    .collection-detail-field.wide { grid-column: 1 / -1; }
+    .collection-detail-field input, .collection-detail-field select, .collection-detail-field textarea {
+      width: 100%; min-width: 0; border: 1px solid var(--line, #ded2c2); border-radius: 12px;
+      padding: 9px 10px; background: var(--paper, #fffdf8); color: var(--ink, #2b251f); font: inherit;
+    }
+    .collection-detail-field textarea { min-height: 82px; resize: vertical; }
+    .collection-detail-checkbox { display: flex; align-items: center; gap: 8px; min-height: 42px; }
+    .collection-detail-checkbox input { width: auto; }
+    .collection-detail-form-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 9px; }
+    .collection-detail-status { flex: 1 1 100%; margin: 0; color: var(--muted, #6f655b); font-size: .86rem; font-weight: 750; }
+    .collection-detail-status.error { color: #9a3228; }
     .plant-document-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
     .plant-document-link {
       min-width: 0; border: 1px solid var(--line, #ded2c2); border-radius: 16px; padding: 10px;
@@ -2246,6 +2272,10 @@ function ensurePlantMilestones() {
       .plant-log-fields { grid-template-columns: 1fr; }
       .plant-log-panel { padding: 16px; }
       .plant-document-grid { grid-template-columns: 1fr; }
+      .collection-detail-facts { grid-template-columns: 1fr; gap: 2px; }
+      .collection-detail-facts dd { margin-bottom: 7px; }
+      .collection-detail-edit-section { grid-template-columns: 1fr; }
+      .collection-detail-field.wide { grid-column: auto; }
     }
   `;
   document.head.appendChild(style);
@@ -2268,6 +2298,143 @@ function ensurePlantMilestones() {
   });
 }
 
+function collectionPlantRecord(category, id) {
+  const plants = window.publicCatalogSnapshot?.categories?.[category]?.plants;
+  return Array.isArray(plants) ? plants.find(row => canonicalPlantId(row.id) === canonicalPlantId(id)) : null;
+}
+
+function collectionProfile(category) {
+  return window.publicCatalogSnapshot?.categories?.[category]?.profile || null;
+}
+
+function collectionFieldApplies(field, row) {
+  if (field.detail === false) return false;
+  if (field.show_for_record_kind && clean(row.record_kind).toUpperCase() !== field.show_for_record_kind) return false;
+  if (field.show_for_arrival && clean(row.arrival_type) !== field.show_for_arrival) return false;
+  if (field.hide_for_arrival && clean(row.arrival_type) === field.hide_for_arrival) return false;
+  const value = clean(row[field.key]);
+  if (!value) return false;
+  if (field.show_when && value.toLocaleLowerCase("sv") !== clean(field.show_when).toLocaleLowerCase("sv")) return false;
+  const comparisons = Array.isArray(field.hide_if_equal_to) ? field.hide_if_equal_to : [];
+  if (comparisons.some(key => value.toLocaleLowerCase("sv") === clean(row[key]).toLocaleLowerCase("sv"))) return false;
+  if (field.type === "checkbox" && value.toLocaleLowerCase("sv") !== "ja") return false;
+  return true;
+}
+
+function collectionFieldValue(field, row) {
+  const value = clean(row[field.key]);
+  if (field.type === "checkbox") return value.toLocaleLowerCase("sv") === "ja" ? "Ja" : "";
+  if (field.format === "record_kind") return {COLLECTION:"Samlingspost", INDIVIDUAL:"Individ", GROUP:"Grupp/samplantering"}[value.toUpperCase()] || value;
+  if (field.format === "sek") {
+    const number = Number(value.replace(",", "."));
+    return Number.isFinite(number) ? new Intl.NumberFormat("sv-SE", {style:"currency", currency:"SEK", maximumFractionDigits:0}).format(number) : value;
+  }
+  if (field.currency_key) {
+    const localized = value.replace(".", ",");
+    if (field.format === "exchange_rate") {
+      return `${localized} SEK/${clean(row[field.currency_key]) || "valuta"}`;
+    }
+    return `${localized}${clean(row[field.currency_key]) ? ` ${clean(row[field.currency_key])}` : ""}`;
+  }
+  return `${value}${field.suffix || ""}`;
+}
+
+function collectionDetailPanelHtml(category, id, editing = false) {
+  const row = collectionPlantRecord(category, id);
+  const profile = collectionProfile(category);
+  if (!row || !profile || !Array.isArray(profile.fields)) return "";
+  const fields = profile.fields;
+  if (editing) {
+    const sections = (profile.sections || []).map(section => {
+      const controls = fields.filter(field => field.editable !== false && field.section === section).map(field => {
+        const value = clean(row[field.key]);
+        let control = "";
+        if (field.type === "textarea") {
+          control = `<textarea data-collection-field="${escapeAttr(field.key)}">${htmlEscape(value)}</textarea>`;
+        } else if (field.type === "select" && Array.isArray(field.options)) {
+          const options = ["", ...field.options].filter((item, index, list) => list.indexOf(item) === index)
+            .map(option => `<option value="${escapeAttr(option)}"${option === value ? " selected" : ""}>${htmlEscape(option || "Ej angivet")}</option>`).join("");
+          control = `<select data-collection-field="${escapeAttr(field.key)}">${options}</select>`;
+        } else if (field.type === "checkbox") {
+          control = `<span class="collection-detail-checkbox"><input data-collection-field="${escapeAttr(field.key)}" type="checkbox"${value.toLocaleLowerCase("sv") === "ja" ? " checked" : ""}><span>Ja</span></span>`;
+        } else {
+          const inputType = field.type === "date" ? "date" : field.type === "number" || field.type === "decimal" ? "number" : "text";
+          const step = field.type === "decimal" ? ' step="0.01" min="0"' : field.type === "number" ? ' step="1" min="0"' : "";
+          control = `<input data-collection-field="${escapeAttr(field.key)}" type="${inputType}"${step} value="${escapeAttr(value)}">`;
+        }
+        return `<label class="collection-detail-field${field.type === "textarea" ? " wide" : ""}"><span>${htmlEscape(field.label)}</span>${control}</label>`;
+      }).join("");
+      return controls ? `<section class="collection-detail-edit-section"><h3>${htmlEscape(section)}</h3>${controls}</section>` : "";
+    }).join("");
+    return `<section class="plant-panel-section collection-detail-panel" data-collection-detail-root aria-label="Redigera växtuppgifter">
+      <form class="collection-detail-form" data-collection-detail-form>${sections}
+        <div class="collection-detail-form-actions"><p class="collection-detail-status" data-collection-detail-status aria-live="polite"></p><button class="collection-detail-cancel" type="button" data-collection-detail-cancel>Avbryt</button><button class="collection-detail-save" type="submit">Spara</button></div>
+      </form>
+    </section>`;
+  }
+  const sections = (profile.sections || []).map(section => {
+    const facts = fields.filter(field => field.section === section && collectionFieldApplies(field, row))
+      .map(field => `<dt>${htmlEscape(field.label)}</dt><dd>${htmlEscape(collectionFieldValue(field, row))}</dd>`).join("");
+    return facts ? `<section class="collection-detail-section"><div class="plant-panel-section-title">${htmlEscape(section)}</div><dl class="collection-detail-facts">${facts}</dl></section>` : "";
+  }).join("");
+  const canEdit = fields.some(field => field.editable !== false);
+  return `<section class="plant-panel-section collection-detail-panel" data-collection-detail-root aria-label="Växtuppgifter">${sections}${canEdit ? '<div class="collection-detail-actions"><button class="collection-detail-edit" type="button" data-collection-detail-edit>Redigera</button></div>' : ""}</section>`;
+}
+
+function bindCollectionDetailPanel(dialog, category, id) {
+  const row = collectionPlantRecord(category, id);
+  if (!row) return;
+  const show = editing => {
+    const root = dialog.querySelector("[data-collection-detail-root]");
+    if (!root) return;
+    root.outerHTML = collectionDetailPanelHtml(category, id, editing);
+    bind();
+  };
+  const bind = () => {
+    dialog.querySelector("[data-collection-detail-edit]")?.addEventListener("click", () => show(true), {once:true});
+    dialog.querySelector("[data-collection-detail-cancel]")?.addEventListener("click", () => show(false), {once:true});
+    dialog.querySelector("[data-collection-detail-form]")?.addEventListener("submit", async event => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const status = form.querySelector("[data-collection-detail-status]");
+      const changes = {};
+      form.querySelectorAll("[data-collection-field]").forEach(input => {
+        const value = input.type === "checkbox" ? (input.checked ? "ja" : "nej") : input.value.trim();
+        if (value !== clean(row[input.dataset.collectionField])) changes[input.dataset.collectionField] = value;
+      });
+      if (!Object.keys(changes).length) { show(false); return; }
+      if (!window.MINA_VAXTER_ARCHIVE_TOKEN) {
+        status.textContent = "Öppna Mina Växter lokalt på Macen för att spara ändringar.";
+        status.className = "collection-detail-status error";
+        return;
+      }
+      const button = form.querySelector(".collection-detail-save");
+      button.disabled = true;
+      button.textContent = "Sparar…";
+      try {
+        const response = await fetch("https://127.0.0.1:47831/data-view", {
+          method: "POST",
+          headers: {"Content-Type":"application/json", "X-Mina-Vaxter-Token":window.MINA_VAXTER_ARCHIVE_TOKEN},
+          body: JSON.stringify({category, id, changes})
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || !result.ok) throw new Error(result.error || "Posten kunde inte sparas.");
+        Object.assign(row, changes);
+        window.dispatchEvent(new CustomEvent("collection-plant-updated", {detail:{category, id, changes}}));
+        const heading = dialog.querySelector(".plant-log-panel header h2");
+        if (heading) heading.textContent = clean(row.name) || clean(row.full_botanical_name) || clean(row.short_name) || clean(row.nickname) || id;
+        show(false);
+      } catch (error) {
+        status.textContent = error.message || "Posten kunde inte sparas.";
+        status.className = "collection-detail-status error";
+        button.disabled = false;
+        button.textContent = "Spara";
+      }
+    }, {once:true});
+  };
+  bind();
+}
+
 function openPlantPanel(card) {
   const dialog = document.querySelector("#plantLogDialog");
   if (!dialog) return;
@@ -2283,10 +2450,11 @@ function openPlantPanel(card) {
         <div class="plant-panel-section-title">Korsningar</div>
         <a class="plant-crossing-action" href="korsningar.html?category=${encodeURIComponent(category)}&mother=${encodeURIComponent(id)}">Registrera korsning</a>
       </section>` : "";
-  const categoryPanel = category === "Hibiskus" && typeof window.hibiscusFlowerPanelHtml === "function"
+  const categoryPanel = collectionDetailPanelHtml(category, id);
+  const categoryExtension = category === "Hibiskus" && typeof window.hibiscusFlowerPanelHtml === "function"
     ? window.hibiscusFlowerPanelHtml(id)
-    : category === "Stapeliader" && typeof window.stapeliadDetailPanelHtml === "function"
-      ? window.stapeliadDetailPanelHtml(id)
+    : category === "Stapeliader" && typeof window.stapeliadSupplementPanelHtml === "function"
+      ? window.stapeliadSupplementPanelHtml(id)
       : "";
   const parentPanel = plantParentReferencePanelHtml(card);
   const documentsPanel = plantDocumentsPanelHtml(card);
@@ -2328,6 +2496,7 @@ function openPlantPanel(card) {
       ${parentPanel}
       ${documentsPanel}
       ${categoryPanel}
+      ${categoryExtension}
       <section class="plant-panel-section" aria-labelledby="plantHistoryTitle">
         <details class="plant-log-history">
           <summary class="plant-log-history-title" id="plantHistoryTitle">Historik <span class="plant-log-history-count">${milestones.length}</span></summary>
@@ -2383,8 +2552,9 @@ function openPlantPanel(card) {
   if (category === "Hibiskus" && typeof window.bindHibiscusFlowerPanel === "function") {
     window.bindHibiscusFlowerPanel(dialog, id);
   }
-  if (category === "Stapeliader" && typeof window.bindStapeliadDetailPanel === "function") {
-    window.bindStapeliadDetailPanel(dialog, id);
+  bindCollectionDetailPanel(dialog, category, id);
+  if (category === "Stapeliader" && typeof window.bindStapeliadSupplementPanel === "function") {
+    window.bindStapeliadSupplementPanel(dialog, id);
   }
   dialog.querySelector(".plant-log-form").addEventListener("submit", event => {
     event.preventDefault();
