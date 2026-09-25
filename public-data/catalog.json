@@ -1,6 +1,6 @@
 {
   "schemaVersion": 4,
-  "catalogVersion": "2026-09-24-synk-2212",
+  "catalogVersion": "2026-09-24-synk-2253",
   "categories": {
     "Hibiskus": {
       "titleField": "id",
@@ -12,13 +12,21 @@
           "Samlingsspecifikt",
           "Anteckningar"
         ],
+        "titleFields": [
+          "nickname",
+          "id"
+        ],
+        "secondaryIdFields": [
+          "id"
+        ],
         "fields": [
           {
             "key": "id",
             "label": "Permanent plant-ID",
             "section": "Identitet",
             "type": "text",
-            "editable": false
+            "editable": false,
+            "detail": false
           },
           {
             "key": "nickname",
@@ -39,6 +47,9 @@
               "Aktiv",
               "Bortgiven",
               "Avslutad/död"
+            ],
+            "hide_values": [
+              "Aktiv"
             ]
           },
           {
@@ -1815,20 +1826,29 @@
           "Samlingsspecifikt",
           "Anteckningar"
         ],
+        "titleFields": [
+          "nickname",
+          "name"
+        ],
+        "secondaryIdFields": [
+          "label_number"
+        ],
         "fields": [
           {
             "key": "id",
             "label": "Internt ID",
             "section": "Identitet",
             "type": "text",
-            "editable": false
+            "editable": false,
+            "detail": false
           },
           {
             "key": "label_number",
             "label": "Etikettnummer",
             "section": "Identitet",
             "type": "text",
-            "editable": false
+            "editable": false,
+            "detail": false
           },
           {
             "key": "name",
@@ -1855,7 +1875,8 @@
               "COLLECTION",
               "INDIVIDUAL"
             ],
-            "format": "record_kind"
+            "format": "record_kind",
+            "detail": false
           },
           {
             "key": "collection_id",
@@ -1863,7 +1884,8 @@
             "section": "Identitet",
             "type": "select",
             "editable": true,
-            "show_for_record_kind": "INDIVIDUAL"
+            "show_for_record_kind": "INDIVIDUAL",
+            "detail": false
           },
           {
             "key": "specimen_count",
@@ -1871,7 +1893,10 @@
             "section": "Identitet",
             "type": "number",
             "editable": true,
-            "show_for_record_kind": "COLLECTION"
+            "show_for_record_kind": "COLLECTION",
+            "hide_values": [
+              "1"
+            ]
           },
           {
             "key": "type",
@@ -2052,7 +2077,10 @@
             "label": "Status",
             "section": "Samlingsspecifikt",
             "type": "select",
-            "editable": true
+            "editable": true,
+            "hide_values": [
+              "Aktiv"
+            ]
           },
           {
             "key": "breeding_selected",
@@ -2212,7 +2240,7 @@
           "purchase_currency": "EUR",
           "purchase_exchange_rate": "",
           "purchase_exchange_rate_note": "",
-          "purchase_note": "Ordertotal: 82 EUR plantor + 18,50 EUR frakt = 100,50 EUR. Frakten är inte fördelad på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "p-cotyledonis-1",
@@ -2302,7 +2330,7 @@
           "purchase_currency": "EUR",
           "purchase_exchange_rate": "",
           "purchase_exchange_rate_note": "",
-          "purchase_note": "Ordertotal: 82 EUR plantor + 18,50 EUR frakt = 100,50 EUR. Frakten är inte fördelad på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "p-gibbosum-1",
@@ -2392,7 +2420,7 @@
           "purchase_currency": "EUR",
           "purchase_exchange_rate": "",
           "purchase_exchange_rate_note": "",
-          "purchase_note": "Ordertotal: 82 EUR plantor + 18,50 EUR frakt = 100,50 EUR. Frakten är inte fördelad på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "p-gibbosum-maroon-1",
@@ -2977,7 +3005,7 @@
           "purchase_currency": "EUR",
           "purchase_exchange_rate": "",
           "purchase_exchange_rate_note": "",
-          "purchase_note": "Ordertotal: 82 EUR plantor + 18,50 EUR frakt = 100,50 EUR. Frakten är inte fördelad på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "p-glauciifolium",
@@ -3022,7 +3050,7 @@
           "purchase_currency": "EUR",
           "purchase_exchange_rate": "",
           "purchase_exchange_rate_note": "",
-          "purchase_note": "Ordertotal: 82 EUR plantor + 18,50 EUR frakt = 100,50 EUR. Frakten är inte fördelad på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "p-lemon-queen",
@@ -3247,7 +3275,7 @@
           "purchase_currency": "EUR",
           "purchase_exchange_rate": "",
           "purchase_exchange_rate_note": "",
-          "purchase_note": "Ordertotal: 82 EUR plantor + 18,50 EUR frakt = 100,50 EUR. Frakten är inte fördelad på plantorna."
+          "purchase_note": ""
         }
       ],
       "photos": [
@@ -3760,13 +3788,20 @@
           "Samlingsspecifikt",
           "Anteckningar"
         ],
+        "titleFields": [
+          "nickname",
+          "name",
+          "latin"
+        ],
+        "secondaryIdFields": [],
         "fields": [
           {
             "key": "id",
             "label": "Internt ID",
             "section": "Identitet",
             "type": "text",
-            "editable": false
+            "editable": false,
+            "detail": false
           },
           {
             "key": "name",
@@ -3803,7 +3838,8 @@
               "COLLECTION",
               "INDIVIDUAL"
             ],
-            "format": "record_kind"
+            "format": "record_kind",
+            "detail": false
           },
           {
             "key": "collection_id",
@@ -3811,7 +3847,8 @@
             "section": "Identitet",
             "type": "select",
             "editable": true,
-            "show_for_record_kind": "INDIVIDUAL"
+            "show_for_record_kind": "INDIVIDUAL",
+            "detail": false
           },
           {
             "key": "specimen_count",
@@ -3819,7 +3856,10 @@
             "section": "Identitet",
             "type": "number",
             "editable": true,
-            "show_for_record_kind": "COLLECTION"
+            "show_for_record_kind": "COLLECTION",
+            "hide_values": [
+              "1"
+            ]
           },
           {
             "key": "type",
@@ -3971,7 +4011,10 @@
             "label": "Status",
             "section": "Samlingsspecifikt",
             "type": "select",
-            "editable": true
+            "editable": true,
+            "hide_values": [
+              "Aktiv"
+            ]
           },
           {
             "key": "cuttings_available",
@@ -4185,7 +4228,7 @@
           "specimen_count": "1",
           "status": "Aktiv",
           "source": "Plantagen",
-          "notes": "Inköpspris: 200 kr",
+          "notes": "",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -4198,16 +4241,16 @@
           "card_crop_y": "69.4354",
           "card_image_updated_at": "2026-08-14T16:03:04.964Z",
           "rootstock": "",
-          "supplier": "",
+          "supplier": "Plantagen",
           "seller": "",
           "purchase_name": "",
           "order_number": "",
           "article_number": "",
           "purchase_date": "",
           "arrival_date": "",
-          "purchase_price_sek": "",
-          "purchase_price_original": "",
-          "purchase_currency": "",
+          "purchase_price_sek": "200",
+          "purchase_price_original": "200",
+          "purchase_currency": "SEK",
           "purchase_exchange_rate": "",
           "purchase_exchange_rate_note": "",
           "purchase_note": ""
@@ -4326,13 +4369,21 @@
           "Samlingsspecifikt",
           "Anteckningar"
         ],
+        "titleFields": [
+          "name",
+          "latin"
+        ],
+        "secondaryIdFields": [
+          "id"
+        ],
         "fields": [
           {
             "key": "id",
             "label": "Permanent plant-ID",
             "section": "Identitet",
             "type": "text",
-            "editable": false
+            "editable": false,
+            "detail": false
           },
           {
             "key": "name",
@@ -4369,7 +4420,8 @@
               "INDIVIDUAL",
               "GROUP"
             ],
-            "format": "record_kind"
+            "format": "record_kind",
+            "detail": false
           },
           {
             "key": "collection_id",
@@ -4377,7 +4429,8 @@
             "section": "Identitet",
             "type": "text",
             "editable": true,
-            "show_for_record_kind": "INDIVIDUAL"
+            "show_for_record_kind": "INDIVIDUAL",
+            "detail": false
           },
           {
             "key": "specimen_count",
@@ -4530,7 +4583,10 @@
             "label": "Status",
             "section": "Samlingsspecifikt",
             "type": "select",
-            "editable": true
+            "editable": true,
+            "hide_values": [
+              "Aktiv"
+            ]
           },
           {
             "key": "cuttings_available",
@@ -5127,13 +5183,21 @@
           "Samlingsspecifikt",
           "Anteckningar"
         ],
+        "titleFields": [
+          "full_botanical_name",
+          "short_name"
+        ],
+        "secondaryIdFields": [
+          "id"
+        ],
         "fields": [
           {
             "key": "id",
             "label": "Permanent plant-ID",
             "section": "Identitet",
             "type": "text",
-            "editable": false
+            "editable": false,
+            "detail": false
           },
           {
             "key": "full_botanical_name",
@@ -5355,7 +5419,10 @@
             "label": "Status",
             "section": "Samlingsspecifikt",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "hide_values": [
+              "Aktiv"
+            ]
           },
           {
             "key": "expected_scent",
@@ -5473,7 +5540,7 @@
           "purchase_price_original": "5.11",
           "purchase_exchange_rate": "11.65",
           "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
-          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "STA-011",
@@ -5522,7 +5589,7 @@
           "purchase_price_original": "5.11",
           "purchase_exchange_rate": "11.65",
           "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
-          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "STA-017",
@@ -5571,7 +5638,7 @@
           "purchase_price_original": "7.95",
           "purchase_exchange_rate": "11.65",
           "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
-          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "STA-007",
@@ -5620,7 +5687,7 @@
           "purchase_price_original": "5.45",
           "purchase_exchange_rate": "11.65",
           "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
-          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "STA-012",
@@ -5669,7 +5736,7 @@
           "purchase_price_original": "6.14",
           "purchase_exchange_rate": "11.65",
           "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
-          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "STA-035",
@@ -5767,7 +5834,7 @@
           "purchase_price_original": "7.16",
           "purchase_exchange_rate": "11.65",
           "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
-          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "STA-006",
@@ -5816,7 +5883,7 @@
           "purchase_price_original": "3.41",
           "purchase_exchange_rate": "11.65",
           "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
-          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "STA-034",
@@ -5914,7 +5981,7 @@
           "purchase_price_original": "6.14",
           "purchase_exchange_rate": "11.65",
           "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
-          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "STA-009",
@@ -5963,7 +6030,7 @@
           "purchase_price_original": "6.14",
           "purchase_exchange_rate": "11.65",
           "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
-          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "STA-010",
@@ -6012,7 +6079,7 @@
           "purchase_price_original": "8.53",
           "purchase_exchange_rate": "11.65",
           "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
-          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "STA-020",
@@ -6061,7 +6128,7 @@
           "purchase_price_original": "6.14",
           "purchase_exchange_rate": "11.65",
           "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
-          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "STA-019",
@@ -6110,7 +6177,7 @@
           "purchase_price_original": "13.64",
           "purchase_exchange_rate": "11.65",
           "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
-          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "STA-015",
@@ -6159,7 +6226,7 @@
           "purchase_price_original": "5.11",
           "purchase_exchange_rate": "11.65",
           "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
-          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "STA-032",
@@ -6257,7 +6324,7 @@
           "purchase_price_original": "4.09",
           "purchase_exchange_rate": "11.65",
           "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
-          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "STA-018",
@@ -6306,7 +6373,7 @@
           "purchase_price_original": "7.95",
           "purchase_exchange_rate": "11.65",
           "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
-          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "STA-004",
@@ -6355,7 +6422,7 @@
           "purchase_price_original": "5.11",
           "purchase_exchange_rate": "11.65",
           "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
-          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "STA-008",
@@ -6404,7 +6471,7 @@
           "purchase_price_original": "4.71",
           "purchase_exchange_rate": "11.65",
           "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
-          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "STA-003",
@@ -6453,7 +6520,7 @@
           "purchase_price_original": "4.55",
           "purchase_exchange_rate": "11.65",
           "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
-          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "STA-013",
@@ -6502,7 +6569,7 @@
           "purchase_price_original": "10.23",
           "purchase_exchange_rate": "11.65",
           "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
-          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
+          "purchase_note": ""
         },
         {
           "id": "STA-014",
@@ -6551,7 +6618,7 @@
           "purchase_price_original": "8.53",
           "purchase_exchange_rate": "11.65",
           "purchase_exchange_rate_note": "PayPal-kurs för order 20451: 153,39 EUR = 1 787,54 SEK.",
-          "purchase_note": "Frakt och andra orderavgifter är inte fördelade på plantorna."
+          "purchase_note": ""
         }
       ],
       "photos": [

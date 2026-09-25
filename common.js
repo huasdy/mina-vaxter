@@ -2314,6 +2314,8 @@ function collectionFieldApplies(field, row) {
   if (field.hide_for_arrival && clean(row.arrival_type) === field.hide_for_arrival) return false;
   const value = clean(row[field.key]);
   if (!value) return false;
+  const hiddenValues = Array.isArray(field.hide_values) ? field.hide_values : [];
+  if (hiddenValues.some(item => value.toLocaleLowerCase("sv") === clean(item).toLocaleLowerCase("sv"))) return false;
   if (field.show_when && value.toLocaleLowerCase("sv") !== clean(field.show_when).toLocaleLowerCase("sv")) return false;
   const comparisons = Array.isArray(field.hide_if_equal_to) ? field.hide_if_equal_to : [];
   if (comparisons.some(key => value.toLocaleLowerCase("sv") === clean(row[key]).toLocaleLowerCase("sv"))) return false;
@@ -2337,6 +2339,20 @@ function collectionFieldValue(field, row) {
     return `${localized}${clean(row[field.currency_key]) ? ` ${clean(row[field.currency_key])}` : ""}`;
   }
   return `${value}${field.suffix || ""}`;
+}
+
+function collectionPanelHeading(category, id, fallbackTitle = "") {
+  const row = collectionPlantRecord(category, id) || {};
+  const profile = collectionProfile(category) || {};
+  const firstValue = keys => (Array.isArray(keys) ? keys : [])
+    .map(key => clean(row[key]))
+    .find(Boolean) || "";
+  const title = firstValue(profile.titleFields) || clean(fallbackTitle) || clean(id) || "Växt";
+  const secondaryId = firstValue(profile.secondaryIdFields);
+  return {
+    title,
+    secondaryId: secondaryId && secondaryId.toLocaleLowerCase("sv") !== title.toLocaleLowerCase("sv") ? secondaryId : "",
+  };
 }
 
 function collectionDetailPanelHtml(category, id, editing = false) {
@@ -2421,8 +2437,9 @@ function bindCollectionDetailPanel(dialog, category, id) {
         if (!response.ok || !result.ok) throw new Error(result.error || "Posten kunde inte sparas.");
         Object.assign(row, changes);
         window.dispatchEvent(new CustomEvent("collection-plant-updated", {detail:{category, id, changes}}));
-        const heading = dialog.querySelector(".plant-log-panel header h2");
-        if (heading) heading.textContent = clean(row.name) || clean(row.full_botanical_name) || clean(row.short_name) || clean(row.nickname) || id;
+        const heading = collectionPanelHeading(category, id);
+        const headingRoot = dialog.querySelector(".plant-log-panel header > div");
+        if (headingRoot) headingRoot.innerHTML = `<h2>${htmlEscape(heading.title)}</h2>${heading.secondaryId ? `<p>${htmlEscape(heading.secondaryId)}</p>` : ""}`;
         show(false);
       } catch (error) {
         status.textContent = error.message || "Posten kunde inte sparas.";
@@ -2440,9 +2457,9 @@ function openPlantPanel(card) {
   if (!dialog) return;
   let milestones = [];
   try { milestones = JSON.parse(card.dataset.milestones || card.dataset.log || "[]"); } catch (e) { milestones = []; }
-  const title = card.dataset.plantName || card.dataset.plantId || "Växt";
   const id = card.dataset.plantId || "";
   const category = card.dataset.category || "Pelargon";
+  const heading = collectionPanelHeading(category, id, card.dataset.plantName);
   const concluded = plantCardIsConcluded(card);
   const canRegisterCrossing = !concluded && (category === "Hibiskus" || (category === "Pelargon" && clean(card.dataset.recordKind).toUpperCase() === "COLLECTION"));
   const crossingPanel = canRegisterCrossing ? `
@@ -2487,8 +2504,8 @@ function openPlantPanel(card) {
     <div class="plant-log-panel">
       <header>
         <div>
-          <h2>${htmlEscape(title)}</h2>
-          ${title !== id ? `<p>${htmlEscape(id)}</p>` : ""}
+          <h2>${htmlEscape(heading.title)}</h2>
+          ${heading.secondaryId ? `<p>${htmlEscape(heading.secondaryId)}</p>` : ""}
         </div>
         <button class="plant-log-close" type="button" aria-label="Stäng">×</button>
       </header>
