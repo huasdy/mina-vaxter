@@ -56,19 +56,54 @@
         color: var(--ink, #2b251f); font-weight: 880;
         box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--accent, #7d4f3b) 72%, transparent);
       }
+      .main-navigation-mobile-title { display: none; }
       @media (max-width: 760px) {
-        .main-navigation { justify-content: flex-start; gap: 14px; padding-inline: 16px; }
+        .main-navigation-mobile-title {
+          display: block; margin: 0 0 12px; text-align: center;
+          font: 500 clamp(2rem, 11vw, 2.45rem)/.95 Georgia, "Times New Roman", serif;
+        }
+        .main-navigation-mobile-title a { color: var(--ink, #2b251f); text-decoration: none; }
+        .main-navigation {
+          justify-content: flex-start; gap: 6px; margin: 0 auto 18px; padding: 1px 0 3px;
+          scroll-snap-type: x proximity;
+        }
+        .main-navigation a,
+        .main-navigation a[href="verktyg.html"] {
+          min-height: 0; padding: 9px 14px; border: 1px solid var(--line, #ded2c2);
+          border-radius: 999px; background: var(--paper, #fffdf8); color: var(--accent, #7d4f3b);
+          font-size: .84rem; font-weight: 800; scroll-snap-align: start; box-shadow: none;
+        }
+        .main-navigation a[href="index.html"] { display: none !important; }
+        .main-navigation a[data-nav-section="hibiskus"] { order: 1; }
+        .main-navigation a[data-nav-section="pelargon"] { order: 2; }
+        .main-navigation a[data-nav-section="citrus"] { order: 3; }
+        .main-navigation a[data-nav-section="udda"] { order: 4; }
+        .main-navigation a[data-nav-section="stapelia"] { order: 5; }
+        .main-navigation a[data-nav-section="labbet"] { order: 6; }
+        .main-navigation a[data-nav-section="vaxtliv"] { order: 7; }
+        .main-navigation a[data-nav-section="verktyg"] { order: 8; }
+        .main-navigation a.current,
+        .main-navigation a[aria-current="page"] {
+          border-color: var(--accent, #7d4f3b); background: var(--accent, #7d4f3b); color: white;
+          box-shadow: none;
+        }
       }
     `;
     document.head.appendChild(style);
   }
 
   document.querySelectorAll("nav[data-main-navigation]").forEach(nav => {
+    if (!nav.previousElementSibling?.classList.contains("main-navigation-mobile-title")) {
+      const title = document.createElement("div");
+      title.className = "main-navigation-mobile-title";
+      title.innerHTML = '<a href="iphone.html" aria-label="Öppna Mina Växter">Mina Växter</a>';
+      nav.before(title);
+    }
     nav.classList.add("main-navigation");
     nav.setAttribute("aria-label", "Huvudnavigation");
     nav.innerHTML = items.map(([href, label, section]) => {
       const active = section === activeSection;
-      return `<a${active ? ' class="current" aria-current="page"' : ""} href="${href}">${escapeHtml(label)}</a>`;
+      return `<a data-nav-section="${section}"${active ? ' class="current" aria-current="page"' : ""} href="${href}">${escapeHtml(label)}</a>`;
     }).join("");
     const current = nav.querySelector('[aria-current="page"]');
     if (current && typeof current.scrollIntoView === "function" && window.innerWidth <= 760) {
