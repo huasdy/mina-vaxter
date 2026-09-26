@@ -115,19 +115,7 @@
 </head>
 <body>
   <header>
-    <nav>
-      <a href="index.html">← Mina Växter</a>
-      <a href="hibiskusar.html">Hibiskus</a>
-      <a href="pelargoner.html">Pelargon</a>
-      <a href="citrus.html">Citrus</a>
-      <a href="udda.html">Udda</a>
-      <a class="current" href="stapeliader.html">Stapelia</a>
-      <a href="labbet.html">Labbet</a>
-      <a href="favoriter.html">Hundöron</a>
-      <a href="vaxtliv.html">Växtliv</a>
-      <a href="galleri.html">Galleri</a>
-      <a href="verktyg.html">Verktyg</a>
-    </nav>
+    <nav data-main-navigation aria-label="Huvudnavigation"></nav>
     <div class="eyebrow">Förvärvsregister</div>
     <h1>Stapelia</h1>
     <p class="subtitle">Separata förvärv, proveniens och blomdoft för stapeliader.</p>
@@ -146,7 +134,8 @@
     </div>
     <section class="grid stapeliad-grid" id="grid"></section>
   </main>
-  <script src="common.js?v=38941bbbcd51"></script>
+  <script src="main-navigation.js?v=2849e1f33fc1"></script>
+  <script src="common.js?v=2fbf338fa390"></script>
   <script>
       const PUBLIC_CATALOG_SCHEMA_VERSION = 4;
     const grid = document.querySelector("#grid");
@@ -183,7 +172,7 @@
         const remaining = seedRemainingFromHistory({original_seed_count: lot.ursprungligt_fröantal, logs}, lot.fröparti_id);
         const fact = (label, value) => clean(value) ? `<dt>${escapeText(label)}</dt><dd>${escapeText(value)}</dd>` : "";
         const seedDetails = [fact("Typ", lot.förvärvstyp), fact("Inköpspris", price), fact("Ursprungligt fröantal", lot.ursprungligt_fröantal), fact("Frön kvar", remaining.text), fact("Status", lot.status)].join("");
-        const otherDetails = [lot.ordernummer && `Order ${lot.ordernummer}`, lot.mängd, price, lot.förvärvstyp, lot.status].filter(Boolean).join(" · ");
+        const otherDetails = [lot.ordernummer && `Order ${lot.ordernummer}`, price, lot.förvärvstyp, lot.status].filter(Boolean).join(" · ");
         return lot.förvärvstyp === "Frö"
           ? `<div class="stapeliad-seed-lot-facts"><strong>${escapeText(lot.fröparti_id || "Fröparti")} · ${escapeText(lot.leverantör || "okänd källa")}</strong><dl class="stapeliad-facts">${seedDetails}</dl></div>`
           : `<dl class="stapeliad-facts">${fact(lot.leverantör || "Fröparti", otherDetails)}</dl>`;

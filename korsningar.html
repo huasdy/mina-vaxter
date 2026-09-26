@@ -152,19 +152,7 @@
 </head>
 <body>
   <header>
-    <nav>
-      <a href="index.html">← Mina Växter</a>
-      <a href="hibiskusar.html">Hibiskus</a>
-      <a href="pelargoner.html">Pelargon</a>
-      <a href="citrus.html">Citrus</a>
-      <a href="udda.html">Udda</a>
-      <a href="stapeliader.html">Stapelia</a>
-      <a href="labbet.html">Labbet</a>
-      <a href="favoriter.html">Hundöron</a>
-      <a class="current" href="vaxtliv.html">Växtliv</a>
-      <a href="galleri.html">Galleri</a>
-      <a href="verktyg.html">Verktyg</a>
-    </nav>
+    <nav data-main-navigation aria-label="Huvudnavigation"></nav>
       <div class="title-row">
         <div class="title-copy"><div class="eyebrow">Växtliv</div><h1>Korsningar</h1><p class="subtitle">Pollineringar, frösättning och avkommor med sin historik.</p></div>
         <button id="openNewCrossing" class="header-action" type="button">Registrera ny korsning</button>
@@ -204,8 +192,9 @@
   </main>
   <dialog id="offspringDialog"></dialog>
   <dialog id="sowBatchDialog"></dialog>
-  <script src="common.js?v=38941bbbcd51"></script>
-  <script src="crossings-common.js"></script>
+  <script src="main-navigation.js?v=2849e1f33fc1"></script>
+  <script src="common.js?v=2fbf338fa390"></script>
+  <script src="crossings-common.js?v=97336e4c8ae8"></script>
   <script>
     const PUBLIC_CATALOG_SCHEMA_VERSION = 4;
     const parameters = new URLSearchParams(window.location.search);

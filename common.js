@@ -241,7 +241,7 @@ function collectionChips(category, row) {
     row && row.parentage,
     row && row.latin,
     row && row.type,
-    row && row.tags,
+    category === "Udda" ? "" : row && row.tags,
     row && row.status,
     row && row.scent,
     row && row.source,
@@ -2068,21 +2068,55 @@ function ensurePlantMilestones() {
       background: var(--paper, #fffdf8); color: var(--accent, #7d4f3b); font: inherit; font-weight: 850; cursor: pointer;
     }
     .collection-detail-save { background: var(--accent, #7d4f3b); color: white; }
-    .collection-detail-form, .collection-detail-edit-fields { display: grid; gap: 12px; }
+    .collection-detail-form, .collection-detail-edit-fields { display: grid; gap: 16px; }
     .collection-detail-edit-section { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
     .collection-detail-edit-section h3 { grid-column: 1 / -1; margin: 4px 0 0; color: var(--accent, #7d4f3b); font-size: .82rem; letter-spacing: .08em; text-transform: uppercase; }
     .collection-detail-field { display: grid; gap: 5px; min-width: 0; color: var(--muted, #6f655b); font-size: .83rem; font-weight: 800; }
     .collection-detail-field.wide { grid-column: 1 / -1; }
-    .collection-detail-field input, .collection-detail-field select, .collection-detail-field textarea {
+    .collection-detail-field input, .collection-detail-field select, .collection-detail-field textarea,
+    .collection-detail-inline-control input, .collection-detail-inline-control select, .collection-detail-inline-control textarea {
       width: 100%; min-width: 0; border: 1px solid var(--line, #ded2c2); border-radius: 12px;
       padding: 9px 10px; background: var(--paper, #fffdf8); color: var(--ink, #2b251f); font: inherit;
     }
-    .collection-detail-field textarea { min-height: 82px; resize: vertical; }
+    .collection-detail-field textarea, .collection-detail-inline-control textarea { min-height: 72px; resize: vertical; }
+    .collection-detail-inline-control { min-width: 0; }
     .collection-detail-checkbox { display: flex; align-items: center; gap: 8px; min-height: 42px; }
     .collection-detail-checkbox input { width: auto; }
+    .collection-detail-more { border-top: 1px solid var(--line, #ded2c2); padding-top: 10px; }
+    .collection-detail-more summary {
+      width: fit-content; color: var(--accent, #7d4f3b); font-size: .86rem; font-weight: 850; cursor: pointer;
+    }
+    .collection-detail-more-sections { margin-top: 14px; display: grid; gap: 16px; }
     .collection-detail-form-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 9px; }
     .collection-detail-status { flex: 1 1 100%; margin: 0; color: var(--muted, #6f655b); font-size: .86rem; font-weight: 750; }
     .collection-detail-status.error { color: #9a3228; }
+    .collection-create-slot { display: flex; justify-content: center; margin-top: 18px; }
+    .collection-create-open {
+      min-height: 44px; border: 1px solid var(--accent, #7d4f3b); border-radius: 999px; padding: 10px 16px;
+      background: var(--accent, #7d4f3b); color: white; font: inherit; font-weight: 900; cursor: pointer;
+    }
+    dialog.collection-create-dialog {
+      width: min(94vw, 760px); max-height: min(92vh, 900px); overflow: auto; border: 0; border-radius: 22px;
+      padding: 0; background: var(--paper, #fffdf8); color: var(--ink, #2b251f); box-shadow: 0 24px 80px rgba(0,0,0,.26);
+    }
+    dialog.collection-create-dialog::backdrop { background: rgba(22,18,15,.50); }
+    .collection-create-panel { padding: 20px; display: grid; gap: 16px; }
+    .collection-create-panel > header { padding: 0; text-align: left; display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+    .collection-create-panel h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 2rem; line-height: 1.05; }
+    .collection-create-panel header p { margin: 5px 0 0; color: var(--muted, #6f655b); font-weight: 700; }
+    .collection-create-close {
+      border: 1px solid var(--line, #ded2c2); background: transparent; color: var(--ink, #2b251f); border-radius: 999px;
+      width: 42px; min-width: 42px; height: 42px; flex: 0 0 42px; padding: 0; display: grid; place-items: center;
+      font: inherit; font-size: 1.4rem; font-weight: 900; cursor: pointer;
+    }
+    .collection-create-intro { margin: 0; color: var(--muted, #6f655b); line-height: 1.5; }
+    .collection-create-help { color: var(--muted, #6f655b); font-size: .78rem; font-weight: 650; line-height: 1.4; }
+    .collection-create-required { color: var(--accent, #7d4f3b); font-size: .72rem; }
+    .collection-create-count-choice { display: flex; align-items: center; gap: 8px; min-height: 42px; }
+    .collection-create-count-choice input { width: auto; }
+    .collection-create-count-input[hidden] { display: none; }
+    .collection-detail-field[hidden] { display: none; }
+    .collection-created-notice { margin: 0; border: 1px solid rgba(77,117,80,.30); border-radius: 14px; padding: 10px 12px; background: rgba(96,119,97,.12); color: #435943; font-weight: 850; }
     .plant-document-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
     .plant-document-link {
       min-width: 0; border: 1px solid var(--line, #ded2c2); border-radius: 16px; padding: 10px;
@@ -2261,7 +2295,6 @@ function ensurePlantMilestones() {
       border-radius: 16px; padding: 18px; text-align: center; font-weight: 800;
     }
     @media (max-width: 700px) {
-      nav a[href="verktyg.html"],
       #printBtn,
       #bulkMilestoneBtn,
       #batchArchiveBtn {
@@ -2276,6 +2309,9 @@ function ensurePlantMilestones() {
       .collection-detail-facts dd { margin-bottom: 7px; }
       .collection-detail-edit-section { grid-template-columns: 1fr; }
       .collection-detail-field.wide { grid-column: auto; }
+      .collection-create-panel { padding: 16px; }
+      .collection-create-slot { padding: 0 16px; }
+      .collection-create-open { width: 100%; }
     }
   `;
   document.head.appendChild(style);
@@ -2296,6 +2332,7 @@ function ensurePlantMilestones() {
     if (!card) return;
     openPlantPanel(card);
   });
+  ensureCollectionPlantCreate();
 }
 
 function collectionPlantRecord(category, id) {
@@ -2307,7 +2344,12 @@ function collectionProfile(category) {
   return window.publicCatalogSnapshot?.categories?.[category]?.profile || null;
 }
 
+function collectionSectionLabel(profile, section) {
+  return clean(profile?.sectionLabels?.[section]) || section;
+}
+
 function collectionFieldApplies(field, row) {
+  if (field.display === false) return false;
   if (field.detail === false) return false;
   if (field.show_for_record_kind && clean(row.record_kind).toUpperCase() !== field.show_for_record_kind) return false;
   if (field.show_for_arrival && clean(row.arrival_type) !== field.show_for_arrival) return false;
@@ -2321,6 +2363,74 @@ function collectionFieldApplies(field, row) {
   if (comparisons.some(key => value.toLocaleLowerCase("sv") === clean(row[key]).toLocaleLowerCase("sv"))) return false;
   if (field.type === "checkbox" && value.toLocaleLowerCase("sv") !== "ja") return false;
   return true;
+}
+
+function collectionFieldInputHtml(field, value, mode = "edit") {
+  const createMode = mode === "create";
+  const key = escapeAttr(field.key);
+  const label = escapeAttr(field.label);
+  const required = createMode && (field.create_required || field.create_required_for_record_kind) ? " required" : "";
+  let control = "";
+  if (createMode && field.create_count_toggle) {
+    control = `<span class="collection-create-count-choice"><input type="checkbox" data-create-count-switch><span>Flera likvärdiga exemplar</span></span><input class="collection-create-count-input" data-collection-field="${key}" type="number" min="2" step="1" inputmode="numeric" value="1" aria-label="${label}" hidden>`;
+  } else if (field.type === "textarea") {
+    control = `<textarea data-collection-field="${key}" aria-label="${label}"${required}>${htmlEscape(value)}</textarea>`;
+  } else if (field.type === "select" && Array.isArray(createMode ? field.create_options || field.options : field.options)) {
+    const sourceOptions = createMode ? field.create_options || field.options : field.options;
+    const options = ["", ...sourceOptions].filter((item, index, list) => list.indexOf(item) === index)
+      .map(option => {
+        const label = field.format === "record_kind"
+          ? ({COLLECTION:"Samlingspost", INDIVIDUAL:"Individ", GROUP:"Grupp/samplantering"}[option] || option || "Ej angivet")
+          : option || "Ej angivet";
+        return `<option value="${escapeAttr(option)}"${option === value ? " selected" : ""}>${htmlEscape(label)}</option>`;
+      }).join("");
+    control = `<select data-collection-field="${key}" aria-label="${label}"${required}>${options}</select>`;
+  } else if (field.type === "checkbox") {
+    control = `<span class="collection-detail-checkbox"><input data-collection-field="${key}" type="checkbox" aria-label="${label}"${value.toLocaleLowerCase("sv") === "ja" ? " checked" : ""}><span>Ja</span></span>`;
+  } else {
+    const inputType = field.type === "date" ? "date" : field.type === "number" || field.type === "decimal" ? "number" : "text";
+    const createMin = createMode && Number.isFinite(Number(field.create_min)) ? Number(field.create_min) : 0;
+    const step = field.type === "decimal" ? ' step="0.01" min="0" inputmode="decimal"' : field.type === "number" ? ` step="1" min="${createMin}" inputmode="numeric"` : "";
+    control = `<input data-collection-field="${key}" type="${inputType}"${step}${required} value="${escapeAttr(value)}" aria-label="${label}" autocomplete="off">`;
+  }
+  return control;
+}
+
+function collectionFieldControlHtml(field, value, mode = "edit") {
+  const createMode = mode === "create";
+  const requiredLabel = createMode && field.create_required ? ' <span class="collection-create-required">behövs</span>' : "";
+  const help = createMode && field.create_help ? `<span class="collection-create-help">${htmlEscape(field.create_help)}</span>` : "";
+  const hideForArrival = createMode && field.create_gift_source ? "" : field.hide_for_arrival;
+  const condition = `${field.show_for_record_kind ? ` data-show-record-kind="${escapeAttr(field.show_for_record_kind)}"` : ""}${field.show_for_arrival ? ` data-show-arrival="${escapeAttr(field.show_for_arrival)}"` : ""}${hideForArrival ? ` data-hide-arrival="${escapeAttr(hideForArrival)}"` : ""}${createMode && field.create_gift_source ? " data-create-gift-source" : ""}`;
+  const control = collectionFieldInputHtml(field, value, mode);
+  return `<label class="collection-detail-field${field.type === "textarea" ? " wide" : ""}"${condition}><span>${htmlEscape(field.label)}${requiredLabel}</span>${control}${help}</label>`;
+}
+
+function collectionFieldEditable(field) {
+  return field.edit !== false && field.editable !== false;
+}
+
+function collectionFieldHasMeaningfulValue(field, row) {
+  const value = clean(row[field.key]);
+  if (!value) return false;
+  if (field.type === "checkbox") return value.toLocaleLowerCase("sv") === "ja";
+  return true;
+}
+
+function collectionFieldRelevantForEdit(field, row) {
+  if (collectionFieldHasMeaningfulValue(field, row)) return true;
+  if (field.show_for_record_kind && clean(row.record_kind).toUpperCase() !== field.show_for_record_kind) return false;
+  if (field.show_for_arrival && clean(row.arrival_type) !== field.show_for_arrival) return false;
+  if (field.hide_for_arrival && clean(row.arrival_type) === field.hide_for_arrival) return false;
+  return true;
+}
+
+function collectionDetailFieldHtml(field, row, editing) {
+  const label = `<dt>${htmlEscape(field.label)}</dt>`;
+  if (editing && collectionFieldEditable(field)) {
+    return `${label}<dd class="collection-detail-inline-control">${collectionFieldInputHtml(field, clean(row[field.key]), "edit")}</dd>`;
+  }
+  return `${label}<dd>${htmlEscape(collectionFieldValue(field, row))}</dd>`;
 }
 
 function collectionFieldValue(field, row) {
@@ -2362,38 +2472,37 @@ function collectionDetailPanelHtml(category, id, editing = false) {
   const fields = profile.fields;
   if (editing) {
     const sections = (profile.sections || []).map(section => {
-      const controls = fields.filter(field => field.editable !== false && field.section === section).map(field => {
-        const value = clean(row[field.key]);
-        let control = "";
-        if (field.type === "textarea") {
-          control = `<textarea data-collection-field="${escapeAttr(field.key)}">${htmlEscape(value)}</textarea>`;
-        } else if (field.type === "select" && Array.isArray(field.options)) {
-          const options = ["", ...field.options].filter((item, index, list) => list.indexOf(item) === index)
-            .map(option => `<option value="${escapeAttr(option)}"${option === value ? " selected" : ""}>${htmlEscape(option || "Ej angivet")}</option>`).join("");
-          control = `<select data-collection-field="${escapeAttr(field.key)}">${options}</select>`;
-        } else if (field.type === "checkbox") {
-          control = `<span class="collection-detail-checkbox"><input data-collection-field="${escapeAttr(field.key)}" type="checkbox"${value.toLocaleLowerCase("sv") === "ja" ? " checked" : ""}><span>Ja</span></span>`;
-        } else {
-          const inputType = field.type === "date" ? "date" : field.type === "number" || field.type === "decimal" ? "number" : "text";
-          const step = field.type === "decimal" ? ' step="0.01" min="0"' : field.type === "number" ? ' step="1" min="0"' : "";
-          control = `<input data-collection-field="${escapeAttr(field.key)}" type="${inputType}"${step} value="${escapeAttr(value)}">`;
-        }
-        return `<label class="collection-detail-field${field.type === "textarea" ? " wide" : ""}"><span>${htmlEscape(field.label)}</span>${control}</label>`;
-      }).join("");
-      return controls ? `<section class="collection-detail-edit-section"><h3>${htmlEscape(section)}</h3>${controls}</section>` : "";
+      const controls = fields
+        .filter(field => field.section === section && (collectionFieldApplies(field, row) || (collectionFieldEditable(field) && collectionFieldHasMeaningfulValue(field, row))))
+        .map(field => collectionDetailFieldHtml(field, row, true))
+        .join("");
+      return controls ? `<section class="collection-detail-section"><div class="plant-panel-section-title">${htmlEscape(collectionSectionLabel(profile, section))}</div><dl class="collection-detail-facts">${controls}</dl></section>` : "";
     }).join("");
-    return `<section class="plant-panel-section collection-detail-panel" data-collection-detail-root aria-label="Redigera växtuppgifter">
-      <form class="collection-detail-form" data-collection-detail-form>${sections}
+    const inlineKeys = new Set(fields
+      .filter(field => collectionFieldApplies(field, row) || (collectionFieldEditable(field) && collectionFieldHasMeaningfulValue(field, row)))
+      .map(field => field.key));
+    const additionalFields = fields.filter(field => collectionFieldEditable(field) && !inlineKeys.has(field.key) && collectionFieldRelevantForEdit(field, row));
+    const additionalSections = (profile.sections || []).map(section => {
+      const controls = additionalFields
+        .filter(field => field.section === section)
+        .map(field => collectionDetailFieldHtml(field, row, true))
+        .join("");
+      return controls ? `<section class="collection-detail-section"><div class="plant-panel-section-title">${htmlEscape(collectionSectionLabel(profile, section))}</div><dl class="collection-detail-facts">${controls}</dl></section>` : "";
+    }).join("");
+    const additional = additionalSections ? `<details class="collection-detail-more"><summary>Fler uppgifter</summary><div class="collection-detail-more-sections">${additionalSections}</div></details>` : "";
+    return `<section class="plant-panel-section collection-detail-panel collection-detail-editing" data-collection-detail-root aria-label="Redigera växtuppgifter">
+      <form class="collection-detail-form" data-collection-detail-form>
         <div class="collection-detail-form-actions"><p class="collection-detail-status" data-collection-detail-status aria-live="polite"></p><button class="collection-detail-cancel" type="button" data-collection-detail-cancel>Avbryt</button><button class="collection-detail-save" type="submit">Spara</button></div>
+        ${sections}${additional}
       </form>
     </section>`;
   }
   const sections = (profile.sections || []).map(section => {
     const facts = fields.filter(field => field.section === section && collectionFieldApplies(field, row))
       .map(field => `<dt>${htmlEscape(field.label)}</dt><dd>${htmlEscape(collectionFieldValue(field, row))}</dd>`).join("");
-    return facts ? `<section class="collection-detail-section"><div class="plant-panel-section-title">${htmlEscape(section)}</div><dl class="collection-detail-facts">${facts}</dl></section>` : "";
+    return facts ? `<section class="collection-detail-section"><div class="plant-panel-section-title">${htmlEscape(collectionSectionLabel(profile, section))}</div><dl class="collection-detail-facts">${facts}</dl></section>` : "";
   }).join("");
-  const canEdit = fields.some(field => field.editable !== false);
+  const canEdit = fields.some(collectionFieldEditable);
   return `<section class="plant-panel-section collection-detail-panel" data-collection-detail-root aria-label="Växtuppgifter">${sections}${canEdit ? '<div class="collection-detail-actions"><button class="collection-detail-edit" type="button" data-collection-detail-edit>Redigera</button></div>' : ""}</section>`;
 }
 
@@ -2415,8 +2524,10 @@ function bindCollectionDetailPanel(dialog, category, id) {
       const status = form.querySelector("[data-collection-detail-status]");
       const changes = {};
       form.querySelectorAll("[data-collection-field]").forEach(input => {
+        const previous = clean(row[input.dataset.collectionField]);
         const value = input.type === "checkbox" ? (input.checked ? "ja" : "nej") : input.value.trim();
-        if (value !== clean(row[input.dataset.collectionField])) changes[input.dataset.collectionField] = value;
+        const comparablePrevious = input.type === "checkbox" ? (previous.toLocaleLowerCase("sv") === "ja" ? "ja" : "nej") : previous;
+        if (value !== comparablePrevious) changes[input.dataset.collectionField] = value;
       });
       if (!Object.keys(changes).length) { show(false); return; }
       if (!window.MINA_VAXTER_ARCHIVE_TOKEN) {
@@ -2452,7 +2563,187 @@ function bindCollectionDetailPanel(dialog, category, id) {
   bind();
 }
 
-function openPlantPanel(card) {
+function collectionCategoryForPage() {
+  const page = (location.pathname.split("/").pop() || "").toLocaleLowerCase("sv");
+  return {
+    "hibiskusar.html":"Hibiskus",
+    "pelargoner.html":"Pelargon",
+    "citrus.html":"Citrus",
+    "udda.html":"Udda",
+    "stapeliader.html":"Stapeliader"
+  }[page] || "";
+}
+
+function collectionCreateValues(profile) {
+  return Object.fromEntries((profile?.fields || [])
+    .filter(field => Object.prototype.hasOwnProperty.call(field, "create_default"))
+    .map(field => [field.key, clean(field.create_default)]));
+}
+
+function updateCollectionCreateConditionalFields(form) {
+  const arrivalType = clean(form.querySelector('[data-collection-field="arrival_type"]')?.value);
+  const recordKind = clean(form.querySelector('[data-collection-field="record_kind"]')?.value || form.dataset.createRecordKind);
+  form.querySelectorAll("[data-create-gift-source]").forEach(wrapper => {
+    const label = wrapper.querySelector(":scope > span");
+    if (label) label.textContent = arrivalType === "Gåva" ? "Från vem" : "Källa";
+  });
+  form.querySelectorAll("[data-show-record-kind], [data-show-arrival], [data-hide-arrival]").forEach(wrapper => {
+    const hidden = Boolean(
+      (wrapper.dataset.showRecordKind && wrapper.dataset.showRecordKind !== recordKind) ||
+      (wrapper.dataset.showArrival && wrapper.dataset.showArrival !== arrivalType) ||
+      (wrapper.dataset.hideArrival && wrapper.dataset.hideArrival === arrivalType)
+    );
+    wrapper.hidden = hidden;
+    wrapper.querySelectorAll("input, select, textarea").forEach(control => {
+      if (control.dataset.collectionField && control.required && hidden) control.dataset.createWasRequired = "true";
+      if (control.dataset.createWasRequired) control.required = !hidden;
+      const minimum = Number(control.min);
+      if (!hidden && control.type === "number" && Number.isFinite(minimum) && Number(control.value) < minimum) control.value = String(minimum);
+    });
+  });
+  form.querySelectorAll("[data-create-count-switch]").forEach(toggle => {
+    const input = toggle.closest("label")?.querySelector(".collection-create-count-input");
+    if (!input) return;
+    input.hidden = !toggle.checked;
+    input.required = toggle.checked;
+    input.value = toggle.checked ? (Number(input.value) > 1 ? input.value : "2") : "1";
+  });
+}
+
+function collectionCreateEndpoint() {
+  if (window.MINA_VAXTER_ARCHIVE_TOKEN) {
+    return {
+      url: "https://127.0.0.1:47831/collection-plant",
+      headers: {"X-Mina-Vaxter-Token": window.MINA_VAXTER_ARCHIVE_TOKEN}
+    };
+  }
+  const hostname = window.location.hostname.toLocaleLowerCase("sv");
+  if (["127.0.0.1", "localhost"].includes(hostname)) {
+    return {url: "https://127.0.0.1:47831/collection-plant", headers: {}};
+  }
+  const endpoint = typeof localSyncEndpoint === "function" ? localSyncEndpoint() : "";
+  const token = typeof localSyncToken === "function" ? localSyncToken() : "";
+  if (endpoint && token) {
+    return {url: `${endpoint}/collection-plant`, headers: {"X-Mina-Vaxter-Sync-Token": token}};
+  }
+  throw new Error("Parkoppla iPhone med Macen under Verktyg › Lokal synk innan du skapar en permanent plantpost.");
+}
+
+function collectionCreateRedirect(category, id) {
+  const page = {
+    Hibiskus:"hibiskusar.html", Pelargon:"pelargoner.html", Citrus:"citrus.html",
+    Udda:"udda.html", Stapeliader:"stapeliader.html"
+  }[category] || location.pathname.split("/").pop();
+  const target = isPublicMobileApp()
+    ? new URL(`https://${publicMobileMacHost}:8766/${page}`)
+    : new URL(page, location.href);
+  target.searchParams.set("created", id);
+  target.hash = id;
+  location.assign(target.href);
+}
+
+function openCollectionCreateDialog(category) {
+  const profile = collectionProfile(category);
+  if (!profile || !Array.isArray(profile.fields)) return;
+  let dialog = document.querySelector("#collectionCreateDialog");
+  if (!dialog) {
+    dialog = document.createElement("dialog");
+    dialog.id = "collectionCreateDialog";
+    dialog.className = "collection-create-dialog";
+    document.body.appendChild(dialog);
+  }
+  const defaults = collectionCreateValues(profile);
+  const sections = (profile.sections || []).map(section => {
+    const controls = profile.fields
+      .filter(field => field.create !== false && field.section === section)
+      .map(field => collectionFieldControlHtml(field, defaults[field.key] || "", "create"))
+      .join("");
+    return controls ? `<section class="collection-detail-edit-section"><h3>${htmlEscape(collectionSectionLabel(profile, section))}</h3>${controls}</section>` : "";
+  }).join("");
+  const displayCategory = category === "Stapeliader" ? "Stapelia" : category;
+  const requestId = localQueueId("create");
+  dialog.innerHTML = `<div class="collection-create-panel">
+    <header><div><h2>Lägg till planta</h2><p>${htmlEscape(displayCategory)} · permanent samlingspost</p></div><button class="collection-create-close" type="button" aria-label="Stäng">×</button></header>
+    <p class="collection-create-intro">För en redan etablerad planta. Fröer, sådder och egen uppdragning registreras i Labbet.</p>
+    <form class="collection-detail-form" data-collection-create-form data-create-record-kind="${escapeAttr(defaults.record_kind || "")}">${sections}
+      <div class="collection-detail-form-actions"><p class="collection-detail-status" data-collection-create-status aria-live="polite"></p><button class="collection-detail-cancel" type="button" data-collection-create-cancel>Avbryt</button><button class="collection-detail-save" type="submit">Skapa planta</button></div>
+    </form>
+  </div>`;
+  const close = () => dialog.close();
+  dialog.querySelector(".collection-create-close").addEventListener("click", close, {once:true});
+  dialog.querySelector("[data-collection-create-cancel]").addEventListener("click", close, {once:true});
+  const form = dialog.querySelector("[data-collection-create-form]");
+  form.querySelectorAll("select, [data-create-count-switch]").forEach(control => control.addEventListener("change", () => updateCollectionCreateConditionalFields(form)));
+  updateCollectionCreateConditionalFields(form);
+  form.addEventListener("submit", async event => {
+    event.preventDefault();
+    if (!form.reportValidity()) return;
+    const status = form.querySelector("[data-collection-create-status]");
+    const button = form.querySelector(".collection-detail-save");
+    const values = {};
+    form.querySelectorAll("[data-collection-field]").forEach(input => {
+      const value = input.type === "checkbox" ? (input.checked ? "ja" : "nej") : input.value.trim();
+      if (value) values[input.dataset.collectionField] = value;
+    });
+    button.disabled = true;
+    button.textContent = "Skapar…";
+    status.textContent = "Validerar, tilldelar permanent ID och uppdaterar samlingen…";
+    status.className = "collection-detail-status";
+    try {
+      const endpoint = collectionCreateEndpoint();
+      const response = await fetch(endpoint.url, {
+        method: "POST",
+        headers: {"Content-Type":"application/json", ...endpoint.headers},
+        body: JSON.stringify({category, request_id: requestId, values}),
+        cache: "no-store"
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.ok || !result.id) throw new Error(result.error || "Plantan kunde inte skapas.");
+      status.textContent = `${result.id} skapades. Öppnar den vanliga detaljpanelen…`;
+      collectionCreateRedirect(category, result.id);
+    } catch (error) {
+      status.textContent = error.message || "Plantan kunde inte skapas.";
+      status.className = "collection-detail-status error";
+      button.disabled = false;
+      button.textContent = "Skapa planta";
+    }
+  });
+  dialog.showModal();
+  setTimeout(() => form.querySelector("input[required], select[required]")?.focus(), 40);
+}
+
+function ensureCollectionPlantCreate() {
+  const category = collectionCategoryForPage();
+  if (!category || !collectionProfile(category) || document.querySelector(".collection-create-slot")) return;
+  const header = document.querySelector("body > header");
+  if (!header) return;
+  const slot = document.createElement("div");
+  slot.className = "collection-create-slot";
+  slot.innerHTML = '<button class="collection-create-open" type="button">+ Lägg till planta</button>';
+  header.appendChild(slot);
+  slot.querySelector("button").addEventListener("click", () => openCollectionCreateDialog(category));
+
+  const createdId = clean(new URL(location.href).searchParams.get("created"));
+  if (!createdId) return;
+  const openCreatedPlant = () => {
+    const card = [...document.querySelectorAll('.plant-card[data-plant-id]')]
+      .find(item => canonicalPlantId(item.dataset.plantId) === canonicalPlantId(createdId));
+    if (!card) return false;
+    openPlantPanel(card, {created:true});
+    const cleanUrl = new URL(location.href);
+    cleanUrl.searchParams.delete("created");
+    history.replaceState(null, "", `${cleanUrl.pathname}${cleanUrl.search}${cleanUrl.hash}`);
+    return true;
+  };
+  if (openCreatedPlant()) return;
+  const observer = new MutationObserver(() => {
+    if (openCreatedPlant()) observer.disconnect();
+  });
+  observer.observe(document.querySelector("main") || document.body, {childList:true, subtree:true});
+  setTimeout(() => observer.disconnect(), 10000);
+}
+
+function openPlantPanel(card, panelOptions = {}) {
   const dialog = document.querySelector("#plantLogDialog");
   if (!dialog) return;
   let milestones = [];
@@ -2460,6 +2751,7 @@ function openPlantPanel(card) {
   const id = card.dataset.plantId || "";
   const category = card.dataset.category || "Pelargon";
   const heading = collectionPanelHeading(category, id, card.dataset.plantName);
+  const createdNotice = panelOptions.created ? `<p class="collection-created-notice">Plantan har skapats med permanent ID ${htmlEscape(id)}.</p>` : "";
   const concluded = plantCardIsConcluded(card);
   const canRegisterCrossing = !concluded && (category === "Hibiskus" || (category === "Pelargon" && clean(card.dataset.recordKind).toUpperCase() === "COLLECTION"));
   const crossingPanel = canRegisterCrossing ? `
@@ -2509,6 +2801,7 @@ function openPlantPanel(card) {
         </div>
         <button class="plant-log-close" type="button" aria-label="Stäng">×</button>
       </header>
+      ${createdNotice}
       ${crossingPanel}
       ${parentPanel}
       ${documentsPanel}

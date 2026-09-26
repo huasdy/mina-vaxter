@@ -4,7 +4,15 @@
   const SCHEMA_VERSION = 4;
   const CACHE_KEY = "mina-vaxter-labbet-katalog-v1";
   const VALID_VIEWS = new Set(["froer", "korsningar", "sadder", "uppdragning"]);
-  const VALID_SPECIES = new Set(["Alla", "Hibiskus", "Pelargon", "Stapelia"]);
+  const LAB_GROUP_PRESENTATION = Object.freeze({
+    Hibiskus: Object.freeze({collectionCategory: "Hibiskus", page: "hibiskusar.html"}),
+    Pelargon: Object.freeze({collectionCategory: "Pelargon", page: "pelargoner.html"}),
+    Stapelia: Object.freeze({collectionCategory: "Stapeliader", page: "stapeliader.html"}),
+    Udda: Object.freeze({collectionCategory: "Udda", page: "udda.html"})
+  });
+  const LAB_GROWING_GROUPS = Object.freeze(["Hibiskus", "Pelargon", "Stapelia", "Udda"]);
+  const LAB_CROSSING_GROUPS = Object.freeze(["Pelargon", "Hibiskus", "Stapelia"]);
+  const VALID_SPECIES = new Set(["Alla", ...LAB_GROWING_GROUPS]);
   const ACTIVE_SEEDLING_STATUSES = new Set(["Under uppdragning", "Redo för bedömning"]);
   const CONCLUDED_STATUSES = new Set(["I samlingen", "Gallrad", "Död", "Bortskänkt"]);
   const ACTIVE_CROSSING_STATUSES = new Set(["Pollinerad", "Frö utvecklas", "Frö skördat"]);
@@ -39,21 +47,21 @@
   const number = value => Number.parseInt(String(value || "0"), 10) || 0;
   const isoDate = value => /^\d{4}-\d{2}-\d{2}$/.test(clean(value)) ? clean(value) : "";
   const crossingName = (mother, father) => `${clean(mother) || "Okänd"} × ${clean(father) || "Okänd"}`;
+  const groupOptions = groups => groups.map(group => `<option>${esc(group)}</option>`).join("");
 
   function plantPageHref(plantId, species) {
-    const page = species === "Hibiskus"
-      ? "hibiskusar.html"
-      : species === "Stapelia" ? "stapeliader.html" : "pelargoner.html";
-    return `${page}#${encodeURIComponent(clean(plantId))}`;
+    const page = LAB_GROUP_PRESENTATION[species]?.page || "";
+    return page ? `${page}#${encodeURIComponent(clean(plantId))}` : "";
   }
 
   function parentRoleHtml(role, label, name, plantId, species, image, linkParents) {
     const id = clean(plantId);
+    const href = plantPageHref(id, species);
     const imageHtml = image
       ? `<img class="parent-role-image" src="${esc(image)}" alt="${esc(label)}: ${esc(name)}" loading="lazy" onerror="this.remove()">`
       : "";
-    const nameHtml = linkParents && id
-      ? `<a class="parent-role-link" href="${esc(plantPageHref(id, species))}">${esc(name)}</a>`
+    const nameHtml = linkParents && id && href
+      ? `<a class="parent-role-link" href="${esc(href)}">${esc(name)}</a>`
       : `<strong>${esc(name)}</strong>`;
     return `<div class="parent-role${image ? " has-parent-image" : ""}">${imageHtml}<span class="parent-role-label">${role} ${esc(label)}</span>${nameHtml}</div>`;
   }
@@ -301,7 +309,7 @@
   }
 
   function photoCategoryForSpecies(species) {
-    return species === "Stapelia" ? "Stapeliader" : species;
+    return LAB_GROUP_PRESENTATION[species]?.collectionCategory || "";
   }
 
   function resolvePlantReferenceImage(plantId, species) {
@@ -345,7 +353,7 @@
     milestonesByPlant.forEach(rows => rows.sort((a, b) => clean(a.date).localeCompare(clean(b.date))));
 
     const photosByPlant = new Map();
-    ["Hibiskus", "Pelargon", "Stapeliader"].forEach(category => {
+    [...new Set(LAB_GROWING_GROUPS.map(group => LAB_GROUP_PRESENTATION[group].collectionCategory))].forEach(category => {
       photos(category).forEach(photo => {
         const key = `${category}:${photo.plant_id}`;
         const rows = photosByPlant.get(key) || [];
@@ -763,7 +771,7 @@
         if (seedling.adapter === false) {
           seedling.sownDate = seedling.batch.sownDate;
           seedling.source = seedling.batch.originDetail;
-          seedling.parentage = seedling.batch.species !== "Stapelia" ? seedling.batch.name : "";
+          seedling.parentage = seedling.batch.sourceType === "seed_harvest" ? seedling.batch.name : "";
         }
       }
     });
@@ -1484,7 +1492,8 @@
   }
 
   function collectionParents(species) {
-    const category = species === "Stapelia" ? "Stapeliader" : species;
+    const category = LAB_GROUP_PRESENTATION[species]?.collectionCategory || "";
+    if (!category) return [];
     return collectionPlants(category)
       .filter(row => species !== "Hibiskus" || (() => {
         const status = clean(row.status).toLocaleLowerCase("sv");
@@ -1519,7 +1528,7 @@
   function openCrossingRegistration() {
     showFormDialog(`<h2>Ny korsning</h2><p>Föräldranamnen sparas tillsammans med ID:n så historiken består även om en planta senare lämnar samlingen.</p>
       <form class="lab-form">
-        <label>Artgrupp<select name="species_group"><option>Pelargon</option><option>Hibiskus</option><option>Stapelia</option></select></label>
+        <label>Artgrupp<select name="species_group">${groupOptions(LAB_CROSSING_GROUPS)}</select></label>
         <label>Pollineringsdatum<input name="pollinated_date" type="date" value="${today()}" max="${today()}" required></label>
         <label>Moderplanta ♀<select name="mother_id"></select></label>
         <label>Annat namn för moder<input name="mother_manual" placeholder="Används vid Annan/okänd"></label>
@@ -1596,7 +1605,7 @@
 
   function openSeedLotRegistration() {
     showFormDialog(`<h2>Registrera fröpåse</h2><p>Köpta, bytta eller mottagna frön med taxon, antal och källa.</p><form class="lab-form">
-      <label>Artgrupp<select name="species_group"><option>Stapelia</option><option>Hibiskus</option><option>Pelargon</option></select></label>
+      <label>Artgrupp<select name="species_group">${groupOptions(LAB_GROWING_GROUPS)}</select></label>
       <label>Fröpåsekod<input name="code" value="${esc(nextSeedLotCode())}" maxlength="24" required></label>
       <label class="wide">Art/taxon<input name="taxon" required></label>
       <label class="wide">Inköpsnamn från säljaren<input name="purchase_name"></label>
@@ -1633,7 +1642,7 @@
     const materialOptions = model.materials.map(row => `<option value="${esc(row.id)}"${selectedMaterial?.id === row.id ? " selected" : ""}>${esc(row.label)} ${esc(row.code)} · ${esc(row.taxon)} · ${row.remaining === null ? "antal okänt" : `${row.remaining} kvar`}</option>`).join("");
     showFormDialog(`<h2>Ny sådd</h2><p>En såbatch måste ha en fröskörd, en fröpåse eller ett uttryckligt äldre/okänt ursprung.</p><form class="lab-form">
       <label class="wide">Ursprung<select name="source_id">${materialOptions}<option value="__legacy">Äldre/okänt ursprung…</option></select></label>
-      <label data-legacy-field>Artgrupp vid äldre ursprung<select name="legacy_species"><option>Hibiskus</option><option>Pelargon</option><option>Stapelia</option></select></label>
+      <label data-legacy-field>Artgrupp vid äldre ursprung<select name="legacy_species">${groupOptions(LAB_GROWING_GROUPS)}</select></label>
       <label data-legacy-field>Taxon/arbetsnamn<input name="legacy_taxon"></label>
       <label class="wide" data-legacy-field>Beskriv ursprunget<input name="source_label" placeholder="T.ex. äldre fröpåse utan känt parti"></label>
       <label>Sådatum<input name="sown_date" type="date" value="${today()}" max="${today()}" required></label>

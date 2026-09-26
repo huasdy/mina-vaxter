@@ -1,6 +1,6 @@
 {
   "schemaVersion": 4,
-  "catalogVersion": "2026-09-24-synk-2253",
+  "catalogVersion": "2026-09-25-synk-1846",
   "categories": {
     "Hibiskus": {
       "titleField": "id",
@@ -12,6 +12,9 @@
           "Samlingsspecifikt",
           "Anteckningar"
         ],
+        "sectionLabels": {
+          "Samlingsspecifikt": "HIBISKUS"
+        },
         "titleFields": [
           "nickname",
           "id"
@@ -26,6 +29,9 @@
             "section": "Identitet",
             "type": "text",
             "editable": false,
+            "create": false,
+            "edit": false,
+            "display": true,
             "detail": false
           },
           {
@@ -33,7 +39,11 @@
             "label": "Namn",
             "section": "Identitet",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
+            "create_required": true
           },
           {
             "key": "status",
@@ -41,6 +51,9 @@
             "section": "Identitet",
             "type": "select",
             "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true,
             "options": [
               "Grodd",
               "Ej blommat / under utvärdering",
@@ -50,7 +63,8 @@
             ],
             "hide_values": [
               "Aktiv"
-            ]
+            ],
+            "create_default": ""
           },
           {
             "key": "arrival_type",
@@ -58,10 +72,19 @@
             "section": "Ursprung och proveniens",
             "type": "select",
             "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
             "options": [
               "Annat",
               "Egen korsning",
               "Frö",
+              "Gåva",
+              "Köpt planta",
+              "Stickling"
+            ],
+            "create_options": [
+              "Annat",
               "Gåva",
               "Köpt planta",
               "Stickling"
@@ -73,28 +96,41 @@
             "section": "Ursprung och proveniens",
             "type": "select",
             "editable": true,
-            "hide_for_arrival": "Gåva"
+            "create": true,
+            "edit": true,
+            "display": true,
+            "hide_for_arrival": "Gåva",
+            "create_gift_source": true
           },
           {
             "key": "start_date",
             "label": "Startdatum",
             "section": "Ursprung och proveniens",
             "type": "date",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true
           },
           {
             "key": "supplier",
             "label": "Leverantör/butik",
             "section": "Förvärv",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "seller",
             "label": "Säljare",
             "section": "Förvärv",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "purchase_name",
@@ -102,6 +138,9 @@
             "section": "Förvärv",
             "type": "text",
             "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
             "hide_if_equal_to": [
               "name",
               "full_botanical_name",
@@ -113,124 +152,134 @@
             "label": "Ordernummer",
             "section": "Förvärv",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "article_number",
             "label": "Artikelnummer",
             "section": "Förvärv",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "purchase_date",
             "label": "Inköpsdatum",
             "section": "Förvärv",
             "type": "date",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "arrival_date",
             "label": "Mottagningsdatum",
             "section": "Förvärv",
             "type": "date",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "purchase_price_sek",
-            "label": "Inköpspris",
+            "label": "Inköpspris (SEK)",
             "section": "Förvärv",
             "type": "decimal",
             "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
             "format": "sek"
-          },
-          {
-            "key": "purchase_price_original",
-            "label": "Originalpris",
-            "section": "Förvärv",
-            "type": "decimal",
-            "editable": true,
-            "currency_key": "purchase_currency"
-          },
-          {
-            "key": "purchase_currency",
-            "label": "Originalvaluta",
-            "section": "Förvärv",
-            "type": "text",
-            "editable": true,
-            "detail": false
-          },
-          {
-            "key": "purchase_exchange_rate",
-            "label": "Valutakurs",
-            "section": "Förvärv",
-            "type": "decimal",
-            "editable": true,
-            "format": "exchange_rate",
-            "currency_key": "purchase_currency"
-          },
-          {
-            "key": "purchase_exchange_rate_note",
-            "label": "Kursunderlag",
-            "section": "Förvärv",
-            "type": "textarea",
-            "editable": true
           },
           {
             "key": "purchase_note",
             "label": "Förvärvsnotering",
             "section": "Förvärv",
             "type": "textarea",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true
           },
           {
             "key": "mother",
             "label": "Moder",
             "section": "Samlingsspecifikt",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true
           },
           {
             "key": "father",
             "label": "Pollenförälder",
             "section": "Samlingsspecifikt",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true
           },
           {
             "key": "crossing_id",
             "label": "Korsnings-ID",
             "section": "Samlingsspecifikt",
             "type": "text",
-            "editable": false
+            "editable": false,
+            "create": false,
+            "edit": false,
+            "display": true
           },
           {
             "key": "sow_batch_id",
             "label": "Såbatch",
             "section": "Samlingsspecifikt",
             "type": "text",
-            "editable": false
+            "editable": false,
+            "create": false,
+            "edit": false,
+            "display": true
           },
           {
             "key": "breeding_selected",
             "label": "Utvald för framtida korsning",
             "section": "Samlingsspecifikt",
             "type": "checkbox",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true,
+            "create_default": "nej"
           },
           {
             "key": "cuttings_available",
             "label": "Sticklingar tillgängliga",
             "section": "Samlingsspecifikt",
             "type": "checkbox",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true,
+            "create_default": "nej"
           },
           {
             "key": "notes",
             "label": "Anteckningar",
             "section": "Anteckningar",
             "type": "textarea",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
+            "create_help": "Unik information om just detta exemplar som saknar ett eget strukturerat fält."
           }
         ]
       },
@@ -1826,8 +1875,10 @@
           "Samlingsspecifikt",
           "Anteckningar"
         ],
+        "sectionLabels": {
+          "Samlingsspecifikt": "PELARGON"
+        },
         "titleFields": [
-          "nickname",
           "name"
         ],
         "secondaryIdFields": [
@@ -1840,6 +1891,9 @@
             "section": "Identitet",
             "type": "text",
             "editable": false,
+            "create": false,
+            "edit": false,
+            "display": true,
             "detail": false
           },
           {
@@ -1848,22 +1902,21 @@
             "section": "Identitet",
             "type": "text",
             "editable": false,
+            "create": false,
+            "edit": false,
+            "display": true,
             "detail": false
           },
           {
             "key": "name",
-            "label": "Sort/art eller individnamn",
-            "section": "Identitet",
-            "type": "text",
-            "editable": true
-          },
-          {
-            "key": "nickname",
-            "label": "Smeknamn",
+            "label": "Art / sort / hybrid",
             "section": "Identitet",
             "type": "text",
             "editable": true,
-            "show_for_record_kind": "INDIVIDUAL"
+            "create": true,
+            "edit": true,
+            "display": true,
+            "create_required": true
           },
           {
             "key": "record_kind",
@@ -1871,12 +1924,16 @@
             "section": "Identitet",
             "type": "select",
             "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true,
             "options": [
               "COLLECTION",
               "INDIVIDUAL"
             ],
             "format": "record_kind",
-            "detail": false
+            "detail": false,
+            "create_default": "COLLECTION"
           },
           {
             "key": "collection_id",
@@ -1884,6 +1941,9 @@
             "section": "Identitet",
             "type": "select",
             "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true,
             "show_for_record_kind": "INDIVIDUAL",
             "detail": false
           },
@@ -1893,17 +1953,25 @@
             "section": "Identitet",
             "type": "number",
             "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
             "show_for_record_kind": "COLLECTION",
             "hide_values": [
               "1"
-            ]
+            ],
+            "create_default": "1",
+            "create_count_toggle": true
           },
           {
             "key": "type",
-            "label": "Art/sort/hybrid",
+            "label": "Typ",
             "section": "Identitet",
             "type": "select",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "arrival_type",
@@ -1911,10 +1979,19 @@
             "section": "Ursprung och proveniens",
             "type": "select",
             "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
             "options": [
               "Annat",
               "Egen korsning",
               "Frö",
+              "Gåva",
+              "Köpt planta",
+              "Stickling"
+            ],
+            "create_options": [
+              "Annat",
               "Gåva",
               "Köpt planta",
               "Stickling"
@@ -1926,28 +2003,41 @@
             "section": "Ursprung och proveniens",
             "type": "select",
             "editable": true,
-            "hide_for_arrival": "Gåva"
+            "create": true,
+            "edit": true,
+            "display": true,
+            "hide_for_arrival": "Gåva",
+            "create_gift_source": true
           },
           {
             "key": "start_date",
             "label": "Startdatum",
             "section": "Ursprung och proveniens",
             "type": "date",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true
           },
           {
             "key": "supplier",
             "label": "Leverantör/butik",
             "section": "Förvärv",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "seller",
             "label": "Säljare",
             "section": "Förvärv",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "purchase_name",
@@ -1955,6 +2045,9 @@
             "section": "Förvärv",
             "type": "text",
             "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
             "hide_if_equal_to": [
               "name",
               "full_botanical_name",
@@ -1966,89 +2059,81 @@
             "label": "Ordernummer",
             "section": "Förvärv",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "article_number",
             "label": "Artikelnummer",
             "section": "Förvärv",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "purchase_date",
             "label": "Inköpsdatum",
             "section": "Förvärv",
             "type": "date",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "arrival_date",
             "label": "Mottagningsdatum",
             "section": "Förvärv",
             "type": "date",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "purchase_price_sek",
-            "label": "Inköpspris",
+            "label": "Inköpspris (SEK)",
             "section": "Förvärv",
             "type": "decimal",
             "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
             "format": "sek"
-          },
-          {
-            "key": "purchase_price_original",
-            "label": "Originalpris",
-            "section": "Förvärv",
-            "type": "decimal",
-            "editable": true,
-            "currency_key": "purchase_currency"
-          },
-          {
-            "key": "purchase_currency",
-            "label": "Originalvaluta",
-            "section": "Förvärv",
-            "type": "text",
-            "editable": true,
-            "detail": false
-          },
-          {
-            "key": "purchase_exchange_rate",
-            "label": "Valutakurs",
-            "section": "Förvärv",
-            "type": "decimal",
-            "editable": true,
-            "format": "exchange_rate",
-            "currency_key": "purchase_currency"
-          },
-          {
-            "key": "purchase_exchange_rate_note",
-            "label": "Kursunderlag",
-            "section": "Förvärv",
-            "type": "textarea",
-            "editable": true
           },
           {
             "key": "purchase_note",
             "label": "Förvärvsnotering",
             "section": "Förvärv",
             "type": "textarea",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true
           },
           {
             "key": "parentage",
-            "label": "Härstamning",
+            "label": "Föräldrar / korsningsbakgrund",
             "section": "Samlingsspecifikt",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "crossing_id",
             "label": "Korsnings-ID",
             "section": "Samlingsspecifikt",
             "type": "text",
-            "editable": false
+            "editable": false,
+            "create": false,
+            "edit": false,
+            "display": true
           },
           {
             "key": "seed_lot_id",
@@ -2056,6 +2141,9 @@
             "section": "Samlingsspecifikt",
             "type": "text",
             "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
             "show_for_record_kind": "INDIVIDUAL"
           },
           {
@@ -2063,14 +2151,20 @@
             "label": "Såbatch",
             "section": "Samlingsspecifikt",
             "type": "text",
-            "editable": false
+            "editable": false,
+            "create": false,
+            "edit": false,
+            "display": true
           },
           {
             "key": "scent",
             "label": "Doft",
             "section": "Samlingsspecifikt",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "status",
@@ -2078,9 +2172,13 @@
             "section": "Samlingsspecifikt",
             "type": "select",
             "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true,
             "hide_values": [
               "Aktiv"
-            ]
+            ],
+            "create_default": ""
           },
           {
             "key": "breeding_selected",
@@ -2088,21 +2186,33 @@
             "section": "Samlingsspecifikt",
             "type": "checkbox",
             "editable": true,
-            "show_for_record_kind": "INDIVIDUAL"
+            "create": false,
+            "edit": true,
+            "display": true,
+            "show_for_record_kind": "INDIVIDUAL",
+            "create_default": "nej"
           },
           {
             "key": "cuttings_available",
             "label": "Sticklingar tillgängliga",
             "section": "Samlingsspecifikt",
             "type": "checkbox",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true,
+            "create_default": "nej"
           },
           {
             "key": "notes",
             "label": "Anteckningar",
             "section": "Anteckningar",
             "type": "textarea",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
+            "create_help": "Unik information om just detta exemplar som saknar ett eget strukturerat fält."
           }
         ]
       },
@@ -2119,7 +2229,7 @@
           "status": "Bekräftad",
           "scent": "",
           "source": "Sune Trygg",
-          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "notes": "",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -2164,7 +2274,7 @@
           "status": "Bekräftad",
           "scent": "",
           "source": "Sune Trygg",
-          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "notes": "",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -2209,7 +2319,7 @@
           "status": "",
           "scent": "",
           "source": "Ralf Paul Pelargonien, Tyskland",
-          "notes": "Pelargonium bowkeri ‘Silver Leaf’. Art: Pelargonium bowkeri. Typ: vildart/urval. Geofyt. Silvergrått finflikigt bladverk. Extremt fransiga blommor, blekgula/vita/rosa med violetta inslag.",
+          "notes": "",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -2254,7 +2364,7 @@
           "status": "Bekräftad",
           "scent": "",
           "source": "Sune Trygg",
-          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "notes": "",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -2299,7 +2409,7 @@
           "status": "",
           "scent": "",
           "source": "Ralf Paul Pelargonien, Tyskland",
-          "notes": "Pelargonium dimeierii ‘Selma’. Typ: hybrid. Säljarens registrerade namn: P. dimeierii ‘Selma’. Mycket långa tunna blomstänglar och mörkt röda blommor.",
+          "notes": "",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -2344,7 +2454,7 @@
           "status": "Bekräftad",
           "scent": "Kvällsdoftande / kryddigt-balsamisk",
           "source": "Sune Trygg",
-          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "notes": "",
           "nickname": "",
           "card_note": "Doft: amaretto/mandel + tydlig lime. Nattdoftande.",
           "card_note_updated_at": "2026-09-01T20:00:27.130Z",
@@ -2382,14 +2492,14 @@
           "record_kind": "COLLECTION",
           "collection_id": "",
           "name": "P. gibbosum × anethifolium",
-          "parentage": "",
+          "parentage": "P. gibbosum × P. anethifolium",
           "type": "Primärhybrid",
           "specimen_count": "1",
           "tags": "",
           "status": "",
           "scent": "",
           "source": "Ralf Paul Pelargonien, Tyskland",
-          "notes": "Pelargonium gibbosum × anethifolium. Föräldrar: P. gibbosum × P. anethifolium. Gibbosum-hybrid med finare/flikigare bladverk och rosa–ljusa blommor.",
+          "notes": "",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -2434,7 +2544,7 @@
           "status": "Bekräftad",
           "scent": "Kvällsdoftande / kryddigt-balsamisk",
           "source": "Sune Trygg",
-          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "notes": "",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -2479,7 +2589,7 @@
           "status": "Bekräftad",
           "scent": "",
           "source": "Sune Trygg",
-          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "notes": "",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -2524,7 +2634,7 @@
           "status": "Bekräftad",
           "scent": "",
           "source": "Sune Trygg",
-          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "notes": "",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -2569,7 +2679,7 @@
           "status": "Bekräftad",
           "scent": "Äpple / frisk doft",
           "source": "Sune Trygg",
-          "notes": "Doftpelargon med äppellik/frisk doft. Doftpelargon och doftande vildart.",
+          "notes": "",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -2614,7 +2724,7 @@
           "status": "Bekräftad",
           "scent": "Svag / örtig",
           "source": "Sune Trygg",
-          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "notes": "",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -2659,7 +2769,7 @@
           "status": "Bekräftad",
           "scent": "",
           "source": "Sune Trygg",
-          "notes": "Vild art. Etiketten anger P. triffidum.",
+          "notes": "Etiketten anger P. triffidum.",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -2704,7 +2814,7 @@
           "status": "Bekräftad",
           "scent": "",
           "source": "Sune Trygg",
-          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "notes": "",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -2749,7 +2859,7 @@
           "status": "Bekräftad",
           "scent": "",
           "source": "Sune Trygg",
-          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "notes": "",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -2794,7 +2904,7 @@
           "status": "Bortgiven",
           "scent": "",
           "source": "Sune Trygg",
-          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "notes": "",
           "nickname": "",
           "card_note": "Till Marie",
           "card_note_updated_at": "2026-08-27T15:55:43.307Z",
@@ -2839,7 +2949,7 @@
           "status": "Bortgiven",
           "scent": "",
           "source": "Sune Trygg",
-          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "notes": "",
           "nickname": "",
           "card_note": "Till Marie",
           "card_note_updated_at": "2026-08-27T15:55:49.490Z",
@@ -2884,7 +2994,7 @@
           "status": "Bekräftad",
           "scent": "",
           "source": "Sune Trygg",
-          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid. Doftpelargon med brokbladigt bladverk.",
+          "notes": "",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -2929,7 +3039,7 @@
           "status": "Bekräftad",
           "scent": "Klassisk doftpelargon / frisk citrus-ros",
           "source": "Sune Trygg",
-          "notes": "Doftpelargon. Eget exemplar i samlingen.",
+          "notes": "",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -2974,11 +3084,11 @@
           "status": "",
           "scent": "",
           "source": "Ralf Paul Pelargonien, Tyskland",
-          "notes": "Härstamning: P. gibbosum × (P. gibbosum × P. cortusifolium). Direkta föräldrar: P. gibbosum × P. ‘Cortusina’. ‘Cortusina’ = P. gibbosum × P. cortusifolium, vilket ger ungefär 75 % P. gibbosum-bakgrund. Gåva/bonusplanta som Ralf Paul lade till utan kostnad.",
+          "notes": "",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
-          "arrival_type": "Köpt planta",
+          "arrival_type": "Gåva",
           "start_date": "",
           "seed_lot_id": "",
           "crossing_id": "",
@@ -3019,7 +3129,7 @@
           "status": "",
           "scent": "Kraftig nattdoft",
           "source": "Ralf Paul Pelargonien, Tyskland",
-          "notes": "Pelargonium × glauciifolium. Typ: art-/primärhybrid. Föräldrar: P. gibbosum × P. lobatum. Geofytisk gammal hybrid. Små mörkt auberginefärgade blommor med gröngul kant. Kraftig nattdoft.",
+          "notes": "",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -3064,7 +3174,7 @@
           "status": "Bekräftad",
           "scent": "Citron",
           "source": "Sune Trygg",
-          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "notes": "",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -3109,7 +3219,7 @@
           "status": "Bekräftad",
           "scent": "Doftpelargon",
           "source": "Sune Trygg",
-          "notes": "Har både helbild och blomma från samma datum.",
+          "notes": "",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -3154,7 +3264,7 @@
           "status": "Bekräftad",
           "scent": "Apelsin / citrus",
           "source": "Sune Trygg",
-          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "notes": "",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -3199,7 +3309,7 @@
           "status": "Avslutad/död",
           "scent": "Cola / kryddig citrus",
           "source": "Sune Trygg",
-          "notes": "Eget exemplar i samlingen. Följ form, stam, doft och blomning över tid.",
+          "notes": "",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -3244,7 +3354,7 @@
           "status": "",
           "scent": "",
           "source": "Ralf Paul Pelargonien, Tyskland",
-          "notes": "Pelargonium Zonartic ‘Rushmoor Mississippi’. Typ: hybrid/sort. Utvald för den tydligt gula blomfärgen. Lemon-/smörgula fyllda till halvfyllda blommor.",
+          "notes": "",
           "nickname": "",
           "card_note": "",
           "card_note_updated_at": "",
@@ -3788,6 +3898,9 @@
           "Samlingsspecifikt",
           "Anteckningar"
         ],
+        "sectionLabels": {
+          "Samlingsspecifikt": "CITRUS"
+        },
         "titleFields": [
           "nickname",
           "name",
@@ -3801,6 +3914,9 @@
             "section": "Identitet",
             "type": "text",
             "editable": false,
+            "create": false,
+            "edit": false,
+            "display": true,
             "detail": false
           },
           {
@@ -3808,7 +3924,11 @@
             "label": "Namn",
             "section": "Identitet",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
+            "create_required": true
           },
           {
             "key": "latin",
@@ -3816,6 +3936,9 @@
             "section": "Identitet",
             "type": "text",
             "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
             "hide_if_equal_to": [
               "name"
             ]
@@ -3826,6 +3949,9 @@
             "section": "Identitet",
             "type": "text",
             "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
             "show_for_record_kind": "INDIVIDUAL"
           },
           {
@@ -3834,12 +3960,16 @@
             "section": "Identitet",
             "type": "select",
             "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true,
             "options": [
               "COLLECTION",
               "INDIVIDUAL"
             ],
             "format": "record_kind",
-            "detail": false
+            "detail": false,
+            "create_default": "COLLECTION"
           },
           {
             "key": "collection_id",
@@ -3847,6 +3977,9 @@
             "section": "Identitet",
             "type": "select",
             "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true,
             "show_for_record_kind": "INDIVIDUAL",
             "detail": false
           },
@@ -3856,24 +3989,35 @@
             "section": "Identitet",
             "type": "number",
             "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
             "show_for_record_kind": "COLLECTION",
             "hide_values": [
               "1"
-            ]
+            ],
+            "create_default": "1",
+            "create_count_toggle": true
           },
           {
             "key": "type",
             "label": "Art/sort",
             "section": "Identitet",
             "type": "select",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "rootstock",
             "label": "Grundstam",
             "section": "Ursprung och proveniens",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "arrival_type",
@@ -3881,10 +4025,19 @@
             "section": "Ursprung och proveniens",
             "type": "select",
             "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
             "options": [
               "Annat",
               "Egen korsning",
               "Frö",
+              "Gåva",
+              "Köpt planta",
+              "Stickling"
+            ],
+            "create_options": [
+              "Annat",
               "Gåva",
               "Köpt planta",
               "Stickling"
@@ -3896,28 +4049,41 @@
             "section": "Ursprung och proveniens",
             "type": "select",
             "editable": true,
-            "hide_for_arrival": "Gåva"
+            "create": true,
+            "edit": true,
+            "display": true,
+            "hide_for_arrival": "Gåva",
+            "create_gift_source": true
           },
           {
             "key": "start_date",
             "label": "Startdatum",
             "section": "Ursprung och proveniens",
             "type": "date",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true
           },
           {
             "key": "supplier",
             "label": "Leverantör/butik",
             "section": "Förvärv",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "seller",
             "label": "Säljare",
             "section": "Förvärv",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "purchase_name",
@@ -3925,6 +4091,9 @@
             "section": "Förvärv",
             "type": "text",
             "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
             "hide_if_equal_to": [
               "name",
               "full_botanical_name",
@@ -3936,75 +4105,61 @@
             "label": "Ordernummer",
             "section": "Förvärv",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "article_number",
             "label": "Artikelnummer",
             "section": "Förvärv",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "purchase_date",
             "label": "Inköpsdatum",
             "section": "Förvärv",
             "type": "date",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "arrival_date",
             "label": "Mottagningsdatum",
             "section": "Förvärv",
             "type": "date",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "purchase_price_sek",
-            "label": "Inköpspris",
+            "label": "Inköpspris (SEK)",
             "section": "Förvärv",
             "type": "decimal",
             "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
             "format": "sek"
-          },
-          {
-            "key": "purchase_price_original",
-            "label": "Originalpris",
-            "section": "Förvärv",
-            "type": "decimal",
-            "editable": true,
-            "currency_key": "purchase_currency"
-          },
-          {
-            "key": "purchase_currency",
-            "label": "Originalvaluta",
-            "section": "Förvärv",
-            "type": "text",
-            "editable": true,
-            "detail": false
-          },
-          {
-            "key": "purchase_exchange_rate",
-            "label": "Valutakurs",
-            "section": "Förvärv",
-            "type": "decimal",
-            "editable": true,
-            "format": "exchange_rate",
-            "currency_key": "purchase_currency"
-          },
-          {
-            "key": "purchase_exchange_rate_note",
-            "label": "Kursunderlag",
-            "section": "Förvärv",
-            "type": "textarea",
-            "editable": true
           },
           {
             "key": "purchase_note",
             "label": "Förvärvsnotering",
             "section": "Förvärv",
             "type": "textarea",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true
           },
           {
             "key": "status",
@@ -4012,23 +4167,35 @@
             "section": "Samlingsspecifikt",
             "type": "select",
             "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true,
             "hide_values": [
               "Aktiv"
-            ]
+            ],
+            "create_default": ""
           },
           {
             "key": "cuttings_available",
             "label": "Sticklingar tillgängliga",
             "section": "Samlingsspecifikt",
             "type": "checkbox",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true,
+            "create_default": "nej"
           },
           {
             "key": "notes",
             "label": "Anteckningar",
             "section": "Anteckningar",
             "type": "textarea",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
+            "create_help": "Unik information om just detta exemplar som saknar ett eget strukturerat fält."
           }
         ]
       },
@@ -4369,6 +4536,9 @@
           "Samlingsspecifikt",
           "Anteckningar"
         ],
+        "sectionLabels": {
+          "Samlingsspecifikt": "UDDA"
+        },
         "titleFields": [
           "name",
           "latin"
@@ -4383,6 +4553,9 @@
             "section": "Identitet",
             "type": "text",
             "editable": false,
+            "create": false,
+            "edit": false,
+            "display": true,
             "detail": false
           },
           {
@@ -4390,7 +4563,11 @@
             "label": "Namn",
             "section": "Identitet",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
+            "create_required": true
           },
           {
             "key": "latin",
@@ -4398,6 +4575,9 @@
             "section": "Identitet",
             "type": "text",
             "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
             "hide_if_equal_to": [
               "name"
             ]
@@ -4407,19 +4587,30 @@
             "label": "Typ",
             "section": "Identitet",
             "type": "select",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "record_kind",
-            "label": "Posttyp",
+            "label": "Posten representerar",
             "section": "Identitet",
             "type": "select",
             "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
             "options": [
               "COLLECTION",
               "INDIVIDUAL",
               "GROUP"
             ],
+            "create_options": [
+              "INDIVIDUAL",
+              "GROUP"
+            ],
+            "create_default": "INDIVIDUAL",
             "format": "record_kind",
             "detail": false
           },
@@ -4429,6 +4620,9 @@
             "section": "Identitet",
             "type": "text",
             "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true,
             "show_for_record_kind": "INDIVIDUAL",
             "detail": false
           },
@@ -4438,7 +4632,13 @@
             "section": "Identitet",
             "type": "number",
             "editable": true,
-            "show_for_record_kind": "GROUP"
+            "create": true,
+            "edit": true,
+            "display": true,
+            "show_for_record_kind": "GROUP",
+            "create_default": "1",
+            "create_min": 2,
+            "create_required_for_record_kind": "GROUP"
           },
           {
             "key": "arrival_type",
@@ -4446,10 +4646,19 @@
             "section": "Ursprung och proveniens",
             "type": "select",
             "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
             "options": [
               "Annat",
               "Egen korsning",
               "Frö",
+              "Gåva",
+              "Köpt planta",
+              "Stickling"
+            ],
+            "create_options": [
+              "Annat",
               "Gåva",
               "Köpt planta",
               "Stickling"
@@ -4461,28 +4670,41 @@
             "section": "Ursprung och proveniens",
             "type": "select",
             "editable": true,
-            "hide_for_arrival": "Gåva"
+            "create": true,
+            "edit": true,
+            "display": true,
+            "hide_for_arrival": "Gåva",
+            "create_gift_source": true
           },
           {
             "key": "start_date",
             "label": "Startdatum",
             "section": "Ursprung och proveniens",
             "type": "date",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true
           },
           {
             "key": "supplier",
             "label": "Leverantör/butik",
             "section": "Förvärv",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "seller",
             "label": "Säljare",
             "section": "Förvärv",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "purchase_name",
@@ -4490,6 +4712,9 @@
             "section": "Förvärv",
             "type": "text",
             "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
             "hide_if_equal_to": [
               "name",
               "full_botanical_name",
@@ -4501,82 +4726,61 @@
             "label": "Ordernummer",
             "section": "Förvärv",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "article_number",
             "label": "Artikelnummer",
             "section": "Förvärv",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "purchase_date",
             "label": "Inköpsdatum",
             "section": "Förvärv",
             "type": "date",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "arrival_date",
             "label": "Mottagningsdatum",
             "section": "Förvärv",
             "type": "date",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "purchase_price_sek",
-            "label": "Inköpspris",
+            "label": "Inköpspris (SEK)",
             "section": "Förvärv",
             "type": "decimal",
             "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
             "format": "sek"
-          },
-          {
-            "key": "purchase_price_original",
-            "label": "Originalpris",
-            "section": "Förvärv",
-            "type": "decimal",
-            "editable": true,
-            "currency_key": "purchase_currency"
-          },
-          {
-            "key": "purchase_currency",
-            "label": "Originalvaluta",
-            "section": "Förvärv",
-            "type": "text",
-            "editable": true,
-            "detail": false
-          },
-          {
-            "key": "purchase_exchange_rate",
-            "label": "Valutakurs",
-            "section": "Förvärv",
-            "type": "decimal",
-            "editable": true,
-            "format": "exchange_rate",
-            "currency_key": "purchase_currency"
-          },
-          {
-            "key": "purchase_exchange_rate_note",
-            "label": "Kursunderlag",
-            "section": "Förvärv",
-            "type": "textarea",
-            "editable": true
           },
           {
             "key": "purchase_note",
             "label": "Förvärvsnotering",
             "section": "Förvärv",
             "type": "textarea",
-            "editable": true
-          },
-          {
-            "key": "tags",
-            "label": "Taggar",
-            "section": "Samlingsspecifikt",
-            "type": "text",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true
           },
           {
             "key": "status",
@@ -4584,23 +4788,35 @@
             "section": "Samlingsspecifikt",
             "type": "select",
             "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true,
             "hide_values": [
               "Aktiv"
-            ]
+            ],
+            "create_default": ""
           },
           {
             "key": "cuttings_available",
             "label": "Sticklingar tillgängliga",
             "section": "Samlingsspecifikt",
             "type": "checkbox",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true,
+            "create_default": "nej"
           },
           {
             "key": "notes",
             "label": "Anteckningar",
             "section": "Anteckningar",
             "type": "textarea",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
+            "create_help": "Unik information om just detta exemplar eller denna grupp som saknar ett eget strukturerat fält."
           }
         ]
       },
@@ -4610,13 +4826,13 @@
           "name": "Fredskalla",
           "latin": "Spathiphyllum wallisii",
           "type": "Krukväxt",
-          "record_kind": "",
+          "record_kind": "GROUP",
           "collection_id": "",
-          "specimen_count": "",
+          "specimen_count": "2",
           "tags": "",
           "status": "Aktiv",
           "source": "",
-          "notes": "Två exemplar dokumenteras gemensamt som udda växt i samlingen.",
+          "notes": "",
           "card_note": "",
           "card_note_updated_at": "",
           "arrival_type": "",
@@ -4652,7 +4868,7 @@
           "tags": "",
           "status": "Aktiv",
           "source": "",
-          "notes": "Dokumenteras som udda växt i samlingen.",
+          "notes": "",
           "card_note": "",
           "card_note_updated_at": "2026-08-27T17:03:05.679Z",
           "arrival_type": "Gåva",
@@ -4682,13 +4898,13 @@
           "name": "Patchouli",
           "latin": "Pogostemon cablin",
           "type": "Doftväxt",
-          "record_kind": "",
+          "record_kind": "GROUP",
           "collection_id": "",
           "specimen_count": "",
           "tags": "Frö",
           "status": "Aktiv",
           "source": "",
-          "notes": "Flera plantor finns men dokumenteras som växttyp snarare än individer.",
+          "notes": "",
           "card_note": "",
           "card_note_updated_at": "",
           "arrival_type": "Frö",
@@ -4718,13 +4934,13 @@
           "name": "Patchouli",
           "latin": "Pogostemon cablin",
           "type": "Doftväxt",
-          "record_kind": "",
-          "collection_id": "",
+          "record_kind": "INDIVIDUAL",
+          "collection_id": "SP-002",
           "specimen_count": "",
           "tags": "Frö",
           "status": "Bortgiven",
           "source": "",
-          "notes": "Individ från grupposten SP-002. Överlämnad som bröllopspresent.",
+          "notes": "",
           "card_note": "Till Stefan",
           "card_note_updated_at": "2026-08-27T15:55:57.104Z",
           "arrival_type": "Frö",
@@ -4796,7 +5012,7 @@
           "tags": "",
           "status": "Aktiv",
           "source": "",
-          "notes": "Dokumenteras som udda växt i samlingen.",
+          "notes": "",
           "card_note": "Tog in",
           "card_note_updated_at": "2026-08-27T16:07:16.900Z",
           "arrival_type": "Frö",
@@ -4832,7 +5048,7 @@
           "tags": "Frö",
           "status": "Under uppdragning",
           "source": "",
-          "notes": "Dokumenteras om sådden tar sig.",
+          "notes": "",
           "card_note": "",
           "card_note_updated_at": "",
           "arrival_type": "Frö",
@@ -4862,13 +5078,13 @@
           "name": "Stapelia mix",
           "latin": "Stapelia spp.",
           "type": "Krukväxt",
-          "record_kind": "",
+          "record_kind": "GROUP",
           "collection_id": "",
           "specimen_count": "",
           "tags": "Frö",
           "status": "Aktiv",
           "source": "",
-          "notes": "Samplantering med flera individer i samma kruka. Dokumenteras som grupp tills blomning visar skillnader.",
+          "notes": "",
           "card_note": "",
           "card_note_updated_at": "",
           "arrival_type": "Frö",
@@ -4976,7 +5192,7 @@
           "tags": "",
           "status": "Aktiv",
           "source": "Tradera",
-          "notes": "Tradera-annons 23. Fokus framåt är etablering, tillväxt och framtida blomning. Trivs ljust utan stark direkt sol och vill ha jämn fuktighet under tillväxtperioden.",
+          "notes": "",
           "card_note": "",
           "card_note_updated_at": "",
           "arrival_type": "",
@@ -5183,6 +5399,9 @@
           "Samlingsspecifikt",
           "Anteckningar"
         ],
+        "sectionLabels": {
+          "Samlingsspecifikt": "STAPELIA"
+        },
         "titleFields": [
           "full_botanical_name",
           "short_name"
@@ -5197,6 +5416,9 @@
             "section": "Identitet",
             "type": "text",
             "editable": false,
+            "create": false,
+            "edit": false,
+            "display": true,
             "detail": false
           },
           {
@@ -5204,7 +5426,11 @@
             "label": "Fullständigt botaniskt namn",
             "section": "Identitet",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
+            "create_required": true
           },
           {
             "key": "short_name",
@@ -5212,6 +5438,9 @@
             "section": "Identitet",
             "type": "text",
             "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
             "hide_if_equal_to": [
               "full_botanical_name"
             ]
@@ -5221,42 +5450,60 @@
             "label": "Släkte",
             "section": "Identitet",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true
           },
           {
             "key": "species",
             "label": "Art",
             "section": "Identitet",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true
           },
           {
             "key": "infraspecific_taxon",
             "label": "Underart/varietet/form",
             "section": "Identitet",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true
           },
           {
             "key": "accession_field_number",
             "label": "Accession/fältnummer",
             "section": "Ursprung och proveniens",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "provenance_location",
             "label": "Proveniens/lokalitet",
             "section": "Ursprung och proveniens",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "accepted_name_or_synonym",
             "label": "Accepterat namn/synonym",
             "section": "Ursprung och proveniens",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "acquisition_type",
@@ -5264,8 +5511,16 @@
             "section": "Ursprung och proveniens",
             "type": "select",
             "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
             "options": [
               "Frö",
+              "Stickling",
+              "Levande planta",
+              "Gåva"
+            ],
+            "create_options": [
               "Stickling",
               "Levande planta",
               "Gåva"
@@ -5276,14 +5531,20 @@
             "label": "Leverantör/butik",
             "section": "Förvärv",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "seller",
             "label": "Säljare",
             "section": "Förvärv",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "purchase_name",
@@ -5291,6 +5552,9 @@
             "section": "Förvärv",
             "type": "text",
             "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
             "hide_if_equal_to": [
               "name",
               "full_botanical_name",
@@ -5302,117 +5566,121 @@
             "label": "Ordernummer",
             "section": "Förvärv",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "article_number",
             "label": "Artikelnummer",
             "section": "Förvärv",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "purchase_date",
             "label": "Inköpsdatum",
             "section": "Förvärv",
             "type": "date",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "arrival_date",
             "label": "Mottagningsdatum",
             "section": "Förvärv",
             "type": "date",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "purchase_price_sek",
-            "label": "Inköpspris",
+            "label": "Inköpspris (SEK)",
             "section": "Förvärv",
             "type": "decimal",
             "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
             "format": "sek"
-          },
-          {
-            "key": "purchase_price_original",
-            "label": "Originalpris",
-            "section": "Förvärv",
-            "type": "decimal",
-            "editable": true,
-            "currency_key": "purchase_currency"
-          },
-          {
-            "key": "purchase_currency",
-            "label": "Originalvaluta",
-            "section": "Förvärv",
-            "type": "text",
-            "editable": true,
-            "detail": false
-          },
-          {
-            "key": "purchase_exchange_rate",
-            "label": "Valutakurs",
-            "section": "Förvärv",
-            "type": "decimal",
-            "editable": true,
-            "format": "exchange_rate",
-            "currency_key": "purchase_currency"
-          },
-          {
-            "key": "purchase_exchange_rate_note",
-            "label": "Kursunderlag",
-            "section": "Förvärv",
-            "type": "textarea",
-            "editable": true
           },
           {
             "key": "purchase_note",
             "label": "Förvärvsnotering",
             "section": "Förvärv",
             "type": "textarea",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true
           },
           {
             "key": "purchase_quantity",
             "label": "Inköpsantal",
             "section": "Förvärv",
             "type": "number",
-            "editable": true
-          },
-          {
-            "key": "package_quantity",
-            "label": "Mängd",
-            "section": "Förvärv",
-            "type": "text",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "original_seed_count",
             "label": "Ursprungligt fröantal",
             "section": "Förvärv",
             "type": "number",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true
+          },
+          {
+            "key": "parentage",
+            "label": "Föräldrar / korsningsbakgrund",
+            "section": "Samlingsspecifikt",
+            "type": "text",
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true
           },
           {
             "key": "seed_lot_id",
             "label": "Fröparti-ID",
             "section": "Samlingsspecifikt",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true
           },
           {
             "key": "sown_date",
             "label": "Sådatum",
             "section": "Samlingsspecifikt",
             "type": "date",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true
           },
           {
             "key": "germination_date",
             "label": "Grodddatum",
             "section": "Samlingsspecifikt",
             "type": "date",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true
           },
           {
             "key": "status",
@@ -5420,23 +5688,33 @@
             "section": "Samlingsspecifikt",
             "type": "text",
             "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true,
             "hide_values": [
               "Aktiv"
-            ]
+            ],
+            "create_default": ""
           },
           {
             "key": "expected_scent",
             "label": "Förväntad doft",
             "section": "Samlingsspecifikt",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true
           },
           {
             "key": "own_scent_observation",
             "label": "Egen doftobservation",
             "section": "Samlingsspecifikt",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true
           },
           {
             "key": "scent_strength",
@@ -5444,6 +5722,9 @@
             "section": "Samlingsspecifikt",
             "type": "select",
             "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true,
             "options": [
               "0",
               "1",
@@ -5459,14 +5740,20 @@
             "label": "Doftbeskrivning",
             "section": "Samlingsspecifikt",
             "type": "textarea",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true
           },
           {
             "key": "scent_distance",
             "label": "Doftavstånd",
             "section": "Samlingsspecifikt",
             "type": "text",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true
           },
           {
             "key": "scent_veto",
@@ -5474,21 +5761,33 @@
             "section": "Samlingsspecifikt",
             "type": "checkbox",
             "editable": true,
-            "show_when": "ja"
+            "create": false,
+            "edit": true,
+            "display": true,
+            "show_when": "ja",
+            "create_default": "nej"
           },
           {
             "key": "cuttings_available",
             "label": "Sticklingar tillgängliga",
             "section": "Samlingsspecifikt",
             "type": "checkbox",
-            "editable": true
+            "editable": true,
+            "create": false,
+            "edit": true,
+            "display": true,
+            "create_default": "nej"
           },
           {
             "key": "notes",
             "label": "Anteckningar",
             "section": "Anteckningar",
             "type": "textarea",
-            "editable": true
+            "editable": true,
+            "create": true,
+            "edit": true,
+            "display": true,
+            "create_help": "Unik information om just detta exemplar som saknar ett eget strukturerat fält."
           }
         ]
       },
@@ -5504,6 +5803,7 @@
           "accession_field_number": "",
           "provenance_location": "",
           "accepted_name_or_synonym": "",
+          "parentage": "",
           "supplier": "Cactus Art",
           "order_number": "20451",
           "acquisition_type": "Stickling",
@@ -5553,6 +5853,7 @@
           "accession_field_number": "",
           "provenance_location": "",
           "accepted_name_or_synonym": "",
+          "parentage": "",
           "supplier": "Cactus Art",
           "order_number": "20451",
           "acquisition_type": "Stickling",
@@ -5573,7 +5874,7 @@
           "scent_veto": "nej",
           "seed_lot_id": "",
           "package_quantity": "",
-          "notes": "Leverantörsnotering: Brown-red flowers.",
+          "notes": "",
           "card_note": "",
           "card_note_updated_at": "",
           "cuttings_available": "",
@@ -5602,6 +5903,7 @@
           "accession_field_number": "",
           "provenance_location": "",
           "accepted_name_or_synonym": "",
+          "parentage": "",
           "supplier": "Cactus Art",
           "order_number": "20451",
           "acquisition_type": "Stickling",
@@ -5651,6 +5953,7 @@
           "accession_field_number": "",
           "provenance_location": "",
           "accepted_name_or_synonym": "",
+          "parentage": "",
           "supplier": "Cactus Art",
           "order_number": "20451",
           "acquisition_type": "Stickling",
@@ -5700,6 +6003,7 @@
           "accession_field_number": "",
           "provenance_location": "",
           "accepted_name_or_synonym": "",
+          "parentage": "",
           "supplier": "Cactus Art",
           "order_number": "20451",
           "acquisition_type": "Stickling",
@@ -5720,7 +6024,7 @@
           "scent_veto": "nej",
           "seed_lot_id": "",
           "package_quantity": "",
-          "notes": "Formangivelsen är bevarad exakt från leverantören.",
+          "notes": "",
           "card_note": "",
           "card_note_updated_at": "",
           "cuttings_available": "",
@@ -5749,6 +6053,7 @@
           "accession_field_number": "",
           "provenance_location": "",
           "accepted_name_or_synonym": "",
+          "parentage": "",
           "supplier": "Cactus Art",
           "order_number": "",
           "acquisition_type": "Gåva",
@@ -5769,7 +6074,7 @@
           "scent_veto": "nej",
           "seed_lot_id": "",
           "package_quantity": "",
-          "notes": "Gåva / bonusplanta",
+          "notes": "",
           "card_note": "",
           "card_note_updated_at": "",
           "cuttings_available": "",
@@ -5798,6 +6103,7 @@
           "accession_field_number": "RH230",
           "provenance_location": "East Al-Magraba · Haraz Mountains · Yemen",
           "accepted_name_or_synonym": "",
+          "parentage": "",
           "supplier": "Cactus Art",
           "order_number": "20451",
           "acquisition_type": "Stickling",
@@ -5818,7 +6124,7 @@
           "scent_veto": "nej",
           "seed_lot_id": "",
           "package_quantity": "",
-          "notes": "Accession RH230. Lokalitet enligt Cactus Arts separata artsida; leverantörens ursprungliga inköpsnamn är bevarat separat.",
+          "notes": "",
           "card_note": "",
           "card_note_updated_at": "",
           "cuttings_available": "",
@@ -5847,6 +6153,7 @@
           "accession_field_number": "",
           "provenance_location": "",
           "accepted_name_or_synonym": "",
+          "parentage": "Traditionellt H. hystrix × H. pendula; alternativt H. recondita × H. aspera (enligt Cactus Art)",
           "supplier": "Cactus Art",
           "order_number": "20451",
           "acquisition_type": "Stickling",
@@ -5867,7 +6174,7 @@
           "scent_veto": "nej",
           "seed_lot_id": "",
           "package_quantity": "",
-          "notes": "Käll-/leverantörsuppgift: materialet anges traditionellt som Huernia hystrix × H. pendula; detta är inte en säker taxonomisk ombestämning.",
+          "notes": "",
           "card_note": "",
           "card_note_updated_at": "",
           "cuttings_available": "",
@@ -5896,6 +6203,7 @@
           "accession_field_number": "",
           "provenance_location": "",
           "accepted_name_or_synonym": "",
+          "parentage": "",
           "supplier": "Cactus Art",
           "order_number": "",
           "acquisition_type": "Gåva",
@@ -5916,7 +6224,7 @@
           "scent_veto": "nej",
           "seed_lot_id": "",
           "package_quantity": "",
-          "notes": "Gåva / bonusplanta",
+          "notes": "",
           "card_note": "",
           "card_note_updated_at": "",
           "cuttings_available": "",
@@ -5945,6 +6253,7 @@
           "accession_field_number": "",
           "provenance_location": "",
           "accepted_name_or_synonym": "Orbea deflersiana",
+          "parentage": "",
           "supplier": "Cactus Art",
           "order_number": "20451",
           "acquisition_type": "Stickling",
@@ -5965,7 +6274,7 @@
           "scent_veto": "nej",
           "seed_lot_id": "",
           "package_quantity": "",
-          "notes": "Leverantörsuppgift/synonym: Orbea deflersiana. Klon B; ocher & purple.",
+          "notes": "",
           "card_note": "",
           "card_note_updated_at": "",
           "cuttings_available": "",
@@ -5994,6 +6303,7 @@
           "accession_field_number": "",
           "provenance_location": "",
           "accepted_name_or_synonym": "Stapelianthus hardyi",
+          "parentage": "",
           "supplier": "Cactus Art",
           "order_number": "20451",
           "acquisition_type": "Stickling",
@@ -6014,7 +6324,7 @@
           "scent_veto": "nej",
           "seed_lot_id": "",
           "package_quantity": "",
-          "notes": "Leverantörsuppgift/synonym: Stapelianthus hardyi.",
+          "notes": "",
           "card_note": "",
           "card_note_updated_at": "",
           "cuttings_available": "",
@@ -6043,6 +6353,7 @@
           "accession_field_number": "",
           "provenance_location": "",
           "accepted_name_or_synonym": "",
+          "parentage": "",
           "supplier": "Cactus Art",
           "order_number": "20451",
           "acquisition_type": "Stickling",
@@ -6092,6 +6403,7 @@
           "accession_field_number": "",
           "provenance_location": "",
           "accepted_name_or_synonym": "",
+          "parentage": "",
           "supplier": "Cactus Art",
           "order_number": "20451",
           "acquisition_type": "Stickling",
@@ -6112,7 +6424,7 @@
           "scent_veto": "nej",
           "seed_lot_id": "",
           "package_quantity": "",
-          "notes": "Korsningsnamn och stavning är bevarade exakt från leverantören.",
+          "notes": "",
           "card_note": "",
           "card_note_updated_at": "",
           "cuttings_available": "",
@@ -6141,6 +6453,7 @@
           "accession_field_number": "",
           "provenance_location": "",
           "accepted_name_or_synonym": "",
+          "parentage": "",
           "supplier": "Cactus Art",
           "order_number": "20451",
           "acquisition_type": "Stickling",
@@ -6190,6 +6503,7 @@
           "accession_field_number": "",
           "provenance_location": "",
           "accepted_name_or_synonym": "",
+          "parentage": "",
           "supplier": "Cactus Art",
           "order_number": "20451",
           "acquisition_type": "Stickling",
@@ -6239,6 +6553,7 @@
           "accession_field_number": "",
           "provenance_location": "Dysseldorp",
           "accepted_name_or_synonym": "",
+          "parentage": "",
           "supplier": "SuccSeed",
           "order_number": "278352062",
           "acquisition_type": "Stickling",
@@ -6288,6 +6603,7 @@
           "accession_field_number": "",
           "provenance_location": "",
           "accepted_name_or_synonym": "",
+          "parentage": "",
           "supplier": "Cactus Art",
           "order_number": "20451",
           "acquisition_type": "Stickling",
@@ -6337,6 +6653,7 @@
           "accession_field_number": "",
           "provenance_location": "",
           "accepted_name_or_synonym": "",
+          "parentage": "",
           "supplier": "Cactus Art",
           "order_number": "20451",
           "acquisition_type": "Stickling",
@@ -6386,6 +6703,7 @@
           "accession_field_number": "",
           "provenance_location": "",
           "accepted_name_or_synonym": "",
+          "parentage": "",
           "supplier": "Cactus Art",
           "order_number": "20451",
           "acquisition_type": "Stickling",
@@ -6435,6 +6753,7 @@
           "accession_field_number": "",
           "provenance_location": "Buffeljachte · Swellendam · Cape Province · South Africa",
           "accepted_name_or_synonym": "",
+          "parentage": "",
           "supplier": "Cactus Art",
           "order_number": "20451",
           "acquisition_type": "Stickling",
@@ -6455,7 +6774,7 @@
           "scent_veto": "nej",
           "seed_lot_id": "",
           "package_quantity": "",
-          "notes": "Lokalitet enligt kontrollerad uppgift; leverantörens ursprungliga stavning är bevarad i inköpsnamnet.",
+          "notes": "",
           "card_note": "",
           "card_note_updated_at": "",
           "cuttings_available": "",
@@ -6484,6 +6803,7 @@
           "accession_field_number": "",
           "provenance_location": "",
           "accepted_name_or_synonym": "",
+          "parentage": "",
           "supplier": "Cactus Art",
           "order_number": "20451",
           "acquisition_type": "Stickling",
@@ -6533,6 +6853,7 @@
           "accession_field_number": "",
           "provenance_location": "",
           "accepted_name_or_synonym": "Stapelia schinzii var. bergeriana",
+          "parentage": "",
           "supplier": "Cactus Art",
           "order_number": "20451",
           "acquisition_type": "Stickling",
@@ -6553,7 +6874,7 @@
           "scent_veto": "nej",
           "seed_lot_id": "",
           "package_quantity": "",
-          "notes": "Leverantörsuppgift/synonym: Stapelia schinzii var. bergeriana.",
+          "notes": "",
           "card_note": "",
           "card_note_updated_at": "",
           "cuttings_available": "",
@@ -6576,12 +6897,13 @@
           "genus": "× Tavarorbea",
           "species": "",
           "infraspecific_taxon": "",
-          "full_botanical_name": "× Tavarorbea ‘Red Leopard’",
-          "short_name": "× Tavarorbea ‘Red Leopard’",
+          "full_botanical_name": "× Tavarorbea 'Red Leopard'",
+          "short_name": "× Tavarorbea 'Red Leopard'",
           "supplier_purchase_name": "Tavarorbea cv. Red Leopard",
           "accession_field_number": "",
           "provenance_location": "",
           "accepted_name_or_synonym": "",
+          "parentage": "Tavaresia barklyi × Orbea variegata (enligt Cactus Art)",
           "supplier": "Cactus Art",
           "order_number": "20451",
           "acquisition_type": "Stickling",
@@ -6602,7 +6924,7 @@
           "scent_veto": "nej",
           "seed_lot_id": "",
           "package_quantity": "",
-          "notes": "Leverantörs-/historisk uppgift: Tavaresia barklyi × Orbea variegata; parentaget är inte verifierat här.",
+          "notes": "",
           "card_note": "",
           "card_note_updated_at": "",
           "cuttings_available": "",
@@ -8549,6 +8871,24 @@
         "notes": "",
         "created_at": "2026-09-22T05:57:53+02:00",
         "reference_image": "bilder/labbet/LABL-exotic-tromotriche-revoluta-20260921_synk-418b361138_2026-09-22_referens.jpg"
+      },
+      {
+        "seed_lot_id": "LABL-75006ac6e20348ea8e57b6eab448c5b6",
+        "species_group": "Udda",
+        "taxon": "Cumarinia odorata",
+        "purchase_name": "Cumarinia odorata (Tamaulipas, SLP)",
+        "code": "F13",
+        "supplier": "SuccSeed",
+        "acquired_date": "2026-09-09",
+        "seller": "",
+        "seeds_original": "20",
+        "seeds_remaining": "20",
+        "price": "18",
+        "currency": "SEK",
+        "source_cross": "",
+        "notes": "",
+        "created_at": "2026-09-24T16:25:48.927Z",
+        "reference_image": "bilder/labbet/LABL-75006ac6e20348ea8e57b6eab448c5b6_synk-9601903c24_2026-09-24_referens.jpg"
       }
     ],
     "sowBatches": [

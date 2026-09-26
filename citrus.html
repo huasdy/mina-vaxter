@@ -77,19 +77,7 @@
 </head>
 <body>
   <header>
-    <nav>
-      <a href="index.html">← Mina Växter</a>
-      <a href="hibiskusar.html">Hibiskus</a>
-      <a href="pelargoner.html">Pelargon</a>
-      <a class="current" href="citrus.html">Citrus</a>
-      <a href="udda.html">Udda</a>
-      <a href="stapeliader.html">Stapelia</a>
-      <a href="labbet.html">Labbet</a>
-      <a href="favoriter.html">Hundöron</a>
-      <a href="vaxtliv.html">Växtliv</a>
-      <a href="galleri.html">Galleri</a>
-      <a href="verktyg.html">Verktyg</a>
-    </nav>
+    <nav data-main-navigation aria-label="Huvudnavigation"></nav>
     <div class="eyebrow">Privat samling</div>
     <h1 data-wishlist-category="Citrus">Citrus</h1>
     <p class="subtitle">Citrusplantor, sorter, ursprung, placering, bildhistorik och anteckningar.</p>
@@ -122,7 +110,8 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script src="common.js?v=38941bbbcd51"></script>
+  <script src="main-navigation.js?v=2849e1f33fc1"></script>
+  <script src="common.js?v=2fbf338fa390"></script>
   <script>
     function startCitrusPage(snapshot) {
     let plants = [];

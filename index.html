@@ -66,7 +66,7 @@
       .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       a.card--lab { grid-column: span 2; }
       a.card[href="favoriter.html"],
-      a.card[href^="galleri.html?v=2026-09-24-synk-2253"] { display: none; }
+      a.card[href^="galleri.html?v=2026-09-25-synk-1846"] { display: none; }
     }
     @media (max-width: 700px) {
       .lab-status { gap: 6px 16px; margin-top: 24px; padding: 16px 0 8px; font-size: .9rem; }
@@ -89,6 +89,7 @@
 <body>
   <div class="pull-refresh-status" id="pullRefreshStatus" aria-live="polite">Dra nedåt för att uppdatera</div>
   <main class="wrap page-shell" id="pullPage">
+    <nav data-main-navigation aria-label="Huvudnavigation"></nav>
     <div class="eyebrow">Privat växtkatalog</div>
     <h1>Mina Växter</h1>
     <p class="home-subtitle">Samling, odling, korsningar och historik.</p>
@@ -131,7 +132,7 @@
         <h2>Växtliv</h2>
         <p>Sticklingar, galleri och aktuella eller tidigare växter.</p>
       </a>
-      <a class="card" href="galleri.html?v=2026-09-24-synk-2253">
+      <a class="card" href="galleri.html?v=2026-09-25-synk-1846">
         <h2>Galleri</h2>
         <p>Trädgårdens platser och planteringar samlade i levande bildalbum.</p>
         <span class="meta"><span>4 album</span></span>
@@ -144,8 +145,9 @@
     <p class="note">En levande katalog över samlingen och det som växer fram.</p>
     <div class="version-status" id="versionStatus">Kontrollerar version...</div>
   </main>
+  <script src="main-navigation.js?v=2849e1f33fc1"></script>
   <script>
-    const APP_VERSION = "2026-09-24-synk-2253";
+    const APP_VERSION = "2026-09-25-synk-1846";
     const versionStatus = document.querySelector("#versionStatus");
     const labStatus = document.querySelector("#labStatus");
 

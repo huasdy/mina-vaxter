@@ -77,19 +77,7 @@
 </head>
 <body>
   <header>
-    <nav>
-      <a href="index.html">← Mina Växter</a>
-      <a href="hibiskusar.html">Hibiskus</a>
-      <a href="pelargoner.html">Pelargon</a>
-      <a href="citrus.html">Citrus</a>
-      <a class="current" href="udda.html">Udda</a>
-      <a href="stapeliader.html">Stapelia</a>
-      <a href="labbet.html">Labbet</a>
-      <a href="favoriter.html">Hundöron</a>
-      <a href="vaxtliv.html">Växtliv</a>
-      <a href="galleri.html">Galleri</a>
-      <a href="verktyg.html">Verktyg</a>
-    </nav>
+    <nav data-main-navigation aria-label="Huvudnavigation"></nav>
     <div class="eyebrow">Privat samling</div>
     <h1 data-wishlist-category="Udda">Udda</h1>
     <p class="subtitle">Art- och gruppkatalog för udda växter, doftväxter, samplanteringar och frögrupper där individ-ID inte är det viktiga.</p>
@@ -122,7 +110,8 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script src="common.js?v=38941bbbcd51"></script>
+  <script src="main-navigation.js?v=2849e1f33fc1"></script>
+  <script src="common.js?v=2fbf338fa390"></script>
   <script>
     function startUddaPage(snapshot) {
     let plants = [];
@@ -203,7 +192,7 @@
       });
       const chips = collectionChipHtml("Udda", p, escapeText);
       const searchable = [
-        p.id, p.name, p.latin, p.type, p.tags, p.status, p.source, p.notes, getPlantCardNote(p.id, p.card_note, p.card_note_updated_at),
+        p.id, p.name, p.latin, p.type, p.status, p.source, p.notes, getPlantCardNote(p.id, p.card_note, p.card_note_updated_at),
         ...photos.map(x => `${x.date} ${x.type} ${x.file}`),
         ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
       ].join(" ").toLowerCase();
@@ -260,7 +249,7 @@
       const selectedType = typeFilter.value === "__concluded_only__" ? "" : typeFilter.value;
       const filtered = plants.filter(p => {
         const combined = [
-          p.id, p.name, p.latin, p.type, p.tags, p.status, p.source, p.notes, getPlantCardNote(p.id, p.card_note, p.card_note_updated_at),
+          p.id, p.name, p.latin, p.type, p.status, p.source, p.notes, getPlantCardNote(p.id, p.card_note, p.card_note_updated_at),
           ...(p.photos || []).map(x => `${x.date} ${x.type} ${x.file}`),
           ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
         ].join(" ").toLowerCase();

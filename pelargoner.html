@@ -97,19 +97,7 @@
 </head>
 <body>
   <header>
-    <nav>
-      <a href="index.html">← Mina Växter</a>
-      <a href="hibiskusar.html">Hibiskus</a>
-      <a class="current" href="pelargoner.html">Pelargon</a>
-      <a href="citrus.html">Citrus</a>
-      <a href="udda.html">Udda</a>
-      <a href="stapeliader.html">Stapelia</a>
-      <a href="labbet.html">Labbet</a>
-      <a href="favoriter.html">Hundöron</a>
-      <a href="vaxtliv.html">Växtliv</a>
-      <a href="galleri.html">Galleri</a>
-      <a href="verktyg.html">Verktyg</a>
-    </nav>
+    <nav data-main-navigation aria-label="Huvudnavigation"></nav>
     <div class="eyebrow">Privat samling</div>
     <h1 data-wishlist-category="Pelargon">Pelargon</h1>
     <p class="subtitle">En lätt sort- och artsamling. Bara pelargoner som behöver följas separat får egna individkort.</p>
@@ -143,8 +131,9 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script src="common.js?v=38941bbbcd51"></script>
-  <script src="crossings-common.js"></script>
+  <script src="main-navigation.js?v=2849e1f33fc1"></script>
+  <script src="common.js?v=2fbf338fa390"></script>
+  <script src="crossings-common.js?v=97336e4c8ae8"></script>
   <script>
     function startPelargonPage(snapshot) {
     let plants = [];
@@ -265,14 +254,15 @@
 
     function crossingPlantHeading(p, crossingDisplay) {
       const display = crossingDisplay || crossingModel.offspringDisplay(p);
-      if (!display.lineageCode) return plantHeadingHtml(p, "", clean(p.record_kind).toUpperCase() === "INDIVIDUAL");
+      if (!display.lineageCode) return plantHeadingHtml({...p, nickname:""});
       return `<h2>${escapeText(display.title)}</h2>${display.subline ? `<div class="plant-nickname">${escapeText(display.subline)}</div>` : ""}`;
     }
 
     function cardTemplate(p) {
-      const displayName = plantDisplayName(p);
-      const identity = plantIdentityName(p);
-      const displayLabel = plantDisplayLabel(p);
+      const presentation = {...p, nickname:""};
+      const displayName = plantDisplayName(presentation);
+      const identity = plantIdentityName(presentation);
+      const displayLabel = plantDisplayLabel(presentation);
       const collectionName = p.collection_id ? clean(plants.find(row => row.id === p.collection_id)?.name) : "";
       const crossingData = crossingModel.plantCrossingView(p);
       const sowBatch = crossingData?.batch;
@@ -292,13 +282,13 @@
         return {file: photo.file, title: displayName, caption: label, alt: displayLabel};
       });
       const searchable = [
-        p.id, p.label_number, p.name, p.parentage, p.nickname, p.type, p.tags, p.status, p.scent, p.source, p.notes, crossingData?.offspringCode, sowBatch?.sown_date, crossingData?.parentName, getPlantCardNote(p.id, p.card_note, p.card_note_updated_at),
+        p.id, p.label_number, p.name, p.parentage, p.type, p.tags, p.status, p.scent, p.source, p.notes, crossingData?.offspringCode, sowBatch?.sown_date, crossingData?.parentName, getPlantCardNote(p.id, p.card_note, p.card_note_updated_at),
         ...photos.map(x => `${x.date} ${x.type} ${x.file}`),
         ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
       ].join(" ").toLowerCase();
 
       return `
-        <article class="plant-card" id="${escapeAttr(p.id)}" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-status="${escapeAttr(p.status)}" data-category="Pelargon" data-record-kind="${escapeAttr(p.record_kind)}" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(displayName)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(p.nickname)}" data-card-image="${escapeAttr(p.card_image)}" data-card-crop-x="${escapeAttr(p.card_crop_x)}" data-card-crop-y="${escapeAttr(p.card_crop_y)}" data-card-image-updated-at="${escapeAttr(p.card_image_updated_at)}" data-cuttings-available="${escapeAttr(p.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(p.cuttings_updated_at)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(p.logs || []))}">
+        <article class="plant-card" id="${escapeAttr(p.id)}" data-search="${escapeAttr(searchable)}" data-type="${escapeAttr(p.type)}" data-status="${escapeAttr(p.status)}" data-category="Pelargon" data-record-kind="${escapeAttr(p.record_kind)}" data-plant-id="${escapeAttr(p.id)}" data-plant-name="${escapeAttr(displayName)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="" data-card-image="${escapeAttr(p.card_image)}" data-card-crop-x="${escapeAttr(p.card_crop_x)}" data-card-crop-y="${escapeAttr(p.card_crop_y)}" data-card-image-updated-at="${escapeAttr(p.card_image_updated_at)}" data-cuttings-available="${escapeAttr(p.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(p.cuttings_updated_at)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(p.logs || []))}">
           <div class="image-wrap">
             ${activeFile ? `<img class="main-photo" src="${activeFile}" alt="${escapeAttr(displayLabel)}" data-caption="${escapeAttr(displayLabel + " · " + activeLabel + (ageText ? " · " + ageText : ""))}">` : ""}
             ${activeLabel ? `<div class="date-ribbon">${activeLabel}${ageText ? " · " + ageText : ""}</div>` : ""}
@@ -351,7 +341,7 @@
       const selectedPhotoType = normalizedPhotoType(photoTypeFilter.value);
       const filtered = plants.filter(p => {
         const combined = [
-          p.id, p.label_number, p.name, p.parentage, p.nickname, p.type, p.tags, p.status, p.scent, p.source, p.notes, crossingModel.lineageCode(p), getPlantCardNote(p.id, p.card_note, p.card_note_updated_at),
+          p.id, p.label_number, p.name, p.parentage, p.type, p.tags, p.status, p.scent, p.source, p.notes, crossingModel.lineageCode(p), getPlantCardNote(p.id, p.card_note, p.card_note_updated_at),
           ...(p.photos || []).map(x => `${x.date} ${x.type} ${x.file}`),
           ...(p.logs || []).map(x => `${x.date} ${x.type} ${x.note}`)
         ].join(" ").toLowerCase();

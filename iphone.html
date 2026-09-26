@@ -262,8 +262,8 @@ PL-H01-N,2025-12-24,Grodd,,,
 PL-H01-O,2025-12-24,Grodd,,,
 PL-H01-Q,2025-12-24,Grodd,,,
 PL-H01-R,2025-12-24,Grodd,,,</script>
-  <script src="common.js?v=38941bbbcd51"></script>
-  <script src="crossings-common.js"></script>
+  <script src="common.js?v=2fbf338fa390"></script>
+  <script src="crossings-common.js?v=97336e4c8ae8"></script>
   <script>
     if ("serviceWorker" in navigator && window.isSecureContext) {
     window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js?v=23").catch(() => {}), {once: true});
@@ -291,7 +291,7 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
     const mobileHeading = document.querySelector('#mobileHeading');
     const legacyMigration = document.querySelector('#legacyMigration');
     const legacyMigrationLink = document.querySelector('#legacyMigrationLink');
-    const MOBILE_APP_VERSION = "2026-09-24-synk-2253";
+    const MOBILE_APP_VERSION = "2026-09-25-synk-1846";
     const MOBILE_CATALOG_CACHE_KEY = "mina-vaxter-mobile-catalog-v1";
     const initialParams = new URLSearchParams(window.location.search);
     const requestedCategory = initialParams.get('kategori');
@@ -477,7 +477,6 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
           ${fact("Leverantör", row.supplier)}
           ${fact("Ordernummer", row.order_number)}
           ${fact("Typ", row.acquisition_type)}
-          ${fact("Mängd", row.package_quantity)}
           ${fact("Inköpsdatum", row.purchase_date)}
           ${fact("Ankomstdatum", row.arrival_date)}
           ${fact("Sådatum", row.sown_date)}
@@ -770,7 +769,7 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
     tabs.addEventListener('click', event => {
       const button = event.target.closest('.tab');
       if (button && button.dataset.name === "Galleri") {
-        window.location.href = "galleri.html?v=2026-09-24-synk-2253";
+        window.location.href = "galleri.html?v=2026-09-25-synk-1846";
         return;
       }
       if (button && button.dataset.name === "Växtliv") {

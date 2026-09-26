@@ -8,20 +8,11 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <link rel="stylesheet" href="labbet.css?v=20260924-lab-labels-4">
+  <link rel="stylesheet" href="labbet.css?v=1f612ebd447b">
 </head>
 <body>
   <header class="page-header">
-    <nav aria-label="Huvudnavigation">
-      <a href="index.html">← Mina Växter</a>
-      <a href="hibiskusar.html">Hibiskus</a>
-      <a href="pelargoner.html">Pelargon</a>
-      <a href="stapeliader.html">Stapelia</a>
-      <a class="current" href="labbet.html" aria-current="page">Labbet</a>
-      <a href="vaxtliv.html">Växtliv</a>
-      <a href="galleri.html">Galleri</a>
-      <a href="verktyg.html">Verktyg</a>
-    </nav>
+    <nav data-main-navigation aria-label="Huvudnavigation"></nav>
     <div class="eyebrow">Förädling och frösådd</div>
     <h1>Labbet</h1>
     <p class="subtitle">Från frö och korsning till urval.</p>
@@ -36,6 +27,7 @@
             <button type="button" data-species="Hibiskus" aria-pressed="false">Hibiskus</button>
             <button type="button" data-species="Pelargon" aria-pressed="false">Pelargon</button>
             <button type="button" data-species="Stapelia" aria-pressed="false">Stapelia</button>
+            <button type="button" data-species="Udda" aria-pressed="false">Udda</button>
           </div>
           <button type="button" class="primary-action" id="newLabItem">+ Nytt</button>
         </div>
@@ -75,7 +67,8 @@
   <div id="seedPrintMenu" class="seed-print-menu" role="menu" aria-label="Skriv ut etikett" hidden></div>
   <div id="seedPrintArea" class="seed-print-area" aria-hidden="true"></div>
 
-  <script src="common.js?v=846775f52a72"></script>
-  <script src="labbet.js?v=20260924-lab-direct-print-1"></script>
+  <script src="main-navigation.js?v=2849e1f33fc1"></script>
+  <script src="common.js?v=2fbf338fa390"></script>
+  <script src="labbet.js?v=1f220a2f8c42"></script>
 </body>
 </html>
