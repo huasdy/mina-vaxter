@@ -42,9 +42,10 @@ figure {
 }
 figure img { display: block; width: 100%; height: auto; min-height: 180px; object-fit: cover; }
 figcaption {
-  position: static; padding: 9px 13px 10px; color: var(--muted); font-size: .82rem; font-weight: 850;
+  position: static; display: grid; gap: 1px; padding: 9px 13px 10px; color: var(--muted); font-size: .82rem; font-weight: 850;
   background: var(--paper); opacity: 1;
 }
+.caption-cultivar { color: var(--ink); font-family: Georgia, "Times New Roman", serif; font-size: .96rem; font-weight: 500; }
 .empty-state { padding: 76px 22px 54px; text-align: center; }
 .empty-flower { display: block; color: rgba(125,79,59,.56); font-family: Georgia, serif; font-size: 4.4rem; line-height: 1; }
 .empty-state h2 { margin: 12px 0 8px; font-family: Georgia, "Times New Roman", serif; font-size: 2.2rem; font-weight: 500; }

@@ -66,6 +66,23 @@
     .card-copy p { margin: 0; max-width: 500px; color: var(--muted); }
     .photo-summary { display: block; margin-top: 8px; color: var(--green); font-size: .78rem; font-weight: 850; }
     .gallery-file-input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+    .gallery-upload-dialog {
+      width: min(92vw, 480px); padding: 0; border: 1px solid var(--line); border-radius: 24px;
+      color: var(--ink); background: var(--paper); box-shadow: 0 28px 90px rgba(43,37,31,.28);
+    }
+    .gallery-upload-dialog::backdrop { background: rgba(43,37,31,.42); backdrop-filter: blur(3px); }
+    .gallery-upload-form { padding: 26px; }
+    .gallery-upload-form h2 { margin: 0 0 8px; font-family: Georgia, "Times New Roman", serif; font-size: 1.75rem; font-weight: 500; }
+    .gallery-upload-form p { margin: 0 0 22px; color: var(--muted); line-height: 1.45; }
+    .gallery-upload-form label { display: grid; gap: 8px; color: var(--accent); font-size: .78rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+    .gallery-upload-form label span { color: var(--muted); font-size: .68rem; font-weight: 750; letter-spacing: .04em; }
+    .gallery-upload-form input {
+      width: 100%; padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px;
+      color: var(--ink); background: white; font: inherit;
+    }
+    .gallery-upload-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+    .gallery-upload-actions button { padding: 10px 15px; border: 1px solid var(--line); border-radius: 999px; color: var(--accent); background: transparent; font: inherit; font-weight: 850; cursor: pointer; }
+    .gallery-upload-actions .primary { color: white; border-color: var(--accent); background: var(--accent); }
     .drop-overlay {
       position: absolute; z-index: 4; inset: 14px; border: 2px dashed rgba(255,255,255,.8); border-radius: 20px;
       display: grid; place-items: center; padding: 24px; color: white; background: rgba(67,45,36,.76);
@@ -120,7 +137,7 @@
   </section>
 
   <main>
-    <div class="section-head"><h2>Album</h2><span>7 album</span></div>
+    <div class="section-head"><h2>Album</h2><span>8 album</span></div>
     <section class="colonies">
       <article class="colony-card" data-album="liljor" data-label="Lilium">
         <a class="art" data-role="art" href="liljor.html?v=2026-09-25-synk-1846" aria-label="Öppna albumet Lilium"><img class="cover-image" data-role="cover" alt=""><span class="flower-mark" aria-hidden="true">✢</span></a>
@@ -170,6 +187,14 @@
         <input class="gallery-file-input" id="kaprifolFileInput" data-role="input" type="file" accept="image/*,.heic,.heif" multiple>
         <div class="drop-overlay">Släpp bilderna i Lonicera</div>
       </article>
+      <article class="colony-card" data-album="citrus" data-label="Citrus">
+        <a class="art" data-role="art" href="citrus-galleri.html?v=2026-09-25-synk-1846" aria-label="Öppna albumet Citrus"><img class="cover-image" data-role="cover" alt=""><span class="flower-mark" aria-hidden="true">✥</span></a>
+        <div class="card-copy">
+          <div><h3><a href="citrus-galleri.html?v=2026-09-25-synk-1846">Citrus</a></h3><p>Frukter, bladverk och sorter samlade som visuella minnen över tid.</p><span class="photo-summary" data-role="summary">9 bilder</span></div>
+        </div>
+        <input class="gallery-file-input" id="citrusFileInput" data-role="input" type="file" accept="image/*,.heic,.heif" multiple>
+        <div class="drop-overlay">Släpp bilderna i Citrus</div>
+      </article>
       <article class="colony-card" data-album="varietas" data-label="Varietas">
         <a class="art" data-role="art" href="varietas.html?v=2026-09-25-synk-1846" aria-label="Öppna albumet Varietas"><img class="cover-image" data-role="cover" alt=""><span class="flower-mark" aria-hidden="true">✧</span></a>
         <div class="card-copy">
@@ -188,40 +213,67 @@
       <a href="index.html">Tillbaka till Mina Växter</a>
     </div>
   </section>
+  <dialog class="gallery-upload-dialog" id="galleryUploadDialog">
+    <form class="gallery-upload-form" method="dialog">
+      <h2 id="galleryUploadTitle">Lägg till i Galleri</h2>
+      <p id="galleryUploadDescription">Sort eller kultivar är frivilligt och visas diskret under datumet.</p>
+      <label for="galleryCultivarInput">Sort eller kultivar <span>Valfritt</span>
+        <input id="galleryCultivarInput" name="cultivar" type="text" maxlength="160" autocomplete="off">
+      </label>
+      <div class="gallery-upload-actions">
+        <button value="cancel">Avbryt</button>
+        <button class="primary" value="confirm">Lägg till</button>
+      </div>
+    </form>
+  </dialog>
   <div class="import-toast" id="importToast" role="status" aria-live="polite"></div>
-  <script type="text/plain" id="defaultLiljorPhotosCSV">date,file
-2026-06-29,bilder/galleri/liljor/1e4e1dc7d7e86a6044ea8341.jpg
-2026-06-29,bilder/galleri/liljor/2056f9c27ec85d2f43293025.jpg
-2026-06-29,bilder/galleri/liljor/734608834bffc9010e051ff0.jpg
-2026-06-29,bilder/galleri/liljor/a5c4dee7a89ba98ce3a4b5b1.jpg
-2026-08-03,bilder/galleri/liljor/368b3bf09f4d9b863fe31594.jpg
-2026-08-21,bilder/galleri/liljor/238bd6fcf32c926a37ef80b9.jpg
-2026-08-25,bilder/galleri/liljor/2500d9f21f748bd98c3b1b4e.jpg</script>
-  <script type="text/plain" id="defaultRosorPhotosCSV">date,file
-2026-06-24,bilder/galleri/rosor/f47bf7d3379b7d693484b2f7.jpg
-2026-07-05,bilder/galleri/rosor/6d7dd7131bc142427894c4f5.jpg
-2026-07-05,bilder/galleri/rosor/b747e18cd8842d4a38e34eff.jpg</script>
-  <script type="text/plain" id="defaultDahliorPhotosCSV">date,file
-2026-08-04,bilder/galleri/dahlior/a1fb8fa0f6905762f15e43cc.jpg
-2026-08-04,bilder/galleri/dahlior/dce2500195d3b1e1a6312d90.jpg</script>
-  <script type="text/plain" id="defaultEchinaceaPhotosCSV">date,file
-2026-08-12,bilder/galleri/echinacea/5fa744f116c9d394a9e456a4.jpg
-2026-08-12,bilder/galleri/echinacea/78cd80b70fff6e8010d262fc.jpg
-2026-08-12,bilder/galleri/echinacea/8eeb23e745199ae92f5259ca.jpg
-2026-08-12,bilder/galleri/echinacea/cea8efd73aa18254ae3d391d.jpg
-2026-08-17,bilder/galleri/echinacea/eae8074ec7999d29ea59c13d.jpg</script>
-  <script type="text/plain" id="defaultKlematisPhotosCSV">date,file
-2026-08-17,bilder/galleri/klematis/ae0bc2b22c07a1bd362a171c.jpg</script>
-  <script type="text/plain" id="defaultKaprifolPhotosCSV">date,file
-2026-08-17,bilder/galleri/kaprifol/0bb900e75b188e09b020a8a2.jpg</script>
-  <script type="text/plain" id="defaultVarietasPhotosCSV">date,file</script>
+  <script type="text/plain" id="defaultLiljorPhotosCSV">date,file,cultivar
+2026-06-29,bilder/galleri/liljor/1e4e1dc7d7e86a6044ea8341.jpg,
+2026-06-29,bilder/galleri/liljor/2056f9c27ec85d2f43293025.jpg,
+2026-06-29,bilder/galleri/liljor/734608834bffc9010e051ff0.jpg,
+2026-06-29,bilder/galleri/liljor/a5c4dee7a89ba98ce3a4b5b1.jpg,
+2026-08-03,bilder/galleri/liljor/368b3bf09f4d9b863fe31594.jpg,
+2026-08-21,bilder/galleri/liljor/238bd6fcf32c926a37ef80b9.jpg,
+2026-08-25,bilder/galleri/liljor/2500d9f21f748bd98c3b1b4e.jpg,</script>
+  <script type="text/plain" id="defaultRosorPhotosCSV">date,file,cultivar
+2026-06-24,bilder/galleri/rosor/f47bf7d3379b7d693484b2f7.jpg,
+2026-07-05,bilder/galleri/rosor/6d7dd7131bc142427894c4f5.jpg,
+2026-07-05,bilder/galleri/rosor/b747e18cd8842d4a38e34eff.jpg,</script>
+  <script type="text/plain" id="defaultDahliorPhotosCSV">date,file,cultivar
+2026-08-04,bilder/galleri/dahlior/a1fb8fa0f6905762f15e43cc.jpg,
+2026-08-04,bilder/galleri/dahlior/dce2500195d3b1e1a6312d90.jpg,</script>
+  <script type="text/plain" id="defaultEchinaceaPhotosCSV">date,file,cultivar
+2026-08-12,bilder/galleri/echinacea/5fa744f116c9d394a9e456a4.jpg,
+2026-08-12,bilder/galleri/echinacea/78cd80b70fff6e8010d262fc.jpg,
+2026-08-12,bilder/galleri/echinacea/8eeb23e745199ae92f5259ca.jpg,
+2026-08-12,bilder/galleri/echinacea/cea8efd73aa18254ae3d391d.jpg,
+2026-08-17,bilder/galleri/echinacea/eae8074ec7999d29ea59c13d.jpg,</script>
+  <script type="text/plain" id="defaultKlematisPhotosCSV">date,file,cultivar
+2026-08-17,bilder/galleri/klematis/ae0bc2b22c07a1bd362a171c.jpg,</script>
+  <script type="text/plain" id="defaultKaprifolPhotosCSV">date,file,cultivar
+2026-08-17,bilder/galleri/kaprifol/0bb900e75b188e09b020a8a2.jpg,</script>
+  <script type="text/plain" id="defaultCitrusPhotosCSV">date,file,cultivar
+2026-06-24,bilder/citrus/c-calamondin_2026-06-24_hel.jpg,Calamondin
+2026-06-24,bilder/citrus/c-kaffirlime_2026-06-24_hel.jpg,Kaffirlime
+2026-06-24,bilder/citrus/c-kumquat-1_2026-06-24_hel.jpg,Kumquat
+2026-06-24,bilder/citrus/c-kumquat-2_2026-06-24_hel.jpg,Kumquat
+2026-06-24,bilder/citrus/c-limequat_2026-06-24_hel.jpg,Limequat
+2026-06-24,bilder/citrus/c-limon-1_2026-06-24_hel.jpg,Citron
+2026-06-24,bilder/citrus/c-limon-2_2026-06-24_hel.jpg,Citron
+2026-06-24,bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jpg,Röd fingerlime
+2026-08-13,bilder/citrus/c-pomelo_synk-e0f75a2974_2026-08-13_hel.jpg,Pomelo</script>
+  <script type="text/plain" id="defaultVarietasPhotosCSV">date,file,cultivar</script>
   <script src="originalarkiv-local.js"></script>
   <script>
     const galleryDbName = "mina-vaxter-kolonier";
-    const galleryDbVersion = 4;
-    const galleryStoreNames = ["liljor", "rosor", "dahlior", "echinacea", "klematis", "kaprifol", "varietas"];
+    const galleryDbVersion = 5;
+    const galleryStoreNames = ["liljor", "rosor", "dahlior", "echinacea", "klematis", "kaprifol", "citrus", "varietas"];
     const albumCards = [...document.querySelectorAll(".colony-card[data-album]")];
     const importToast = document.querySelector("#importToast");
+    const galleryUploadDialog = document.querySelector("#galleryUploadDialog");
+    const galleryUploadTitle = document.querySelector("#galleryUploadTitle");
+    const galleryUploadDescription = document.querySelector("#galleryUploadDescription");
+    const galleryCultivarInput = document.querySelector("#galleryCultivarInput");
     const galleryArchiveEndpoint = "https://127.0.0.1:47831/archive";
     const galleryArchiveToken = window.MINA_VAXTER_ARCHIVE_TOKEN || "";
     const galleryCoverUrls = new Map();
@@ -319,6 +371,28 @@
       }
     }
 
+    function galleryParseCsv(text) {
+      const source = text.replace(/^\uFEFF/, "");
+      const rows = [];
+      let row = [], cell = "", inQuotes = false;
+      for (let index = 0; index < source.length; index++) {
+        const character = source[index], next = source[index + 1];
+        if (inQuotes) {
+          if (character === '"' && next === '"') { cell += '"'; index++; }
+          else if (character === '"') inQuotes = false;
+          else cell += character;
+        } else if (character === '"') inQuotes = true;
+        else if (character === ",") { row.push(cell); cell = ""; }
+        else if (character === "\n") { row.push(cell); rows.push(row); row = []; cell = ""; }
+        else if (character !== "\r") cell += character;
+      }
+      if (cell || row.length) { row.push(cell); rows.push(row); }
+      const headers = (rows.shift() || []).map(value => value.trim());
+      return rows.filter(values => values.some(value => value.trim())).map(values =>
+        Object.fromEntries(headers.map((header, index) => [header, (values[index] || "").trim()]))
+      );
+    }
+
     function galleryPublishedPhotos(album) {
       const sourceIds = {
         liljor: "defaultLiljorPhotosCSV",
@@ -327,15 +401,12 @@
         echinacea: "defaultEchinaceaPhotosCSV",
         klematis: "defaultKlematisPhotosCSV",
         kaprifol: "defaultKaprifolPhotosCSV",
+        citrus: "defaultCitrusPhotosCSV",
         varietas: "defaultVarietasPhotosCSV"
       };
       const source = document.querySelector(`#${sourceIds[album] || ""}`);
       if (!source) return [];
-      const lines = source.textContent.trim().split(/\r?\n/).slice(1);
-      return lines.map(line => {
-        const comma = line.indexOf(",");
-        return comma < 0 ? null : {date: line.slice(0, comma).trim(), file: line.slice(comma + 1).trim(), published: true};
-      }).filter(row => row && row.date && row.file);
+      return galleryParseCsv(source.textContent).map(row => ({...row, published: true})).filter(row => row.date && row.file);
     }
 
     async function galleryServerPhotos(album) {
@@ -417,14 +488,14 @@
       return `${fallback.getFullYear()}-${String(fallback.getMonth() + 1).padStart(2, "0")}-${String(fallback.getDate()).padStart(2, "0")}`;
     }
 
-    async function archiveGalleryOriginal(file, date, album) {
+    async function archiveGalleryOriginal(file, date, album, cultivar = "") {
       const localPreview = window.location.protocol === "https:" && ["127.0.0.1", "localhost"].includes(window.location.hostname);
       const endpoint = localPreview ? "https://127.0.0.1:47831/gallery-upload" : galleryArchiveEndpoint;
       if (!localPreview && window.location.protocol !== "file:") {
         throw new Error("Öppna Galleri via Mina Växter lokal.app på Macen för att lägga till bilder.");
       }
       if (!localPreview && !galleryArchiveToken) throw new Error("Den lokala nyckeln till originalarkivet saknas.");
-      const query = new URLSearchParams({filename: file.name, date, album});
+      const query = new URLSearchParams({filename: file.name, date, album, cultivar});
       const response = await fetch(`${endpoint}?${query}`, {
         method: "POST",
         headers: localPreview
@@ -443,6 +514,22 @@
       importToast.classList.add("visible");
       window.clearTimeout(toastTimer);
       toastTimer = window.setTimeout(() => importToast.classList.remove("visible"), 3200);
+    }
+
+    function requestGalleryCultivar(label, count) {
+      galleryCultivarInput.value = "";
+      galleryUploadDialog.returnValue = "";
+      galleryUploadTitle.textContent = `Lägg till i ${label}`;
+      galleryUploadDescription.textContent = count === 1
+        ? "Sort eller kultivar är frivilligt och visas diskret under datumet."
+        : `Sort eller kultivar är frivilligt och används för alla ${count} valda bilder.`;
+      return new Promise(resolve => {
+        galleryUploadDialog.addEventListener("close", () => {
+          resolve(galleryUploadDialog.returnValue === "confirm" ? galleryCultivarInput.value.trim() : null);
+        }, {once: true});
+        galleryUploadDialog.showModal();
+        window.requestAnimationFrame(() => galleryCultivarInput.focus());
+      });
     }
 
     async function renderAlbumCard(card) {
@@ -488,6 +575,11 @@
         showImportToast("Här kan du bara släppa bildfiler.");
         return;
       }
+      const cultivar = await requestGalleryCultivar(label, files.length);
+      if (cultivar === null) {
+        input.value = "";
+        return;
+      }
       const stored = await galleryStoredPhotos(album);
       let added = 0;
       let failed = 0;
@@ -499,7 +591,7 @@
         let archiveCompleted = false;
         try {
           const date = await galleryPhotoDate(file);
-          const archiveResult = await archiveGalleryOriginal(file, date, album);
+          const archiveResult = await archiveGalleryOriginal(file, date, album, cultivar);
           archiveCompleted = true;
           if (archiveResult.created) archived++;
           if (archiveResult.published) {
@@ -519,7 +611,7 @@
           const compactBlob = await compactGalleryBlob(file);
           const photo = {
             date, name: file.name, type: "image/jpeg", size: file.size, lastModified: file.lastModified,
-            originalBytes: file.size, compact: true, archived: !archiveResult.skipped, blob: compactBlob
+            originalBytes: file.size, compact: true, archived: !archiveResult.skipped, cultivar, blob: compactBlob
           };
           photo.id = await gallerySavePhoto(album, photo);
           stored.push(photo);
@@ -551,7 +643,7 @@
         if (!photo || !photo.blob || !photo.name) continue;
         try {
           const file = new File([photo.blob], photo.name, {type: photo.type || "image/jpeg", lastModified: photo.lastModified || Date.now()});
-          const result = await archiveGalleryOriginal(file, photo.date || await galleryPhotoDate(file), album);
+          const result = await archiveGalleryOriginal(file, photo.date || await galleryPhotoDate(file), album, photo.cultivar || "");
           if (result.published) {
             await galleryDeletePhoto(album, photo.id);
             published++;

@@ -111,8 +111,8 @@
     </div>
   </dialog>
 
-  <script src="main-navigation.js?v=7b1a2b0f9f81"></script>
-  <script src="common.js?v=2fbf338fa390"></script>
+  <script src="main-navigation.js?v=1c472786e1ec"></script>
+  <script src="common.js?v=33805811b683"></script>
 
   <script type="text/plain" id="defaultDocumentsCSV">id,date,type,title,file,pages
 SP-009,2026-08-13,Växtkort,Presentkort för pillerfikus,dokument/udda/SP-009_pillerfikus_2026-08-13_vaxtkort.png,
@@ -240,7 +240,7 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
     const closeParentDialog = document.querySelector("#closeParentDialog");
     const manageBtn = document.querySelector("#manageBtn");
     let manageMode = false;
-    const chooserCategoryNames = ["Alla", "Hibiskus", "Pelargon", "Citrus", "Udda", "Stapeliader"];
+    const chooserCategoryNames = ["Alla", "Hibiskus", "Pelargon", "Udda", "Stapeliader"];
     let chooserCategory = "Alla";
 
     function showCatalogLoadError() {
@@ -249,7 +249,7 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
     }
 
     function snapshotToCatalog(snapshot) {
-      const titleKeys = {Hibiskus: "id", Pelargon: "name", Citrus: "name", Udda: "name", Stapeliader: "short_name"};
+      const titleKeys = {Hibiskus: "id", Pelargon: "name", Udda: "name", Stapeliader: "short_name"};
       if (!snapshot || snapshot.schemaVersion !== 4 || !snapshot.categories || typeof snapshot.categories !== "object") {
         throw new Error("Katalogens format stöds inte.");
       }
@@ -290,7 +290,7 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
     }
 
     function pageForCategory(category) {
-      return {Hibiskus: "hibiskusar.html", Pelargon: "pelargoner.html", Citrus: "citrus.html", Udda: "udda.html", Stapeliader: "stapeliader.html"}[category] || "index.html";
+      return {Hibiskus: "hibiskusar.html", Pelargon: "pelargoner.html", Udda: "udda.html", Stapeliader: "stapeliader.html"}[category] || "index.html";
     }
 
     function cuttingsCard(category, section, row) {

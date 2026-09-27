@@ -262,7 +262,7 @@ PL-H01-N,2025-12-24,Grodd,,,
 PL-H01-O,2025-12-24,Grodd,,,
 PL-H01-Q,2025-12-24,Grodd,,,
 PL-H01-R,2025-12-24,Grodd,,,</script>
-  <script src="common.js?v=2fbf338fa390"></script>
+  <script src="common.js?v=33805811b683"></script>
   <script src="crossings-common.js?v=97336e4c8ae8"></script>
   <script>
     if ("serviceWorker" in navigator && window.isSecureContext) {
@@ -283,7 +283,7 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
     const mobileCloseParentDialog = document.querySelector('#mobileCloseParentDialog');
     const mobileManageBtn = document.querySelector('#mobileManageBtn');
     let manageMode = false;
-    const mobileChooserCategoryNames = ['Alla', 'Hibiskus', 'Pelargon', 'Citrus', 'Udda', 'Stapeliader'];
+    const mobileChooserCategoryNames = ['Alla', 'Hibiskus', 'Pelargon', 'Udda', 'Stapeliader'];
     let mobileChooserCategory = 'Alla';
     const stats = document.querySelector('#stats');
     const search = document.querySelector('#search');
@@ -312,7 +312,7 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
       mobileViewToggle.hidden = true;
     }
     function snapshotToCatalog(snapshot) {
-      const titleKeys = {Hibiskus: 'id', Pelargon: 'name', Citrus: 'name', Udda: 'name', Stapeliader: 'short_name'};
+      const titleKeys = {Hibiskus: 'id', Pelargon: 'name', Udda: 'name', Stapeliader: 'short_name'};
       if (!snapshot || snapshot.schemaVersion !== 4 || !snapshot.categories || typeof snapshot.categories !== 'object') {
         throw new Error('Katalogens format stöds inte.');
       }
@@ -399,7 +399,6 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
       return {
         Hibiskus: "hibiskusar.html",
         Pelargon: "pelargoner.html",
-        Citrus: "citrus.html",
         Udda: "udda.html",
         Stapeliader: "stapeliader.html"
       }[category] || "index.html";
@@ -416,7 +415,7 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
       return labels.map((label, index) => `<span class="chip ${index === 0 ? "green" : ""}"${label === "🌱 Stickling" ? ' data-status-chip="cuttings"' : ""}>${escapeHtml(label)}</span>`).join("");
     }
     function renderTabs() {
-      const names = [...Object.keys(data), "Labbet", "Tidigare", "Växtliv", "Galleri", "Ankomstsamtal"];
+      const names = [...Object.keys(data), "Labbet", "Tidigare", "Växtliv", "Galleri"];
       const tabLabel = name => name === "Stapeliader" ? "Stapelia" : name;
       tabs.innerHTML = names.map(name => `<button class="tab ${name === active ? 'active' : ''}" type="button" data-name="${escapeHtml(name)}">${escapeHtml(tabLabel(name))}</button>`).join('');
       requestAnimationFrame(() => tabs.querySelector('.tab.active')?.scrollIntoView({block: 'nearest', inline: 'nearest'}));
@@ -433,7 +432,7 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
         const display = crossingDisplay || crossingModel.offspringDisplay(row);
         return `<h2>${escapeHtml(display.title)}</h2>${display.subline ? `<div class="plant-nickname">${escapeHtml(display.subline)}</div>` : ""}`;
       }
-      if (["Pelargon", "Citrus"].includes(categoryName) && clean(row.record_kind).toUpperCase() === "INDIVIDUAL") {
+      if (categoryName === "Pelargon" && clean(row.record_kind).toUpperCase() === "INDIVIDUAL") {
         return plantHeadingHtml(row, identity, true);
       }
       return plantHeadingHtml(row, identity);
@@ -598,12 +597,12 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
         : `<div class="image"><div class="plant-card-gallery-slot"></div></div>`;
       const chips = mobileChips(categoryName, row, logs);
       const cardNote = categoryName === "Stapeliader" ? "" : plantCardNoteField(row.id, row.card_note, row.card_note_updated_at, categoryName);
-      const collectionName = ["Pelargon", "Citrus"].includes(categoryName) && row.collection_id
+      const collectionName = categoryName === "Pelargon" && row.collection_id
         ? clean(section.rows.find(item => item.id === row.collection_id)?.name)
         : "";
       let recordInfo = categoryName === "Stapeliader"
         ? stapeliadCardInfo(row)
-        : ["Pelargon", "Citrus"].includes(categoryName) ? collectionRecordInfoHtml(row, collectionName) : "";
+        : categoryName === "Pelargon" ? collectionRecordInfoHtml(row, collectionName) : "";
       if (crossingData?.batch && crossingData.seedLot) recordInfo += mobileCrossingInfoHtml(crossingData);
       const parentCross = categoryName === "Hibiskus" ? hibiscusCrossLabel(row) : (crossingData ? `${crossingData.crossing.mother_id} × ${crossingData.crossing.father_id}` : "");
       const parentReferences = categoryName === "Hibiskus" ? hibiscusParentReferenceItems(row) : [];
@@ -649,7 +648,7 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
       const gallery = item.image ? [{file: item.image, title: identity, caption: `${displayLabel} · ${item.dateLabel || ""}`, alt: displayLabel}] : [];
       const logs = logMap.get(item.plantId) || [];
       const latestMilestone = latestPlantMilestone(logs);
-      const cardNote = ["Hibiskus", "Pelargon", "Citrus", "Udda"].includes(item.category)
+      const cardNote = ["Hibiskus", "Pelargon", "Udda"].includes(item.category)
         ? plantCardNoteField(item.plantId, "", "", item.category)
         : "";
       const hasCuttings = getPlantCuttingsStatus(item.plantId, item.cuttingsAvailable ? "ja" : "nej", item.cuttingsUpdatedAt || "");
@@ -722,11 +721,11 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
       const section = data[active];
       const q = search.value.trim().toLowerCase();
       const rows = section.rows.filter(row => !q || JSON.stringify(row).toLowerCase().includes(q));
-      if (["Pelargon", "Citrus"].includes(active)) {
+      if (active === "Pelargon") {
         rows.sort((a, b) => (clean(a.record_kind).toUpperCase() === "INDIVIDUAL" ? 0 : 1)
           - (clean(b.record_kind).toUpperCase() === "INDIVIDUAL" ? 0 : 1));
       }
-      if (["Pelargon", "Citrus"].includes(active)) {
+      if (active === "Pelargon") {
         const collections = section.rows.filter(row => clean(row.record_kind).toUpperCase() === "COLLECTION");
         const individuals = section.rows.filter(row => clean(row.record_kind).toUpperCase() === "INDIVIDUAL");
         const specimens = collections.reduce((sum, row) => sum + (Number.parseInt(row.specimen_count, 10) || 0), 0);
@@ -778,10 +777,6 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
       }
       if (button && button.dataset.name === "Labbet") {
         window.location.href = "labbet.html";
-        return;
-      }
-      if (button && button.dataset.name === "Ankomstsamtal") {
-        window.location.href = "verktyg.html#ankomstsamtal";
         return;
       }
       if (!button) return;

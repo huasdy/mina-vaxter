@@ -2345,7 +2345,7 @@
           "article_number": "00027",
           "purchase_date": "2026-09-01",
           "arrival_date": "",
-          "purchase_price_sek": "",
+          "purchase_price_sek": "245",
           "purchase_price_original": "22",
           "purchase_currency": "EUR",
           "purchase_exchange_rate": "",
@@ -2435,7 +2435,7 @@
           "article_number": "00078",
           "purchase_date": "2026-09-01",
           "arrival_date": "",
-          "purchase_price_sek": "",
+          "purchase_price_sek": "167",
           "purchase_price_original": "15",
           "purchase_currency": "EUR",
           "purchase_exchange_rate": "",
@@ -2525,7 +2525,7 @@
           "article_number": "00100",
           "purchase_date": "2026-09-01",
           "arrival_date": "",
-          "purchase_price_sek": "",
+          "purchase_price_sek": "112",
           "purchase_price_original": "10",
           "purchase_currency": "EUR",
           "purchase_exchange_rate": "",
@@ -3110,7 +3110,7 @@
           "article_number": "",
           "purchase_date": "2026-09-01",
           "arrival_date": "",
-          "purchase_price_sek": "",
+          "purchase_price_sek": "0",
           "purchase_price_original": "0",
           "purchase_currency": "EUR",
           "purchase_exchange_rate": "",
@@ -3155,7 +3155,7 @@
           "article_number": "00102",
           "purchase_date": "2026-09-01",
           "arrival_date": "",
-          "purchase_price_sek": "",
+          "purchase_price_sek": "167",
           "purchase_price_original": "15",
           "purchase_currency": "EUR",
           "purchase_exchange_rate": "",
@@ -3380,7 +3380,7 @@
           "article_number": "00384",
           "purchase_date": "2026-09-01",
           "arrival_date": "",
-          "purchase_price_sek": "",
+          "purchase_price_sek": "223",
           "purchase_price_original": "20",
           "purchase_currency": "EUR",
           "purchase_exchange_rate": "",
@@ -3885,644 +3885,6 @@
           "type": "blomma",
           "file": "bilder/pelargoner/p-triffidum_synk-8eaffe31fa_2026-08-05_blomma.jpg",
           "label": "2026-08-05 · blomma"
-        }
-      ]
-    },
-    "Citrus": {
-      "titleField": "name",
-      "profile": {
-        "sections": [
-          "Identitet",
-          "Ursprung och proveniens",
-          "Förvärv",
-          "Samlingsspecifikt",
-          "Anteckningar"
-        ],
-        "sectionLabels": {
-          "Samlingsspecifikt": "CITRUS"
-        },
-        "titleFields": [
-          "nickname",
-          "name",
-          "latin"
-        ],
-        "secondaryIdFields": [],
-        "fields": [
-          {
-            "key": "id",
-            "label": "Internt ID",
-            "section": "Identitet",
-            "type": "text",
-            "editable": false,
-            "create": false,
-            "edit": false,
-            "display": true,
-            "detail": false
-          },
-          {
-            "key": "name",
-            "label": "Namn",
-            "section": "Identitet",
-            "type": "text",
-            "editable": true,
-            "create": true,
-            "edit": true,
-            "display": true,
-            "create_required": true
-          },
-          {
-            "key": "latin",
-            "label": "Botaniskt namn",
-            "section": "Identitet",
-            "type": "text",
-            "editable": true,
-            "create": true,
-            "edit": true,
-            "display": true,
-            "hide_if_equal_to": [
-              "name"
-            ]
-          },
-          {
-            "key": "nickname",
-            "label": "Smeknamn",
-            "section": "Identitet",
-            "type": "text",
-            "editable": true,
-            "create": true,
-            "edit": true,
-            "display": true,
-            "show_for_record_kind": "INDIVIDUAL"
-          },
-          {
-            "key": "record_kind",
-            "label": "Posttyp",
-            "section": "Identitet",
-            "type": "select",
-            "editable": true,
-            "create": false,
-            "edit": true,
-            "display": true,
-            "options": [
-              "COLLECTION",
-              "INDIVIDUAL"
-            ],
-            "format": "record_kind",
-            "detail": false,
-            "create_default": "COLLECTION"
-          },
-          {
-            "key": "collection_id",
-            "label": "Tillhör samlingskort",
-            "section": "Identitet",
-            "type": "select",
-            "editable": true,
-            "create": false,
-            "edit": true,
-            "display": true,
-            "show_for_record_kind": "INDIVIDUAL",
-            "detail": false
-          },
-          {
-            "key": "specimen_count",
-            "label": "Antal exemplar",
-            "section": "Identitet",
-            "type": "number",
-            "editable": true,
-            "create": true,
-            "edit": true,
-            "display": true,
-            "show_for_record_kind": "COLLECTION",
-            "hide_values": [
-              "1"
-            ],
-            "create_default": "1",
-            "create_count_toggle": true
-          },
-          {
-            "key": "type",
-            "label": "Art/sort",
-            "section": "Identitet",
-            "type": "select",
-            "editable": true,
-            "create": true,
-            "edit": true,
-            "display": true
-          },
-          {
-            "key": "rootstock",
-            "label": "Grundstam",
-            "section": "Ursprung och proveniens",
-            "type": "text",
-            "editable": true,
-            "create": true,
-            "edit": true,
-            "display": true
-          },
-          {
-            "key": "arrival_type",
-            "label": "Material/förvärvssätt",
-            "section": "Ursprung och proveniens",
-            "type": "select",
-            "editable": true,
-            "create": true,
-            "edit": true,
-            "display": true,
-            "options": [
-              "Annat",
-              "Egen korsning",
-              "Frö",
-              "Gåva",
-              "Köpt planta",
-              "Stickling"
-            ],
-            "create_options": [
-              "Annat",
-              "Gåva",
-              "Köpt planta",
-              "Stickling"
-            ]
-          },
-          {
-            "key": "source",
-            "label": "Källa",
-            "section": "Ursprung och proveniens",
-            "type": "select",
-            "editable": true,
-            "create": true,
-            "edit": true,
-            "display": true,
-            "hide_for_arrival": "Gåva",
-            "create_gift_source": true
-          },
-          {
-            "key": "start_date",
-            "label": "Startdatum",
-            "section": "Ursprung och proveniens",
-            "type": "date",
-            "editable": true,
-            "create": false,
-            "edit": true,
-            "display": true
-          },
-          {
-            "key": "supplier",
-            "label": "Leverantör/butik",
-            "section": "Förvärv",
-            "type": "text",
-            "editable": true,
-            "create": true,
-            "edit": true,
-            "display": true
-          },
-          {
-            "key": "seller",
-            "label": "Säljare",
-            "section": "Förvärv",
-            "type": "text",
-            "editable": true,
-            "create": true,
-            "edit": true,
-            "display": true
-          },
-          {
-            "key": "purchase_name",
-            "label": "Inköpsnamn",
-            "section": "Förvärv",
-            "type": "text",
-            "editable": true,
-            "create": true,
-            "edit": true,
-            "display": true,
-            "hide_if_equal_to": [
-              "name",
-              "full_botanical_name",
-              "short_name"
-            ]
-          },
-          {
-            "key": "order_number",
-            "label": "Ordernummer",
-            "section": "Förvärv",
-            "type": "text",
-            "editable": true,
-            "create": true,
-            "edit": true,
-            "display": true
-          },
-          {
-            "key": "article_number",
-            "label": "Artikelnummer",
-            "section": "Förvärv",
-            "type": "text",
-            "editable": true,
-            "create": true,
-            "edit": true,
-            "display": true
-          },
-          {
-            "key": "purchase_date",
-            "label": "Inköpsdatum",
-            "section": "Förvärv",
-            "type": "date",
-            "editable": true,
-            "create": true,
-            "edit": true,
-            "display": true
-          },
-          {
-            "key": "arrival_date",
-            "label": "Mottagningsdatum",
-            "section": "Förvärv",
-            "type": "date",
-            "editable": true,
-            "create": true,
-            "edit": true,
-            "display": true
-          },
-          {
-            "key": "purchase_price_sek",
-            "label": "Inköpspris (SEK)",
-            "section": "Förvärv",
-            "type": "decimal",
-            "editable": true,
-            "create": true,
-            "edit": true,
-            "display": true,
-            "format": "sek"
-          },
-          {
-            "key": "purchase_note",
-            "label": "Förvärvsnotering",
-            "section": "Förvärv",
-            "type": "textarea",
-            "editable": true,
-            "create": false,
-            "edit": true,
-            "display": true
-          },
-          {
-            "key": "status",
-            "label": "Status",
-            "section": "Samlingsspecifikt",
-            "type": "select",
-            "editable": true,
-            "create": false,
-            "edit": true,
-            "display": true,
-            "hide_values": [
-              "Aktiv"
-            ],
-            "create_default": ""
-          },
-          {
-            "key": "cuttings_available",
-            "label": "Sticklingar tillgängliga",
-            "section": "Samlingsspecifikt",
-            "type": "checkbox",
-            "editable": true,
-            "create": false,
-            "edit": true,
-            "display": true,
-            "create_default": "nej"
-          },
-          {
-            "key": "notes",
-            "label": "Anteckningar",
-            "section": "Anteckningar",
-            "type": "textarea",
-            "editable": true,
-            "create": true,
-            "edit": true,
-            "display": true,
-            "create_help": "Unik information om just detta exemplar som saknar ett eget strukturerat fält."
-          }
-        ]
-      },
-      "plants": [
-        {
-          "id": "c-calamondin",
-          "record_kind": "COLLECTION",
-          "collection_id": "",
-          "name": "Calamondin",
-          "latin": "",
-          "type": "Calamondin",
-          "specimen_count": "1",
-          "status": "Aktiv",
-          "source": "",
-          "notes": "",
-          "nickname": "",
-          "card_note": "",
-          "card_note_updated_at": "",
-          "arrival_type": "Gåva",
-          "start_date": "",
-          "cuttings_available": "",
-          "cuttings_updated_at": "",
-          "card_image": "bilder/citrus/c-calamondin_2026-06-24_hel.jpg",
-          "card_crop_x": "41.3508",
-          "card_crop_y": "18.9033",
-          "card_image_updated_at": "2026-08-14T16:04:23.464Z",
-          "rootstock": "",
-          "supplier": "",
-          "seller": "",
-          "purchase_name": "",
-          "order_number": "",
-          "article_number": "",
-          "purchase_date": "",
-          "arrival_date": "",
-          "purchase_price_sek": "",
-          "purchase_price_original": "",
-          "purchase_currency": "",
-          "purchase_exchange_rate": "",
-          "purchase_exchange_rate_note": "",
-          "purchase_note": ""
-        },
-        {
-          "id": "c-limon-1",
-          "record_kind": "COLLECTION",
-          "collection_id": "",
-          "name": "Citron",
-          "latin": "Citrus × limon",
-          "type": "Citron",
-          "specimen_count": "2",
-          "status": "Aktiv",
-          "source": "Bauhaus",
-          "notes": "",
-          "nickname": "",
-          "card_note": "",
-          "card_note_updated_at": "",
-          "arrival_type": "Köpt planta",
-          "start_date": "",
-          "cuttings_available": "",
-          "cuttings_updated_at": "",
-          "card_image": "bilder/citrus/c-limon-1_2026-06-24_hel.jpg",
-          "card_crop_x": "66.1322",
-          "card_crop_y": "11.8052",
-          "card_image_updated_at": "2026-08-14T16:04:13.224Z",
-          "rootstock": "",
-          "supplier": "",
-          "seller": "",
-          "purchase_name": "",
-          "order_number": "",
-          "article_number": "",
-          "purchase_date": "",
-          "arrival_date": "",
-          "purchase_price_sek": "",
-          "purchase_price_original": "",
-          "purchase_currency": "",
-          "purchase_exchange_rate": "",
-          "purchase_exchange_rate_note": "",
-          "purchase_note": ""
-        },
-        {
-          "id": "c-kaffirlime",
-          "record_kind": "COLLECTION",
-          "collection_id": "",
-          "name": "Kaffirlime",
-          "latin": "Citrus hystrix",
-          "type": "Kaffirlime",
-          "specimen_count": "1",
-          "status": "Aktiv",
-          "source": "Vivai Miano",
-          "notes": "",
-          "nickname": "",
-          "card_note": "",
-          "card_note_updated_at": "",
-          "arrival_type": "Köpt planta",
-          "start_date": "",
-          "cuttings_available": "",
-          "cuttings_updated_at": "",
-          "card_image": "bilder/citrus/c-kaffirlime_2026-06-24_hel.jpg",
-          "card_crop_x": "49.8056",
-          "card_crop_y": "23.6354",
-          "card_image_updated_at": "2026-08-14T16:03:37.703Z",
-          "rootstock": "",
-          "supplier": "",
-          "seller": "",
-          "purchase_name": "",
-          "order_number": "",
-          "article_number": "",
-          "purchase_date": "",
-          "arrival_date": "",
-          "purchase_price_sek": "",
-          "purchase_price_original": "",
-          "purchase_currency": "",
-          "purchase_exchange_rate": "",
-          "purchase_exchange_rate_note": "",
-          "purchase_note": ""
-        },
-        {
-          "id": "c-kumquat-1",
-          "record_kind": "COLLECTION",
-          "collection_id": "",
-          "name": "Kumquat",
-          "latin": "",
-          "type": "Kumquat",
-          "specimen_count": "2",
-          "status": "Aktiv",
-          "source": "Vivai Miano",
-          "notes": "",
-          "nickname": "",
-          "card_note": "",
-          "card_note_updated_at": "",
-          "arrival_type": "Köpt planta",
-          "start_date": "",
-          "cuttings_available": "",
-          "cuttings_updated_at": "",
-          "card_image": "bilder/citrus/c-kumquat-1_2026-06-24_hel.jpg",
-          "card_crop_x": "43.6832",
-          "card_crop_y": "11.9993",
-          "card_image_updated_at": "2026-08-14T16:03:27.219Z",
-          "rootstock": "",
-          "supplier": "",
-          "seller": "",
-          "purchase_name": "",
-          "order_number": "",
-          "article_number": "",
-          "purchase_date": "",
-          "arrival_date": "",
-          "purchase_price_sek": "",
-          "purchase_price_original": "",
-          "purchase_currency": "",
-          "purchase_exchange_rate": "",
-          "purchase_exchange_rate_note": "",
-          "purchase_note": ""
-        },
-        {
-          "id": "c-limequat",
-          "record_kind": "COLLECTION",
-          "collection_id": "",
-          "name": "Limequat",
-          "latin": "",
-          "type": "Limequat",
-          "specimen_count": "1",
-          "status": "Aktiv",
-          "source": "Vivai Miano",
-          "notes": "",
-          "nickname": "",
-          "card_note": "",
-          "card_note_updated_at": "",
-          "arrival_type": "Köpt planta",
-          "start_date": "",
-          "cuttings_available": "",
-          "cuttings_updated_at": "",
-          "card_image": "",
-          "card_crop_x": "",
-          "card_crop_y": "",
-          "card_image_updated_at": "",
-          "rootstock": "",
-          "supplier": "",
-          "seller": "",
-          "purchase_name": "",
-          "order_number": "",
-          "article_number": "",
-          "purchase_date": "",
-          "arrival_date": "",
-          "purchase_price_sek": "",
-          "purchase_price_original": "",
-          "purchase_currency": "",
-          "purchase_exchange_rate": "",
-          "purchase_exchange_rate_note": "",
-          "purchase_note": ""
-        },
-        {
-          "id": "c-pomelo",
-          "record_kind": "COLLECTION",
-          "collection_id": "",
-          "name": "Pomelo",
-          "latin": "Citrus maxima",
-          "type": "Pomelo",
-          "specimen_count": "1",
-          "status": "Aktiv",
-          "source": "Plantagen",
-          "notes": "",
-          "nickname": "",
-          "card_note": "",
-          "card_note_updated_at": "",
-          "arrival_type": "Köpt planta",
-          "start_date": "2026-08-13",
-          "cuttings_available": "",
-          "cuttings_updated_at": "",
-          "card_image": "bilder/citrus/c-pomelo_synk-e0f75a2974_2026-08-13_hel.jpg",
-          "card_crop_x": "51.4577",
-          "card_crop_y": "69.4354",
-          "card_image_updated_at": "2026-08-14T16:03:04.964Z",
-          "rootstock": "",
-          "supplier": "Plantagen",
-          "seller": "",
-          "purchase_name": "",
-          "order_number": "",
-          "article_number": "",
-          "purchase_date": "",
-          "arrival_date": "",
-          "purchase_price_sek": "200",
-          "purchase_price_original": "200",
-          "purchase_currency": "SEK",
-          "purchase_exchange_rate": "",
-          "purchase_exchange_rate_note": "",
-          "purchase_note": ""
-        },
-        {
-          "id": "c-rod-fingerlime",
-          "record_kind": "COLLECTION",
-          "collection_id": "",
-          "name": "Röd fingerlime",
-          "latin": "Citrus australasica",
-          "type": "Fingerlime",
-          "specimen_count": "1",
-          "status": "Aktiv",
-          "source": "Vivai Miano",
-          "notes": "",
-          "nickname": "",
-          "card_note": "",
-          "card_note_updated_at": "",
-          "arrival_type": "Köpt planta",
-          "start_date": "",
-          "cuttings_available": "",
-          "cuttings_updated_at": "",
-          "card_image": "bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jpg",
-          "card_crop_x": "48.2507",
-          "card_crop_y": "16.7063",
-          "card_image_updated_at": "2026-08-14T16:04:34.628Z",
-          "rootstock": "",
-          "supplier": "",
-          "seller": "",
-          "purchase_name": "",
-          "order_number": "",
-          "article_number": "",
-          "purchase_date": "",
-          "arrival_date": "",
-          "purchase_price_sek": "",
-          "purchase_price_original": "",
-          "purchase_currency": "",
-          "purchase_exchange_rate": "",
-          "purchase_exchange_rate_note": "",
-          "purchase_note": ""
-        }
-      ],
-      "photos": [
-        {
-          "plant_id": "c-calamondin",
-          "date": "2026-06-24",
-          "type": "hel",
-          "file": "bilder/citrus/c-calamondin_2026-06-24_hel.jpg",
-          "label": "2026-06-24 · hel"
-        },
-        {
-          "plant_id": "c-kaffirlime",
-          "date": "2026-06-24",
-          "type": "hel",
-          "file": "bilder/citrus/c-kaffirlime_2026-06-24_hel.jpg",
-          "label": "2026-06-24 · hel"
-        },
-        {
-          "plant_id": "c-kumquat-1",
-          "date": "2026-06-24",
-          "type": "hel",
-          "file": "bilder/citrus/c-kumquat-1_2026-06-24_hel.jpg",
-          "label": "2026-06-24 · hel"
-        },
-        {
-          "plant_id": "c-kumquat-1",
-          "date": "2026-06-24",
-          "type": "hel",
-          "file": "bilder/citrus/c-kumquat-2_2026-06-24_hel.jpg",
-          "label": "2026-06-24 · hel"
-        },
-        {
-          "plant_id": "c-limequat",
-          "date": "2026-06-24",
-          "type": "hel",
-          "file": "bilder/citrus/c-limequat_2026-06-24_hel.jpg",
-          "label": "2026-06-24 · hel"
-        },
-        {
-          "plant_id": "c-limon-1",
-          "date": "2026-06-24",
-          "type": "hel",
-          "file": "bilder/citrus/c-limon-1_2026-06-24_hel.jpg",
-          "label": "2026-06-24 · hel"
-        },
-        {
-          "plant_id": "c-limon-1",
-          "date": "2026-06-24",
-          "type": "hel",
-          "file": "bilder/citrus/c-limon-2_2026-06-24_hel.jpg",
-          "label": "2026-06-24 · hel"
-        },
-        {
-          "plant_id": "c-pomelo",
-          "date": "2026-08-13",
-          "type": "hel",
-          "file": "bilder/citrus/c-pomelo_synk-e0f75a2974_2026-08-13_hel.jpg",
-          "label": "2026-08-13 · hel"
-        },
-        {
-          "plant_id": "c-rod-fingerlime",
-          "date": "2026-06-24",
-          "type": "hel",
-          "file": "bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jpg",
-          "label": "2026-06-24 · hel"
         }
       ]
     },
@@ -8685,8 +8047,8 @@
         "seller": "",
         "seeds_original": "3",
         "seeds_remaining": "3",
-        "price": "",
-        "currency": "",
+        "price": "58",
+        "currency": "SEK",
         "source_cross": "",
         "notes": "",
         "created_at": "2026-09-22T05:57:53+02:00",
@@ -8721,8 +8083,8 @@
         "seller": "vendoesvendotutto",
         "seeds_original": "200",
         "seeds_remaining": "195",
-        "price": "8.99",
-        "currency": "EUR",
+        "price": "104",
+        "currency": "SEK",
         "source_cross": "",
         "notes": "Historisk referens: STA-033. Ordernummer: 26-12251-59065. eBay Item ID: 185401812050.",
         "created_at": "2026-09-16T23:50:00+02:00",
@@ -8739,8 +8101,8 @@
         "seller": "",
         "seeds_original": "5",
         "seeds_remaining": "5",
-        "price": "",
-        "currency": "",
+        "price": "46",
+        "currency": "SEK",
         "source_cross": "",
         "notes": "",
         "created_at": "2026-09-22T05:57:53+02:00",
@@ -8775,8 +8137,8 @@
         "seller": "",
         "seeds_original": "5",
         "seeds_remaining": "5",
-        "price": "",
-        "currency": "",
+        "price": "41",
+        "currency": "SEK",
         "source_cross": "",
         "notes": "",
         "created_at": "2026-09-22T05:57:53+02:00",
@@ -8793,8 +8155,8 @@
         "seller": "",
         "seeds_original": "5",
         "seeds_remaining": "5",
-        "price": "",
-        "currency": "",
+        "price": "45",
+        "currency": "SEK",
         "source_cross": "",
         "notes": "",
         "created_at": "2026-09-22T05:57:53+02:00",
@@ -8811,8 +8173,8 @@
         "seller": "",
         "seeds_original": "5",
         "seeds_remaining": "5",
-        "price": "",
-        "currency": "",
+        "price": "41",
+        "currency": "SEK",
         "source_cross": "",
         "notes": "",
         "created_at": "2026-09-22T05:57:53+02:00",
@@ -8829,8 +8191,8 @@
         "seller": "",
         "seeds_original": "3",
         "seeds_remaining": "3",
-        "price": "",
-        "currency": "",
+        "price": "41",
+        "currency": "SEK",
         "source_cross": "",
         "notes": "",
         "created_at": "2026-09-22T05:57:53+02:00",
@@ -8847,8 +8209,8 @@
         "seller": "",
         "seeds_original": "2",
         "seeds_remaining": "2",
-        "price": "",
-        "currency": "",
+        "price": "33",
+        "currency": "SEK",
         "source_cross": "",
         "notes": "",
         "created_at": "2026-09-22T05:57:53+02:00",
@@ -8865,8 +8227,8 @@
         "seller": "",
         "seeds_original": "5",
         "seeds_remaining": "5",
-        "price": "",
-        "currency": "",
+        "price": "45",
+        "currency": "SEK",
         "source_cross": "",
         "notes": "",
         "created_at": "2026-09-22T05:57:53+02:00",
@@ -9814,89 +9176,155 @@
     "Lilium": [
       {
         "date": "2026-06-29",
-        "file": "bilder/galleri/liljor/1e4e1dc7d7e86a6044ea8341.jpg"
+        "file": "bilder/galleri/liljor/1e4e1dc7d7e86a6044ea8341.jpg",
+        "cultivar": ""
       },
       {
         "date": "2026-06-29",
-        "file": "bilder/galleri/liljor/2056f9c27ec85d2f43293025.jpg"
+        "file": "bilder/galleri/liljor/2056f9c27ec85d2f43293025.jpg",
+        "cultivar": ""
       },
       {
         "date": "2026-06-29",
-        "file": "bilder/galleri/liljor/734608834bffc9010e051ff0.jpg"
+        "file": "bilder/galleri/liljor/734608834bffc9010e051ff0.jpg",
+        "cultivar": ""
       },
       {
         "date": "2026-06-29",
-        "file": "bilder/galleri/liljor/a5c4dee7a89ba98ce3a4b5b1.jpg"
+        "file": "bilder/galleri/liljor/a5c4dee7a89ba98ce3a4b5b1.jpg",
+        "cultivar": ""
       },
       {
         "date": "2026-08-03",
-        "file": "bilder/galleri/liljor/368b3bf09f4d9b863fe31594.jpg"
+        "file": "bilder/galleri/liljor/368b3bf09f4d9b863fe31594.jpg",
+        "cultivar": ""
       },
       {
         "date": "2026-08-21",
-        "file": "bilder/galleri/liljor/238bd6fcf32c926a37ef80b9.jpg"
+        "file": "bilder/galleri/liljor/238bd6fcf32c926a37ef80b9.jpg",
+        "cultivar": ""
       },
       {
         "date": "2026-08-25",
-        "file": "bilder/galleri/liljor/2500d9f21f748bd98c3b1b4e.jpg"
+        "file": "bilder/galleri/liljor/2500d9f21f748bd98c3b1b4e.jpg",
+        "cultivar": ""
       }
     ],
     "Rosa": [
       {
         "date": "2026-06-24",
-        "file": "bilder/galleri/rosor/f47bf7d3379b7d693484b2f7.jpg"
+        "file": "bilder/galleri/rosor/f47bf7d3379b7d693484b2f7.jpg",
+        "cultivar": ""
       },
       {
         "date": "2026-07-05",
-        "file": "bilder/galleri/rosor/6d7dd7131bc142427894c4f5.jpg"
+        "file": "bilder/galleri/rosor/6d7dd7131bc142427894c4f5.jpg",
+        "cultivar": ""
       },
       {
         "date": "2026-07-05",
-        "file": "bilder/galleri/rosor/b747e18cd8842d4a38e34eff.jpg"
+        "file": "bilder/galleri/rosor/b747e18cd8842d4a38e34eff.jpg",
+        "cultivar": ""
       }
     ],
     "Dahlia": [
       {
         "date": "2026-08-04",
-        "file": "bilder/galleri/dahlior/a1fb8fa0f6905762f15e43cc.jpg"
+        "file": "bilder/galleri/dahlior/a1fb8fa0f6905762f15e43cc.jpg",
+        "cultivar": ""
       },
       {
         "date": "2026-08-04",
-        "file": "bilder/galleri/dahlior/dce2500195d3b1e1a6312d90.jpg"
+        "file": "bilder/galleri/dahlior/dce2500195d3b1e1a6312d90.jpg",
+        "cultivar": ""
       }
     ],
     "Echinacea": [
       {
         "date": "2026-08-12",
-        "file": "bilder/galleri/echinacea/5fa744f116c9d394a9e456a4.jpg"
+        "file": "bilder/galleri/echinacea/5fa744f116c9d394a9e456a4.jpg",
+        "cultivar": ""
       },
       {
         "date": "2026-08-12",
-        "file": "bilder/galleri/echinacea/78cd80b70fff6e8010d262fc.jpg"
+        "file": "bilder/galleri/echinacea/78cd80b70fff6e8010d262fc.jpg",
+        "cultivar": ""
       },
       {
         "date": "2026-08-12",
-        "file": "bilder/galleri/echinacea/8eeb23e745199ae92f5259ca.jpg"
+        "file": "bilder/galleri/echinacea/8eeb23e745199ae92f5259ca.jpg",
+        "cultivar": ""
       },
       {
         "date": "2026-08-12",
-        "file": "bilder/galleri/echinacea/cea8efd73aa18254ae3d391d.jpg"
+        "file": "bilder/galleri/echinacea/cea8efd73aa18254ae3d391d.jpg",
+        "cultivar": ""
       },
       {
         "date": "2026-08-17",
-        "file": "bilder/galleri/echinacea/eae8074ec7999d29ea59c13d.jpg"
+        "file": "bilder/galleri/echinacea/eae8074ec7999d29ea59c13d.jpg",
+        "cultivar": ""
       }
     ],
     "Clematis": [
       {
         "date": "2026-08-17",
-        "file": "bilder/galleri/klematis/ae0bc2b22c07a1bd362a171c.jpg"
+        "file": "bilder/galleri/klematis/ae0bc2b22c07a1bd362a171c.jpg",
+        "cultivar": ""
       }
     ],
     "Lonicera": [
       {
         "date": "2026-08-17",
-        "file": "bilder/galleri/kaprifol/0bb900e75b188e09b020a8a2.jpg"
+        "file": "bilder/galleri/kaprifol/0bb900e75b188e09b020a8a2.jpg",
+        "cultivar": ""
+      }
+    ],
+    "Citrus": [
+      {
+        "date": "2026-06-24",
+        "file": "bilder/citrus/c-calamondin_2026-06-24_hel.jpg",
+        "cultivar": "Calamondin"
+      },
+      {
+        "date": "2026-06-24",
+        "file": "bilder/citrus/c-kaffirlime_2026-06-24_hel.jpg",
+        "cultivar": "Kaffirlime"
+      },
+      {
+        "date": "2026-06-24",
+        "file": "bilder/citrus/c-kumquat-1_2026-06-24_hel.jpg",
+        "cultivar": "Kumquat"
+      },
+      {
+        "date": "2026-06-24",
+        "file": "bilder/citrus/c-kumquat-2_2026-06-24_hel.jpg",
+        "cultivar": "Kumquat"
+      },
+      {
+        "date": "2026-06-24",
+        "file": "bilder/citrus/c-limequat_2026-06-24_hel.jpg",
+        "cultivar": "Limequat"
+      },
+      {
+        "date": "2026-06-24",
+        "file": "bilder/citrus/c-limon-1_2026-06-24_hel.jpg",
+        "cultivar": "Citron"
+      },
+      {
+        "date": "2026-06-24",
+        "file": "bilder/citrus/c-limon-2_2026-06-24_hel.jpg",
+        "cultivar": "Citron"
+      },
+      {
+        "date": "2026-06-24",
+        "file": "bilder/citrus/c-rod-fingerlime_2026-06-24_hel.jpg",
+        "cultivar": "Röd fingerlime"
+      },
+      {
+        "date": "2026-08-13",
+        "file": "bilder/citrus/c-pomelo_synk-e0f75a2974_2026-08-13_hel.jpg",
+        "cultivar": "Pomelo"
       }
     ],
     "Varietas": []

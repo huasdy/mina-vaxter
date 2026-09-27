@@ -17,6 +17,34 @@ function friendlyDate(value) {
   return `${parts[2]} ${monthNames[parts[1] - 1]} ${parts[0]}`;
 }
 
+function parseCsv(text) {
+  const source = text.replace(/^\uFEFF/, "");
+  const rows = [];
+  let row = [], cell = "", inQuotes = false;
+  for (let index = 0; index < source.length; index++) {
+    const character = source[index], next = source[index + 1];
+    if (inQuotes) {
+      if (character === '"' && next === '"') { cell += '"'; index++; }
+      else if (character === '"') inQuotes = false;
+      else cell += character;
+    } else if (character === '"') inQuotes = true;
+    else if (character === ",") { row.push(cell); cell = ""; }
+    else if (character === "\n") { row.push(cell); rows.push(row); row = []; cell = ""; }
+    else if (character !== "\r") cell += character;
+  }
+  if (cell || row.length) { row.push(cell); rows.push(row); }
+  const headers = (rows.shift() || []).map(value => value.trim());
+  return rows.filter(values => values.some(value => value.trim())).map(values =>
+    Object.fromEntries(headers.map((header, index) => [header, (values[index] || "").trim()]))
+  );
+}
+
+function escapeHtml(value) {
+  return String(value || "").replace(/[&<>"']/g, character => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;",
+  })[character]);
+}
+
 async function loadPhotos() {
   if (window.location.protocol !== "file:" || !archiveToken) return [];
   try {
@@ -33,13 +61,9 @@ async function loadPhotos() {
 function publishedPhotos() {
   const source = document.querySelector("#defaultPhotosCSV");
   if (!source) return [];
-  return source.textContent.trim().split(/\r?\n/).slice(1).map(line => {
-    const comma = line.indexOf(",");
-    if (comma < 0) return null;
-    const date = line.slice(0, comma).trim();
-    const url = line.slice(comma + 1).trim();
-    return date && url ? {date, url, name: url.split("/").pop(), published: true} : null;
-  }).filter(Boolean);
+  return parseCsv(source.textContent).map(row => ({
+    date: row.date, url: row.file, name: row.file.split("/").pop(), cultivar: row.cultivar || "", published: true,
+  })).filter(row => row.date && row.url);
 }
 
 function render() {
@@ -55,7 +79,8 @@ function render() {
     const yearPhotos = photos.filter(photo => photo.date.startsWith(year));
     const figures = yearPhotos.map(photo => {
       const index = photos.indexOf(photo);
-      return `<figure tabindex="0" data-index="${index}"><img src="${photo.url}" alt="${albumLabel}, ${friendlyDate(photo.date)}" loading="lazy"><figcaption>${friendlyDate(photo.date)}</figcaption></figure>`;
+      const cultivar = String(photo.cultivar || "").trim();
+      return `<figure tabindex="0" data-index="${index}"><img src="${escapeHtml(photo.url)}" alt="${escapeHtml([albumLabel, cultivar, friendlyDate(photo.date)].filter(Boolean).join(", "))}" loading="lazy"><figcaption><span class="caption-date">${escapeHtml(friendlyDate(photo.date))}</span>${cultivar ? `<span class="caption-cultivar">${escapeHtml(cultivar)}</span>` : ""}</figcaption></figure>`;
     }).join("");
     return `<section class="year-section"><div class="year-heading"><h2>${year}</h2><span>${yearPhotos.length === 1 ? "1 ögonblick" : `${yearPhotos.length} ögonblick`}</span></div><div class="gallery">${figures}</div></section>`;
   }).join("");
@@ -65,8 +90,9 @@ function showLightbox(index) {
   lightboxIndex = (index + photos.length) % photos.length;
   const photo = photos[lightboxIndex];
   lightboxImage.src = photo.url;
-  lightboxImage.alt = `${albumLabel}, ${friendlyDate(photo.date)}`;
-  lightboxCaption.textContent = friendlyDate(photo.date);
+  const cultivar = String(photo.cultivar || "").trim();
+  lightboxImage.alt = [albumLabel, cultivar, friendlyDate(photo.date)].filter(Boolean).join(", ");
+  lightboxCaption.textContent = [friendlyDate(photo.date), cultivar].filter(Boolean).join(" · ");
   if (!lightbox.open) lightbox.showModal();
 }
 

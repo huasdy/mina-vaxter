@@ -182,48 +182,6 @@
     .tool-card strong { display: block; color: var(--accent); font-size: 1.05rem; margin-bottom: 4px; }
     .tool-card span { color: var(--muted); font-size: .9rem; }
     .tool-card[hidden] { display: none; }
-    .arrival-shell { max-width: 980px; margin: 0 auto 28px; padding: 0 18px; scroll-margin-top: 18px; }
-    .arrival-card {
-      background: rgba(255,253,248,.9); border: 1px solid var(--line); border-radius: 24px;
-      box-shadow: var(--shadow); padding: clamp(20px, 4vw, 34px);
-    }
-    .arrival-head { max-width: 650px; margin-bottom: 24px; }
-    .arrival-head .eyebrow { margin-bottom: 7px; }
-    .arrival-head h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 500; }
-    .arrival-head p { margin: 10px 0 0; color: var(--muted); line-height: 1.55; }
-    .arrival-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 18px; }
-    .arrival-field { display: grid; align-content: start; gap: 7px; }
-    .arrival-field.full { grid-column: 1 / -1; }
-    .arrival-label, .arrival-legend { font-weight: 800; font-size: .95rem; }
-    .arrival-required { color: var(--accent); font-size: .8rem; margin-left: 4px; }
-    .arrival-field input, .arrival-field select, .arrival-field textarea {
-      width: 100%; border: 1px solid var(--line); background: var(--paper); color: var(--ink);
-      border-radius: 14px; padding: 12px 14px; font: inherit; text-align: left;
-    }
-    .arrival-field textarea { min-height: 116px; resize: vertical; line-height: 1.45; }
-    .arrival-help { color: var(--muted); font-size: .86rem; line-height: 1.4; }
-    .arrival-hibiscus { border: 1px solid var(--line); border-radius: 18px; padding: 16px; }
-    .arrival-hibiscus[hidden] { display: none; }
-    .arrival-hibiscus-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 18px; margin-top: 8px; }
-    .arrival-hibiscus-grid label { display: grid; align-content: start; gap: 7px; }
-    .arrival-hibiscus-note { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: .86rem; line-height: 1.4; }
-    .arrival-categories { border: 0; padding: 0; margin: 0; }
-    .arrival-category-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 7px; }
-    .arrival-category { position: relative; cursor: pointer; }
-    .arrival-category input { position: absolute; opacity: 0; pointer-events: none; width: 1px; }
-    .arrival-category span {
-      display: grid; place-items: center; min-height: 46px; padding: 9px 10px; text-align: center;
-      border: 1px solid var(--line); border-radius: 14px; background: var(--paper); font-weight: 750;
-    }
-    .arrival-category input:checked + span { color: white; background: var(--accent); border-color: var(--accent); }
-    .arrival-category input:focus-visible + span { outline: 3px solid rgba(125,79,59,.22); outline-offset: 2px; }
-    .arrival-error { min-height: 1.1em; color: #984c37; font-size: .86rem; font-weight: 700; }
-    .arrival-field.has-error input, .arrival-field.has-error select, .arrival-field.has-error .arrival-category span { border-color: #b7654e; }
-    .arrival-actions { grid-column: 1 / -1; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding-top: 2px; }
-    .arrival-status { color: var(--muted); line-height: 1.4; }
-    .arrival-status.success { color: #4f6b51; font-weight: 750; }
-    .arrival-status.error { color: #984c37; font-weight: 750; }
-    .arrival-form[aria-busy="true"] button { opacity: .65; cursor: wait; }
     .data-shell { max-width: 980px; margin: 0 auto 28px; padding: 0 18px; scroll-margin-top: 18px; }
     .data-card {
       background: rgba(255,253,248,.9); border: 1px solid var(--line); border-radius: 24px;
@@ -248,13 +206,13 @@
     .data-status.error { color: #984c37; font-weight: 750; }
     .data-empty { color: var(--muted); padding: 16px 0; }
     .section-title { width: min(100%, 980px); margin: 2px 0 -4px; font-family: Georgia, "Times New Roman", serif; font-size: 1.7rem; }
-    @media (max-width: 760px) { .toolbar-inner { display: grid; grid-template-columns: 1fr; } select, input, button { width: 100%; text-align: center; } .batch-head { display: grid; } .tool-grid { grid-template-columns: 1fr; } .arrival-form, .data-form, .data-picker, .arrival-hibiscus-grid { grid-template-columns: 1fr; } .arrival-field.full, .arrival-actions, .data-actions, .data-field.parent-field { grid-column: auto; } .arrival-hibiscus-note { grid-column: auto; } .arrival-category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .arrival-actions button, .data-actions button { width: auto; } }
+    @media (max-width: 760px) { .toolbar-inner { display: grid; grid-template-columns: 1fr; } select, input, button { width: 100%; text-align: center; } .batch-head { display: grid; } .tool-grid { grid-template-columns: 1fr; } .data-form, .data-picker { grid-template-columns: 1fr; } .data-actions, .data-field.parent-field { grid-column: auto; } .data-actions button { width: auto; } }
     @media print {
       @page { size: 57mm 32mm; margin: 0; }
       :root { --dymo-label-width: 57mm; --dymo-label-height: 32mm; --dymo-printable-height: 32mm; --dymo-printable-half-height: 16mm; }
       html, body { width: var(--dymo-label-width); height: var(--dymo-printable-height); min-height: 0; max-height: var(--dymo-printable-height); margin: 0; padding: 0; overflow: hidden; background: #fff; box-sizing: border-box; }
       html:has(body.batch-printing), body.batch-printing { height: auto; min-height: 0; max-height: none; overflow: visible; }
-      header, .tool-menu, .arrival-shell, .data-shell, .toolbar, .summary, .section-title, .print-note, .batch-panel, .batch-preview { display: none !important; }
+      header, .tool-menu, .data-shell, .toolbar, .summary, .section-title, .print-note, .batch-panel, .batch-preview { display: none !important; }
       main { width: var(--dymo-label-width); height: var(--dymo-printable-height); max-height: var(--dymo-printable-height); margin: 0; padding: 0; display: block; overflow: hidden; box-sizing: border-box; }
       .sheet-frame { width: var(--dymo-label-width); height: var(--dymo-printable-height); max-height: var(--dymo-printable-height); padding: 0; border: 0; border-radius: 0; box-shadow: none; overflow: hidden; box-sizing: border-box; }
       /* Den flytande synkkön får inte täcka text på de små etikettsidorna. */
@@ -365,104 +323,6 @@
   </header>
   <section class="tool-menu" aria-label="Verktyg">
     <div class="tool-grid">
-      <a class="tool-card" data-tool-card="ankomstsamtal" href="#ankomstsamtal" aria-expanded="false"><strong>🌱 Ankomstsamtal</strong><span>Välkomna en ny växt och spara det du vet om dess bakgrund.</span></a>
-      <a class="tool-card" id="dataViewCard" data-tool-card="datavy" href="#datavy" aria-expanded="false" hidden><strong>Datavy</strong><span>Granska och komplettera bara de strukturerade fält som är aktiva för växttypen.</span></a>
-      <a class="tool-card" data-tool-card="etiketter" href="#etiketter" aria-expanded="false"><strong>Etiketter</strong><span>Växtetiketter, fri text och batchutskrift för DYMO.</span></a>
-      <a class="tool-card" href="hibiskusar.html?tool=milstolpar"><strong>Milstolpar flera</strong><span>Spara samma milstolpe på flera hibiskusar.</span></a>
-      <a class="tool-card" id="localSyncCard" data-tool-card="lokal-synk" href="#lokal-synk" aria-expanded="false" hidden><strong>Lokal synk</strong><span>Parkoppla iPhone med Macen för synkning hemma på wifi.</span></a>
-      <a class="tool-card" id="originalArchiveLink" href="#" hidden><strong>Öppna originalarkiv</strong><span>Fullstora originalbilder sparade lokalt på denna Mac.</span></a>
-    </div>
-  </section>
-  <section class="arrival-shell" id="ankomstsamtal" aria-labelledby="arrivalTitle" hidden>
-    <div class="arrival-card">
-      <div class="arrival-head">
-        <div class="eyebrow">Ett första möte</div>
-        <h2 id="arrivalTitle">🌱 Ankomstsamtal</h2>
-        <p>Börja med namn och en plats i samlingen. Resten fyller du i om du vet det just nu.</p>
-      </div>
-      <form class="arrival-form" id="arrivalForm" novalidate>
-        <div class="arrival-field" id="arrivalNameField">
-          <label class="arrival-label" for="arrivalName">Namn <span class="arrival-required">behövs</span></label>
-          <input id="arrivalName" name="name" type="text" maxlength="160" autocomplete="off" aria-required="true" aria-describedby="arrivalNameError">
-          <div class="arrival-error" id="arrivalNameError" aria-live="polite"></div>
-        </div>
-        <fieldset class="arrival-field arrival-categories" id="arrivalCategoryField">
-          <legend class="arrival-legend">Kategori <span class="arrival-required">välj en</span></legend>
-          <div class="arrival-category-grid">
-            <label class="arrival-category"><input type="radio" name="category" value="Hibiskus"><span>Hibiskus</span></label>
-            <label class="arrival-category"><input type="radio" name="category" value="Pelargon"><span>Pelargon</span></label>
-            <label class="arrival-category"><input type="radio" name="category" value="Citrus"><span>Citrus</span></label>
-            <label class="arrival-category"><input type="radio" name="category" value="Udda"><span>Udda</span></label>
-          </div>
-          <div class="arrival-error" id="arrivalCategoryError" aria-live="polite"></div>
-        </fieldset>
-        <div class="arrival-field">
-          <label class="arrival-label" for="arrivalTaxon">Art / sort</label>
-          <input id="arrivalTaxon" name="taxon" type="text" maxlength="200" autocomplete="off">
-          <div class="arrival-help">Vetenskapligt namn eller sortnamn, om känt.</div>
-        </div>
-        <div class="arrival-field" id="arrivalTypeField">
-          <label class="arrival-label" for="arrivalType">Hur kom du hit?</label>
-          <select id="arrivalType" name="arrival_type">
-            <option value="">Välj om du vill</option>
-            <option>Köpt planta</option>
-            <option>Frö</option>
-            <option>Stickling</option>
-            <option>Gåva</option>
-            <option>Egen korsning</option>
-            <option>Annat</option>
-          </select>
-          <div class="arrival-error" id="arrivalTypeError" aria-live="polite"></div>
-        </div>
-        <div class="arrival-field">
-          <label class="arrival-label" id="arrivalSourceLabel" for="arrivalSource">Källa</label>
-          <input id="arrivalSource" name="source" type="text" maxlength="240" autocomplete="off">
-          <div class="arrival-help" id="arrivalSourceHelp">Varifrån kom växten? Till exempel Tradera eller Rareplants.eu.</div>
-        </div>
-        <div class="arrival-field">
-          <label class="arrival-label" id="arrivalDateLabel" for="arrivalDate">Ankomstdatum</label>
-          <input id="arrivalDate" name="arrival_date" type="date">
-        </div>
-        <fieldset class="arrival-field full arrival-hibiscus" id="arrivalHibiscusFields" hidden>
-          <legend class="arrival-legend">Fröbatch och korsning</legend>
-          <div class="arrival-hibiscus-grid">
-            <label>
-              <span class="arrival-label">Fröbatch</span>
-              <select id="arrivalHibiscusBatch" name="hibiscus_batch"></select>
-            </label>
-            <label>
-              <span class="arrival-label">Korsning</span>
-              <select id="arrivalHibiscusSubBatch" name="hibiscus_sub_batch"></select>
-            </label>
-            <label>
-              <span class="arrival-label">Moder</span>
-              <input id="arrivalHibiscusMother" name="mother" type="text" maxlength="120" autocomplete="off">
-            </label>
-            <label>
-              <span class="arrival-label">Fader</span>
-              <input id="arrivalHibiscusFather" name="father" type="text" maxlength="120" autocomplete="off">
-            </label>
-            <p class="arrival-hibiscus-note" id="arrivalHibiscusHelp"></p>
-          </div>
-          <div class="arrival-error" id="arrivalHibiscusError" aria-live="polite"></div>
-        </fieldset>
-        <div class="arrival-field full">
-          <label class="arrival-label" for="arrivalBackground">Ursprung / bakgrund</label>
-          <textarea id="arrivalBackground" name="background" maxlength="2000"></textarea>
-          <div class="arrival-help">Vad vet du om växtens biologiska eller genetiska bakgrund? Till exempel Sydafrika, hybrid, föräldrar eller fröparti.</div>
-        </div>
-        <div class="arrival-field full">
-          <label class="arrival-label" for="arrivalImpression">Första intryck</label>
-          <textarea id="arrivalImpression" name="first_impression" maxlength="2000"></textarea>
-          <div class="arrival-help">Vad vill du komma ihåg från när den kom?</div>
-        </div>
-        <div class="arrival-actions">
-          <button id="arrivalSave" type="submit">Skapa växtpost</button>
-          <div class="arrival-status" id="arrivalStatus" role="status" aria-live="polite"></div>
-        </div>
-      </form>
-    </div>
-  </section>
   <section class="data-shell" id="lokal-synk" aria-labelledby="localSyncTitle" hidden>
     <div class="data-card">
       <div class="data-head">
@@ -585,9 +445,9 @@
   </main>
   <section class="batch-print-area" id="batchPrintArea" aria-label="Batchutskrift"></section>
   <script src="originalarkiv-local.js"></script>
-  <script src="main-navigation.js?v=7b1a2b0f9f81"></script>
-  <script src="common.js?v=2fbf338fa390"></script>
-  <script id="labelData" type="application/json">[{"category": "Hibiskus", "id": "HIB-001", "name": "Hibiskus", "batch": "", "cross": "", "nickname": "Cato"}, {"category": "Hibiskus", "id": "HIB-002", "name": "Hibiskus", "batch": "", "cross": "", "nickname": "Bemita"}, {"category": "Hibiskus", "id": "PL-H01-A", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-B", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-C", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-D", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-G", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-H", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-I", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-J", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-K", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-L", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-M", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-N", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-O", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-Q", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-R", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-A-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-B-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × 030", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-C-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "030 × 041", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-C-02", "name": "Hibiskus", "batch": "PL-H02", "cross": "030 × 041", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-C-03", "name": "Hibiskus", "batch": "PL-H02", "cross": "030 × 041", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-D-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-D-02", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-D-03", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × okänd", "nickname": ""}, {"category": "Pelargon", "id": "p-acetosum", "label_number": "PEL-001", "name": "P. acetosum", "nickname": ""}, {"category": "Pelargon", "id": "p-australe-1", "label_number": "PEL-002", "name": "P. australe", "nickname": ""}, {"category": "Pelargon", "id": "p-bowkeri-silver-leaf", "label_number": "PEL-005", "name": "P. bowkeri ‘Silver Leaf’", "nickname": ""}, {"category": "Pelargon", "id": "p-cotyledonis-1", "label_number": "PEL-007", "name": "P. cotyledonis", "nickname": ""}, {"category": "Pelargon", "id": "p-dimeierii-selma", "label_number": "PEL-010", "name": "P. dimeierii ‘Selma’", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-1", "label_number": "PEL-013", "name": "P. gibbosum", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-anethifolium", "label_number": "PEL-015", "name": "P. gibbosum × anethifolium", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-maroon-1", "label_number": "PEL-016", "name": "P. gibbosum ‘Maroon’", "nickname": ""}, {"category": "Pelargon", "id": "p-laxum-1", "label_number": "PEL-018", "name": "P. laxum", "nickname": ""}, {"category": "Pelargon", "id": "p-magenteum", "label_number": "PEL-020", "name": "P. magenteum", "nickname": ""}, {"category": "Pelargon", "id": "p-odoratissimum-1", "label_number": "PEL-022", "name": "P. odoratissimum", "nickname": ""}, {"category": "Pelargon", "id": "p-sidoides", "label_number": "PEL-025", "name": "P. sidoides", "nickname": ""}, {"category": "Pelargon", "id": "p-triffidum", "label_number": "PEL-027", "name": "P. triffidum", "nickname": ""}, {"category": "Pelargon", "id": "p-caffrum-diana", "label_number": "PEL-006", "name": "P. × caffrum ‘Diana’", "nickname": ""}, {"category": "Pelargon", "id": "p-bontrosai-1", "label_number": "PEL-003", "name": "P. ‘Bontrosai’", "nickname": ""}, {"category": "Pelargon", "id": "p-cys-sunburst-1", "label_number": "PEL-009", "name": "P. ‘Cy’s Sunburst’", "nickname": ""}, {"category": "Pelargon", "id": "p-dr-westerlund-1", "label_number": "PEL-011", "name": "P. ‘Dr Westerlund’", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosina-bicolour", "label_number": "PEL-012", "name": "P. ‘Gibbosina Bicolour’", "nickname": ""}, {"category": "Pelargon", "id": "p-glauciifolium", "label_number": "PEL-017", "name": "P. ‘Glauciifolium’", "nickname": ""}, {"category": "Pelargon", "id": "p-lemon-queen", "label_number": "PEL-019", "name": "P. ‘Lemon Queen’", "nickname": ""}, {"category": "Pelargon", "id": "p-nielsens-fragrans-1", "label_number": "PEL-021", "name": "P. ‘Nielsens Fragrans’", "nickname": ""}, {"category": "Pelargon", "id": "p-prince-of-orange", "label_number": "PEL-023", "name": "P. ‘Prince of Orange’", "nickname": ""}, {"category": "Pelargon", "id": "p-rushmoor-mississippi", "label_number": "PEL-024", "name": "‘Rushmoor Mississippi’", "nickname": ""}, {"category": "Citrus", "id": "c-calamondin", "name": "Calamondin", "nickname": ""}, {"category": "Citrus", "id": "c-limon-1", "name": "Citron", "nickname": ""}, {"category": "Citrus", "id": "c-kaffirlime", "name": "Kaffirlime", "nickname": ""}, {"category": "Citrus", "id": "c-kumquat-1", "name": "Kumquat", "nickname": ""}, {"category": "Citrus", "id": "c-limequat", "name": "Limequat", "nickname": ""}, {"category": "Citrus", "id": "c-pomelo", "name": "Pomelo", "nickname": ""}, {"category": "Citrus", "id": "c-rod-fingerlime", "name": "Röd fingerlime", "nickname": ""}, {"category": "Udda", "id": "SP-006", "name": "Fredskalla"}, {"category": "Udda", "id": "SP-005", "name": "Hjärtbräken"}, {"category": "Udda", "id": "SP-002", "name": "Patchouli"}, {"category": "Udda", "id": "SP-004", "name": "Plumeria"}, {"category": "Udda", "id": "SP-003", "name": "Salvia apiana"}, {"category": "Udda", "id": "SP-001", "name": "Stapelia mix"}, {"category": "Udda", "id": "SP-008", "name": "The Monster"}, {"category": "Udda", "id": "SP-011", "name": "Vippjasmin"}, {"category": "Udda", "id": "SP-007", "name": "Ödesträd"}, {"category": "Stapeliader", "id": "STA-005", "name": "D. sulcata subsp. seminuda", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-011", "name": "E. cereiformis", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-017", "name": "H. hystrix — cristat form", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-007", "name": "H. keniensis var. nairobiensis", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-012", "name": "H. laevis — Harras", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-035", "name": "H. macrocarpa", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-001", "name": "H. rosea — RH230", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-006", "name": "H. × pendurata", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-034", "name": "H. ‘Pink Eye’", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-016", "name": "O. deflersiana — Clone B", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-009", "name": "O. hardyi", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-010", "name": "O. lutea", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-020", "name": "O. mcloughlinii × O. variegata", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-019", "name": "O. semota — lutea-form", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-015", "name": "O. sp. 'Cypro'", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-032", "name": "P. geminatus — foetidus", "supplier": "SuccSeed", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-002", "name": "P. geminatus — globosus", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-018", "name": "P. punctatus var. framesii", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-004", "name": "S. decaryi", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-008", "name": "S. divaricata", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-003", "name": "S. grandiflora", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-013", "name": "S. schinzii var. bergeriana", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-014", "name": "× Tavarorbea 'Red Leopard'", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}]</script>
+  <script src="main-navigation.js?v=1c472786e1ec"></script>
+  <script src="common.js?v=33805811b683"></script>
+  <script id="labelData" type="application/json">[{"category": "Hibiskus", "id": "HIB-001", "name": "Hibiskus", "batch": "", "cross": "", "nickname": "Cato"}, {"category": "Hibiskus", "id": "HIB-002", "name": "Hibiskus", "batch": "", "cross": "", "nickname": "Bemita"}, {"category": "Hibiskus", "id": "PL-H01-A", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-B", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-C", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-D", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-G", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-H", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-I", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-J", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-K", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-L", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-M", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-N", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-O", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-Q", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H01-R", "name": "Hibiskus", "batch": "PL-H01", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-A-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "okänd × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-B-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × 030", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-C-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "030 × 041", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-C-02", "name": "Hibiskus", "batch": "PL-H02", "cross": "030 × 041", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-C-03", "name": "Hibiskus", "batch": "PL-H02", "cross": "030 × 041", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-D-01", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-D-02", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × okänd", "nickname": ""}, {"category": "Hibiskus", "id": "PL-H02-D-03", "name": "Hibiskus", "batch": "PL-H02", "cross": "012 × okänd", "nickname": ""}, {"category": "Pelargon", "id": "p-acetosum", "label_number": "PEL-001", "name": "P. acetosum", "nickname": ""}, {"category": "Pelargon", "id": "p-australe-1", "label_number": "PEL-002", "name": "P. australe", "nickname": ""}, {"category": "Pelargon", "id": "p-bowkeri-silver-leaf", "label_number": "PEL-005", "name": "P. bowkeri ‘Silver Leaf’", "nickname": ""}, {"category": "Pelargon", "id": "p-cotyledonis-1", "label_number": "PEL-007", "name": "P. cotyledonis", "nickname": ""}, {"category": "Pelargon", "id": "p-dimeierii-selma", "label_number": "PEL-010", "name": "P. dimeierii ‘Selma’", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-1", "label_number": "PEL-013", "name": "P. gibbosum", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-anethifolium", "label_number": "PEL-015", "name": "P. gibbosum × anethifolium", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosum-maroon-1", "label_number": "PEL-016", "name": "P. gibbosum ‘Maroon’", "nickname": ""}, {"category": "Pelargon", "id": "p-laxum-1", "label_number": "PEL-018", "name": "P. laxum", "nickname": ""}, {"category": "Pelargon", "id": "p-magenteum", "label_number": "PEL-020", "name": "P. magenteum", "nickname": ""}, {"category": "Pelargon", "id": "p-odoratissimum-1", "label_number": "PEL-022", "name": "P. odoratissimum", "nickname": ""}, {"category": "Pelargon", "id": "p-sidoides", "label_number": "PEL-025", "name": "P. sidoides", "nickname": ""}, {"category": "Pelargon", "id": "p-triffidum", "label_number": "PEL-027", "name": "P. triffidum", "nickname": ""}, {"category": "Pelargon", "id": "p-caffrum-diana", "label_number": "PEL-006", "name": "P. × caffrum ‘Diana’", "nickname": ""}, {"category": "Pelargon", "id": "p-bontrosai-1", "label_number": "PEL-003", "name": "P. ‘Bontrosai’", "nickname": ""}, {"category": "Pelargon", "id": "p-cys-sunburst-1", "label_number": "PEL-009", "name": "P. ‘Cy’s Sunburst’", "nickname": ""}, {"category": "Pelargon", "id": "p-dr-westerlund-1", "label_number": "PEL-011", "name": "P. ‘Dr Westerlund’", "nickname": ""}, {"category": "Pelargon", "id": "p-gibbosina-bicolour", "label_number": "PEL-012", "name": "P. ‘Gibbosina Bicolour’", "nickname": ""}, {"category": "Pelargon", "id": "p-glauciifolium", "label_number": "PEL-017", "name": "P. ‘Glauciifolium’", "nickname": ""}, {"category": "Pelargon", "id": "p-lemon-queen", "label_number": "PEL-019", "name": "P. ‘Lemon Queen’", "nickname": ""}, {"category": "Pelargon", "id": "p-nielsens-fragrans-1", "label_number": "PEL-021", "name": "P. ‘Nielsens Fragrans’", "nickname": ""}, {"category": "Pelargon", "id": "p-prince-of-orange", "label_number": "PEL-023", "name": "P. ‘Prince of Orange’", "nickname": ""}, {"category": "Pelargon", "id": "p-rushmoor-mississippi", "label_number": "PEL-024", "name": "‘Rushmoor Mississippi’", "nickname": ""}, {"category": "Udda", "id": "SP-006", "name": "Fredskalla"}, {"category": "Udda", "id": "SP-005", "name": "Hjärtbräken"}, {"category": "Udda", "id": "SP-002", "name": "Patchouli"}, {"category": "Udda", "id": "SP-004", "name": "Plumeria"}, {"category": "Udda", "id": "SP-003", "name": "Salvia apiana"}, {"category": "Udda", "id": "SP-001", "name": "Stapelia mix"}, {"category": "Udda", "id": "SP-008", "name": "The Monster"}, {"category": "Udda", "id": "SP-011", "name": "Vippjasmin"}, {"category": "Udda", "id": "SP-007", "name": "Ödesträd"}, {"category": "Stapeliader", "id": "STA-005", "name": "D. sulcata subsp. seminuda", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-011", "name": "E. cereiformis", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-017", "name": "H. hystrix — cristat form", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-007", "name": "H. keniensis var. nairobiensis", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-012", "name": "H. laevis — Harras", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-035", "name": "H. macrocarpa", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-001", "name": "H. rosea — RH230", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-006", "name": "H. × pendurata", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-034", "name": "H. ‘Pink Eye’", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-016", "name": "O. deflersiana — Clone B", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-009", "name": "O. hardyi", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-010", "name": "O. lutea", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-020", "name": "O. mcloughlinii × O. variegata", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-019", "name": "O. semota — lutea-form", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-015", "name": "O. sp. 'Cypro'", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-032", "name": "P. geminatus — foetidus", "supplier": "SuccSeed", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-002", "name": "P. geminatus — globosus", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-018", "name": "P. punctatus var. framesii", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-004", "name": "S. decaryi", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-008", "name": "S. divaricata", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-003", "name": "S. grandiflora", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-013", "name": "S. schinzii var. bergeriana", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}, {"category": "Stapeliader", "id": "STA-014", "name": "× Tavarorbea 'Red Leopard'", "supplier": "Cactus Art", "seed_lot_id": "", "seed_lots": []}]</script>
   <script>
     const labels = JSON.parse(document.querySelector("#labelData").textContent);
     const labelMode = document.querySelector("#labelMode");
@@ -631,22 +491,6 @@
     const localSyncCode = document.querySelector("#localSyncCode");
     const refreshLocalSyncStatus = document.querySelector("#refreshLocalSyncStatus");
     const localSyncStatus = document.querySelector("#localSyncStatus");
-    const arrivalForm = document.querySelector("#arrivalForm");
-    const arrivalName = document.querySelector("#arrivalName");
-    const arrivalDate = document.querySelector("#arrivalDate");
-    const arrivalDateLabel = document.querySelector("#arrivalDateLabel");
-    const arrivalType = document.querySelector("#arrivalType");
-    const arrivalSourceLabel = document.querySelector("#arrivalSourceLabel");
-    const arrivalSourceHelp = document.querySelector("#arrivalSourceHelp");
-    const arrivalHibiscusFields = document.querySelector("#arrivalHibiscusFields");
-    const arrivalHibiscusBatch = document.querySelector("#arrivalHibiscusBatch");
-    const arrivalHibiscusSubBatch = document.querySelector("#arrivalHibiscusSubBatch");
-    const arrivalHibiscusMother = document.querySelector("#arrivalHibiscusMother");
-    const arrivalHibiscusFather = document.querySelector("#arrivalHibiscusFather");
-    const arrivalHibiscusHelp = document.querySelector("#arrivalHibiscusHelp");
-    const arrivalHibiscusError = document.querySelector("#arrivalHibiscusError");
-    const arrivalSave = document.querySelector("#arrivalSave");
-    const arrivalStatus = document.querySelector("#arrivalStatus");
     const dataCategory = document.querySelector("#dataCategory");
     const dataSearch = document.querySelector("#dataSearch");
     const dataPlant = document.querySelector("#dataPlant");
@@ -657,11 +501,9 @@
 
     function showSelectedTool(scrollToTool = false) {
       const selected = window.location.hash.slice(1);
-      const showArrival = selected === "ankomstsamtal";
       const showDataView = selected === "datavy" && (Boolean(window.MINA_VAXTER_ARCHIVE_TOKEN) || localMacPreview);
       const showLocalSync = selected === "lokal-synk" && (Boolean(window.MINA_VAXTER_ARCHIVE_TOKEN) || localMacPreview);
       const showLabels = selected === "etiketter";
-      document.querySelector("#ankomstsamtal").hidden = !showArrival;
       document.querySelector("#datavy").hidden = !showDataView;
       document.querySelector("#lokal-synk").hidden = !showLocalSync;
       document.querySelector("#etiketterToolbar").hidden = !showLabels;
@@ -671,8 +513,8 @@
       });
       if (showDataView && !dataViewLoaded) loadDataView();
       if (showLocalSync) loadLocalSyncStatus();
-      if (scrollToTool && (showArrival || showDataView || showLocalSync || showLabels)) {
-        document.querySelector(showArrival ? "#ankomstsamtal" : showDataView ? "#datavy" : showLocalSync ? "#lokal-synk" : "#etiketterToolbar").scrollIntoView({behavior: "smooth", block: "start"});
+      if (scrollToTool && (showDataView || showLocalSync || showLabels)) {
+        document.querySelector(showDataView ? "#datavy" : showLocalSync ? "#lokal-synk" : "#etiketterToolbar").scrollIntoView({behavior: "smooth", block: "start"});
       }
     }
 
@@ -688,7 +530,7 @@
       const values = plant.values || {};
       const name = values.name || "";
       const nickname = values.nickname || "";
-      if (["Pelargon", "Citrus"].includes(plant.category)) {
+      if (plant.category === "Pelargon") {
         if ((values.record_kind || "").toUpperCase() === "INDIVIDUAL") return nickname || name || plant.id;
         const count = values.specimen_count;
         if (name && count !== undefined && count !== "") return `${name} · ${count} exemplar`;
@@ -717,7 +559,7 @@
         return (!category || plant.category === category) && (!query || haystack.includes(query));
       });
       visible.sort((a, b) => {
-        if (a.category !== b.category || !["Pelargon", "Citrus"].includes(a.category)) return 0;
+        if (a.category !== b.category || a.category !== "Pelargon") return 0;
         return ((a.values || {}).record_kind === "INDIVIDUAL" ? 0 : 1)
           - ((b.values || {}).record_kind === "INDIVIDUAL" ? 0 : 1);
       });
@@ -846,218 +688,6 @@
       return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
     }
 
-    function selectedArrivalCategory() {
-      return arrivalForm.querySelector('input[name="category"]:checked')?.value || "";
-    }
-
-    function hibiscusArrivalGroups() {
-      const groups = new Map();
-      labels.filter(row => row.category === "Hibiskus").forEach(row => {
-        const match = String(row.id || "").match(/^(PL-H\d{2}-[A-Z])-\d{2}$/);
-        if (!match || groups.has(match[1])) return;
-        groups.set(match[1], {id: match[1], batch: match[1].slice(0, 6), cross: row.cross || "okänd × okänd"});
-      });
-      return [...groups.values()].sort((a, b) => a.id.localeCompare(b.id, "sv"));
-    }
-
-    function fillArrivalHibiscusBatches() {
-      const current = arrivalHibiscusBatch.value;
-      const batches = [...new Set(hibiscusArrivalGroups().map(group => group.batch))];
-      arrivalHibiscusBatch.innerHTML = '<option value="__new__">Ny fröbatch</option>' + batches
-        .map(batch => `<option value="${escapeHtml(batch)}">${escapeHtml(batch)}</option>`)
-        .join("");
-      arrivalHibiscusBatch.value = batches.includes(current) ? current : "__new__";
-      fillArrivalHibiscusSubBatches();
-    }
-
-    function fillArrivalHibiscusSubBatches() {
-      const current = arrivalHibiscusSubBatch.value;
-      const batch = arrivalHibiscusBatch.value;
-      const groups = hibiscusArrivalGroups().filter(group => group.batch === batch);
-      if (batch === "__new__") {
-        arrivalHibiscusSubBatch.innerHTML = '<option value="__new__">Första korsningen (A)</option>';
-      } else {
-        arrivalHibiscusSubBatch.innerHTML = groups
-          .map(group => `<option value="${escapeHtml(group.id)}">${escapeHtml(group.id)} · ${escapeHtml(group.cross)}</option>`)
-          .join("") + `<option value="__new__">Ny korsning i ${escapeHtml(batch)}</option>`;
-        arrivalHibiscusSubBatch.value = groups.some(group => group.id === current) ? current : (groups[0]?.id || "__new__");
-      }
-      updateArrivalHibiscusParents();
-    }
-
-    function updateArrivalHibiscusParents() {
-      const group = hibiscusArrivalGroups().find(item => item.id === arrivalHibiscusSubBatch.value);
-      const inherited = Boolean(group);
-      if (inherited) {
-        const [mother = "okänd", father = "okänd"] = group.cross.split(" × ");
-        arrivalHibiscusMother.value = mother || "okänd";
-        arrivalHibiscusFather.value = father || "okänd";
-      } else if (arrivalHibiscusMother.readOnly || arrivalHibiscusFather.readOnly) {
-        arrivalHibiscusMother.value = "okänd";
-        arrivalHibiscusFather.value = "okänd";
-      } else {
-        arrivalHibiscusMother.value ||= "okänd";
-        arrivalHibiscusFather.value ||= "okänd";
-      }
-      arrivalHibiscusMother.readOnly = inherited;
-      arrivalHibiscusFather.readOnly = inherited;
-      arrivalHibiscusHelp.textContent = inherited
-        ? `Nästa individnummer skapas automatiskt och föräldrarna ärvs från ${group.id}.`
-        : arrivalHibiscusBatch.value === "__new__"
-          ? "Nästa fröbatch skapas automatiskt med korsning A. Okänd förälder kan stå som okänd."
-          : `Nästa lediga korsningsbokstav i ${arrivalHibiscusBatch.value} används automatiskt.`;
-    }
-
-    function updateArrivalHibiscusFields() {
-      const seedArrival = selectedArrivalCategory() === "Hibiskus" && ["Frö", "Egen korsning"].includes(arrivalType.value);
-      arrivalHibiscusFields.hidden = !seedArrival;
-      arrivalHibiscusError.textContent = "";
-      if (seedArrival && !arrivalHibiscusBatch.options.length) fillArrivalHibiscusBatches();
-    }
-
-    function updateArrivalDateLabel() {
-      const labels = {
-        "Frö": "Sådatum",
-        "Egen korsning": "Sådatum",
-        "Köpt planta": "Inköpsdatum",
-        "Stickling": "Datum för stickling",
-        "Gåva": "Mottagningsdatum",
-        "Annat": "Startdatum"
-      };
-      arrivalDateLabel.textContent = labels[arrivalType.value] || "Ankomstdatum";
-      const isGift = arrivalType.value === "Gåva";
-      arrivalSourceLabel.textContent = isGift ? "Från vem" : "Källa";
-      arrivalSourceHelp.textContent = isGift ? "Vem gav dig växten?" : "Varifrån kom växten? Till exempel Tradera eller Rareplants.eu.";
-      updateArrivalHibiscusFields();
-    }
-
-    function setArrivalError(fieldId, errorId, message) {
-      document.querySelector(`#${fieldId}`).classList.toggle("has-error", Boolean(message));
-      document.querySelector(`#${errorId}`).textContent = message;
-    }
-
-    function clearArrivalStatus() {
-      arrivalStatus.textContent = "";
-      arrivalStatus.className = "arrival-status";
-    }
-
-    function arrivalViewTarget() {
-      const query = new URLSearchParams(window.location.search);
-      const category = query.get("arrivalCategory") || "";
-      const id = query.get("arrivalId") || "";
-      return ["Hibiskus", "Pelargon", "Citrus", "Udda"].includes(category) && id ? {category, id} : null;
-    }
-
-    function setArrivalViewMode() {
-      arrivalForm.querySelectorAll('input:not([type="radio"]), textarea').forEach(field => { field.readOnly = true; });
-      arrivalForm.querySelectorAll('input[type="radio"], select').forEach(field => { field.disabled = true; });
-      arrivalSave.hidden = true;
-      arrivalStatus.textContent = "Visar sparade ankomstuppgifter. Ändra grunduppgifter i Datavy.";
-      arrivalStatus.className = "arrival-status success";
-    }
-
-    async function loadArrivalView() {
-      const target = arrivalViewTarget();
-      if (!target) return;
-      const headers = {};
-      if (window.location.protocol === "file:") {
-        const token = window.MINA_VAXTER_ARCHIVE_TOKEN || "";
-        if (!token) return;
-        headers["X-Mina-Vaxter-Token"] = token;
-      }
-      try {
-        const query = new URLSearchParams({category: target.category, id: target.id});
-        const response = await fetch(`https://127.0.0.1:47831/plant-arrival?${query}`, {headers, cache: "no-store"});
-        const result = await response.json().catch(() => ({}));
-        if (!response.ok || !result.ok || !result.arrival) throw new Error(result.error || "Ankomstuppgifterna kunde inte läsas.");
-        const arrival = result.arrival;
-        arrivalName.value = arrival.name || target.id;
-        arrivalForm.querySelector(`input[name="category"][value="${CSS.escape(target.category)}"]`).checked = true;
-        arrivalForm.elements.taxon.value = arrival.taxon || "";
-        arrivalType.value = arrival.arrival_type || "";
-        arrivalForm.elements.source.value = arrival.gift_from || arrival.source || "";
-        arrivalDate.value = arrival.date || "";
-        arrivalForm.elements.background.value = arrival.background || "";
-        arrivalForm.elements.first_impression.value = arrival.first_impression || "";
-        updateArrivalDateLabel();
-        setArrivalViewMode();
-      } catch (error) {
-        arrivalStatus.textContent = error.message || "Ankomstuppgifterna kunde inte läsas.";
-        arrivalStatus.className = "arrival-status error";
-      }
-    }
-
-    function validateArrival() {
-      const nameMissing = !arrivalName.value.trim();
-      const categoryMissing = !arrivalForm.querySelector('input[name="category"]:checked');
-      const hibiscusTypeMissing = selectedArrivalCategory() === "Hibiskus" && !arrivalType.value;
-      const hibiscusSeedMissing = !arrivalHibiscusFields.hidden && (!arrivalHibiscusBatch.value || !arrivalHibiscusSubBatch.value);
-      setArrivalError("arrivalNameField", "arrivalNameError", nameMissing ? "Berätta vad växten heter." : "");
-      setArrivalError("arrivalCategoryField", "arrivalCategoryError", categoryMissing ? "Välj var växten ska bo i samlingen." : "");
-      setArrivalError("arrivalTypeField", "arrivalTypeError", hibiscusTypeMissing ? "Välj hur hibiskusen kom till samlingen." : "");
-      arrivalHibiscusError.textContent = hibiscusSeedMissing ? "Välj fröbatch och korsning." : "";
-      if (nameMissing) arrivalName.focus();
-      else if (categoryMissing) arrivalForm.querySelector('input[name="category"]').focus();
-      else if (hibiscusTypeMissing) arrivalType.focus();
-      else if (hibiscusSeedMissing) arrivalHibiscusBatch.focus();
-      return !nameMissing && !categoryMissing && !hibiscusTypeMissing && !hibiscusSeedMissing;
-    }
-
-    async function saveArrival(event) {
-      event.preventDefault();
-      clearArrivalStatus();
-      if (!validateArrival()) return;
-      const payload = Object.fromEntries(new FormData(arrivalForm).entries());
-      if (payload.arrival_type === "Gåva") {
-        payload.gift_from = payload.source;
-        payload.source = "";
-      }
-      arrivalForm.setAttribute("aria-busy", "true");
-      arrivalSave.disabled = true;
-      arrivalSave.textContent = "Sparar…";
-      try {
-        if (typeof queuePendingArrival !== "function") throw new Error("Den lokala synkkön kunde inte startas.");
-        queuePendingArrival(payload);
-        const savedName = payload.name.trim();
-        const savedCategory = payload.category;
-        arrivalForm.reset();
-        arrivalDate.value = localDateValue();
-        fillArrivalHibiscusBatches();
-        updateArrivalDateLabel();
-        setArrivalError("arrivalNameField", "arrivalNameError", "");
-        setArrivalError("arrivalCategoryField", "arrivalCategoryError", "");
-        arrivalStatus.textContent = `${savedName} är sparad för ${savedCategory} och förs in i samlingen nästa gång du synkar med Macen.`;
-        arrivalStatus.classList.add("success");
-      } catch (error) {
-        arrivalStatus.textContent = error.message || "Växtposten kunde inte skapas just nu.";
-        arrivalStatus.classList.add("error");
-      } finally {
-        arrivalForm.removeAttribute("aria-busy");
-        arrivalSave.disabled = false;
-        arrivalSave.textContent = "Skapa växtpost";
-      }
-    }
-
-    arrivalDate.value = localDateValue();
-    fillArrivalHibiscusBatches();
-    updateArrivalDateLabel();
-    arrivalForm.addEventListener("submit", saveArrival);
-    arrivalType.addEventListener("change", () => {
-      setArrivalError("arrivalTypeField", "arrivalTypeError", "");
-      updateArrivalDateLabel();
-    });
-    arrivalHibiscusBatch.addEventListener("change", fillArrivalHibiscusSubBatches);
-    arrivalHibiscusSubBatch.addEventListener("change", updateArrivalHibiscusParents);
-    arrivalName.addEventListener("input", () => {
-      if (arrivalName.value.trim()) setArrivalError("arrivalNameField", "arrivalNameError", "");
-      clearArrivalStatus();
-    });
-    arrivalForm.querySelectorAll('input[name="category"]').forEach(input => input.addEventListener("change", () => {
-      setArrivalError("arrivalCategoryField", "arrivalCategoryError", "");
-      updateArrivalHibiscusFields();
-      clearArrivalStatus();
-    }));
-    loadArrivalView();
     function enableLocalOriginalArchive() {
       if (window.location.protocol === "file:") {
         originalArchiveLink.href = "minavaxter-originalarkiv://open";
@@ -1107,7 +737,6 @@
         const pending = result.pending || {};
         const pendingParts = [
           [Number(pending.dataViewChanges) || 0, "Datavyändring", "Datavyändringar"],
-          [Number(pending.arrivals) || 0, "ankomstpost", "ankomstposter"],
           [Number(pending.packages) || 0, "synkpaket", "synkpaket"],
         ].filter(([count]) => count > 0).map(([count, singular, plural]) => localSyncStatusPart(count, singular, plural));
         const importedAt = formatLocalSyncTime(result.lastImportAt);
@@ -1191,7 +820,7 @@
 
     function labelHtml(row) {
       if (!row) return "";
-      if (row.category === "Pelargon" || row.category === "Citrus") {
+      if (row.category === "Pelargon") {
         const name = row.category === "Pelargon" && /^[‘']/.test(String(row.name || "").trim())
           ? `P. ${row.name.trim()}` : row.name;
         const nameClass = row.category === "Pelargon" ? "label-name pelargon-label-name" : "label-name";
@@ -1358,8 +987,8 @@
       const selectedB = labelWithSelectedSeedLot(b, stapeliadSeedLotB);
       previewA.classList.remove("free-label");
       previewB.classList.remove("free-label");
-      previewA.classList.toggle("name-only", !!a && (a.category === "Pelargon" || a.category === "Citrus"));
-      previewB.classList.toggle("name-only", !!b && (b.category === "Pelargon" || b.category === "Citrus"));
+      previewA.classList.toggle("name-only", !!a && a.category === "Pelargon");
+      previewB.classList.toggle("name-only", !!b && b.category === "Pelargon");
       previewA.innerHTML = labelHtml(selectedA);
       previewB.innerHTML = labelHtml(selectedB);
       adaptStapeliadLabel(previewA);

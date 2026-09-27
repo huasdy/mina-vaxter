@@ -4,7 +4,6 @@
     ["labbet.html", "Labbet", "labbet"],
     ["hibiskusar.html", "Hibiskus", "hibiskus"],
     ["pelargoner.html", "Pelargon", "pelargon"],
-    ["citrus.html", "Citrus", "citrus"],
     ["udda.html", "Udda", "udda"],
     ["stapeliader.html", "Stapelia", "stapelia"],
     ["vaxtliv.html", "Växtliv", "vaxtliv"],
@@ -17,7 +16,6 @@
     "labbet.html": "labbet",
     "hibiskusar.html": "hibiskus",
     "pelargoner.html": "pelargon",
-    "citrus.html": "citrus",
     "udda.html": "udda",
     "stapeliader.html": "stapelia",
     "vaxtliv.html": "vaxtliv",
@@ -76,12 +74,11 @@
         .main-navigation a[href="index.html"] { display: none !important; }
         .main-navigation a[data-nav-section="hibiskus"] { order: 1; }
         .main-navigation a[data-nav-section="pelargon"] { order: 2; }
-        .main-navigation a[data-nav-section="citrus"] { order: 3; }
-        .main-navigation a[data-nav-section="udda"] { order: 4; }
-        .main-navigation a[data-nav-section="stapelia"] { order: 5; }
-        .main-navigation a[data-nav-section="labbet"] { order: 6; }
-        .main-navigation a[data-nav-section="vaxtliv"] { order: 7; }
-        .main-navigation a[data-nav-section="verktyg"] { order: 8; }
+        .main-navigation a[data-nav-section="udda"] { order: 3; }
+        .main-navigation a[data-nav-section="stapelia"] { order: 4; }
+        .main-navigation a[data-nav-section="labbet"] { order: 5; }
+        .main-navigation a[data-nav-section="vaxtliv"] { order: 6; }
+        .main-navigation a[data-nav-section="verktyg"] { order: 7; }
         .main-navigation a.current,
         .main-navigation a[aria-current="page"] {
           border-color: var(--accent, #7d4f3b); background: var(--accent, #7d4f3b); color: white;

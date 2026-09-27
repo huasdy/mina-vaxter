@@ -1223,8 +1223,8 @@
     const price = rawPrice ? `${rawPrice}${material.currency ? ` ${material.currency}` : ""}` : "";
     const rows = materialDetailRows([
       ["Mottaget/inköpt", material.date ? displayDate(material.date, true) : ""],
-      ["Pris", price],
       ["Butik/källa", materialRawValue(material, "supplier")],
+      ["Inköpspris", price],
       ["Säljare", materialRawValue(material, "seller")],
       ["Inköpsnamn", materialRawValue(material, "purchase_name")],
       ["Ordernummer", materialRawValue(material, "order_number")],

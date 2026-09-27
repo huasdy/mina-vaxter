@@ -54,8 +54,8 @@
     </div>
     <section class="grid" id="grid"></section>
   </main>
-  <script src="main-navigation.js?v=7b1a2b0f9f81"></script>
-  <script src="common.js?v=2fbf338fa390"></script>
+  <script src="main-navigation.js?v=1c472786e1ec"></script>
+  <script src="common.js?v=33805811b683"></script>
   <script>
     const grid = document.querySelector("#grid");
     const search = document.querySelector("#search");
@@ -88,7 +88,7 @@
       const latest = latestPlantMilestone(logs);
       const caption = active ? (active.label || active.date || "") : "";
       return `
-        <article class="plant-card" data-category="${escapeAttr(category)}" data-status="${escapeAttr(row.status)}" data-plant-id="${escapeAttr(row.id)}" data-plant-name="${escapeAttr(name)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(nickname)}" data-page="${escapeAttr({Hibiskus:"hibiskusar.html",Pelargon:"pelargoner.html",Citrus:"citrus.html",Udda:"udda.html",Stapeliader:"stapeliader.html"}[category])}" data-card-image="${escapeAttr(row.card_image)}" data-card-crop-x="${escapeAttr(row.card_crop_x)}" data-card-crop-y="${escapeAttr(row.card_crop_y)}" data-card-image-updated-at="${escapeAttr(row.card_image_updated_at)}" data-cuttings-available="${escapeAttr(row.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(row.cuttings_updated_at)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(logs))}">
+        <article class="plant-card" data-category="${escapeAttr(category)}" data-status="${escapeAttr(row.status)}" data-plant-id="${escapeAttr(row.id)}" data-plant-name="${escapeAttr(name)}" data-plant-identity="${escapeAttr(identity)}" data-plant-nickname="${escapeAttr(nickname)}" data-page="${escapeAttr({Hibiskus:"hibiskusar.html",Pelargon:"pelargoner.html",Udda:"udda.html",Stapeliader:"stapeliader.html"}[category])}" data-card-image="${escapeAttr(row.card_image)}" data-card-crop-x="${escapeAttr(row.card_crop_x)}" data-card-crop-y="${escapeAttr(row.card_crop_y)}" data-card-image-updated-at="${escapeAttr(row.card_image_updated_at)}" data-cuttings-available="${escapeAttr(row.cuttings_available)}" data-cuttings-updated-at="${escapeAttr(row.cuttings_updated_at)}" data-gallery="${escapeAttr(JSON.stringify(gallery))}" data-milestones="${escapeAttr(JSON.stringify(logs))}">
           <div class="image-wrap">
             ${active ? `<img class="main-photo" src="${escapeAttr(active.file)}" alt="${escapeAttr(name)}" data-caption="${escapeAttr(name + (caption ? " · " + caption : ""))}">` : '<div class="image-empty">Bild saknas</div>'}
             ${caption ? `<div class="date-ribbon">${htmlEscape(caption)}</div>` : ""}

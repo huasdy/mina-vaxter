@@ -8,7 +8,6 @@ function redirectStandaloneMobileCatalog() {
   const categoryByPage = {
     "hibiskusar.html": "Hibiskus",
     "pelargoner.html": "Pelargon",
-    "citrus.html": "Citrus",
     "udda.html": "Udda",
     "stapeliader.html": "Stapeliader",
     "favoriter.html": "Hundöron",
@@ -162,9 +161,7 @@ const plantLegacyIdMap = Object.freeze({
   "p-bothams-surprise-2": "p-bothams-surprise-1",
   "p-cys-sunburst-2": "p-cys-sunburst-1",
   "p-cys-sunburst-3": "p-cys-sunburst-1",
-  "p-dr-westerlund-2": "p-dr-westerlund-1",
-  "c-limon-2": "c-limon-1",
-  "c-kumquat-2": "c-kumquat-1"
+  "p-dr-westerlund-2": "p-dr-westerlund-1"
 });
 
 function canonicalPlantId(value) {
@@ -270,8 +267,6 @@ function collectionChips(category, row) {
   } else if (category === "Pelargon") {
     if (clean(row && row.record_kind).toUpperCase() === "INDIVIDUAL" && clean(row && row.breeding_selected).toLowerCase() === "ja") add("🏷 Utvald");
     if (clean(row && row.type).toLocaleLowerCase("sv") === "doftpelargon") add("Doft");
-  } else if (category === "Citrus") {
-    add("Inne");
   } else if (category === "Udda") {
     if (haystack.includes("doft") || haystack.includes("patchouli") || haystack.includes("salvia")) add("Doft");
     if (haystack.includes("fredskalla") || haystack.includes("hjärtbräken")) add("Inne");
@@ -721,56 +716,6 @@ function buildPlantMilestoneExport(rows = getPlantMilestoneAdditions()) {
   };
 }
 
-const plantArrivalStorageKey = "mina-vaxter-arrival-queue-v1";
-
-function getPendingArrivalItems() {
-  try {
-    const items = JSON.parse(localStorage.getItem(plantArrivalStorageKey) || "[]");
-    return Array.isArray(items) ? items.filter(item => item && typeof item === "object" && clean(item.request_id)) : [];
-  } catch (error) {
-    return [];
-  }
-}
-
-function savePendingArrivalItems(items) {
-  try { localStorage.setItem(plantArrivalStorageKey, JSON.stringify(items || [])); } catch (error) {}
-  if (typeof updatePlantImageImportUI === "function") updatePlantImageImportUI();
-}
-
-function queuePendingArrival(payload) {
-  const requestId = clean(payload && payload.request_id) || localQueueId("arrival");
-  const item = {
-    name: clean(payload && payload.name),
-    category: clean(payload && payload.category),
-    taxon: clean(payload && payload.taxon),
-    arrival_type: clean(payload && payload.arrival_type),
-    source: clean(payload && payload.source),
-    gift_from: clean(payload && payload.gift_from),
-    arrival_date: clean(payload && payload.arrival_date),
-    background: clean(payload && payload.background),
-    first_impression: clean(payload && payload.first_impression),
-    hibiscus_batch: clean(payload && payload.hibiscus_batch),
-    hibiscus_sub_batch: clean(payload && payload.hibiscus_sub_batch),
-    mother: clean(payload && payload.mother),
-    father: clean(payload && payload.father),
-    request_id: requestId,
-    queued_at: new Date().toISOString()
-  };
-  const items = getPendingArrivalItems().filter(row => clean(row.request_id) !== requestId);
-  items.push(item);
-  savePendingArrivalItems(items);
-  return item;
-}
-
-function deletePendingArrivalItem(requestId) {
-  const id = clean(requestId);
-  savePendingArrivalItems(getPendingArrivalItems().filter(item => clean(item.request_id) !== id));
-}
-
-function clearPendingArrivalItems() {
-  savePendingArrivalItems([]);
-}
-
 const crossingChangeStorageKey = "mina-vaxter-crossing-changes-v1";
 const crossingChangeKinds = Object.freeze(["crossing", "event", "seed_lot", "sow_batch", "offspring"]);
 
@@ -930,7 +875,7 @@ function plantMilestoneKey(row) {
   ].join("|");
 }
 
-function buildSyncManifest(imageItems, milestoneItems, cardNoteItems, plantStatusItems, flowerAssessmentItems = [], cardImageItems = [], arrivalItems = [], crossingItems = [], wishlistItems = [], labItems = [], packageId = "") {
+function buildSyncManifest(imageItems, milestoneItems, cardNoteItems, plantStatusItems, flowerAssessmentItems = [], cardImageItems = [], crossingItems = [], wishlistItems = [], labItems = [], packageId = "") {
   return {
     version: 1,
     exportedAt: new Date().toISOString(),
@@ -944,7 +889,6 @@ function buildSyncManifest(imageItems, milestoneItems, cardNoteItems, plantStatu
       plantStatuses: plantStatusItems.length,
       flowerAssessments: flowerAssessmentItems.length,
       cardImages: cardImageItems.length,
-      arrivals: arrivalItems.length,
       crossings: crossingItems.length,
       wishlists: wishlistItems.length,
       lab: labItems.length
@@ -2568,7 +2512,6 @@ function collectionCategoryForPage() {
   return {
     "hibiskusar.html":"Hibiskus",
     "pelargoner.html":"Pelargon",
-    "citrus.html":"Citrus",
     "udda.html":"Udda",
     "stapeliader.html":"Stapeliader"
   }[page] || "";
@@ -2631,7 +2574,7 @@ function collectionCreateEndpoint() {
 
 function collectionCreateRedirect(category, id) {
   const page = {
-    Hibiskus:"hibiskusar.html", Pelargon:"pelargoner.html", Citrus:"citrus.html",
+    Hibiskus:"hibiskusar.html", Pelargon:"pelargoner.html",
     Udda:"udda.html", Stapeliader:"stapeliader.html"
   }[category] || location.pathname.split("/").pop();
   const target = isPublicMobileApp()
@@ -2642,7 +2585,10 @@ function collectionCreateRedirect(category, id) {
   location.assign(target.href);
 }
 
+const activeCollectionCreateCategories = new Set(["Hibiskus", "Pelargon", "Udda", "Stapeliader"]);
+
 function openCollectionCreateDialog(category) {
+  if (!activeCollectionCreateCategories.has(category)) return;
   const profile = collectionProfile(category);
   if (!profile || !Array.isArray(profile.fields)) return;
   let dialog = document.querySelector("#collectionCreateDialog");
@@ -3371,7 +3317,7 @@ async function clearPendingSyncPackage() {
 
 const wishlistStorageKey = "mina-vaxter-wishlists-v1";
 const wishlistChangesStorageKey = "mina-vaxter-wishlist-changes-v1";
-const wishlistCategories = new Set(["Pelargon", "Hibiskus", "Citrus", "Udda"]);
+const wishlistCategories = new Set(["Pelargon", "Hibiskus", "Udda"]);
 
 function wishlistItemKey(item) {
   return `${clean(item && item.category)}|${clean(item && item.id)}`;
@@ -3508,7 +3454,7 @@ async function privateWishlistRequest(method, items = []) {
   let endpoint = "";
   let headers = {};
   if (window.location.protocol === "file:") {
-    const token = await loadLocalArrivalToken();
+    const token = await loadLocalMacToken();
     if (!token) return null;
     endpoint = "https://127.0.0.1:47831/wishlists";
     headers = {"X-Mina-Vaxter-Token": token};
@@ -3703,7 +3649,7 @@ async function ensurePrivateWishlists() {
   render();
 }
 
-function syncPackageSnapshot(imageItems, milestoneItems, cardNoteItems, plantStatusItems, flowerAssessmentItems, cardImageItems, arrivalItems, crossingItems, wishlistItems, labItems) {
+function syncPackageSnapshot(imageItems, milestoneItems, cardNoteItems, plantStatusItems, flowerAssessmentItems, cardImageItems, crossingItems, wishlistItems, labItems) {
   return {
     imageIds: (imageItems || []).map(item => clean(item.id)).filter(Boolean),
     milestoneOperationIds: (milestoneItems || []).map(item => clean(item.operationId)).filter(Boolean),
@@ -3716,7 +3662,6 @@ function syncPackageSnapshot(imageItems, milestoneItems, cardNoteItems, plantSta
     cardImages: (cardImageItems || []).map(item => ({
       category: clean(item.category), id: clean(item.id), updatedAt: clean(item.updatedAt)
     })).filter(item => item.category && item.id && item.updatedAt),
-    arrivalRequestIds: (arrivalItems || []).map(item => clean(item.request_id)).filter(Boolean),
     crossingOperationIds: (crossingItems || []).map(item => clean(item.operation_id)).filter(Boolean),
     wishlists: (wishlistItems || []).map(item => ({category: clean(item.category), id: clean(item.id), updatedAt: clean(item.updatedAt)})).filter(item => item.category && item.id && item.updatedAt),
     labOperationIds: (labItems || []).map(item => clean(item.operation_id)).filter(Boolean)
@@ -3733,7 +3678,6 @@ async function createPendingSyncPackage(payload) {
     payload.plantStatusItems,
     payload.flowerAssessmentExport,
     payload.cardImageExport,
-    payload.arrivalItems,
     payload.crossingItems,
     payload.wishlistItems,
     payload.labItems,
@@ -3751,7 +3695,6 @@ async function createPendingSyncPackage(payload) {
       payload.plantStatusItems,
       payload.flowerAssessmentExport.items || [],
       payload.cardImageExport.items || [],
-      payload.arrivalItems,
       payload.crossingItems,
       payload.wishlistItems,
       payload.labItems
@@ -3796,8 +3739,6 @@ async function clearAcknowledgedSyncPackage(outbox) {
   if (typeof window.clearHibiscusFlowerAssessmentChangesIfUnchanged === "function") {
     window.clearHibiscusFlowerAssessmentChangesIfUnchanged(snapshot.flowerAssessments || []);
   }
-  const arrivalIds = new Set(snapshot.arrivalRequestIds || []);
-  if (arrivalIds.size) savePendingArrivalItems(getPendingArrivalItems().filter(item => !arrivalIds.has(clean(item.request_id))));
   const crossingIds = new Set(snapshot.crossingOperationIds || []);
   if (crossingIds.size) savePendingCrossingItems(getPendingCrossingItems().filter(item => !crossingIds.has(clean(item.operation_id))));
   const labIds = new Set(snapshot.labOperationIds || []);
@@ -4208,7 +4149,7 @@ async function openImageImportForm(file) {
   }, {once: true});
 }
 
-let localArrivalTokenPromise = null;
+let localMacTokenPromise = null;
 const localSyncTokenKey = "mina-vaxter-lokal-synk-token-v1";
 const publicMobileAppOrigin = "https://huasdy.github.io";
 const publicMobileMacHost = "ny-imac.local";
@@ -4253,13 +4194,13 @@ async function pairWithLocalMac(code) {
   return payload;
 }
 
-function loadLocalArrivalToken() {
+function loadLocalMacToken() {
   if (window.MINA_VAXTER_ARCHIVE_TOKEN || window.location.protocol !== "file:") {
     return Promise.resolve(window.MINA_VAXTER_ARCHIVE_TOKEN || "");
   }
-  if (localArrivalTokenPromise) return localArrivalTokenPromise;
-  localArrivalTokenPromise = new Promise(resolve => {
-    const existing = document.querySelector('script[data-local-arrival-token]');
+  if (localMacTokenPromise) return localMacTokenPromise;
+  localMacTokenPromise = new Promise(resolve => {
+    const existing = document.querySelector('script[data-local-mac-token]');
     if (existing) {
       existing.addEventListener("load", () => resolve(window.MINA_VAXTER_ARCHIVE_TOKEN || ""), {once: true});
       existing.addEventListener("error", () => resolve(""), {once: true});
@@ -4267,12 +4208,12 @@ function loadLocalArrivalToken() {
     }
     const script = document.createElement("script");
     script.src = "originalarkiv-local.js";
-    script.dataset.localArrivalToken = "";
+    script.dataset.localMacToken = "";
     script.addEventListener("load", () => resolve(window.MINA_VAXTER_ARCHIVE_TOKEN || ""), {once: true});
     script.addEventListener("error", () => resolve(""), {once: true});
     document.head.appendChild(script);
   });
-  return localArrivalTokenPromise;
+  return localMacTokenPromise;
 }
 
 async function saveSyncPackageToMac(filename, blob) {
@@ -4296,7 +4237,7 @@ async function saveSyncPackageToMac(filename, blob) {
       return {ok: false, error: "Kunde inte nå Macen. Kontrollera att du använder den lokala förhandsvisningen på samma wifi."};
     }
   }
-  const token = await loadLocalArrivalToken();
+  const token = await loadLocalMacToken();
   if (!token) return {ok: false, needsPairing: Boolean(endpoint), error: "iPhone är inte parkopplad med Macen."};
   try {
     const response = await fetch(`https://127.0.0.1:47831/sync-package?filename=${encodeURIComponent(filename)}`, {
@@ -4319,7 +4260,6 @@ async function saveSyncPackageToMac(filename, blob) {
 async function updatePlantImageImportUI() {
   let items = [];
   try { items = await getImageImportItems(); } catch (error) { items = []; }
-  const arrivalItems = await getPendingArrivalItems();
   const flowerAssessmentItems = typeof window.buildHibiscusFlowerAssessmentExport === "function"
     ? (window.buildHibiscusFlowerAssessmentExport().items || [])
     : [];
@@ -4327,7 +4267,7 @@ async function updatePlantImageImportUI() {
   const wishlistItems = buildWishlistExport().items;
   const crossingItems = getPendingCrossingItems();
   const labItems = getPendingLabItems();
-  const syncCount = items.length + getPlantMilestoneAdditions().length + buildPlantCardNoteExport().items.length + buildPlantStatusExport().items.length + flowerAssessmentItems.length + cardImageItems.length + arrivalItems.length + crossingItems.length + wishlistItems.length + labItems.length;
+  const syncCount = items.length + getPlantMilestoneAdditions().length + buildPlantCardNoteExport().items.length + buildPlantStatusExport().items.length + flowerAssessmentItems.length + cardImageItems.length + crossingItems.length + wishlistItems.length + labItems.length;
   const button = document.querySelector(".import-queue-button");
   if (button) {
     button.classList.toggle("has-items", syncCount > 0);
@@ -4360,12 +4300,11 @@ async function openImageImportQueue() {
   const flowerAssessmentItems = flowerAssessmentExport.items || [];
   const cardImageExport = buildPlantCardImageExport();
   const cardImageItems = cardImageExport.items || [];
-  const arrivalItems = getPendingArrivalItems();
   const crossingItems = getPendingCrossingItems();
   const wishlistItems = buildWishlistExport().items;
   const labItems = getPendingLabItems();
   const pendingSyncPackage = await getPendingSyncPackage().catch(() => null);
-  const syncCount = items.length + milestoneItems.length + cardNoteItems.length + plantStatusItems.length + flowerAssessmentItems.length + cardImageItems.length + arrivalItems.length + crossingItems.length + wishlistItems.length + labItems.length;
+  const syncCount = items.length + milestoneItems.length + cardNoteItems.length + plantStatusItems.length + flowerAssessmentItems.length + cardImageItems.length + crossingItems.length + wishlistItems.length + labItems.length;
   const localSyncReady = Boolean(localSyncEndpoint());
   const needsPairing = localSyncReady && !localSyncToken();
   const urls = [];
@@ -4447,20 +4386,6 @@ async function openImageImportQueue() {
       <button class="import-delete" type="button" data-delete-card-image="${escapeAttr(item.category)}|${escapeAttr(item.id)}">Ta bort</button>
     </article>
   `).join("");
-  const arrivalRows = arrivalItems.map(item => {
-    const meta = [item.category, item.arrival_type, item.arrival_date].filter(Boolean).join(" · ");
-    return `
-      <article class="import-item">
-        <div class="import-item-icon" aria-hidden="true">🌱</div>
-        <div>
-          <strong>${htmlEscape(item.name || "Ny växt")}</strong>
-          <small>${htmlEscape(meta)}</small>
-          <small>Ankomstsamtal · sparad för Mac-synk</small>
-        </div>
-        <button class="import-delete" type="button" data-delete-arrival="${escapeAttr(item.request_id)}">Ta bort</button>
-      </article>
-    `;
-  }).join("");
   const crossingRows = crossingItems.map(item => {
     const data = item.kind === "crossing" ? item.crossing : item.kind === "event" ? item.event : item.kind === "seed_lot" ? item.seed_lot : item.kind === "sow_batch" ? item.sow_batch : item.offspring;
     const title = item.kind === "crossing"
@@ -4529,11 +4454,11 @@ async function openImageImportQueue() {
       <header>
         <div>
           <h2>Synka till Mac</h2>
-          <p>${syncCount ? `${items.length} bilder · ${milestoneItems.length} milstolpar · ${cardNoteItems.length} anteckningar · ${plantStatusItems.length} statusar · ${flowerAssessmentItems.length} blombedömningar · ${cardImageItems.length} kortutsnitt · ${arrivalItems.length} ankomstsamtal · ${crossingItems.length} korsningsändringar · ${labItems.length} Labbet-ändringar · ${wishlistItems.length} önskelisteändringar` : "Kön är tom just nu."}</p>
+          <p>${syncCount ? `${items.length} bilder · ${milestoneItems.length} milstolpar · ${cardNoteItems.length} anteckningar · ${plantStatusItems.length} statusar · ${flowerAssessmentItems.length} blombedömningar · ${cardImageItems.length} kortutsnitt · ${crossingItems.length} korsningsändringar · ${labItems.length} Labbet-ändringar · ${wishlistItems.length} önskelisteändringar` : "Kön är tom just nu."}</p>
         </div>
         <button class="import-close" type="button" aria-label="Stäng">×</button>
       </header>
-      <div class="import-list">${rows + milestoneRows + cardNoteRows + plantStatusRows + flowerAssessmentRows + cardImageRows + arrivalRows + crossingRows + labRows + wishlistRows || '<div class="import-empty">Inga ändringar i kön.</div>'}</div>
+      <div class="import-list">${rows + milestoneRows + cardNoteRows + plantStatusRows + flowerAssessmentRows + cardImageRows + crossingRows + labRows + wishlistRows || '<div class="import-empty">Inga ändringar i kön.</div>'}</div>
       <div class="import-buttons">
         ${syncCount || pendingSyncPackage ? `
           ${needsPairing ? '<label class="import-pairing"><span>Parkopplingskod från Macen</span><input data-sync-pairing-code autocomplete="one-time-code" inputmode="text" autocapitalize="none" spellcheck="false"></label>' : ''}
@@ -4602,14 +4527,6 @@ async function openImageImportQueue() {
       openImageImportQueue();
     });
   });
-  dialog.querySelectorAll("[data-delete-arrival]").forEach(button => {
-    button.addEventListener("click", async () => {
-      await clearPendingSyncPackage();
-      deletePendingArrivalItem(button.dataset.deleteArrival);
-      updatePlantImageImportUI();
-      openImageImportQueue();
-    });
-  });
   dialog.querySelectorAll("[data-delete-crossing]").forEach(button => {
     button.addEventListener("click", async () => {
       await clearPendingSyncPackage();
@@ -4628,14 +4545,13 @@ async function openImageImportQueue() {
   });
   const clearButton = dialog.querySelector("[data-clear-import]");
   if (clearButton) clearButton.addEventListener("click", async () => {
-    if (!confirm("Ta bort alla bilder, milstolpar, anteckningar, statusändringar, kortutsnitt, blombedömningar, ankomstsamtal, korsningsändringar och önskelisteändringar i synkkön? Gör detta först när paketet är sparat eller importerat på Mac.")) return;
+    if (!confirm("Ta bort alla bilder, milstolpar, anteckningar, statusändringar, kortutsnitt, blombedömningar, korsningsändringar och önskelisteändringar i synkkön? Gör detta först när paketet är sparat eller importerat på Mac.")) return;
     await clearPendingSyncPackage();
     await clearImageImportItems();
     clearPlantMilestoneAdditions();
     clearPlantCardNoteChanges();
     clearPlantStatusChanges();
     clearPlantCardImageChanges();
-    clearPendingArrivalItems();
     clearPendingCrossingItems();
     clearPendingLabItems();
     clearWishlistChanges();
@@ -4662,7 +4578,6 @@ async function openImageImportQueue() {
         plantStatusItems,
         flowerAssessmentExport,
         cardImageExport,
-        arrivalItems,
         crossingItems,
         wishlistItems,
         labItems
@@ -4717,7 +4632,7 @@ function buildImageImportManifest(items) {
   };
 }
 
-async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRows = [], plantStatusRows = [], flowerAssessmentExport = {version: 1, traits: [], items: []}, cardImageExport = {version: 1, items: []}, arrivalItems = [], crossingItems = [], wishlistItems = [], labItems = [], packageId = "") {
+async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRows = [], plantStatusRows = [], flowerAssessmentExport = {version: 1, traits: [], items: []}, cardImageExport = {version: 1, items: []}, crossingItems = [], wishlistItems = [], labItems = [], packageId = "") {
   const imageManifest = buildImageImportManifest(imageItems);
   const milestoneExport = buildPlantMilestoneExport(milestoneRows);
   const cardNoteExport = buildPlantCardNoteExport(cardNoteRows);
@@ -4727,14 +4642,13 @@ async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRo
   const crossingExport = buildCrossingExport(crossingItems);
   const wishlistExport = buildWishlistExport(wishlistItems);
   const labExport = buildLabExport(labItems);
-  const syncManifest = buildSyncManifest(imageManifest.items, milestoneExport.items, cardNoteExport.items, plantStatusExport.items, flowerAssessmentItems, cardImageItems, arrivalItems, crossingExport.items, wishlistExport.items, labExport.items, packageId);
+  const syncManifest = buildSyncManifest(imageManifest.items, milestoneExport.items, cardNoteExport.items, plantStatusExport.items, flowerAssessmentItems, cardImageItems, crossingExport.items, wishlistExport.items, labExport.items, packageId);
   syncManifest.images = imageManifest.items;
   syncManifest.milestonesFile = "milstolpar.json";
   syncManifest.cardNotesFile = "kortanteckningar.json";
   syncManifest.plantStatusesFile = "vaxtstatusar.json";
   syncManifest.flowerAssessmentsFile = "hibiskus-blombedomningar.json";
   syncManifest.cardImagesFile = "kortbilder.json";
-  syncManifest.arrivalsFile = "ankomstsamtal.json";
   syncManifest.crossingsFile = "korsningar.json";
   syncManifest.wishlistsFile = "onskelistor.json";
   syncManifest.labFile = "labbet.json";
@@ -4765,10 +4679,6 @@ async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRo
       blob: new Blob([JSON.stringify(cardImageExport, null, 2)], {type: "application/json;charset=utf-8"})
     },
     {
-      name: "ankomstsamtal.json",
-      blob: new Blob([JSON.stringify({version: 1, exportedAt: new Date().toISOString(), items: arrivalItems}, null, 2)], {type: "application/json;charset=utf-8"})
-    },
-    {
       name: "korsningar.json",
       blob: new Blob([JSON.stringify(crossingExport, null, 2)], {type: "application/json;charset=utf-8"})
     },
@@ -4791,6 +4701,7 @@ async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRo
 }
 
 const plantFavoritesKey = "mina-vaxter-favorites-v1";
+const plantFavoriteCategories = new Set(["Hibiskus", "Pelargon", "Stapeliader", "Udda"]);
 
 function getPlantFavorites() {
   try {
@@ -4800,14 +4711,19 @@ function getPlantFavorites() {
     let changed = false;
     Object.values(parsed && typeof parsed === "object" ? parsed : {}).forEach(item => {
       if (!item || typeof item !== "object") return;
+      const category = clean(item.category);
+      if (!plantFavoriteCategories.has(category)) {
+        changed = true;
+        return;
+      }
       const plantId = canonicalPlantId(item.plantId);
-      const key = favoriteKey(item.category, plantId);
-      const next = {...item, key, plantId};
+      const key = favoriteKey(category, plantId);
+      const next = {...item, category, key, plantId};
       const previous = migrated[key];
       const selected = latestLocalEntry(previous, next);
       if (previous && !clean(selected.focusNote)) selected.focusNote = clean(previous.focusNote || next.focusNote);
       migrated[key] = selected;
-      if (key !== item.key || plantId !== item.plantId) changed = true;
+      if (key !== item.key || plantId !== item.plantId || category !== item.category) changed = true;
     });
     if (changed) {
       backupLegacyPlantStorage(plantFavoritesKey, raw);
@@ -4819,7 +4735,19 @@ function getPlantFavorites() {
 }
 
 function savePlantFavorites(favorites) {
-  try { localStorage.setItem(plantFavoritesKey, JSON.stringify(favorites)); }
+  try {
+    const normalized = {};
+    Object.values(favorites && typeof favorites === "object" ? favorites : {}).forEach(item => {
+      if (!item || typeof item !== "object") return;
+      const category = clean(item.category);
+      if (!plantFavoriteCategories.has(category)) return;
+      const plantId = canonicalPlantId(item.plantId);
+      const key = favoriteKey(category, plantId);
+      const next = {...item, category, plantId, key};
+      normalized[key] = latestLocalEntry(normalized[key], next);
+    });
+    localStorage.setItem(plantFavoritesKey, JSON.stringify(normalized));
+  }
   catch (error) {}
 }
 
