@@ -10,7 +10,6 @@ function redirectStandaloneMobileCatalog() {
     "pelargoner.html": "Pelargon",
     "udda.html": "Udda",
     "stapeliader.html": "Stapeliader",
-    "favoriter.html": "Hundöron",
     "sticklingar.html": "Sticklingar"
   };
   const targetView = categoryByPage[pageName];
@@ -20,8 +19,7 @@ function redirectStandaloneMobileCatalog() {
   const mobileUrl = new URL("iphone.html", window.location.href);
   const cacheVersion = scriptUrl.searchParams.get("v");
   if (cacheVersion) mobileUrl.searchParams.set("v", cacheVersion);
-  if (targetView === "Hundöron") mobileUrl.searchParams.set("vy", "hundoron");
-  else if (targetView === "Sticklingar") mobileUrl.searchParams.set("vy", "sticklingar");
+  if (targetView === "Sticklingar") mobileUrl.searchParams.set("vy", "sticklingar");
   else mobileUrl.searchParams.set("kategori", targetView);
   window.location.replace(mobileUrl.toString());
   return true;
@@ -893,7 +891,7 @@ function buildSyncManifest(imageItems, milestoneItems, cardNoteItems, plantStatu
       wishlists: wishlistItems.length,
       lab: labItems.length
     },
-    note: "Hundöron och fokusnotiser är lokal arbetslista och ingår inte i synkpaketet."
+    note: "Tillfällig lokal arbetsstatus ingår inte i synkpaketet."
   };
 }
 
@@ -1741,7 +1739,7 @@ function ensurePlantCardActionRails() {
   document.body.dataset.plantCardActionRailsReady = "true";
 
   const placeActionRails = root => {
-    root.querySelectorAll(".plant-card-head > .import-actions, .plant-card-head > .favorite-log-action").forEach(actions => {
+    root.querySelectorAll(".plant-card-head > .import-actions").forEach(actions => {
       const head = actions.parentElement;
       const body = head && head.parentElement;
       if (!body || !body.classList.contains("card-body")) return;
@@ -1826,8 +1824,7 @@ function ensurePlantMilestones() {
       grid-column: 2; grid-row: 2 / span 2;
       display: flex; align-items: flex-start; justify-content: flex-end;
     }
-    .plant-card .plant-card-action-rail .import-actions,
-    .plant-card .plant-card-action-rail .favorite-log-action {
+    .plant-card .plant-card-action-rail .import-actions {
       position: relative; display: flex; align-items: center; justify-content: flex-start;
       flex-direction: column; gap: 6px; margin: 0;
     }
@@ -1892,7 +1889,6 @@ function ensurePlantMilestones() {
     .plant-card .plant-card-milestone-slot { grid-column: 1; grid-row: 4; height: 64px; min-height: 64px; overflow: hidden; }
     .plant-card .plant-card-notes-slot { grid-column: 1; grid-row: 5; height: 108px; min-height: 108px; overflow: hidden; }
     .plant-card .plant-card-notes-slot .notes { margin-top: 0; }
-    .plant-card .plant-card-notes-slot.favorite-focus { height: 108px; min-height: 108px; margin-top: 0; }
     .plant-card .plant-card-notes-slot:has(.card-note) { height: 108px; overflow: visible; }
     .plant-card:has(.plant-card-info .edit-form) .card-body {
       grid-template-rows: var(--plant-heading-height) var(--plant-chip-height) auto 64px 108px;
@@ -1933,8 +1929,7 @@ function ensurePlantMilestones() {
       .plant-card .plant-card-action-rail {
         grid-column: 2; grid-row: 2 / span 2;
       }
-      .plant-card .plant-card-action-rail .import-actions,
-      .plant-card .plant-card-action-rail .favorite-log-action {
+      .plant-card .plant-card-action-rail .import-actions {
         flex-direction: column;
       }
       .plant-card .plant-card-chip-slot {
@@ -1965,7 +1960,7 @@ function ensurePlantMilestones() {
       display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 10px; margin-bottom: 10px;
     }
     .plant-card-head h2 { min-width: 0; }
-    .plant-card-head .import-actions, .plant-card-head .favorite-log-action {
+    .plant-card-head .import-actions {
       position: static; display: flex; align-items: center; justify-content: flex-end; gap: 6px;
     }
     .milestone {
@@ -3761,7 +3756,7 @@ function ensurePlantImageImport() {
       display: flex; align-items: center; justify-content: flex-end; gap: 6px;
       margin-top: -4px;
     }
-    .plant-card-head .import-actions, .plant-card-head .favorite-log-action {
+    .plant-card-head .import-actions {
       position: static; top: auto; right: auto; display: flex; align-items: center; justify-content: flex-end; gap: 6px;
     }
     .add-photo-btn {
@@ -3895,13 +3890,11 @@ function ensurePlantImageImport() {
       .import-queue-panel > .import-buttons {
         grid-row: 2; padding: 0 18px 12px; background: var(--paper, #fffdf8);
       }
-      .import-queue-button,
-      .mobile-view-toggle {
+      .import-queue-button {
         right: 12px; width: 46px; height: 46px;
         box-shadow: 0 9px 26px rgba(43,37,31,.18);
       }
       .import-queue-button { bottom: max(12px, env(safe-area-inset-bottom)); }
-      .mobile-view-toggle { bottom: max(66px, calc(env(safe-area-inset-bottom) + 66px)); }
       .import-fields { grid-template-columns: 1fr; }
       .import-item { grid-template-columns: 64px 1fr; }
       .import-item img, .import-item-icon { width: 64px; height: 64px; }
@@ -4698,240 +4691,4 @@ async function createSyncPackage(imageItems = [], milestoneRows = [], cardNoteRo
     });
   });
   return createZipBlob(entries);
-}
-
-const plantFavoritesKey = "mina-vaxter-favorites-v1";
-const plantFavoriteCategories = new Set(["Hibiskus", "Pelargon", "Stapeliader", "Udda"]);
-
-function getPlantFavorites() {
-  try {
-    const raw = localStorage.getItem(plantFavoritesKey) || "{}";
-    const parsed = JSON.parse(raw);
-    const migrated = {};
-    let changed = false;
-    Object.values(parsed && typeof parsed === "object" ? parsed : {}).forEach(item => {
-      if (!item || typeof item !== "object") return;
-      const category = clean(item.category);
-      if (!plantFavoriteCategories.has(category)) {
-        changed = true;
-        return;
-      }
-      const plantId = canonicalPlantId(item.plantId);
-      const key = favoriteKey(category, plantId);
-      const next = {...item, category, key, plantId};
-      const previous = migrated[key];
-      const selected = latestLocalEntry(previous, next);
-      if (previous && !clean(selected.focusNote)) selected.focusNote = clean(previous.focusNote || next.focusNote);
-      migrated[key] = selected;
-      if (key !== item.key || plantId !== item.plantId || category !== item.category) changed = true;
-    });
-    if (changed) {
-      backupLegacyPlantStorage(plantFavoritesKey, raw);
-      localStorage.setItem(plantFavoritesKey, JSON.stringify(migrated));
-    }
-    return migrated;
-  }
-  catch (error) { return {}; }
-}
-
-function savePlantFavorites(favorites) {
-  try {
-    const normalized = {};
-    Object.values(favorites && typeof favorites === "object" ? favorites : {}).forEach(item => {
-      if (!item || typeof item !== "object") return;
-      const category = clean(item.category);
-      if (!plantFavoriteCategories.has(category)) return;
-      const plantId = canonicalPlantId(item.plantId);
-      const key = favoriteKey(category, plantId);
-      const next = {...item, category, plantId, key};
-      normalized[key] = latestLocalEntry(normalized[key], next);
-    });
-    localStorage.setItem(plantFavoritesKey, JSON.stringify(normalized));
-  }
-  catch (error) {}
-}
-
-function favoriteKey(category, plantId) {
-  return `${category || ""}:${plantId || ""}`;
-}
-
-function favoriteFromCard(card) {
-  const title = clean(card.dataset.plantName || card.querySelector("h2")?.textContent || card.dataset.plantId);
-  const plantIdentity = clean(card.dataset.plantIdentity || "");
-  const plantNickname = clean(card.dataset.plantNickname || card.querySelector(".plant-nickname")?.textContent || "");
-  const image = card.querySelector(".main-photo")?.getAttribute("src") || "";
-  const dateLabel = card.querySelector(".date-ribbon")?.textContent || "";
-  const latin = card.querySelector(".latin")?.textContent || "";
-  const chips = [...card.querySelectorAll(".chip")].map(chip => clean(chip.textContent)).filter(Boolean).slice(0, 5);
-  const notes = clean(card.querySelector(".notes")?.textContent || "");
-  return {
-    key: favoriteKey(card.dataset.category, card.dataset.plantId),
-    category: card.dataset.category || "",
-    plantId: card.dataset.plantId || "",
-    plantName: title,
-    plantIdentity,
-    plantNickname,
-    latin,
-    image,
-    dateLabel,
-    chips,
-    cuttingsAvailable: getPlantCuttingsStatus(card.dataset.plantId, card.dataset.cuttingsAvailable, card.dataset.cuttingsUpdatedAt),
-    cuttingsUpdatedAt: clean(card.dataset.cuttingsUpdatedAt),
-    notes,
-    page: card.dataset.page || location.pathname.split("/").pop() || "index.html",
-    updatedAt: new Date().toISOString()
-  };
-}
-
-function favoriteFocusDialog(item, existingNote = "") {
-  return new Promise(resolve => {
-    const dialog = document.createElement("dialog");
-    dialog.className = "favorite-focus-dialog";
-    dialog.innerHTML = `
-      <form method="dialog" class="favorite-focus-panel">
-        <header>
-          <div>
-            <h2>Hundöra</h2>
-            <p>${htmlEscape(item.plantName)} · ${htmlEscape(item.plantId)}</p>
-          </div>
-          <button class="favorite-focus-close" value="cancel" type="submit" aria-label="Stäng">×</button>
-        </header>
-        <label>
-          Kort notis
-          <textarea name="focusNote" maxlength="120" rows="3" placeholder="T.ex. toppa, kolla ohyra, ta ny bild">${htmlEscape(existingNote || "")}</textarea>
-        </label>
-        <div class="favorite-focus-buttons">
-          <button class="secondary" value="skip" type="submit">Utan notis</button>
-          <button class="primary" value="save" type="submit">Spara</button>
-        </div>
-      </form>
-    `;
-    document.body.appendChild(dialog);
-    const textarea = dialog.querySelector("textarea");
-    dialog.addEventListener("close", () => {
-      const value = dialog.returnValue;
-      const note = textarea ? textarea.value.trim() : "";
-      dialog.remove();
-      if (value === "cancel") resolve(null);
-      else resolve(value === "skip" ? "" : note);
-    }, {once: true});
-    dialog.showModal();
-    setTimeout(() => textarea && textarea.focus(), 40);
-  });
-}
-
-function confirmRemoveFavorite(item) {
-  const name = item && item.plantName ? item.plantName : "växten";
-  return confirm(`Ta bort hundöra?\n\n${name} tas bort från Hundöron och notisen försvinner.`);
-}
-
-function ensurePlantFavorites() {
-  if (document.body.dataset.favoritesReady === "true") return;
-  document.body.dataset.favoritesReady = "true";
-  if (!document.querySelector("#plantFavoriteStyles")) {
-    const style = document.createElement("style");
-    style.id = "plantFavoriteStyles";
-    style.textContent = `
-      .plant-card { position: relative; }
-      .favorite-corner {
-        position: absolute; top: 0; right: 0; z-index: 12; width: 50px; height: 50px; border: 0; padding: 0;
-        background: transparent; cursor: pointer; color: rgba(125,79,59,.34);
-        pointer-events: auto; touch-action: manipulation;
-      }
-      .favorite-corner::before {
-        content: ""; position: absolute; top: 0; right: 0; width: 0; height: 0;
-        border-top: 46px solid rgba(255,253,248,.72); border-left: 46px solid transparent;
-        filter: drop-shadow(-1px 2px 2px rgba(43,37,31,.10));
-      }
-      .favorite-corner::after {
-        content: ""; position: absolute; top: 7px; right: 7px; width: 14px; height: 14px;
-        border-top: 2px solid currentColor; border-right: 2px solid currentColor; transform: rotate(0deg);
-      }
-      .favorite-corner.active { color: #8f5638; }
-      .favorite-corner.active::before { border-top-color: #e0b55c; }
-      .favorite-corner:active { transform: scale(.97); }
-      .favorite-empty {
-        background: rgba(255,253,248,.78); border: 1px solid var(--line, #ded2c2); border-radius: 18px;
-        padding: 24px; color: var(--muted, #6f655b); text-align: center; font-weight: 700;
-      }
-      .favorite-card-link { color: inherit; text-decoration: none; display: contents; }
-      dialog.favorite-focus-dialog {
-        width: min(92vw, 440px); border: 0; border-radius: 22px; padding: 0;
-        background: var(--paper, #fffdf8); color: var(--ink, #2b251f);
-        box-shadow: 0 24px 80px rgba(0,0,0,.24);
-      }
-      dialog.favorite-focus-dialog::backdrop { background: rgba(22,18,15,.48); }
-      .favorite-focus-panel { padding: 18px; display: grid; gap: 14px; }
-      .favorite-focus-panel header { padding: 0; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; text-align: left; }
-      .favorite-focus-panel h2 { margin: 0; font-size: 1.55rem; line-height: 1.05; }
-      .favorite-focus-panel p { margin: 4px 0 0; color: var(--muted, #6f655b); font-weight: 750; }
-      .favorite-focus-close {
-        border: 1px solid var(--line, #ded2c2); background: transparent; color: var(--ink, #2b251f);
-        border-radius: 999px; width: 40px; min-width: 40px; height: 40px; flex: 0 0 40px; padding: 0;
-        display: grid; place-items: center; font-size: 1.35rem; line-height: 1; cursor: pointer;
-      }
-      .favorite-focus-panel label { display: grid; gap: 7px; color: var(--accent, #7d4f3b); font-weight: 900; }
-      .favorite-focus-panel textarea {
-        width: 100%; border: 1px solid var(--line, #ded2c2); border-radius: 16px; padding: 12px 13px;
-        background: white; color: var(--ink, #2b251f); font: inherit; resize: vertical;
-      }
-      .favorite-focus-panel textarea::placeholder { color: rgba(111,101,91,.68); }
-      .favorite-focus-buttons { display: flex; justify-content: flex-end; gap: 9px; flex-wrap: wrap; }
-      .favorite-focus-buttons button {
-        border: 1px solid var(--line, #ded2c2); border-radius: 999px; padding: 10px 13px;
-        font: inherit; font-weight: 900; cursor: pointer;
-      }
-      .favorite-focus-buttons .primary { background: var(--accent, #7d4f3b); color: white; border-color: var(--accent, #7d4f3b); }
-      .favorite-focus-buttons .secondary { background: white; color: var(--accent, #7d4f3b); border-color: rgba(125,79,59,.35); }
-    `;
-    document.head.appendChild(style);
-  }
-  document.addEventListener("click", async event => {
-    const button = event.target.closest(".favorite-corner");
-    if (!button) return;
-    event.preventDefault();
-    event.stopPropagation();
-    const card = button.closest(".plant-card");
-    if (!card) return;
-    const favorites = getPlantFavorites();
-    const item = favoriteFromCard(card);
-    if (favorites[item.key]) {
-      if (!confirmRemoveFavorite(favorites[item.key])) return;
-      delete favorites[item.key];
-    } else {
-      const note = await favoriteFocusDialog(item);
-      if (note === null) return;
-      item.focusNote = note;
-      favorites[item.key] = item;
-    }
-    savePlantFavorites(favorites);
-    updatePlantFavoriteUI();
-    if (typeof renderFavoritesPage === "function" && document.querySelector("#favoriteGrid")) renderFavoritesPage();
-  });
-  updatePlantFavoriteUI();
-}
-
-function updatePlantFavoriteUI() {
-  const favorites = getPlantFavorites();
-  document.querySelectorAll(".plant-card[data-plant-id]").forEach(card => {
-    if (!card.querySelector(".favorite-corner")) {
-      const button = document.createElement("button");
-      button.className = "favorite-corner";
-      button.type = "button";
-      button.setAttribute("aria-label", "Lägg till hundöra");
-      button.title = "Hundöra";
-      card.appendChild(button);
-    }
-    const key = favoriteKey(card.dataset.category, card.dataset.plantId);
-    const button = card.querySelector(".favorite-corner");
-    const active = !!favorites[key];
-    button.classList.toggle("active", active);
-    button.setAttribute("aria-pressed", active ? "true" : "false");
-    button.setAttribute("aria-label", active ? "Ta bort hundöra" : "Lägg till hundöra");
-	    if (active) {
-	      const existing = favorites[key] || {};
-	      favorites[key] = {...existing, ...favoriteFromCard(card), focusNote: existing.focusNote || ""};
-	    }
-	  });
-  savePlantFavorites(favorites);
 }

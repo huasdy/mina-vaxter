@@ -54,8 +54,8 @@
     </div>
     <section class="grid" id="grid"></section>
   </main>
-  <script src="main-navigation.js?v=1c472786e1ec"></script>
-  <script src="common.js?v=33805811b683"></script>
+  <script src="main-navigation.js?v=151344bfe07a"></script>
+  <script src="common.js?v=a1ca7bb31bef"></script>
   <script>
     const grid = document.querySelector("#grid");
     const search = document.querySelector("#search");
@@ -115,7 +115,6 @@
       const label = archive === "gift" ? "gåva" : archive === "ended" ? "avslutad växt" : "tidigare växt";
       stats.textContent = `${rows.length} ${rows.length === 1 ? label : (archive === "gift" ? "gåvor" : archive === "ended" ? "avslutade växter" : "tidigare växter")}`;
       grid.innerHTML = rows.length ? rows.map(plantCard).join("") : '<div class="empty">Inga tidigare växter matchar sökningen.</div>';
-      updatePlantFavoriteUI();
     }
 
     async function initialise() {
@@ -141,7 +140,6 @@
         ensurePlantPhotoGallery();
         ensurePlantMilestones();
         ensurePlantImageImport();
-        ensurePlantFavorites();
         render();
       } catch (error) {
         stats.textContent = "Kunde inte läsa arkivet.";

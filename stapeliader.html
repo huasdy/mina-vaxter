@@ -134,8 +134,8 @@
     </div>
     <section class="grid stapeliad-grid" id="grid"></section>
   </main>
-  <script src="main-navigation.js?v=1c472786e1ec"></script>
-  <script src="common.js?v=33805811b683"></script>
+  <script src="main-navigation.js?v=151344bfe07a"></script>
+  <script src="common.js?v=a1ca7bb31bef"></script>
   <script>
       const PUBLIC_CATALOG_SCHEMA_VERSION = 4;
     const grid = document.querySelector("#grid");
@@ -431,7 +431,6 @@
       grid.classList.toggle("stapeliad-gallery", viewMode === "gallery");
       grid.innerHTML = visible.length ? visible.map(viewMode === "gallery" ? galleryTemplate : cardTemplate).join("") : '<div class="empty">Inga stapeliader matchar sökningen just nu.</div>';
       stats.textContent = `${visible.length} visas av ${plants.length}`;
-      updatePlantFavoriteUI();
     }
 
     function showCatalogLoadError() {
@@ -497,7 +496,6 @@
         ensurePlantPhotoGallery();
         ensurePlantMilestones();
         ensurePlantImageImport();
-        ensurePlantFavorites();
         grid.addEventListener("click", event => {
           const thumb = event.target.closest(".thumb");
           if (thumb) {
@@ -527,7 +525,7 @@
             return;
           }
           const galleryItem = event.target.closest(".stapeliad-gallery-item");
-          if (galleryItem && !event.target.closest(".favorite-corner")) {
+          if (galleryItem) {
             openPlantPanel(galleryItem);
             return;
           }

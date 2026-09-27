@@ -65,7 +65,6 @@
     .cuttings-card .cuttings-remove { position: absolute; top: 10px; right: 10px; margin: 0; width: 30px; height: 30px; padding: 0; border-color: rgba(255,255,255,.8); background: rgba(43,37,31,.78); color: white; font-size: 0; }
     .cuttings-card .cuttings-remove::before { content: "−"; font-size: 1.15rem; line-height: 1; }
     body.manage-mode .cuttings-card .cuttings-remove { display: grid; place-items: center; }
-    .cuttings-card .favorite-corner { display: none !important; }
     .catalog-status-row { display: flex; align-items: center; gap: 8px; margin: 2px 0 10px; min-width: 0; }
     .catalog-status-row .stats { flex: 1 1 auto; min-width: 0; margin: 0; }
     #mobileWishlistAnchor { position: relative; flex: 0 0 auto; }
@@ -108,14 +107,6 @@
     .mobile-crossing-parent span { color: var(--muted); font-size: .75rem; font-weight: 800; }
     .mobile-crossing-events { margin: 0; padding-left: 18px; color: var(--muted); font-size: .8rem; }
     .empty { background: var(--paper); border: 1px solid var(--line); border-radius: 18px; padding: 22px; color: var(--muted); text-align: center; font-weight: 750; }
-    .mobile-view-toggle {
-      position: fixed; right: 16px; bottom: max(76px, calc(env(safe-area-inset-bottom) + 76px)); z-index: 20;
-      border: 0; border-radius: 999px; width: 52px; height: 52px; padding: 0;
-      display: grid; place-items: center; background: rgba(96,119,97,.92); color: white;
-      box-shadow: 0 12px 34px rgba(43,37,31,.18); cursor: pointer;
-    }
-    .mobile-view-toggle svg { width: 27px; height: 27px; display: block; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-    .mobile-view-toggle:active { transform: scale(.96); }
   </style>
 </head>
 <body>
@@ -149,7 +140,6 @@
       </div>
     </div>
   </dialog>
-  <button class="mobile-view-toggle" id="mobileViewToggle" type="button" hidden></button>
 
   <script type="text/plain" id="defaultDocumentsCSV">id,date,type,title,file,pages
 SP-009,2026-08-13,Växtkort,Presentkort för pillerfikus,dokument/udda/SP-009_pillerfikus_2026-08-13_vaxtkort.png,
@@ -262,7 +252,7 @@ PL-H01-N,2025-12-24,Grodd,,,
 PL-H01-O,2025-12-24,Grodd,,,
 PL-H01-Q,2025-12-24,Grodd,,,
 PL-H01-R,2025-12-24,Grodd,,,</script>
-  <script src="common.js?v=33805811b683"></script>
+  <script src="common.js?v=a1ca7bb31bef"></script>
   <script src="crossings-common.js?v=97336e4c8ae8"></script>
   <script>
     if ("serviceWorker" in navigator && window.isSecureContext) {
@@ -287,7 +277,6 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
     let mobileChooserCategory = 'Alla';
     const stats = document.querySelector('#stats');
     const search = document.querySelector('#search');
-    const mobileViewToggle = document.querySelector('#mobileViewToggle');
     const mobileHeading = document.querySelector('#mobileHeading');
     const legacyMigration = document.querySelector('#legacyMigration');
     const legacyMigrationLink = document.querySelector('#legacyMigrationLink');
@@ -296,7 +285,6 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
     const initialParams = new URLSearchParams(window.location.search);
     const requestedCategory = initialParams.get('kategori');
     let active = 'Hibiskus';
-    let lastCatalogCategory = 'Hibiskus';
 
     if (window.location.protocol === "http:") {
       legacyMigration.hidden = false;
@@ -309,7 +297,6 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
       tabs.innerHTML = '';
       stats.textContent = 'Katalogen kunde inte laddas';
       grid.innerHTML = '<div class="empty">Katalogdata kunde inte hämtas. Kontrollera anslutningen och uppdatera sidan.</div>';
-      mobileViewToggle.hidden = true;
     }
     function snapshotToCatalog(snapshot) {
       const titleKeys = {Hibiskus: 'id', Pelargon: 'name', Udda: 'name', Stapeliader: 'short_name'};
@@ -391,8 +378,7 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
       } catch (error) {}
     }
     function preserveMobileView(url) {
-      if (active === "Hundöron") url.searchParams.set("vy", "hundoron");
-      else if (active === "Sticklingar") url.searchParams.set("vy", "sticklingar");
+      if (active === "Sticklingar") url.searchParams.set("vy", "sticklingar");
       else if (data[active]) url.searchParams.set("kategori", active);
     }
     function pageForCategory(category) {
@@ -492,18 +478,6 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
         ${veto ? '<p>☠️ Näsan har lagt in sitt veto.</p>' : ''}
       </section>`;
     }
-    function dogEarIcon() {
-      return '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 4.5h12.5L25 10v17.5H7z"/><path d="M19.5 4.5V10H25"/></svg>';
-    }
-    function catalogIcon() {
-      return '<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="5" y="5" width="9" height="9" rx="1.5"/><rect x="18" y="5" width="9" height="9" rx="1.5"/><rect x="5" y="18" width="9" height="9" rx="1.5"/><rect x="18" y="18" width="9" height="9" rx="1.5"/></svg>';
-    }
-    function updateMobileViewToggle() {
-      const inFavorites = active === "Hundöron";
-      mobileViewToggle.innerHTML = inFavorites ? catalogIcon() : dogEarIcon();
-      mobileViewToggle.setAttribute('aria-label', inFavorites ? `Tillbaka till ${lastCatalogCategory}` : 'Öppna Hundöron');
-      mobileViewToggle.title = inFavorites ? 'Katalog' : 'Hundöron';
-    }
     function updateMobileWishlist() {
       const category = data[active] ? active : '';
       mobileHeading.dataset.wishlistCategory = category;
@@ -557,7 +531,6 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
       `;
     }
     function showMobileView(name) {
-      if (name !== "Hundöron" && data[name]) lastCatalogCategory = name;
       if (name === active) return;
       active = name;
       updateMobileWishlist();
@@ -640,36 +613,6 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
         <div class="body"><h2>${escapeHtml(displayName)}</h2>${secondary && secondary !== displayName ? `<div class="latin">${escapeHtml(secondary)}</div>` : ""}<button class="cuttings-remove" type="button" data-remove-cuttings="${escapeHtml(row.id)}" data-remove-category="${escapeHtml(categoryName)}">Ta bort</button></div>
       </article>`;
     }
-    function favoriteCard(item) {
-      const identity = clean(item.plantIdentity) || clean(item.plantName);
-      const nickname = clean(item.plantNickname) || (item.plantIdentity && item.plantName !== item.plantIdentity ? clean(item.plantName) : "");
-      const nicknameFirst = item.category === "Pelargon" && Boolean(nickname && identity);
-      const displayLabel = nickname ? `${identity} · ${nickname}` : identity;
-      const gallery = item.image ? [{file: item.image, title: identity, caption: `${displayLabel} · ${item.dateLabel || ""}`, alt: displayLabel}] : [];
-      const logs = logMap.get(item.plantId) || [];
-      const latestMilestone = latestPlantMilestone(logs);
-      const cardNote = ["Hibiskus", "Pelargon", "Udda"].includes(item.category)
-        ? plantCardNoteField(item.plantId, "", "", item.category)
-        : "";
-      const hasCuttings = getPlantCuttingsStatus(item.plantId, item.cuttingsAvailable ? "ja" : "nej", item.cuttingsUpdatedAt || "");
-      return `<article class="card plant-card" data-category="${escapeHtml(item.category)}" data-plant-id="${escapeHtml(item.plantId)}" data-plant-name="${escapeHtml(identity)}" data-plant-identity="${escapeHtml(identity)}" data-plant-nickname="${escapeHtml(nickname)}" data-cuttings-available="${hasCuttings ? "ja" : "nej"}" data-cuttings-updated-at="${escapeHtml(item.cuttingsUpdatedAt || "")}" data-page="${escapeHtml(item.page || pageForCategory(item.category))}" data-gallery="${escapeHtml(JSON.stringify(gallery))}" data-milestones="${escapeHtml(JSON.stringify(logs))}">
-        <div class="image">${item.image ? `<img class="main-photo" src="${escapeHtml(item.image)}" alt="${escapeHtml(displayLabel)}" data-caption="${escapeHtml(displayLabel + (item.dateLabel ? " · " + item.dateLabel : ""))}" loading="lazy">` : ""}<div class="plant-card-gallery-slot"></div></div>
-        <div class="body card-body">
-          <div class="plant-card-head">
-            <div class="plant-title-block"><h2>${escapeHtml(nicknameFirst ? nickname : identity)}</h2>${nickname ? `<div class="plant-nickname">${escapeHtml(nicknameFirst ? identity : nickname)}</div>` : ""}${item.latin ? `<div class="latin">${escapeHtml(item.latin)}</div>` : ""}</div>
-            <div class="import-actions">
-              <button class="plant-log-btn" type="button" aria-label="Växtpanel" title="Växtpanel">${logBookIcon()}</button>
-              <button class="add-photo-btn" type="button" aria-label="Lägg till bild" title="Lägg till bild">${cameraLineIcon()}</button>
-              <span class="import-badge" data-import-badge hidden></span>
-            </div>
-          </div>
-          <div class="plant-card-chip-slot"><div class="chips">${hasCuttings ? '<span class="chip green" data-status-chip="cuttings">🌱 Stickling</span>' : `<span class="chip">${escapeHtml(item.category)}</span>`}</div></div>
-          <div class="plant-card-info"></div>
-          <div class="plant-card-milestone-slot">${milestoneSummary(latestMilestone)}</div>
-          <div class="plant-card-notes-slot">${cardNote || (item.focusNote ? `<div class="notes">${escapeHtml(item.focusNote)}</div>` : item.notes ? `<div class="notes">${escapeHtml(item.notes)}</div>` : "")}</div>
-        </div>
-      </article>`;
-    }
     function render() {
       if (!catalogReady) return;
       document.body.dataset.concludedPlantArchive = active === "Tidigare" ? "true" : "false";
@@ -678,16 +621,6 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
       grid.style.alignItems = active === "Sticklingar" ? "start" : "";
       grid.style.gridAutoRows = active === "Sticklingar" ? "max-content" : "";
       renderTabs();
-      updateMobileViewToggle();
-      if (active === "Hundöron") {
-        const favorites = Object.values(getPlantFavorites()).sort((a, b) => sortNatural(`${a.category} ${a.plantName}`, `${b.category} ${b.plantName}`));
-        const q = search.value.trim().toLowerCase();
-        const rows = favorites.filter(item => !q || JSON.stringify(item).toLowerCase().includes(q));
-        stats.textContent = `${rows.length} hundöron`;
-        grid.innerHTML = rows.length ? rows.map(favoriteCard).join('') : '<div class="empty">Inga hundöron ännu. Markera en växt med hundörat på ett kort.</div>';
-        updatePlantFavoriteUI();
-        return;
-      }
       if (active === "Sticklingar") {
         const q = search.value.trim().toLowerCase();
         const rows = Object.entries(data).flatMap(([categoryName, section]) =>
@@ -701,7 +634,6 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
         grid.innerHTML = rows.length
           ? rows.map(item => card(item.section, item.row, item.categoryName)).join('')
           : '<div class="empty">Inga moderplantor är markerade ännu. Lägg till en moderplanta ovan.</div>';
-        updatePlantFavoriteUI();
         renderMobileChooser();
         return;
       }
@@ -715,7 +647,6 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
         rows.sort((a, b) => sortNatural(`${a.categoryName} ${a.row.name || a.row.nickname || a.row.id}`, `${b.categoryName} ${b.row.name || b.row.nickname || b.row.id}`));
         stats.textContent = `${rows.length} ${rows.length === 1 ? "tidigare växt" : "tidigare växter"}`;
         grid.innerHTML = rows.length ? rows.map(item => card(item.section, item.row, item.categoryName)).join('') : '<div class="empty">Inga tidigare växter ännu.</div>';
-        updatePlantFavoriteUI();
         return;
       }
       const section = data[active];
@@ -734,7 +665,6 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
         stats.textContent = `${rows.length} visas av ${section.rows.length}`;
       }
       grid.innerHTML = rows.length ? rows.map(row => card(section, row, active)).join('') : '<div class="empty">Inga växter matchar sökningen.</div>';
-      updatePlantFavoriteUI();
     }
     function renderMobileChooser() {
       if (!catalogReady) return;
@@ -781,9 +711,6 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
       }
       if (!button) return;
       showMobileView(button.dataset.name);
-    });
-    mobileViewToggle.addEventListener('click', () => {
-      showMobileView(active === "Hundöron" ? lastCatalogCategory : "Hundöron");
     });
     let pullStartY = null;
     let pullDistance = 0;
@@ -856,11 +783,6 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
       if (remove) setPlantCuttingsStatus(remove.dataset.removeCuttings, remove.dataset.removeCategory, false);
       if (cuttingsCard && !event.target.closest("button, input, a") && !manageMode) openPlantPanel(cuttingsCard);
     });
-    document.addEventListener('click', event => {
-      if (active === "Hundöron" && event.target.closest('.favorite-corner')) {
-        setTimeout(render, 0);
-      }
-    });
     search.addEventListener('input', render);
     mobileChooserSearch.addEventListener('input', renderMobileChooser);
     mobileChooserList.addEventListener('click', event => {
@@ -885,7 +807,7 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
       render();
     });
     document.addEventListener('plant-concluded-filter-applied', event => {
-      if (!catalogReady || active === "Hundöron" || !data[active]) return;
+      if (!catalogReady || !data[active]) return;
       const visibleCount = [...grid.querySelectorAll('.plant-card')]
         .filter(card => card.dataset.concludedHidden !== "true").length;
       const allRows = data[active].rows;
@@ -910,16 +832,13 @@ PL-H01-R,2025-12-24,Grodd,,,</script>
           window.location.replace('korsningar.html');
           return;
         }
-        active = initialParams.get('vy') === 'hundoron' ? 'Hundöron' : (initialParams.get('vy') === 'sticklingar' ? 'Sticklingar' : initialCategory);
-        lastCatalogCategory = initialCategory;
+        active = initialParams.get('vy') === 'sticklingar' ? 'Sticklingar' : initialCategory;
         catalogReady = true;
-        mobileViewToggle.hidden = false;
         ensurePlantPhotoGallery();
         ensurePlantMilestones();
         ensurePlantImageImport();
         updateMobileWishlist();
         ensurePrivateWishlists();
-        ensurePlantFavorites();
         render();
         renderMobileChooser();
         checkMobileVersion();

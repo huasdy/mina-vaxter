@@ -197,8 +197,8 @@
 
   <footer>Serverfri lokal HTML-katalog.</footer>
 
-  <script src="main-navigation.js?v=1c472786e1ec"></script>
-  <script src="common.js?v=33805811b683"></script>
+  <script src="main-navigation.js?v=151344bfe07a"></script>
+  <script src="common.js?v=a1ca7bb31bef"></script>
   <script src="hibiskus-george-import.js?v=bd89f67e7a6c"></script>
   <script>
     function startHibiscusPage(snapshot) {
@@ -561,7 +561,6 @@
       const visible = sortedPlants(filtered);
       grid.innerHTML = visible.length ? visible.map(cardTemplate).join("") : '<div class="empty">Inga hibiskusar matchar sökningen just nu.</div>';
       updatePlantImageImportUI();
-      updatePlantFavoriteUI();
       const photoCount = plants.reduce((sum, p) => sum + (p.photos || []).length, 0);
       const activeParts = [
         query ? `Sökning: “${search.value.trim()}”` : "",
@@ -709,7 +708,6 @@
     ensurePlantMilestones();
     ensurePlantImageImport();
     ensurePrivateWishlists();
-    ensurePlantFavorites();
     clearBtn.addEventListener("click", () => {
       search.value = "";
       batchFilter.value = "";

@@ -12,7 +12,6 @@
   const sectionByPage = {
     "": "home",
     "index.html": "home",
-    "favoriter.html": "home",
     "labbet.html": "labbet",
     "hibiskusar.html": "hibiskus",
     "pelargoner.html": "pelargon",
