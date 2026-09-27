@@ -154,6 +154,7 @@
         if (batch) {
           if (clean(update.germinated_count) !== "") batch.germinated_count = clean(update.germinated_count);
           if (Object.hasOwn(update, "germinated_date")) batch.germinated_date = clean(update.germinated_date);
+          if (Object.hasOwn(update, "status")) batch.status = clean(update.status);
           if (Object.hasOwn(update, "notes")) batch.notes = clean(update.notes);
         }
       } else if (operation.kind === "material_update") {
@@ -691,6 +692,7 @@
         germinated,
         germinatedExact: true,
         germinatedDate: clean(row.germinated_date),
+        status: clean(row.status) || "Aktiv",
         registered: 0,
         legacyRegistered: 0,
         raising: 0,
@@ -699,8 +701,8 @@
         remainingExact: seedsSown !== null,
         kept: 0,
         concluded: 0,
-        active: true,
-        activeSowing: !(clean(row.source_type) === "legacy" && clean(row.species_group) === "Hibiskus" && /^PL-H\d{2}(?:-[A-D])?$/.test(clean(row.source_id))),
+        active: clean(row.status) !== "Avslutad",
+        activeSowing: clean(row.status) !== "Avslutad",
         originLabel: material ? `${material.label} ${material.code}` : clean(row.source_label) || "Äldre/okänt ursprung",
         originDetail: material ? material.sourceName : clean(row.source_label),
         originHref: "",
@@ -782,14 +784,12 @@
       batch.ready = number(batch.ready) + linkedLegacy.filter(row => row.status === "Redo för bedömning").length;
       batch.legacyKept = number(batch.legacyKept) + linkedLegacy.filter(row => row.status === "I samlingen").length;
       batch.legacyConcluded = number(batch.legacyConcluded) + linkedLegacy.filter(row => ["Gallrad", "Död", "Bortskänkt"].includes(row.status)).length;
-      if (linkedLegacy.some(row => ACTIVE_SEEDLING_STATUSES.has(row.status))) batch.active = true;
       const realSeedlings = batch.seedlings.filter(row => row?.adapter === false);
       batch.registered = number(batch.legacyRegistered) + realSeedlings.length;
       batch.raising = number(batch.raising) + realSeedlings.filter(row => row.status === "Under uppdragning").length;
       batch.ready = number(batch.ready) + realSeedlings.filter(row => row.status === "Redo för bedömning").length;
       batch.kept = number(batch.legacyKept ?? batch.kept) + realSeedlings.filter(row => row.status === "I samlingen").length;
       batch.concluded = number(batch.legacyConcluded ?? batch.concluded) + realSeedlings.filter(row => ["Gallrad", "Död", "Bortskänkt"].includes(row.status)).length;
-      if (realSeedlings.some(row => ACTIVE_SEEDLING_STATUSES.has(row.status))) batch.active = true;
     });
     const crossingById = new Map(crossings.map(row => [row.crossing_id, row]));
     const seedlingById = new Map(seedlings.map(row => [row.id, row]));
@@ -825,9 +825,8 @@
   }
 
   function batchCard(batch) {
-    const legacyChip = batch.adapter !== false ? '<span class="chip">Legacy</span>' : '';
     return `<button type="button" class="batch-card" data-open-batch="${esc(batch.id)}">
-      <span class="chip-row"><span class="chip green">${esc(batch.species)}</span>${legacyChip}</span>
+      <span class="chip-row"><span class="chip green">${esc(batch.species)}</span><span class="chip ${batch.activeSowing ? "" : "ended"}">${esc(batch.activeSowing ? "Aktiv" : "Avslutad")}</span></span>
       <h3>${esc(batch.name)}</h3>
       <span class="batch-code">${esc(batch.fullCode)} · sådd ${esc(displayDate(batch.sownDate))}</span>
       <span class="batch-progress">${esc(batchProgress(batch))}</span>
@@ -1061,10 +1060,10 @@
 
   function portalStats(species) {
     const activeCrossings = model.crossings.filter(row => row.adapter === false && row.active && !crossingIsExhausted(row) && matchesSpecies(row, species));
-    const activeBatches = model.batches.filter(row => row.adapter === false && row.active && matchesSpecies(row, species));
-    const labSeedlings = model.seedlings.filter(row => row.adapter === false && matchesSpecies(row, species));
-    const activeSeedlings = labSeedlings.filter(row => row.status === "Under uppdragning");
-    const ready = labSeedlings.filter(row => row.status === "Redo för bedömning");
+    const activeBatches = model.batches.filter(row => row.adapter === false && row.activeSowing && matchesSpecies(row, species));
+    const visibleSeedlings = model.seedlings.filter(row => matchesSpecies(row, species));
+    const activeSeedlings = visibleSeedlings.filter(row => row.status === "Under uppdragning");
+    const ready = visibleSeedlings.filter(row => row.status === "Redo för bedömning");
     const seedRows = model.materials.filter(row => matchesSpecies(row, species) && row.remaining !== null && row.remaining > 0);
     return {
       froer: {count: seedRows.length, secondary: `${seedRows.reduce((sum, row) => sum + row.remaining, 0)} frön kvar`},
@@ -1141,8 +1140,13 @@
       return `<section class="lab-view">${viewIntro("Frömaterial", "Fröskördar och externa fröpåsar hålls åtskilda och kan ge flera såbatcher.")}${activeRows.length ? materialCards(activeRows) : emptyState("Inget aktivt frömaterial i valt artfilter.")}${consumedSection}</section>`;
     }
     const rows = model.batches.filter(row => matchesSpecies(row, species));
-    const cards = rows.length ? `<div class="batch-grid">${rows.map(batchCard).join("")}</div>` : emptyState("Inga såbatcher i valt artfilter.");
-    return `<section class="lab-view">${viewIntro("Sådder", "Såbatcher och deras groddresultat.")}${cards}</section>`;
+    const batchCards = rowsToRender => rowsToRender.length ? `<div class="batch-grid">${rowsToRender.map(batchCard).join("")}</div>` : "";
+    const activeRows = rows.filter(row => row.activeSowing);
+    const previousRows = rows.filter(row => !row.activeSowing);
+    const previousSection = previousRows.length
+      ? `<details class="archive-section"><summary>Tidigare sådder <span>${previousRows.length}</span></summary>${batchCards(previousRows)}</details>`
+      : "";
+    return `<section class="lab-view">${viewIntro("Aktiva sådder", "Såbatcher som fortfarande befinner sig i såddfasen.")}${batchCards(activeRows) || emptyState("Inga aktiva sådder i valt artfilter.")}${previousSection}</section>`;
   }
 
   function seedlingAge(seedling) {
@@ -1306,6 +1310,8 @@
       ? ""
       : isLegacy
       ? `<a class="primary-action" href="${esc(batch.actionHref || "korsningar.html")}">Öppna äldre korsningsflöde →</a>`
+      : !batch.activeSowing
+      ? `<button type="button" class="secondary-action" data-edit-batch="${esc(batch.id)}">Redigera såbatch</button>`
       : (() => {
           const germinationAction = `<button type="button" class="primary-action" data-edit-batch="${esc(batch.id)}">Registrera grodd</button>`;
           return shouldRegisterGermination
@@ -1316,6 +1322,8 @@
       ? "Historisk såbatch. De registrerade fröplantorna behåller sina permanenta PL-H-ID:n."
       : isLegacy
       ? "Äldre såbatch. Registrering och uppdatering görs i det äldre korsningsflödet."
+      : !batch.activeSowing
+      ? "Såbatchen är avslutad. Fröplantor och historik ligger kvar och kan följas här."
       : (batch.registered > 0
         ? "Individualisera bara fler plantor som behöver egen identitet. Övriga kan fortsätta som grupp."
         : (["Stapelia", "Pelargon"].includes(batch.species)
@@ -1324,12 +1332,13 @@
     return `<section class="detail-shell">
       ${detailNavigation("Till sådder")}
       <article class="detail-card">
-        <div class="detail-hero"><div><div class="detail-kicker">${isLegacy ? "Legacy-såbatch" : "Såbatch"} · ${esc(batch.species)}</div><h2>${esc(batch.name)}</h2><div class="detail-code">${esc(batch.fullCode)}</div></div><div class="detail-actions">${action}<button type="button" class="secondary-action seed-print-trigger" data-seed-print-menu-kind="batch" data-seed-print-menu-id="${esc(batch.id)}">Skriv ut</button><p class="action-note">${actionNote}</p></div></div>
+        <div class="detail-hero"><div><div class="detail-kicker">Såbatch · ${esc(batch.species)}</div><h2>${esc(batch.name)}</h2><div class="detail-code">${esc(batch.fullCode)}</div></div><div class="detail-actions">${action}<button type="button" class="secondary-action seed-print-trigger" data-seed-print-menu-kind="batch" data-seed-print-menu-id="${esc(batch.id)}">Skriv ut</button><p class="action-note">${actionNote}</p></div></div>
         <div class="detail-body">
           <dl class="fact-grid">
             <div class="fact"><dt>Sådatum</dt><dd>${esc(displayDate(batch.sownDate, true))}</dd></div>
             <div class="fact"><dt>Antal sådda</dt><dd>${esc(countText(batch.seedsSown, true, "Okänt"))}</dd></div>
             <div class="fact"><dt>Antal grodda</dt><dd>${esc(countText(batch.germinated, batch.germinatedExact))}</dd></div>
+            <div class="fact"><dt>Status</dt><dd>${esc(batch.activeSowing ? "Aktiv" : "Avslutad")}</dd></div>
             ${batch.registered > 0 ? `<div class="fact"><dt>Registrerade plantor</dt><dd>${batch.registered}</dd></div>` : ""}
             <div class="fact"><dt>Under uppdragning</dt><dd>${batch.raising}</dd></div>
             <div class="fact"><dt>Redo för bedömning</dt><dd>${batch.ready}</dd></div>
@@ -1669,7 +1678,7 @@
         full_code: `${sourceRoot}-${batchCode}`, species_group: material?.species || clean(data.get("legacy_species")),
         taxon: material?.taxon || clean(data.get("legacy_taxon")) || sourceLabel, sown_date: isoDate(data.get("sown_date")),
         seeds_sown: String(seedsSown), container_count: clean(data.get("container_count")), germinated_count: "0",
-        germinated_date: "", notes: clean(data.get("notes")), created_at: new Date().toISOString()
+        germinated_date: "", status: "Aktiv", notes: clean(data.get("notes")), created_at: new Date().toISOString()
       });
       await refreshModel();
       updateRoute({vy: "sadder", del: "batcher", batch: batchId, material: null, korsning: null});
@@ -1727,14 +1736,15 @@
   }
 
   function openBatchUpdate(batch) {
-    showFormDialog(`<h2>Registrera grodd</h2><p>${esc(batch.fullCode)} · groddantal och individuella fröplantor hålls separata.</p><form class="lab-form">
+    showFormDialog(`<h2>Uppdatera såbatch</h2><p>${esc(batch.fullCode)} · groddantal och individuella fröplantor hålls separata.</p><form class="lab-form">
       <label>Antal grodda<input name="germinated_count" type="number" min="0" ${batch.seedsSown === null ? "" : `max="${batch.seedsSown}"`} value="${batch.germinated}" inputmode="numeric" required></label>
       <label>Första grodddatum<input name="germinated_date" type="date" value="${esc(batch.germinatedDate || today())}" max="${today()}"></label>
+      <label>Status<select name="status"><option value="Aktiv"${batch.activeSowing ? " selected" : ""}>Aktiv sådd</option><option value="Avslutad"${batch.activeSowing ? "" : " selected"}>Avslutad sådd</option></select></label>
       <label class="wide">Anteckning<textarea name="notes" rows="3">${esc(batch.notes || "")}</textarea></label>
-      <div class="dialog-actions">${closeDialogButton()}<button type="submit" class="primary-action">Spara groning</button></div>
+      <div class="dialog-actions">${closeDialogButton()}<button type="submit" class="primary-action">Spara</button></div>
     </form>`, async data => {
       const count = number(data.get("germinated_count"));
-      queueLabChange("batch_update", {sow_batch_id: batch.id, germinated_count: String(count), germinated_date: count ? isoDate(data.get("germinated_date")) : "", notes: clean(data.get("notes")), updated_at: new Date().toISOString()});
+      queueLabChange("batch_update", {sow_batch_id: batch.id, germinated_count: String(count), germinated_date: count ? isoDate(data.get("germinated_date")) : "", status: clean(data.get("status")), notes: clean(data.get("notes")), updated_at: new Date().toISOString()});
       await refreshModel();
       updateRoute({batch: batch.id});
     });

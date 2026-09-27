@@ -8269,6 +8269,7 @@
         "container_count": "",
         "germinated_count": "15",
         "germinated_date": "2025-12-24",
+        "status": "Avslutad",
         "notes": "2026-05-24 · Omplantering: 15 befintliga plantor omplanterades (batchhistorik).",
         "created_at": "2026-09-23T12:50:01+02:00"
       },
@@ -8287,6 +8288,7 @@
         "container_count": "",
         "germinated_count": "1",
         "germinated_date": "2026-07-06",
+        "status": "Avslutad",
         "notes": "",
         "created_at": "2026-09-23T12:50:01+02:00"
       },
@@ -8305,6 +8307,7 @@
         "container_count": "",
         "germinated_count": "1",
         "germinated_date": "2026-07-06",
+        "status": "Avslutad",
         "notes": "",
         "created_at": "2026-09-23T12:50:01+02:00"
       },
@@ -8323,6 +8326,7 @@
         "container_count": "",
         "germinated_count": "3",
         "germinated_date": "2026-07-06",
+        "status": "Avslutad",
         "notes": "",
         "created_at": "2026-09-23T12:50:01+02:00"
       },
@@ -8341,6 +8345,7 @@
         "container_count": "",
         "germinated_count": "3",
         "germinated_date": "2026-07-06",
+        "status": "Avslutad",
         "notes": "",
         "created_at": "2026-09-23T12:50:01+02:00"
       },
@@ -8359,6 +8364,7 @@
         "container_count": "2",
         "germinated_count": "0",
         "germinated_date": "",
+        "status": "Aktiv",
         "notes": "",
         "created_at": "2026-09-12T10:00:00Z"
       },
@@ -8377,6 +8383,7 @@
         "container_count": "",
         "germinated_count": "2",
         "germinated_date": "2026-09-12",
+        "status": "Aktiv",
         "notes": "Första grodd registrerad 2026-09-12.",
         "created_at": "2026-09-16T23:50:00+02:00"
       },
@@ -8395,6 +8402,7 @@
         "container_count": "",
         "germinated_count": "2",
         "germinated_date": "2026-09-12",
+        "status": "Aktiv",
         "notes": "Första grodd registrerad 2026-09-12.",
         "created_at": "2026-09-16T23:50:00+02:00"
       },
@@ -8413,6 +8421,7 @@
         "container_count": "",
         "germinated_count": "4",
         "germinated_date": "2026-09-12",
+        "status": "Aktiv",
         "notes": "Första grodd registrerad 2026-09-12.",
         "created_at": "2026-09-16T23:50:00+02:00"
       },
@@ -8431,6 +8440,7 @@
         "container_count": "",
         "germinated_count": "1",
         "germinated_date": "2026-09-12",
+        "status": "Aktiv",
         "notes": "Första grodd registrerad 2026-09-12.",
         "created_at": "2026-09-16T23:50:00+02:00"
       }
