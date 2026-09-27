@@ -271,7 +271,10 @@
     const status = ["Alla", "Under uppdragning", "Redo för bedömning"].includes(params.get("status"))
       ? params.get("status")
       : view === "uppdragning" ? "Under uppdragning" : "Alla";
-    const sowSection = params.get("del") === "material" ? "material" : "batcher";
+    const requestedSowSection = params.get("del");
+    const sowSection = requestedSowSection === "material" || requestedSowSection === "tidigare"
+      ? requestedSowSection
+      : "batcher";
     return {
       view, species, status, sowSection,
       batch: params.get("batch") || "",
@@ -804,6 +807,12 @@
     return species === "Alla" || row.species === species;
   }
 
+  function seedlingsForRaisingView(species, status = "Alla") {
+    return model.seedlings.filter(row => matchesSpecies(row, species)
+      && ACTIVE_SEEDLING_STATUSES.has(row.status)
+      && (status === "Alla" || row.status === status));
+  }
+
   function crossingIsExhausted(crossing) {
     return crossing.adapter === false
       && crossing.harvests.length > 0
@@ -1061,9 +1070,8 @@
   function portalStats(species) {
     const activeCrossings = model.crossings.filter(row => row.adapter === false && row.active && !crossingIsExhausted(row) && matchesSpecies(row, species));
     const activeBatches = model.batches.filter(row => row.adapter === false && row.activeSowing && matchesSpecies(row, species));
-    const visibleSeedlings = model.seedlings.filter(row => matchesSpecies(row, species));
-    const activeSeedlings = visibleSeedlings.filter(row => row.status === "Under uppdragning");
-    const ready = visibleSeedlings.filter(row => row.status === "Redo för bedömning");
+    const activeSeedlings = seedlingsForRaisingView(species, "Under uppdragning");
+    const ready = seedlingsForRaisingView(species, "Redo för bedömning");
     const seedRows = model.materials.filter(row => matchesSpecies(row, species) && row.remaining !== null && row.remaining > 0);
     return {
       froer: {count: seedRows.length, secondary: `${seedRows.reduce((sum, row) => sum + row.remaining, 0)} frön kvar`},
@@ -1143,10 +1151,12 @@
     const batchCards = rowsToRender => rowsToRender.length ? `<div class="batch-grid">${rowsToRender.map(batchCard).join("")}</div>` : "";
     const activeRows = rows.filter(row => row.activeSowing);
     const previousRows = rows.filter(row => !row.activeSowing);
-    const previousSection = previousRows.length
-      ? `<details class="archive-section"><summary>Tidigare sådder <span>${previousRows.length}</span></summary>${batchCards(previousRows)}</details>`
-      : "";
-    return `<section class="lab-view">${viewIntro("Aktiva sådder", "Såbatcher som fortfarande befinner sig i såddfasen.")}${batchCards(activeRows) || emptyState("Inga aktiva sådder i valt artfilter.")}${previousSection}</section>`;
+    if (sowSection === "tidigare") {
+      const activeAction = '<button type="button" class="secondary-action" data-show-active-sowings>Aktiva sådder</button>';
+      return `<section class="lab-view">${viewIntro("Tidigare sådder", "Avslutade såbatcher med bevarad historik och koppling till individualiserade plantor.", activeAction, `${previousRows.length} avslutade`)}${batchCards(previousRows) || emptyState("Inga tidigare sådder i valt artfilter.")}</section>`;
+    }
+    const previousAction = `<button type="button" class="secondary-action" data-show-previous-sowings>Tidigare sådder (${previousRows.length})</button>`;
+    return `<section class="lab-view">${viewIntro("Aktiva sådder", "Såbatcher som fortfarande befinner sig i såddfasen.", previousAction, `${activeRows.length} aktiva`)}${batchCards(activeRows) || emptyState("Inga aktiva sådder i valt artfilter.")}</section>`;
   }
 
   function seedlingAge(seedling) {
@@ -1168,7 +1178,7 @@
   }
 
   function renderSeedlings(species, status) {
-    const rows = model.seedlings.filter(row => matchesSpecies(row, species) && ACTIVE_SEEDLING_STATUSES.has(row.status) && (status === "Alla" || row.status === status));
+    const rows = seedlingsForRaisingView(species, status);
     const readyView = status === "Redo för bedömning";
     const title = readyView ? "Redo för bedömning" : "Under uppdragning";
     const description = readyView
@@ -1924,12 +1934,19 @@
     const keepHibiscusSeedling = event.target.closest("[data-keep-hibiscus-seedling]");
     const galleryPhoto = event.target.closest("[data-gallery-photo]");
     const materialImageAction = event.target.closest("[data-material-image-action]");
-    if (batch) updateRoute({vy: "sadder", del: "batcher", batch: batch.dataset.openBatch, planta: null, korsning: null, material: null});
+    const showPreviousSowings = event.target.closest("[data-show-previous-sowings]");
+    const showActiveSowings = event.target.closest("[data-show-active-sowings]");
+    if (batch) {
+      const selectedBatch = model.batchById.get(batch.dataset.openBatch);
+      updateRoute({vy: "sadder", del: selectedBatch?.activeSowing === false ? "tidigare" : "batcher", batch: batch.dataset.openBatch, planta: null, korsning: null, material: null});
+    }
     else if (seedling) updateRoute({vy: "uppdragning", planta: seedling.dataset.openSeedling, batch: null, korsning: null, material: null});
     else if (crossing) updateRoute({vy: "korsningar", korsning: crossing.dataset.openCrossing, batch: null, planta: null, material: null});
     else if (material) updateRoute({vy: material.classList.contains("seed-box-card") ? "froer" : "sadder", del: "material", material: material.dataset.openMaterial, batch: null, planta: null, korsning: null});
     else if (group) updateRoute({vy: "uppdragning", art: group.dataset.openGroup, status: "Alla", batch: null, planta: null});
     else if (back) updateRoute({batch: null, planta: null, korsning: null, material: null});
+    else if (showPreviousSowings) updateRoute({vy: "sadder", del: "tidigare", batch: null, planta: null, korsning: null, material: null});
+    else if (showActiveSowings) updateRoute({vy: "sadder", del: "batcher", batch: null, planta: null, korsning: null, material: null});
     else if (newCrossing) openCrossingRegistration();
     else if (registerHarvest) {
       const selectedCrossing = model.crossingById.get(registerHarvest.dataset.registerHarvest);
