@@ -196,6 +196,9 @@
         if (clean(update.status)) seedling.status = clean(update.status);
         if (Object.hasOwn(update, "notes")) seedling.notes = clean(update.notes);
         if (isoDate(update.germinated_date)) seedling.germinated_date = clean(update.germinated_date);
+      } else if (operation.kind === "keep_seedling") {
+        const seedling = seedlingsById.get(clean(operation.keep_seedling?.seedling_id));
+        if (seedling) seedling.status = "I samlingen";
       }
     });
     data.photos.push(...pendingLabImages);
@@ -268,9 +271,7 @@
       ? "froer"
       : VALID_VIEWS.has(requestedView) ? requestedView : "froer";
     const species = VALID_SPECIES.has(params.get("art")) ? params.get("art") : "Alla";
-    const status = ["Alla", "Under uppdragning", "Redo för bedömning"].includes(params.get("status"))
-      ? params.get("status")
-      : view === "uppdragning" ? "Under uppdragning" : "Alla";
+    const status = params.get("status") === "Redo för bedömning" ? "Redo för bedömning" : "Alla";
     const requestedSowSection = params.get("del");
     const sowSection = requestedSowSection === "material" || requestedSowSection === "tidigare"
       ? requestedSowSection
@@ -290,7 +291,11 @@
       if (value === null || value === "" || value === "Alla" && key !== "art") url.searchParams.delete(key);
       else url.searchParams.set(key, value);
     });
-    (push ? history.pushState : history.replaceState).call(history, null, "", url);
+    if (url.href === window.location.href) {
+      render();
+      return;
+    }
+    (push ? history.pushState : history.replaceState).call(history, push ? {labbetRoute: true} : history.state, "", url);
     render();
   }
 
@@ -392,6 +397,9 @@
     const seedLotById = new Map((snapshot.crossings?.seedLots || []).map(row => [row.seed_lot_id, row]));
 
     const lab = combinedLabData();
+    const pendingLegacyDecisions = new Map(getPendingLabItems()
+      .filter(item => clean(item.kind) === "decide_hibiscus_seedling")
+      .map(item => [clean(item.decide_hibiscus_seedling?.plant_id), clean(item.decide_hibiscus_seedling?.type)]));
     const seedlings = [];
     const hibiscusGroups = new Map();
     const historicalBatchIds = new Set(lab.sowBatches.map(row => clean(row.sow_batch_id)));
@@ -406,12 +414,16 @@
       const rowPhotos = photosByPlant.get(`Hibiskus:${row.id}`) || [];
       const firstFlower = rows.find(item => clean(item.type).toLocaleLowerCase("sv") === "första blomning");
       const concluded = latest(rows.filter(milestoneIsConcluded));
+      const continuedAfterFlower = firstFlower && rows.map(item => clean(item.type)).lastIndexOf("Fortsatt uppdragning") > rows.indexOf(firstFlower);
       let status = "Under uppdragning";
       if (concluded) {
         const type = clean(concluded.type).toLocaleLowerCase("sv");
         status = type.includes("gåva") || type === "bortskänkt" ? "Bortskänkt" : type.startsWith("gallrad") ? "Gallrad" : "Död";
       } else if (clean(row.breeding_selected).toLocaleLowerCase("sv") === "ja") status = "I samlingen";
-      else if (firstFlower) status = "Redo för bedömning";
+      else if (firstFlower && !continuedAfterFlower) status = "Redo för bedömning";
+      const pendingDecision = pendingLegacyDecisions.get(clean(row.id));
+      if (pendingDecision === "Fortsatt uppdragning") status = "Under uppdragning";
+      else if (["Gallrad", "Död", "Bortskänkt"].includes(pendingDecision)) status = pendingDecision;
       const germinatedDate = earliestDate(rows, "Grodd");
       const latestMilestone = latest(rows.filter(item => !["sådd"].includes(clean(item.type).toLocaleLowerCase("sv")))) || latest(rows);
       const shortId = clean(row.id).replace(/^PL-/, "");
@@ -509,7 +521,7 @@
         concluded: group.filter(row => CONCLUDED_STATUSES.has(row.status)).length,
         legacyConcluded: group.filter(row => CONCLUDED_STATUSES.has(row.status)).length,
         legacyRegistered: group.length,
-        raising: group.filter(row => row.status === "Under uppdragning").length,
+        raising: group.filter(row => ACTIVE_SEEDLING_STATUSES.has(row.status)).length,
         ready: group.filter(row => row.status === "Redo för bedömning").length,
         active: group.some(row => ACTIVE_SEEDLING_STATUSES.has(row.status)),
         activeSowing: false,
@@ -783,13 +795,13 @@
     batches.forEach(batch => {
       const linkedLegacy = batch.seedlings.filter(row => row?.adapter !== false && clean(row.batchId) === batch.id && !batch.id.startsWith("hib:"));
       batch.legacyRegistered = number(batch.legacyRegistered) + linkedLegacy.length;
-      batch.raising = number(batch.raising) + linkedLegacy.filter(row => row.status === "Under uppdragning").length;
+      batch.raising = number(batch.raising) + linkedLegacy.filter(row => ACTIVE_SEEDLING_STATUSES.has(row.status)).length;
       batch.ready = number(batch.ready) + linkedLegacy.filter(row => row.status === "Redo för bedömning").length;
       batch.legacyKept = number(batch.legacyKept) + linkedLegacy.filter(row => row.status === "I samlingen").length;
       batch.legacyConcluded = number(batch.legacyConcluded) + linkedLegacy.filter(row => ["Gallrad", "Död", "Bortskänkt"].includes(row.status)).length;
       const realSeedlings = batch.seedlings.filter(row => row?.adapter === false);
       batch.registered = number(batch.legacyRegistered) + realSeedlings.length;
-      batch.raising = number(batch.raising) + realSeedlings.filter(row => row.status === "Under uppdragning").length;
+      batch.raising = number(batch.raising) + realSeedlings.filter(row => ACTIVE_SEEDLING_STATUSES.has(row.status)).length;
       batch.ready = number(batch.ready) + realSeedlings.filter(row => row.status === "Redo för bedömning").length;
       batch.kept = number(batch.legacyKept ?? batch.kept) + realSeedlings.filter(row => row.status === "I samlingen").length;
       batch.concluded = number(batch.legacyConcluded ?? batch.concluded) + realSeedlings.filter(row => ["Gallrad", "Död", "Bortskänkt"].includes(row.status)).length;
@@ -1070,36 +1082,35 @@
   function portalStats(species) {
     const activeCrossings = model.crossings.filter(row => row.adapter === false && row.active && !crossingIsExhausted(row) && matchesSpecies(row, species));
     const activeBatches = model.batches.filter(row => row.adapter === false && row.activeSowing && matchesSpecies(row, species));
-    const activeSeedlings = seedlingsForRaisingView(species, "Under uppdragning");
+    const activeSeedlings = seedlingsForRaisingView(species);
     const ready = seedlingsForRaisingView(species, "Redo för bedömning");
     const seedRows = model.materials.filter(row => matchesSpecies(row, species) && row.remaining !== null && row.remaining > 0);
     return {
       froer: {count: seedRows.length, secondary: `${seedRows.reduce((sum, row) => sum + row.remaining, 0)} frön kvar`},
       korsningar: {count: activeCrossings.length, secondary: "aktiva"},
       sadder: {count: activeBatches.length, secondary: "aktiva"},
-      uppdragning: {count: activeSeedlings.length, secondary: "aktiva"},
-      redo: {count: ready.length, secondary: "urval"}
+      uppdragning: {count: activeSeedlings.length, secondary: ready.length ? `varav ${ready.length} redo för bedömning` : ""}
     };
   }
 
   function syncPortal(current) {
     const stats = portalStats(current.species);
     labPortal.querySelectorAll("[data-lab-view]").forEach(button => {
-      const key = button.dataset.portalStatus === "Redo för bedömning" ? "redo" : button.dataset.labView;
-      const statusMatches = !button.dataset.portalStatus
-        || button.dataset.portalStatus === current.status
-        || current.status === "Alla" && button.dataset.portalStatus === "Under uppdragning";
-      const active = button.dataset.labView === current.view && statusMatches;
+      const key = button.dataset.labView;
+      const active = button.dataset.labView === current.view;
       const stat = stats[key];
       const label = button.querySelector("span")?.textContent || "Labbetvy";
       const secondary = button.querySelector(`[data-portal-secondary="${key}"]`);
       button.classList.toggle("is-active", active);
       button.classList.toggle("is-empty", stat.count === 0);
       button.setAttribute("aria-pressed", String(active));
-      button.setAttribute("aria-label", `${label}: ${stat.count}. Öppna.`);
+      button.setAttribute("aria-label", `${label}: ${stat.count}${stat.secondary ? `, ${stat.secondary}` : ""}. Öppna.`);
       const count = button.querySelector(`[data-portal-count="${key}"]`);
       if (count) count.textContent = String(stat.count);
-      if (secondary) secondary.textContent = stat.secondary;
+      if (secondary) {
+        secondary.textContent = stat.secondary;
+        secondary.hidden = !stat.secondary;
+      }
     });
   }
 
@@ -1159,9 +1170,9 @@
     return `<section class="lab-view">${viewIntro("Aktiva sådder", "Såbatcher som fortfarande befinner sig i såddfasen.", previousAction, `${activeRows.length} aktiva`)}${batchCards(activeRows) || emptyState("Inga aktiva sådder i valt artfilter.")}</section>`;
   }
 
-  function seedlingAge(seedling) {
+  function seedlingAge(seedling, includeContext = true) {
     const days = daysSince(seedling.germinatedDate);
-    return days === null ? "" : `${days} dagar sedan grodd`;
+    return days === null ? "" : `${days} dagar${includeContext ? " sedan grodd" : ""}`;
   }
 
   function seedlingCard(seedling) {
@@ -1179,12 +1190,13 @@
 
   function renderSeedlings(species, status) {
     const rows = seedlingsForRaisingView(species, status);
-    const readyView = status === "Redo för bedömning";
-    const title = readyView ? "Redo för bedömning" : "Under uppdragning";
-    const description = readyView
-      ? "Plantor som nått urvalsstadiet."
-      : "Grodda plantor som ännu inte är redo för urval.";
-    return `<section class="lab-view">${viewIntro(title, description)}${rows.length ? `<div class="seedling-grid">${rows.map(seedlingCard).join("")}</div>` : emptyState("Inga aktiva fröplantor matchar filtren.")}</section>`;
+    const allCount = seedlingsForRaisingView(species).length;
+    const readyCount = seedlingsForRaisingView(species, "Redo för bedömning").length;
+    const filters = `<div class="pill-group seedling-filter" role="group" aria-label="Filtrera plantor under uppdragning">
+      <button type="button" data-seedling-filter="Alla" aria-pressed="${status === "Alla"}">Alla (${allCount})</button>
+      <button type="button" data-seedling-filter="Redo för bedömning" aria-pressed="${status === "Redo för bedömning"}">Redo för bedömning (${readyCount})</button>
+    </div>`;
+    return `<section class="lab-view">${viewIntro("Under uppdragning", "Grodda plantor som följs fram till urval eller avslut.", filters)}${rows.length ? `<div class="seedling-grid">${rows.map(seedlingCard).join("")}</div>` : emptyState("Inga aktiva fröplantor matchar filtren.")}</section>`;
   }
 
   function historyHtml(rows) {
@@ -1351,7 +1363,7 @@
             <div class="fact"><dt>Status</dt><dd>${esc(batch.activeSowing ? "Aktiv" : "Avslutad")}</dd></div>
             ${batch.registered > 0 ? `<div class="fact"><dt>Registrerade plantor</dt><dd>${batch.registered}</dd></div>` : ""}
             <div class="fact"><dt>Under uppdragning</dt><dd>${batch.raising}</dd></div>
-            <div class="fact"><dt>Redo för bedömning</dt><dd>${batch.ready}</dd></div>
+            <div class="fact"><dt>Varav redo för bedömning</dt><dd>${batch.ready}</dd></div>
             <div class="fact"><dt>Kvar / ej grodda</dt><dd>${esc(countText(batch.remaining, batch.remainingExact, "Ej räknat"))}</dd></div>
             <div class="fact"><dt>Behållna i samlingen</dt><dd>${batch.kept}</dd></div>
             <div class="fact"><dt>Avslutade</dt><dd>${batch.concluded}</dd></div>
@@ -1401,9 +1413,22 @@
       <button type="button" class="secondary-action" data-add-seedling-milestone="${esc(seedling.id)}">Registrera milstolpe</button>
       <button type="button" class="secondary-action" data-edit-seedling="${esc(seedling.id)}">Redigera</button>
     ` : "";
+    const canKeepLabSeedling = seedling.adapter === false
+      && ["Under uppdragning", "Redo för bedömning"].includes(seedling.status);
     const keepAction = canKeepHibiscusSeedling
       ? `<button type="button" class="secondary-action" data-keep-hibiscus-seedling="${esc(seedling.internalId)}">Behåll i samlingen</button>`
+      : canKeepLabSeedling
+      ? `<button type="button" class="secondary-action" data-keep-seedling="${esc(seedling.id)}">Behåll i samlingen</button>`
       : "";
+    const continueAction = seedling.status === "Redo för bedömning"
+      ? `<button type="button" class="secondary-action" data-continue-seedling="${esc(seedling.id)}">Fortsätt uppdragning</button>`
+      : "";
+    const concludeAction = seedling.status === "Redo för bedömning"
+      ? `<button type="button" class="secondary-action" data-conclude-seedling="${esc(seedling.id)}">Avsluta</button>`
+      : "";
+    const readyForAssessment = seedling.status === "Redo för bedömning";
+    const decisionActions = `<div class="seedling-decisions"><h3>Beslut</h3><div class="seedling-decision-actions">${keepAction}${continueAction}${concludeAction}</div></div>`;
+    const ordinaryActions = `<div class="detail-actions">${labActions}${keepAction}</div>`;
     return `<section class="detail-shell">
       ${detailNavigation("Till uppdragning")}
       <article class="detail-card ${seedling.adapter === false ? "plant-card" : ""}" data-category="Labbet" data-plant-id="${esc(seedling.internalId)}" data-plant-name="${esc(seedling.shortId)}">
@@ -1415,17 +1440,16 @@
             <dl class="fact-grid">
               ${seedling.adapter === false ? `<div class="fact"><dt>Individualiserad</dt><dd>${esc(seedling.individualizedDate ? displayDate(seedling.individualizedDate, true) : "—")}</dd></div>` : ""}
               <div class="fact"><dt>Grodddatum</dt><dd>${esc(seedling.germinatedDate ? displayDate(seedling.germinatedDate, true) : "Ej registrerat")}</dd></div>
-              <div class="fact"><dt>Ålder</dt><dd>${esc(seedlingAge(seedling) || "—")}</dd></div>
-              <div class="fact"><dt>Senaste milstolpe</dt><dd>${esc(latestMilestone)}</dd></div>
+              <div class="fact"><dt>Ålder</dt><dd>${esc(seedlingAge(seedling, false) || "—")}</dd></div>
+              <div class="fact"><dt>Milstolpe</dt><dd>${esc(latestMilestone)}</dd></div>
             </dl>
-            <div class="detail-actions">${labActions}${keepAction}${keepAction ? '<p class="action-note">ID:t behålls. Endast urvalet ändras så att plantan lämnar aktiv uppdragning.</p>' : ""}</div>
+            ${readyForAssessment ? `${labActions ? `<div class="detail-actions">${labActions}</div>` : ""}${decisionActions}` : ordinaryActions}
           </div>
         </div>
         <div class="detail-body">
-          <section class="detail-section"><h3>Härkomst</h3><ol class="lineage-chain">${lineage.map(item => `<li>${esc(item.title)}${item.sub ? `<small>${esc(item.sub)}</small>` : ""}</li>`).join("")}</ol></section>
           <section class="detail-section"><h3>Anteckningar</h3><p>${esc(seedling.notes || "Ingen anteckning ännu.")}</p></section>
-          <section class="detail-section"><h3>Bildhistorik</h3><p>${seedling.photos.length ? `${seedling.photos.length} registrerade bilder. Välj en miniatyr ovan för att visa den.` : "Ingen bild registrerad ännu."}</p></section>
           <details open><summary>Milstolpar och historik</summary>${historyHtml(seedling.milestones)}</details>
+          <details><summary>Härkomst</summary><ol class="lineage-chain">${lineage.map(item => `<li>${esc(item.title)}${item.sub ? `<small>${esc(item.sub)}</small>` : ""}</li>`).join("")}</ol></details>
         </div>
       </article>
     </section>`;
@@ -1854,6 +1878,51 @@
     });
   }
 
+  async function continueSeedlingRaising(seedling) {
+    if (seedling.status !== "Redo för bedömning") return;
+    if (seedling.adapter) {
+      queueLabChange("decide_hibiscus_seedling", {plant_id: seedling.internalId, type: "Fortsatt uppdragning", date: today()});
+      await refreshModel();
+      updateRoute({planta: seedling.id, batch: null});
+      return;
+    }
+    queueLabChange("update", {
+      seedling_id: seedling.id,
+      status: "Under uppdragning",
+      germinated_date: seedling.germinatedDate,
+      notes: seedling.notes,
+      updated_at: new Date().toISOString()
+    });
+    await refreshModel();
+    updateRoute({planta: seedling.id, batch: null});
+  }
+
+  function openSeedlingConclusion(seedling) {
+    const statuses = ["Gallrad", "Död", "Bortskänkt"];
+    showFormDialog(`<h2>Avsluta fröplanta</h2>
+      <p>${esc(seedling.shortId)} · välj hur uppdragningen avslutades.</p>
+      <form class="lab-form">
+        <label>Avslut<select name="status">${statuses.map(status => `<option>${esc(status)}</option>`).join("")}</select></label>
+        <div class="dialog-actions"><button type="button" class="secondary-action" data-dialog-close>Avbryt</button><button type="submit" class="primary-action">Avsluta</button></div>
+      </form>`, async data => {
+      if (seedling.adapter) {
+        queueLabChange("decide_hibiscus_seedling", {plant_id: seedling.internalId, type: clean(data.get("status")), date: today()});
+        await refreshModel();
+        updateRoute({planta: null, batch: null, vy: "uppdragning", status: "Alla"});
+        return;
+      }
+      queueLabChange("update", {
+        seedling_id: seedling.id,
+        status: clean(data.get("status")),
+        germinated_date: seedling.germinatedDate,
+        notes: seedling.notes,
+        updated_at: new Date().toISOString()
+      });
+      await refreshModel();
+      updateRoute({planta: null, batch: null, vy: "uppdragning", status: "Alla"});
+    });
+  }
+
   speciesFilters.addEventListener("click", event => {
     const button = event.target.closest("[data-species]");
     if (!button) return;
@@ -1867,7 +1936,7 @@
     updateRoute({
       vy: view,
       del: view === "sadder" ? "batcher" : null,
-      status: view === "uppdragning" ? (button.dataset.portalStatus || "Alla") : null,
+      status: view === "uppdragning" ? "Alla" : null,
       batch: null,
       planta: null,
       korsning: null,
@@ -1932,6 +2001,10 @@
     const addMilestone = event.target.closest("[data-add-seedling-milestone]");
     const editSeedling = event.target.closest("[data-edit-seedling]");
     const keepHibiscusSeedling = event.target.closest("[data-keep-hibiscus-seedling]");
+    const keepSeedling = event.target.closest("[data-keep-seedling]");
+    const continueSeedling = event.target.closest("[data-continue-seedling]");
+    const concludeSeedling = event.target.closest("[data-conclude-seedling]");
+    const seedlingFilter = event.target.closest("[data-seedling-filter]");
     const galleryPhoto = event.target.closest("[data-gallery-photo]");
     const materialImageAction = event.target.closest("[data-material-image-action]");
     const showPreviousSowings = event.target.closest("[data-show-previous-sowings]");
@@ -1944,10 +2017,22 @@
     else if (crossing) updateRoute({vy: "korsningar", korsning: crossing.dataset.openCrossing, batch: null, planta: null, material: null});
     else if (material) updateRoute({vy: material.classList.contains("seed-box-card") ? "froer" : "sadder", del: "material", material: material.dataset.openMaterial, batch: null, planta: null, korsning: null});
     else if (group) updateRoute({vy: "uppdragning", art: group.dataset.openGroup, status: "Alla", batch: null, planta: null});
-    else if (back) updateRoute({batch: null, planta: null, korsning: null, material: null});
+    else if (seedlingFilter) updateRoute({vy: "uppdragning", status: seedlingFilter.dataset.seedlingFilter, batch: null, planta: null, korsning: null, material: null});
+    else if (back) {
+      if (history.state?.labbetRoute) history.back();
+      else updateRoute({batch: null, planta: null, korsning: null, material: null});
+    }
     else if (showPreviousSowings) updateRoute({vy: "sadder", del: "tidigare", batch: null, planta: null, korsning: null, material: null});
     else if (showActiveSowings) updateRoute({vy: "sadder", del: "batcher", batch: null, planta: null, korsning: null, material: null});
     else if (newCrossing) openCrossingRegistration();
+    else if (continueSeedling) {
+      const selectedSeedling = model.seedlingById.get(continueSeedling.dataset.continueSeedling);
+      if (selectedSeedling) await continueSeedlingRaising(selectedSeedling);
+    }
+    else if (concludeSeedling) {
+      const selectedSeedling = model.seedlingById.get(concludeSeedling.dataset.concludeSeedling);
+      if (selectedSeedling) openSeedlingConclusion(selectedSeedling);
+    }
     else if (registerHarvest) {
       const selectedCrossing = model.crossingById.get(registerHarvest.dataset.registerHarvest);
       if (selectedCrossing?.adapter === false) openSeedHarvestRegistration(selectedCrossing);
@@ -1988,6 +2073,13 @@
       });
       await refreshModel();
       updateRoute({planta: selectedSeedling.internalId, batch: null});
+    }
+    else if (keepSeedling) {
+      const selectedSeedling = model.seedlingById.get(keepSeedling.dataset.keepSeedling);
+      if (!selectedSeedling || selectedSeedling.adapter !== false || !["Under uppdragning", "Redo för bedömning"].includes(selectedSeedling.status)) return;
+      queueLabChange("keep_seedling", {seedling_id: selectedSeedling.id, updated_at: new Date().toISOString()});
+      await refreshModel();
+      updateRoute({planta: selectedSeedling.id, batch: null});
     }
     else if (materialImageAction) {
       const selectedMaterial = model.materialById.get(materialImageAction.dataset.materialId);

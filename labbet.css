@@ -77,7 +77,7 @@ main { max-width: 1180px; margin: 0 auto; padding: 0 18px 72px; }
 .section-heading p, .section-count { margin: 0; color: var(--muted); font-size: .88rem; font-weight: 750; }
 
 .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 11px; }
-.lab-portal { grid-template-columns: repeat(5, minmax(0, 1fr)); margin-bottom: 30px; }
+.lab-portal { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 30px; }
 .stat-card {
   width: 100%;
   min-height: 112px;
@@ -97,6 +97,7 @@ main { max-width: 1180px; margin: 0 auto; padding: 0 18px 72px; }
 .stat-card strong { font-family: Georgia, "Times New Roman", serif; font-size: 2.25rem; font-weight: 500; line-height: 1; }
 .stat-card span { color: var(--muted); font-size: .85rem; font-weight: 800; }
 .stat-card small { min-height: 1.25em; color: var(--muted); font-size: .74rem; font-weight: 750; line-height: 1.25; }
+.stat-card small[hidden] { display: none; }
 .stat-card:hover { border-color: rgba(125, 79, 59, .55); transform: translateY(-1px); }
 .stat-card.is-empty { opacity: .68; }
 .stat-card.is-active, .stat-card[aria-pressed="true"] { border-color: var(--accent); background: rgba(125, 79, 59, .13); box-shadow: 0 10px 28px rgba(125, 79, 59, .14); }
@@ -202,6 +203,7 @@ main { max-width: 1180px; margin: 0 auto; padding: 0 18px 72px; }
 .view-intro p { margin: 5px 0 0; color: var(--muted); }
 .view-intro-meta { margin-left: auto; color: var(--muted); font-size: .88rem; font-weight: 750; text-align: right; }
 .view-intro > .primary-action { flex: 0 0 auto; }
+.seedling-filter { flex: 0 0 auto; }
 .text-link { color: var(--accent); font-weight: 850; text-decoration: none; white-space: nowrap; }
 
 .seedling-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(225px, 1fr)); gap: 16px; }
@@ -322,7 +324,7 @@ button.origin-link { width: 100%; font: inherit; text-align: left; cursor: point
 .history-item strong { color: var(--ink); }
 
 .seedling-detail-hero { display: grid; grid-template-columns: minmax(250px, .9fr) minmax(0, 1.1fr); }
-.detail-gallery { min-width: 0; background: linear-gradient(135deg, rgba(125, 79, 59, .14), rgba(96, 119, 97, .16)); }
+.detail-gallery { min-width: 0; align-self: start; background: linear-gradient(135deg, rgba(125, 79, 59, .14), rgba(96, 119, 97, .16)); }
 .detail-gallery-main { aspect-ratio: 4 / 3; overflow: hidden; }
 .detail-gallery-main img { width: 100%; height: 100%; display: block; object-fit: cover; }
 .detail-gallery-copy { height: 100%; display: grid; place-items: center; color: var(--muted); font-weight: 800; }
@@ -331,6 +333,13 @@ button.origin-link { width: 100%; font: inherit; text-align: left; cursor: point
 .detail-gallery-thumbs button.active { border-color: var(--accent); }
 .detail-gallery-thumbs img { width: 100%; height: 100%; display: block; object-fit: cover; }
 .seedling-detail-copy { display: grid; align-content: start; gap: 15px; padding: 23px; }
+.seedling-detail-copy > .fact-grid .fact dt { color: var(--accent); font-weight: 950; letter-spacing: .035em; }
+.seedling-detail-copy > .fact-grid { width: 100%; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.3fr); }
+.seedling-detail-copy > .fact-grid:has(.fact:nth-child(4)) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.seedling-decisions { display: grid; gap: 10px; border-top: 1px solid var(--line); padding-top: 15px; }
+.seedling-decisions h3 { margin: 0; color: var(--accent); font-size: .8rem; font-weight: 900; letter-spacing: .09em; text-transform: uppercase; }
+.seedling-decision-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.seedling-decisions .action-note { text-align: left; }
 .lineage-chain { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
 .lineage-chain li { position: relative; padding-left: 22px; font-weight: 800; }
 .lineage-chain li:not(:last-child)::before { content: "↓"; position: absolute; left: 2px; top: 21px; color: var(--accent); }
@@ -392,6 +401,9 @@ button.origin-link { width: 100%; font: inherit; text-align: left; cursor: point
   .parent-pair { grid-template-columns: 1fr; gap: 8px; }
   .parent-cross { display: none; }
   .seedling-detail-hero { grid-template-columns: 1fr; }
+  .seedling-detail-copy > .fact-grid,
+  .seedling-detail-copy > .fact-grid:has(.fact:nth-child(4)) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .seedling-detail-copy > .fact-grid:not(:has(.fact:nth-child(4))) .fact:last-child { grid-column: span 2; }
   .history-item { grid-template-columns: 78px 1fr; }
   .lab-form { grid-template-columns: 1fr; }
   .lab-form label.wide, .dialog-actions { grid-column: 1; }

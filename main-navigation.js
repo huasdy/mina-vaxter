@@ -61,27 +61,7 @@
         }
         .main-navigation-mobile-title a { color: var(--ink, #2b251f); text-decoration: none; }
         .main-navigation {
-          justify-content: flex-start; gap: 6px; margin: 0 auto 18px; padding: 1px 0 3px;
-          scroll-snap-type: x proximity;
-        }
-        .main-navigation a,
-        .main-navigation a[href="verktyg.html"] {
-          min-height: 0; padding: 9px 14px; border: 1px solid var(--line, #ded2c2);
-          border-radius: 999px; background: var(--paper, #fffdf8); color: var(--accent, #7d4f3b);
-          font-size: .84rem; font-weight: 800; scroll-snap-align: start; box-shadow: none;
-        }
-        .main-navigation a[href="index.html"] { display: none !important; }
-        .main-navigation a[data-nav-section="hibiskus"] { order: 1; }
-        .main-navigation a[data-nav-section="pelargon"] { order: 2; }
-        .main-navigation a[data-nav-section="udda"] { order: 3; }
-        .main-navigation a[data-nav-section="stapelia"] { order: 4; }
-        .main-navigation a[data-nav-section="labbet"] { order: 5; }
-        .main-navigation a[data-nav-section="vaxtliv"] { order: 6; }
-        .main-navigation a[data-nav-section="verktyg"] { order: 7; }
-        .main-navigation a.current,
-        .main-navigation a[aria-current="page"] {
-          border-color: var(--accent, #7d4f3b); background: var(--accent, #7d4f3b); color: white;
-          box-shadow: none;
+          display: none;
         }
       }
     `;
@@ -101,9 +81,5 @@
       const active = section === activeSection;
       return `<a data-nav-section="${section}"${active ? ' class="current" aria-current="page"' : ""} href="${href}">${escapeHtml(label)}</a>`;
     }).join("");
-    const current = nav.querySelector('[aria-current="page"]');
-    if (current && typeof current.scrollIntoView === "function" && window.innerWidth <= 760) {
-      requestAnimationFrame(() => current.scrollIntoView({block: "nearest", inline: "center"}));
-    }
   });
 })();

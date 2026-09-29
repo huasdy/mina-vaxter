@@ -774,7 +774,7 @@ function buildCrossingExport(items = getPendingCrossingItems()) {
 }
 
 const labChangeStorageKey = "mina-vaxter-lab-changes-v1";
-const labChangeKinds = Object.freeze(["crossing", "seed_harvest", "seed_lot", "sow_batch", "batch_update", "material_update", "seedling", "remove_seedling", "milestone", "update", "keep_hibiscus_seedling"]);
+const labChangeKinds = Object.freeze(["crossing", "seed_harvest", "seed_lot", "sow_batch", "batch_update", "material_update", "seedling", "remove_seedling", "milestone", "update", "keep_hibiscus_seedling", "keep_seedling", "decide_hibiscus_seedling"]);
 
 function getPendingLabItems() {
   try {
@@ -4428,6 +4428,10 @@ async function openImageImportQueue() {
                   ? `Ny fröplanta · ${data.provisional_id || ""}`
               : item.kind === "keep_hibiscus_seedling"
                 ? `Behållen Hibiskus · ${data.plant_id || data.seedling_id || ""}`
+                : item.kind === "keep_seedling"
+                  ? `Behållen fröplanta · ${data.seedling_id || ""}`
+                  : item.kind === "decide_hibiscus_seedling"
+                    ? `${data.type || "Beslut"} · ${data.plant_id || ""}`
                 : item.kind === "milestone"
                     ? `${data.type || "Milstolpe"} · ${data.date || ""}`
                     : `Uppdatera · ${data.seedling_id || ""}`;
